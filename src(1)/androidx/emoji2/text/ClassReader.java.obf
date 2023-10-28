@@ -1,0 +1,180 @@
+package androidx.emoji2.text;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
+import android.content.pm.Signature;
+import android.os.Build.VERSION;
+import android.util.Log;
+import c.h.p.h;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+public final class e
+{
+  public static k a(Context paramContext)
+  {
+    return (k)new a(null).c(paramContext);
+  }
+  
+  public static class a
+  {
+    private final e.b a;
+    
+    public a(e.b paramB)
+    {
+      if (paramB == null) {
+        paramB = e();
+      }
+      a = paramB;
+    }
+    
+    private g.c a(Context paramContext, c.h.n.e paramE)
+    {
+      if (paramE == null) {
+        return null;
+      }
+      return new k(paramContext, paramE);
+    }
+    
+    private List<List<byte[]>> b(Signature[] paramArrayOfSignature)
+    {
+      ArrayList localArrayList = new ArrayList();
+      int j = paramArrayOfSignature.length;
+      int i = 0;
+      while (i < j)
+      {
+        localArrayList.add(paramArrayOfSignature[i].toByteArray());
+        i += 1;
+      }
+      return Collections.singletonList(localArrayList);
+    }
+    
+    private c.h.n.e d(ProviderInfo paramProviderInfo, PackageManager paramPackageManager)
+      throws PackageManager.NameNotFoundException
+    {
+      String str = authority;
+      paramProviderInfo = packageName;
+      return new c.h.n.e(str, paramProviderInfo, "emojicompat-emoji-font", b(a.b(paramPackageManager, paramProviderInfo)));
+    }
+    
+    private static e.b e()
+    {
+      int i = Build.VERSION.SDK_INT;
+      if (i >= 28) {
+        return new e.d();
+      }
+      if (i >= 19) {
+        return new e.c();
+      }
+      return new e.b();
+    }
+    
+    private boolean f(ProviderInfo paramProviderInfo)
+    {
+      if (paramProviderInfo != null)
+      {
+        paramProviderInfo = applicationInfo;
+        if ((paramProviderInfo != null) && ((flags & 0x1) == 1)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    private ProviderInfo g(PackageManager paramPackageManager)
+    {
+      paramPackageManager = a.c(paramPackageManager, new Intent("androidx.content.action.LOAD_EMOJI_FONT"), 0).iterator();
+      while (paramPackageManager.hasNext())
+      {
+        Object localObject = (ResolveInfo)paramPackageManager.next();
+        localObject = a.a((ResolveInfo)localObject);
+        if (f((ProviderInfo)localObject)) {
+          return localObject;
+        }
+      }
+      return null;
+    }
+    
+    public g.c c(Context paramContext)
+    {
+      return a(paramContext, h(paramContext));
+    }
+    
+    c.h.n.e h(Context paramContext)
+    {
+      paramContext = paramContext.getPackageManager();
+      h.h(paramContext, "Package manager required to locate emoji font provider");
+      ProviderInfo localProviderInfo = g(paramContext);
+      if (localProviderInfo == null) {
+        return null;
+      }
+      try
+      {
+        paramContext = d(localProviderInfo, paramContext);
+        return paramContext;
+      }
+      catch (PackageManager.NameNotFoundException paramContext)
+      {
+        Log.wtf("emoji2.text.DefaultEmojiConfig", paramContext);
+      }
+      return null;
+    }
+  }
+  
+  public static class b
+  {
+    public b() {}
+    
+    public ProviderInfo a(ResolveInfo paramResolveInfo)
+    {
+      throw new IllegalStateException("Unable to get provider info prior to API 19");
+    }
+    
+    public Signature[] b(PackageManager paramPackageManager, String paramString)
+      throws PackageManager.NameNotFoundException
+    {
+      return getPackageInfo64signatures;
+    }
+    
+    public List<ResolveInfo> c(PackageManager paramPackageManager, Intent paramIntent, int paramInt)
+    {
+      return Collections.emptyList();
+    }
+  }
+  
+  public static class c
+    extends e.b
+  {
+    public c() {}
+    
+    public ProviderInfo a(ResolveInfo paramResolveInfo)
+    {
+      return providerInfo;
+    }
+    
+    public List<ResolveInfo> c(PackageManager paramPackageManager, Intent paramIntent, int paramInt)
+    {
+      return paramPackageManager.queryIntentContentProviders(paramIntent, paramInt);
+    }
+  }
+  
+  public static class d
+    extends e.c
+  {
+    public d() {}
+    
+    public Signature[] b(PackageManager paramPackageManager, String paramString)
+      throws PackageManager.NameNotFoundException
+    {
+      return getPackageInfo64signatures;
+    }
+  }
+}

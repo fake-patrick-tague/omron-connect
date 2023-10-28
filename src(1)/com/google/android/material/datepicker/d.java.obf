@@ -1,0 +1,373 @@
+package com.google.android.material.datepicker;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.a0;
+import androidx.fragment.app.l;
+import c.h.q.f0;
+import com.google.android.material.internal.CheckableImageButton;
+import d.c.a.a.d;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+public final class e<S>
+  extends l
+{
+  static final Object b = "CONFIRM_BUTTON_TAG";
+  static final Object c = "CANCEL_BUTTON_TAG";
+  static final Object d = "TOGGLE_BUTTON_TAG";
+  private final LinkedHashSet<f<? super S>> e = new LinkedHashSet();
+  private final LinkedHashSet<View.OnClickListener> f = new LinkedHashSet();
+  private final LinkedHashSet<DialogInterface.OnCancelListener> g = new LinkedHashSet();
+  private final LinkedHashSet<DialogInterface.OnDismissListener> h = new LinkedHashSet();
+  private int i;
+  private DateSelector<S> j;
+  private k<S> k;
+  private CalendarConstraints l;
+  private MaterialCalendar<S> m;
+  private int n;
+  private CharSequence o;
+  private boolean p;
+  private int q;
+  private TextView r;
+  private CheckableImageButton s;
+  private d.c.a.a.x.g t;
+  private Button u;
+  
+  public e() {}
+  
+  static boolean B(Context paramContext)
+  {
+    return C(paramContext, d.c.a.a.b.z);
+  }
+  
+  static boolean C(Context paramContext, int paramInt)
+  {
+    paramContext = paramContext.obtainStyledAttributes(d.c.a.a.u.b.c(paramContext, d.c.a.a.b.w, MaterialCalendar.class.getCanonicalName()), new int[] { paramInt });
+    boolean bool = paramContext.getBoolean(0, false);
+    paramContext.recycle();
+    return bool;
+  }
+  
+  private void D()
+  {
+    int i1 = x(requireContext());
+    m = MaterialCalendar.C(j, i1, l);
+    if (s.isChecked()) {
+      localObject = g.k(j, i1, l);
+    } else {
+      localObject = m;
+    }
+    k = ((k)localObject);
+    E();
+    Object localObject = getChildFragmentManager().k();
+    ((a0)localObject).p(d.c.a.a.f.z, k);
+    ((a0)localObject).j();
+    k.i(new c());
+  }
+  
+  private void E()
+  {
+    String str = u();
+    r.setContentDescription(String.format(getString(d.c.a.a.j.m), new Object[] { str }));
+    r.setText(str);
+  }
+  
+  private void F(CheckableImageButton paramCheckableImageButton)
+  {
+    if (s.isChecked()) {
+      paramCheckableImageButton = paramCheckableImageButton.getContext().getString(d.c.a.a.j.p);
+    } else {
+      paramCheckableImageButton = paramCheckableImageButton.getContext().getString(d.c.a.a.j.r);
+    }
+    s.setContentDescription(paramCheckableImageButton);
+  }
+  
+  private static Drawable s(Context paramContext)
+  {
+    StateListDrawable localStateListDrawable = new StateListDrawable();
+    Drawable localDrawable = c.a.k.a.a.b(paramContext, d.c.a.a.e.c);
+    localStateListDrawable.addState(new int[] { 16842912 }, localDrawable);
+    paramContext = c.a.k.a.a.b(paramContext, d.c.a.a.e.d);
+    localStateListDrawable.addState(new int[0], paramContext);
+    return localStateListDrawable;
+  }
+  
+  private static int t(Context paramContext)
+  {
+    paramContext = paramContext.getResources();
+    int i1 = paramContext.getDimensionPixelSize(d.U);
+    int i2 = paramContext.getDimensionPixelOffset(d.V);
+    int i3 = paramContext.getDimensionPixelOffset(d.T);
+    int i4 = paramContext.getDimensionPixelSize(d.P);
+    int i5 = h.b;
+    return i1 + i2 + i3 + i4 + (paramContext.getDimensionPixelSize(d.N) * i5 + (i5 - 1) * paramContext.getDimensionPixelOffset(d.S)) + paramContext.getDimensionPixelOffset(d.L);
+  }
+  
+  private static int v(Context paramContext)
+  {
+    paramContext = paramContext.getResources();
+    int i1 = paramContext.getDimensionPixelOffset(d.M);
+    int i2 = de;
+    return i1 * 2 + paramContext.getDimensionPixelSize(d.O) * i2 + (i2 - 1) * paramContext.getDimensionPixelOffset(d.R);
+  }
+  
+  private int x(Context paramContext)
+  {
+    int i1 = i;
+    if (i1 != 0) {
+      return i1;
+    }
+    return j.a0(paramContext);
+  }
+  
+  private void y(Context paramContext)
+  {
+    s.setTag(d);
+    s.setImageDrawable(s(paramContext));
+    paramContext = s;
+    boolean bool;
+    if (q != 0) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    paramContext.setChecked(bool);
+    f0.p0(s, null);
+    F(s);
+    s.setOnClickListener(new d());
+  }
+  
+  static boolean z(Context paramContext)
+  {
+    return C(paramContext, 16843277);
+  }
+  
+  public final void onCancel(DialogInterface paramDialogInterface)
+  {
+    Iterator localIterator = g.iterator();
+    while (localIterator.hasNext()) {
+      ((DialogInterface.OnCancelListener)localIterator.next()).onCancel(paramDialogInterface);
+    }
+    super.onCancel(paramDialogInterface);
+  }
+  
+  public final void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    Bundle localBundle = paramBundle;
+    if (paramBundle == null) {
+      localBundle = getArguments();
+    }
+    i = localBundle.getInt("OVERRIDE_THEME_RES_ID");
+    j = ((DateSelector)localBundle.getParcelable("DATE_SELECTOR_KEY"));
+    l = ((CalendarConstraints)localBundle.getParcelable("CALENDAR_CONSTRAINTS_KEY"));
+    n = localBundle.getInt("TITLE_TEXT_RES_ID_KEY");
+    o = localBundle.getCharSequence("TITLE_TEXT_KEY");
+    q = localBundle.getInt("INPUT_MODE_KEY");
+  }
+  
+  public final Dialog onCreateDialog(Bundle paramBundle)
+  {
+    paramBundle = new Dialog(requireContext(), x(requireContext()));
+    Context localContext = paramBundle.getContext();
+    p = z(localContext);
+    int i1 = d.c.a.a.u.b.c(localContext, d.c.a.a.b.o, e.class.getCanonicalName());
+    d.c.a.a.x.g localG = new d.c.a.a.x.g(localContext, null, d.c.a.a.b.w, d.c.a.a.k.x);
+    t = localG;
+    localG.M(localContext);
+    t.X(ColorStateList.valueOf(i1));
+    t.W(f0.x(paramBundle.getWindow().getDecorView()));
+    return paramBundle;
+  }
+  
+  public final View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    int i1;
+    if (p) {
+      i1 = d.c.a.a.h.t;
+    } else {
+      i1 = d.c.a.a.h.s;
+    }
+    paramLayoutInflater = paramLayoutInflater.inflate(i1, paramViewGroup);
+    paramViewGroup = paramLayoutInflater.getContext();
+    if (p)
+    {
+      paramLayoutInflater.findViewById(d.c.a.a.f.z).setLayoutParams(new LinearLayout.LayoutParams(v(paramViewGroup), -2));
+    }
+    else
+    {
+      paramBundle = paramLayoutInflater.findViewById(d.c.a.a.f.A);
+      localObject = paramLayoutInflater.findViewById(d.c.a.a.f.z);
+      paramBundle.setLayoutParams(new LinearLayout.LayoutParams(v(paramViewGroup), -1));
+      ((View)localObject).setMinimumHeight(t(requireContext()));
+    }
+    paramBundle = (TextView)paramLayoutInflater.findViewById(d.c.a.a.f.F);
+    r = paramBundle;
+    f0.r0(paramBundle, 1);
+    s = ((CheckableImageButton)paramLayoutInflater.findViewById(d.c.a.a.f.G));
+    paramBundle = (TextView)paramLayoutInflater.findViewById(d.c.a.a.f.H);
+    Object localObject = o;
+    if (localObject != null) {
+      paramBundle.setText((CharSequence)localObject);
+    } else {
+      paramBundle.setText(n);
+    }
+    y(paramViewGroup);
+    u = ((Button)paramLayoutInflater.findViewById(d.c.a.a.f.c));
+    if (j.e0()) {
+      u.setEnabled(true);
+    } else {
+      u.setEnabled(false);
+    }
+    u.setTag(b);
+    u.setOnClickListener(new a());
+    paramViewGroup = (Button)paramLayoutInflater.findViewById(d.c.a.a.f.a);
+    paramViewGroup.setTag(c);
+    paramViewGroup.setOnClickListener(new b());
+    return paramLayoutInflater;
+  }
+  
+  public final void onDismiss(DialogInterface paramDialogInterface)
+  {
+    Object localObject = h.iterator();
+    while (((Iterator)localObject).hasNext()) {
+      ((DialogInterface.OnDismissListener)((Iterator)localObject).next()).onDismiss(paramDialogInterface);
+    }
+    localObject = (ViewGroup)getView();
+    if (localObject != null) {
+      ((ViewGroup)localObject).removeAllViews();
+    }
+    super.onDismiss(paramDialogInterface);
+  }
+  
+  public final void onSaveInstanceState(Bundle paramBundle)
+  {
+    super.onSaveInstanceState(paramBundle);
+    paramBundle.putInt("OVERRIDE_THEME_RES_ID", i);
+    paramBundle.putParcelable("DATE_SELECTOR_KEY", j);
+    CalendarConstraints.b localB = new CalendarConstraints.b(l);
+    if (m.x() != null) {
+      localB.b(m.x().g);
+    }
+    paramBundle.putParcelable("CALENDAR_CONSTRAINTS_KEY", localB.a());
+    paramBundle.putInt("TITLE_TEXT_RES_ID_KEY", n);
+    paramBundle.putCharSequence("TITLE_TEXT_KEY", o);
+  }
+  
+  public void onStart()
+  {
+    super.onStart();
+    Window localWindow = requireDialog().getWindow();
+    if (p)
+    {
+      localWindow.setLayout(-1, -1);
+      localWindow.setBackgroundDrawable(t);
+    }
+    else
+    {
+      localWindow.setLayout(-2, -2);
+      int i1 = getResources().getDimensionPixelOffset(d.Q);
+      Rect localRect = new Rect(i1, i1, i1, i1);
+      localWindow.setBackgroundDrawable(new InsetDrawable(t, i1, i1, i1, i1));
+      localWindow.getDecorView().setOnTouchListener(new d.c.a.a.p.a(requireDialog(), localRect));
+    }
+    D();
+  }
+  
+  public void onStop()
+  {
+    k.j();
+    super.onStop();
+  }
+  
+  public String u()
+  {
+    return j.i(getContext());
+  }
+  
+  public final S w()
+  {
+    return j.n0();
+  }
+  
+  class a
+    implements View.OnClickListener
+  {
+    a() {}
+    
+    public void onClick(View paramView)
+    {
+      paramView = e.i(e.this).iterator();
+      while (paramView.hasNext()) {
+        ((f)paramView.next()).a(w());
+      }
+      dismiss();
+    }
+  }
+  
+  class b
+    implements View.OnClickListener
+  {
+    b() {}
+    
+    public void onClick(View paramView)
+    {
+      Iterator localIterator = e.j(e.this).iterator();
+      while (localIterator.hasNext()) {
+        ((View.OnClickListener)localIterator.next()).onClick(paramView);
+      }
+      dismiss();
+    }
+  }
+  
+  class c
+    extends j<S>
+  {
+    c() {}
+    
+    public void a(S paramS)
+    {
+      e.k(e.this);
+      e.n(e.this).setEnabled(e.l(e.this).e0());
+    }
+  }
+  
+  class d
+    implements View.OnClickListener
+  {
+    d() {}
+    
+    public void onClick(View paramView)
+    {
+      e.n(e.this).setEnabled(e.l(e.this).e0());
+      e.p(e.this).toggle();
+      paramView = e.this;
+      e.q(paramView, e.p(paramView));
+      e.r(e.this);
+    }
+  }
+}

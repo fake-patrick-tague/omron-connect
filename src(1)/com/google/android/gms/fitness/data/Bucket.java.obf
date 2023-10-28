@@ -1,0 +1,187 @@
+package com.google.android.gms.fitness.data;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import androidx.annotation.RecentlyNullable;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.internal.fitness.zzko;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+@SafeParcelable.Class(creator="BucketCreator")
+@SafeParcelable.Reserved({7, 1000})
+public class Bucket
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<Bucket> CREATOR = new zze();
+  public static final int TYPE_ACTIVITY_SEGMENT = 4;
+  public static final int TYPE_ACTIVITY_TYPE = 3;
+  public static final int TYPE_SESSION = 2;
+  public static final int TYPE_TIME = 1;
+  @SafeParcelable.Field(getter="getStartTimeMillis", id=1)
+  private final long zzkr;
+  @SafeParcelable.Field(getter="getEndTimeMillis", id=2)
+  private final long zzks;
+  @SafeParcelable.Field(getter="getSession", id=3)
+  private final Session zzky;
+  @SafeParcelable.Field(getter="getActivityType", id=4)
+  private final int zzlg;
+  @SafeParcelable.Field(getter="getDataSets", id=5)
+  private final List<DataSet> zzlh;
+  @SafeParcelable.Field(getter="getBucketType", id=6)
+  private final int zzli;
+  
+  @SafeParcelable.Constructor
+  Bucket(@SafeParcelable.Param(id=1) long paramLong1, @SafeParcelable.Param(id=2) long paramLong2, @SafeParcelable.Param(id=3) Session paramSession, @SafeParcelable.Param(id=4) int paramInt1, @SafeParcelable.Param(id=5) List<DataSet> paramList, @SafeParcelable.Param(id=6) int paramInt2)
+  {
+    zzkr = paramLong1;
+    zzks = paramLong2;
+    zzky = paramSession;
+    zzlg = paramInt1;
+    zzlh = paramList;
+    zzli = paramInt2;
+  }
+  
+  public Bucket(@RecentlyNonNull RawBucket paramRawBucket, @RecentlyNonNull List<DataSource> paramList)
+  {
+    this(l1, l2, localSession, i, localArrayList, zzli);
+  }
+  
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static String zza(int paramInt)
+  {
+    if (paramInt != 0)
+    {
+      if (paramInt != 1)
+      {
+        if (paramInt != 2)
+        {
+          if (paramInt != 3)
+          {
+            if (paramInt != 4)
+            {
+              if (paramInt != 5) {
+                return "bug";
+              }
+              return "intervals";
+            }
+            return "segment";
+          }
+          return "type";
+        }
+        return "session";
+      }
+      return "time";
+    }
+    return "none";
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (!(paramObject instanceof Bucket)) {
+      return false;
+    }
+    paramObject = (Bucket)paramObject;
+    return (zzkr == zzkr) && (zzks == zzks) && (zzlg == zzlg) && (Objects.equal(zzlh, zzlh)) && (zzli == zzli);
+  }
+  
+  @RecentlyNonNull
+  public String getActivity()
+  {
+    return zzko.getName(zzlg);
+  }
+  
+  public int getBucketType()
+  {
+    return zzli;
+  }
+  
+  @RecentlyNullable
+  public DataSet getDataSet(@RecentlyNonNull DataType paramDataType)
+  {
+    Iterator localIterator = zzlh.iterator();
+    while (localIterator.hasNext())
+    {
+      DataSet localDataSet = (DataSet)localIterator.next();
+      if (localDataSet.getDataType().equals(paramDataType)) {
+        return localDataSet;
+      }
+    }
+    return null;
+  }
+  
+  @RecentlyNonNull
+  public List<DataSet> getDataSets()
+  {
+    return zzlh;
+  }
+  
+  public long getEndTime(@RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzks, TimeUnit.MILLISECONDS);
+  }
+  
+  @RecentlyNullable
+  public Session getSession()
+  {
+    return zzky;
+  }
+  
+  public long getStartTime(@RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzkr, TimeUnit.MILLISECONDS);
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { Long.valueOf(zzkr), Long.valueOf(zzks), Integer.valueOf(zzlg), Integer.valueOf(zzli) });
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("startTime", Long.valueOf(zzkr)).add("endTime", Long.valueOf(zzks)).add("activity", Integer.valueOf(zzlg)).add("dataSets", zzlh).add("bucketType", zza(zzli)).toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeLong(paramParcel, 1, zzkr);
+    SafeParcelWriter.writeLong(paramParcel, 2, zzks);
+    SafeParcelWriter.writeParcelable(paramParcel, 3, getSession(), paramInt, false);
+    SafeParcelWriter.writeInt(paramParcel, 4, zzlg);
+    SafeParcelWriter.writeTypedList(paramParcel, 5, getDataSets(), false);
+    SafeParcelWriter.writeInt(paramParcel, 6, getBucketType());
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  public final boolean zza(@RecentlyNonNull Bucket paramBucket)
+  {
+    return (zzkr == zzkr) && (zzks == zzks) && (zzlg == zzlg) && (zzli == zzli);
+  }
+  
+  @ShowFirstParty
+  public final int zzd()
+  {
+    return zzlg;
+  }
+}

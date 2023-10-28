@@ -1,0 +1,55 @@
+package androidx.viewpager2.widget;
+
+import android.view.View;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView.o;
+import java.util.Locale;
+
+final class d
+  extends ViewPager2.i
+{
+  private final LinearLayoutManager a;
+  private ViewPager2.k b;
+  
+  d(LinearLayoutManager paramLinearLayoutManager)
+  {
+    a = paramLinearLayoutManager;
+  }
+  
+  public void a(int paramInt) {}
+  
+  public void b(int paramInt1, float paramFloat, int paramInt2)
+  {
+    if (b == null) {
+      return;
+    }
+    paramFloat = -paramFloat;
+    paramInt2 = 0;
+    while (paramInt2 < a.g0())
+    {
+      View localView = a.f0(paramInt2);
+      if (localView != null)
+      {
+        float f = a.A0(localView) - paramInt1;
+        b.a(localView, f + paramFloat);
+        paramInt2 += 1;
+      }
+      else
+      {
+        throw new IllegalStateException(String.format(Locale.US, "LayoutManager returned a null child at pos %d/%d while transforming pages", new Object[] { Integer.valueOf(paramInt2), Integer.valueOf(a.g0()) }));
+      }
+    }
+  }
+  
+  public void c(int paramInt) {}
+  
+  ViewPager2.k d()
+  {
+    return b;
+  }
+  
+  void e(ViewPager2.k paramK)
+  {
+    b = paramK;
+  }
+}

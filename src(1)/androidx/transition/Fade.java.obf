@@ -1,0 +1,108 @@
+package androidx.transition;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.view.View;
+import android.view.ViewGroup;
+import c.h.q.f0;
+import java.util.Map;
+
+public class Fade
+  extends Visibility
+{
+  public Fade(int paramInt)
+  {
+    m0(paramInt);
+  }
+  
+  private Animator n0(final View paramView, float paramFloat1, float paramFloat2)
+  {
+    if (paramFloat1 == paramFloat2) {
+      return null;
+    }
+    w.g(paramView, paramFloat1);
+    ObjectAnimator localObjectAnimator = ObjectAnimator.ofFloat(paramView, w.b, new float[] { paramFloat2 });
+    localObjectAnimator.addListener(new b(paramView));
+    b(new a(paramView));
+    return localObjectAnimator;
+  }
+  
+  private static float o0(m paramM, float paramFloat)
+  {
+    float f = paramFloat;
+    if (paramM != null)
+    {
+      paramM = (Float)a.get("android:fade:transitionAlpha");
+      f = paramFloat;
+      if (paramM != null) {
+        f = paramM.floatValue();
+      }
+    }
+    return f;
+  }
+  
+  public Animator i0(ViewGroup paramViewGroup, View paramView, m paramM1, m paramM2)
+  {
+    float f1 = 0.0F;
+    float f2 = o0(paramM1, 0.0F);
+    if (f2 != 1.0F) {
+      f1 = f2;
+    }
+    return n0(paramView, f1, 1.0F);
+  }
+  
+  public Animator k0(ViewGroup paramViewGroup, View paramView, m paramM1, m paramM2)
+  {
+    w.e(paramView);
+    return n0(paramView, o0(paramM1, 1.0F), 0.0F);
+  }
+  
+  public void l(m paramM)
+  {
+    super.l(paramM);
+    a.put("android:fade:transitionAlpha", Float.valueOf(w.c(b)));
+  }
+  
+  class a
+    extends i
+  {
+    a(View paramView) {}
+    
+    public void c(Transition paramTransition)
+    {
+      w.g(paramView, 1.0F);
+      w.a(paramView);
+      paramTransition.R(this);
+    }
+  }
+  
+  private static class b
+    extends AnimatorListenerAdapter
+  {
+    private final View a;
+    private boolean b = false;
+    
+    b(View paramView)
+    {
+      a = paramView;
+    }
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      w.g(a, 1.0F);
+      if (b) {
+        a.setLayerType(0, null);
+      }
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      if ((f0.P(a)) && (a.getLayerType() == 0))
+      {
+        b = true;
+        a.setLayerType(2, null);
+      }
+    }
+  }
+}

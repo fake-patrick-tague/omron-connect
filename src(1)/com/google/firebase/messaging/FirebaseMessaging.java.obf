@@ -1,0 +1,526 @@
+package com.google.firebase.messaging;
+
+import android.app.Application;
+import android.app.Application.ActivityLifecycleCallbacks;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import androidx.annotation.Keep;
+import com.google.android.datatransport.f;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.concurrent.NamedThreadFactory;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.heartbeatinfo.HeartBeatInfo;
+import com.google.firebase.iid.a.a;
+import com.google.firebase.q.d;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+public class FirebaseMessaging
+{
+  private static final String EXTRA_DUMMY_P_INTENT = "app";
+  static final String GMS_PACKAGE = "com.google.android.gms";
+  @Deprecated
+  public static final String INSTANCE_ID_SCOPE = "FCM";
+  private static final long MAX_DELAY_SEC = TimeUnit.HOURS.toSeconds(8L);
+  private static final long MIN_DELAY_SEC = 30L;
+  private static final String SEND_INTENT_ACTION = "com.google.android.gcm.intent.SEND";
+  private static final String SUBTYPE_DEFAULT = "";
+  static final String TAG = "FirebaseMessaging";
+  private static b1 store;
+  static ScheduledExecutorService syncExecutor;
+  static f transportFactory;
+  private final a autoInit;
+  private final Context context;
+  private final Executor fileExecutor;
+  private final com.google.firebase.i firebaseApp;
+  private final com.google.firebase.installations.i fis;
+  private final o0 gmsRpc;
+  private final a iid;
+  private final Executor initExecutor;
+  private final Application.ActivityLifecycleCallbacks lifecycleCallbacks;
+  private final r0 metadata;
+  private final x0 requestDeduplicator;
+  private boolean syncScheduledOrRunning = false;
+  private final Executor taskExecutor;
+  private final Task<f1> topicsSubscriberTask;
+  
+  FirebaseMessaging(com.google.firebase.i paramI, a paramA, com.google.firebase.installations.i paramI1, f paramF, d paramD, r0 paramR0, o0 paramO0, Executor paramExecutor1, Executor paramExecutor2, Executor paramExecutor3)
+  {
+    transportFactory = paramF;
+    firebaseApp = paramI;
+    iid = paramA;
+    fis = paramI1;
+    autoInit = new a(paramD);
+    paramI1 = paramI.h();
+    context = paramI1;
+    paramF = new n0();
+    lifecycleCallbacks = paramF;
+    metadata = paramR0;
+    taskExecutor = paramExecutor1;
+    gmsRpc = paramO0;
+    requestDeduplicator = new x0(paramExecutor1);
+    initExecutor = paramExecutor2;
+    fileExecutor = paramExecutor3;
+    paramI = paramI.h();
+    if ((paramI instanceof Application))
+    {
+      ((Application)paramI).registerActivityLifecycleCallbacks(paramF);
+    }
+    else
+    {
+      paramF = new StringBuilder();
+      paramF.append("Context ");
+      paramF.append(paramI);
+      paramF.append(" was not an application, can't register for lifecycle callbacks. Some notification events may be dropped as a result.");
+      Log.w("FirebaseMessaging", paramF.toString());
+    }
+    if (paramA != null) {
+      paramA.c(new n(this));
+    }
+    paramExecutor2.execute(new p(this));
+    paramI = f1.e(this, paramR0, paramO0, paramI1, m0.g());
+    topicsSubscriberTask = paramI;
+    paramI.addOnSuccessListener(paramExecutor2, new o(this));
+    paramExecutor2.execute(new j(this));
+  }
+  
+  FirebaseMessaging(com.google.firebase.i paramI, a paramA, com.google.firebase.r.b<com.google.firebase.t.i> paramB, com.google.firebase.r.b<HeartBeatInfo> paramB1, com.google.firebase.installations.i paramI1, f paramF, d paramD)
+  {
+    this(paramI, paramA, paramB, paramB1, paramI1, paramF, paramD, new r0(paramI.h()));
+  }
+  
+  FirebaseMessaging(com.google.firebase.i paramI, a paramA, com.google.firebase.r.b<com.google.firebase.t.i> paramB, com.google.firebase.r.b<HeartBeatInfo> paramB1, com.google.firebase.installations.i paramI1, f paramF, d paramD, r0 paramR0)
+  {
+    this(paramI, paramA, paramI1, paramF, paramD, paramR0, new o0(paramI, paramR0, paramB, paramB1, paramI1), m0.f(), m0.c(), m0.b());
+  }
+  
+  static void clearStoreForTest()
+  {
+    try
+    {
+      store = null;
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  static void clearTransportFactoryForTest()
+  {
+    transportFactory = null;
+  }
+  
+  public static FirebaseMessaging getInstance()
+  {
+    try
+    {
+      FirebaseMessaging localFirebaseMessaging = getInstance(com.google.firebase.i.i());
+      return localFirebaseMessaging;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  @Keep
+  static FirebaseMessaging getInstance(com.google.firebase.i paramI)
+  {
+    try
+    {
+      paramI = (FirebaseMessaging)paramI.g(FirebaseMessaging.class);
+      Preconditions.checkNotNull(paramI, "Firebase Messaging component is not present");
+      return paramI;
+    }
+    finally
+    {
+      paramI = finally;
+      throw paramI;
+    }
+  }
+  
+  private static b1 getStore(Context paramContext)
+  {
+    try
+    {
+      if (store == null) {
+        store = new b1(paramContext);
+      }
+      paramContext = store;
+      return paramContext;
+    }
+    finally {}
+  }
+  
+  private String getSubtype()
+  {
+    if ("[DEFAULT]".equals(firebaseApp.j())) {
+      return "";
+    }
+    return firebaseApp.l();
+  }
+  
+  public static f getTransportFactory()
+  {
+    return transportFactory;
+  }
+  
+  private void invokeOnTokenRefresh(String paramString)
+  {
+    if ("[DEFAULT]".equals(firebaseApp.j()))
+    {
+      if (Log.isLoggable("FirebaseMessaging", 3))
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Invoking onNewToken for app: ");
+        ((StringBuilder)localObject).append(firebaseApp.j());
+        Log.d("FirebaseMessaging", ((StringBuilder)localObject).toString());
+      }
+      Object localObject = new Intent("com.google.firebase.messaging.NEW_TOKEN");
+      ((Intent)localObject).putExtra("token", paramString);
+      new l0(context).f((Intent)localObject);
+    }
+  }
+  
+  private void startSync()
+  {
+    try
+    {
+      if (!syncScheduledOrRunning) {
+        syncWithDelaySecondsInternal(0L);
+      }
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  private void startSyncIfNecessary()
+  {
+    a localA = iid;
+    if (localA != null)
+    {
+      localA.d();
+      return;
+    }
+    if (tokenNeedsRefresh(getTokenWithoutTriggeringSync())) {
+      startSync();
+    }
+  }
+  
+  String blockingGetToken()
+    throws IOException
+  {
+    Object localObject1 = iid;
+    if (localObject1 != null)
+    {
+      try
+      {
+        localObject1 = (String)Tasks.await(((a)localObject1).b());
+        return localObject1;
+      }
+      catch (InterruptedException localInterruptedException1) {}catch (ExecutionException localExecutionException1) {}
+      throw new IOException(localExecutionException1);
+    }
+    Object localObject2 = getTokenWithoutTriggeringSync();
+    if (!tokenNeedsRefresh((b1.a)localObject2)) {
+      return b;
+    }
+    String str = r0.c(firebaseApp);
+    localObject2 = requestDeduplicator.a(str, new h(this, str, (b1.a)localObject2));
+    try
+    {
+      localObject2 = (String)Tasks.await((Task)localObject2);
+      return localObject2;
+    }
+    catch (InterruptedException localInterruptedException2) {}catch (ExecutionException localExecutionException2) {}
+    throw new IOException(localExecutionException2);
+  }
+  
+  public Task<Void> deleteToken()
+  {
+    if (iid != null)
+    {
+      localTaskCompletionSource = new TaskCompletionSource();
+      initExecutor.execute(new m(this, localTaskCompletionSource));
+      return localTaskCompletionSource.getTask();
+    }
+    if (getTokenWithoutTriggeringSync() == null) {
+      return Tasks.forResult(null);
+    }
+    TaskCompletionSource localTaskCompletionSource = new TaskCompletionSource();
+    m0.e().execute(new r(this, localTaskCompletionSource));
+    return localTaskCompletionSource.getTask();
+  }
+  
+  public boolean deliveryMetricsExportToBigQueryEnabled()
+  {
+    return q0.a();
+  }
+  
+  void enqueueTaskWithDelaySeconds(Runnable paramRunnable, long paramLong)
+  {
+    try
+    {
+      if (syncExecutor == null) {
+        syncExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("TAG"));
+      }
+      syncExecutor.schedule(paramRunnable, paramLong, TimeUnit.SECONDS);
+      return;
+    }
+    finally {}
+  }
+  
+  Context getApplicationContext()
+  {
+    return context;
+  }
+  
+  public Task<String> getToken()
+  {
+    Object localObject = iid;
+    if (localObject != null) {
+      return ((a)localObject).b();
+    }
+    localObject = new TaskCompletionSource();
+    initExecutor.execute(new q(this, (TaskCompletionSource)localObject));
+    return ((TaskCompletionSource)localObject).getTask();
+  }
+  
+  b1.a getTokenWithoutTriggeringSync()
+  {
+    return getStore(context).e(getSubtype(), r0.c(firebaseApp));
+  }
+  
+  Task<f1> getTopicsSubscriberTask()
+  {
+    return topicsSubscriberTask;
+  }
+  
+  public boolean isAutoInitEnabled()
+  {
+    return autoInit.b();
+  }
+  
+  boolean isGmsCorePresent()
+  {
+    return metadata.g();
+  }
+  
+  public boolean isNotificationDelegationEnabled()
+  {
+    return u0.c(context);
+  }
+  
+  public void send(RemoteMessage paramRemoteMessage)
+  {
+    if (!TextUtils.isEmpty(paramRemoteMessage.getTo()))
+    {
+      Intent localIntent1 = new Intent("com.google.android.gcm.intent.SEND");
+      Intent localIntent2 = new Intent();
+      localIntent2.setPackage("com.google.example.invalidpackage");
+      Context localContext = context;
+      int i;
+      if (Build.VERSION.SDK_INT >= 23) {
+        i = 67108864;
+      } else {
+        i = 0;
+      }
+      localIntent1.putExtra("app", PendingIntent.getBroadcast(localContext, 0, localIntent2, i));
+      localIntent1.setPackage("com.google.android.gms");
+      paramRemoteMessage.h(localIntent1);
+      context.sendOrderedBroadcast(localIntent1, "com.google.android.gtalkservice.permission.GTALK_SERVICE");
+      return;
+    }
+    throw new IllegalArgumentException("Missing 'to'");
+  }
+  
+  public void setAutoInitEnabled(boolean paramBoolean)
+  {
+    autoInit.f(paramBoolean);
+  }
+  
+  public void setDeliveryMetricsExportToBigQuery(boolean paramBoolean)
+  {
+    q0.y(paramBoolean);
+  }
+  
+  public Task<Void> setNotificationDelegationEnabled(boolean paramBoolean)
+  {
+    return u0.e(initExecutor, context, paramBoolean);
+  }
+  
+  void setSyncScheduledOrRunning(boolean paramBoolean)
+  {
+    try
+    {
+      syncScheduledOrRunning = paramBoolean;
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  public Task<Void> subscribeToTopic(String paramString)
+  {
+    return topicsSubscriberTask.onSuccessTask(new s(paramString));
+  }
+  
+  void syncWithDelaySecondsInternal(long paramLong)
+  {
+    try
+    {
+      enqueueTaskWithDelaySeconds(new c1(this, Math.min(Math.max(30L, 2L * paramLong), MAX_DELAY_SEC)), paramLong);
+      syncScheduledOrRunning = true;
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  boolean tokenNeedsRefresh(b1.a paramA)
+  {
+    return (paramA == null) || (paramA.b(metadata.a()));
+  }
+  
+  public Task<Void> unsubscribeFromTopic(String paramString)
+  {
+    return topicsSubscriberTask.onSuccessTask(new l(paramString));
+  }
+  
+  private class a
+  {
+    private final d a;
+    private boolean b;
+    private com.google.firebase.q.b<com.google.firebase.h> c;
+    private Boolean d;
+    
+    a(d paramD)
+    {
+      a = paramD;
+    }
+    
+    private Boolean e()
+    {
+      Object localObject1 = firebaseApp.h();
+      Object localObject2 = ((Context)localObject1).getSharedPreferences("com.google.firebase.messaging", 0);
+      if (((SharedPreferences)localObject2).contains("auto_init")) {
+        return Boolean.valueOf(((SharedPreferences)localObject2).getBoolean("auto_init", false));
+      }
+      try
+      {
+        localObject2 = ((Context)localObject1).getPackageManager();
+        if (localObject2 != null)
+        {
+          localObject1 = ((PackageManager)localObject2).getApplicationInfo(((Context)localObject1).getPackageName(), 128);
+          if (localObject1 != null)
+          {
+            localObject2 = metaData;
+            if ((localObject2 != null) && (((Bundle)localObject2).containsKey("firebase_messaging_auto_init_enabled")))
+            {
+              boolean bool = metaData.getBoolean("firebase_messaging_auto_init_enabled");
+              return Boolean.valueOf(bool);
+            }
+          }
+        }
+      }
+      catch (PackageManager.NameNotFoundException localNameNotFoundException)
+      {
+        for (;;) {}
+      }
+      return null;
+    }
+    
+    void a()
+    {
+      try
+      {
+        boolean bool = b;
+        if (bool) {
+          return;
+        }
+        Object localObject1 = e();
+        d = ((Boolean)localObject1);
+        if (localObject1 == null)
+        {
+          localObject1 = new k(this);
+          c = ((com.google.firebase.q.b)localObject1);
+          a.a(com.google.firebase.h.class, (com.google.firebase.q.b)localObject1);
+        }
+        b = true;
+        return;
+      }
+      finally {}
+    }
+    
+    boolean b()
+    {
+      try
+      {
+        a();
+        Boolean localBoolean = d;
+        boolean bool;
+        if (localBoolean != null) {
+          bool = localBoolean.booleanValue();
+        } else {
+          bool = firebaseApp.q();
+        }
+        return bool;
+      }
+      finally {}
+    }
+    
+    void f(boolean paramBoolean)
+    {
+      try
+      {
+        a();
+        Object localObject1 = c;
+        if (localObject1 != null)
+        {
+          a.c(com.google.firebase.h.class, (com.google.firebase.q.b)localObject1);
+          c = null;
+        }
+        localObject1 = firebaseApp.h().getSharedPreferences("com.google.firebase.messaging", 0).edit();
+        ((SharedPreferences.Editor)localObject1).putBoolean("auto_init", paramBoolean);
+        ((SharedPreferences.Editor)localObject1).apply();
+        if (paramBoolean) {
+          FirebaseMessaging.this.startSyncIfNecessary();
+        }
+        d = Boolean.valueOf(paramBoolean);
+        return;
+      }
+      finally {}
+    }
+  }
+}

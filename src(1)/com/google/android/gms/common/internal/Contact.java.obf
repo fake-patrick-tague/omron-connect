@@ -1,0 +1,47 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+
+@SafeParcelable.Class(creator="SignInButtonConfigCreator")
+public final class zax
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<zax> CREATOR = new zay();
+  @SafeParcelable.VersionField(id=1)
+  final int zaa;
+  @SafeParcelable.Field(getter="getButtonSize", id=2)
+  private final int zab;
+  @SafeParcelable.Field(getter="getColorScheme", id=3)
+  private final int zac;
+  @Deprecated
+  @SafeParcelable.Field(getter="getScopes", id=4)
+  private final Scope[] zad;
+  
+  @SafeParcelable.Constructor
+  zax(@SafeParcelable.Param(id=1) int paramInt1, @SafeParcelable.Param(id=2) int paramInt2, @SafeParcelable.Param(id=3) int paramInt3, @SafeParcelable.Param(id=4) Scope[] paramArrayOfScope)
+  {
+    zaa = paramInt1;
+    zab = paramInt2;
+    zac = paramInt3;
+    zad = paramArrayOfScope;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zaa);
+    SafeParcelWriter.writeInt(paramParcel, 2, zab);
+    SafeParcelWriter.writeInt(paramParcel, 3, zac);
+    SafeParcelWriter.writeTypedArray(paramParcel, 4, zad, paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

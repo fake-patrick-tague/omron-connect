@@ -1,0 +1,89 @@
+package com.google.android.gms.fitness.request;
+
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.internal.fitness.zzcm;
+import com.google.android.gms.internal.fitness.zzcn;
+import java.util.concurrent.TimeUnit;
+
+@ShowFirstParty
+@SafeParcelable.Class(creator="SessionStartRequestCreator")
+@SafeParcelable.Reserved({3, 1000})
+public final class zzay
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<zzay> CREATOR = new zzbb();
+  @SafeParcelable.Field(getter="getSession", id=1)
+  private final Session zzky;
+  @SafeParcelable.Field(getter="getCallbackBinder", id=2, type="android.os.IBinder")
+  private final zzcn zzql;
+  
+  @SafeParcelable.Constructor
+  zzay(@SafeParcelable.Param(id=1) Session paramSession, @SafeParcelable.Param(id=2) IBinder paramIBinder)
+  {
+    zzky = paramSession;
+    if (paramIBinder == null) {
+      paramSession = null;
+    } else {
+      paramSession = zzcm.zzj(paramIBinder);
+    }
+    zzql = paramSession;
+  }
+  
+  public zzay(Session paramSession, zzcn paramZzcn)
+  {
+    boolean bool;
+    if (paramSession.getStartTime(TimeUnit.MILLISECONDS) <= System.currentTimeMillis()) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    Preconditions.checkArgument(bool, "Cannot start a session in the future");
+    Preconditions.checkArgument(paramSession.isOngoing(), "Cannot start a session which has already ended");
+    zzky = paramSession;
+    zzql = paramZzcn;
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    return (paramObject == this) || (((paramObject instanceof zzay)) && (Objects.equal(zzky, zzky)));
+  }
+  
+  public final int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzky });
+  }
+  
+  public final String toString()
+  {
+    return Objects.toStringHelper(this).add("session", zzky).toString();
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeParcelable(paramParcel, 1, zzky, paramInt, false);
+    Object localObject = zzql;
+    if (localObject == null) {
+      localObject = null;
+    } else {
+      localObject = ((IInterface)localObject).asBinder();
+    }
+    SafeParcelWriter.writeIBinder(paramParcel, 2, (IBinder)localObject, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

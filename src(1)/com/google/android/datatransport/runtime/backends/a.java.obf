@@ -1,0 +1,171 @@
+package com.google.android.datatransport.runtime.backends;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ServiceInfo;
+import android.os.Bundle;
+import android.util.Log;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+class j
+  implements e
+{
+  private final a a;
+  private final h b;
+  private final Map<String, l> c = new HashMap();
+  
+  j(Context paramContext, h paramH)
+  {
+    this(new a(paramContext), paramH);
+  }
+  
+  j(a paramA, h paramH)
+  {
+    a = paramA;
+    b = paramH;
+  }
+  
+  public l get(String paramString)
+  {
+    try
+    {
+      if (c.containsKey(paramString))
+      {
+        paramString = (l)c.get(paramString);
+        return paramString;
+      }
+      Object localObject = a.b(paramString);
+      if (localObject == null) {
+        return null;
+      }
+      localObject = ((d)localObject).create(b.a(paramString));
+      c.put(paramString, localObject);
+      return localObject;
+    }
+    finally {}
+  }
+  
+  static class a
+  {
+    private final Context a;
+    private Map<String, String> b = null;
+    
+    a(Context paramContext)
+    {
+      a = paramContext;
+    }
+    
+    private Map<String, String> a(Context paramContext)
+    {
+      paramContext = d(paramContext);
+      if (paramContext == null)
+      {
+        Log.w("BackendRegistry", "Could not retrieve metadata, returning empty list of transport backends.");
+        return Collections.emptyMap();
+      }
+      HashMap localHashMap = new HashMap();
+      Iterator localIterator = paramContext.keySet().iterator();
+      while (localIterator.hasNext())
+      {
+        String str1 = (String)localIterator.next();
+        Object localObject = paramContext.get(str1);
+        if (((localObject instanceof String)) && (str1.startsWith("backend:")))
+        {
+          localObject = ((String)localObject).split(",", -1);
+          int j = localObject.length;
+          int i = 0;
+          while (i < j)
+          {
+            String str2 = localObject[i].trim();
+            if (!str2.isEmpty()) {
+              localHashMap.put(str2, str1.substring(8));
+            }
+            i += 1;
+          }
+        }
+      }
+      return localHashMap;
+    }
+    
+    private Map<String, String> c()
+    {
+      if (b == null) {
+        b = a(a);
+      }
+      return b;
+    }
+    
+    private static Bundle d(Context paramContext)
+    {
+      try
+      {
+        PackageManager localPackageManager = paramContext.getPackageManager();
+        if (localPackageManager == null)
+        {
+          Log.w("BackendRegistry", "Context has no PackageManager.");
+          return null;
+        }
+        paramContext = localPackageManager.getServiceInfo(new ComponentName(paramContext, TransportBackendDiscovery.class), 128);
+        if (paramContext == null)
+        {
+          Log.w("BackendRegistry", "TransportBackendDiscovery has no service info.");
+          return null;
+        }
+        paramContext = metaData;
+        return paramContext;
+      }
+      catch (PackageManager.NameNotFoundException paramContext)
+      {
+        for (;;) {}
+      }
+      Log.w("BackendRegistry", "Application info not found.");
+      return null;
+    }
+    
+    d b(String paramString)
+    {
+      paramString = (String)c().get(paramString);
+      if (paramString == null) {
+        return null;
+      }
+      try
+      {
+        d localD = (d)Class.forName(paramString).asSubclass(d.class).getDeclaredConstructor(new Class[0]).newInstance(new Object[0]);
+        return localD;
+      }
+      catch (InvocationTargetException localInvocationTargetException)
+      {
+        Log.w("BackendRegistry", String.format("Could not instantiate %s", new Object[] { paramString }), localInvocationTargetException);
+        return null;
+      }
+      catch (NoSuchMethodException localNoSuchMethodException)
+      {
+        Log.w("BackendRegistry", String.format("Could not instantiate %s", new Object[] { paramString }), localNoSuchMethodException);
+        return null;
+      }
+      catch (InstantiationException localInstantiationException)
+      {
+        Log.w("BackendRegistry", String.format("Could not instantiate %s.", new Object[] { paramString }), localInstantiationException);
+        return null;
+      }
+      catch (IllegalAccessException localIllegalAccessException)
+      {
+        Log.w("BackendRegistry", String.format("Could not instantiate %s.", new Object[] { paramString }), localIllegalAccessException);
+        return null;
+      }
+      catch (ClassNotFoundException localClassNotFoundException)
+      {
+        Log.w("BackendRegistry", String.format("Class %s is not found.", new Object[] { paramString }), localClassNotFoundException);
+      }
+      return null;
+    }
+  }
+}

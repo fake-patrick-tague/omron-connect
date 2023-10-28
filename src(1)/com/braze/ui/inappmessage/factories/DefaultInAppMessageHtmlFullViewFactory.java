@@ -1,0 +1,64 @@
+package com.braze.ui.inappmessage.factories;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.webkit.WebView;
+import com.braze.configuration.BrazeConfigurationProvider;
+import com.braze.models.inappmessage.IInAppMessage;
+import com.braze.models.inappmessage.InAppMessageHtmlBase;
+import com.braze.models.inappmessage.InAppMessageHtmlFull;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.ui.R.layout;
+import com.braze.ui.inappmessage.IInAppMessageViewFactory;
+import com.braze.ui.inappmessage.jsinterface.InAppMessageJavascriptInterface;
+import com.braze.ui.inappmessage.listeners.IInAppMessageWebViewClientListener;
+import com.braze.ui.inappmessage.utils.InAppMessageWebViewClient;
+import com.braze.ui.inappmessage.views.InAppMessageHtmlBaseView;
+import com.braze.ui.inappmessage.views.InAppMessageHtmlFullView;
+import com.braze.ui.support.ViewUtils;
+import java.util.Objects;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public class DefaultInAppMessageHtmlFullViewFactory
+  implements IInAppMessageViewFactory
+{
+  private final IInAppMessageWebViewClientListener inAppMessageWebViewClientListener;
+  
+  public DefaultInAppMessageHtmlFullViewFactory(IInAppMessageWebViewClientListener paramIInAppMessageWebViewClientListener)
+  {
+    inAppMessageWebViewClientListener = paramIInAppMessageWebViewClientListener;
+  }
+  
+  public InAppMessageHtmlFullView createInAppMessageView(Activity paramActivity, IInAppMessage paramIInAppMessage)
+  {
+    i.e(paramActivity, "activity");
+    i.e(paramIInAppMessage, "inAppMessage");
+    Object localObject = paramActivity.getLayoutInflater().inflate(R.layout.com_braze_inappmessage_html_full, null);
+    Objects.requireNonNull(localObject, "null cannot be cast to non-null type com.braze.ui.inappmessage.views.InAppMessageHtmlFullView");
+    localObject = (InAppMessageHtmlFullView)localObject;
+    Context localContext = paramActivity.getApplicationContext();
+    i.d(localContext, "activity.applicationContext");
+    if ((new BrazeConfigurationProvider(localContext).isTouchModeRequiredForHtmlInAppMessages()) && (ViewUtils.isDeviceNotInTouchMode((View)localObject)))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.PREPARED, null, createInAppMessageView.1.INSTANCE, 2, null);
+      return null;
+    }
+    localContext = paramActivity.getApplicationContext();
+    InAppMessageHtmlFull localInAppMessageHtmlFull = (InAppMessageHtmlFull)paramIInAppMessage;
+    i.d(localContext, "context");
+    paramActivity = new InAppMessageJavascriptInterface(localContext, localInAppMessageHtmlFull);
+    ((InAppMessageHtmlBaseView)localObject).setWebViewContent(paramIInAppMessage.getMessage(), localInAppMessageHtmlFull.getLocalAssetsDirectoryUrl());
+    ((InAppMessageHtmlBaseView)localObject).setInAppMessageWebViewClient(new InAppMessageWebViewClient(localContext, paramIInAppMessage, inAppMessageWebViewClientListener));
+    paramIInAppMessage = ((InAppMessageHtmlBaseView)localObject).getMessageWebView();
+    if (paramIInAppMessage != null) {
+      paramIInAppMessage.addJavascriptInterface(paramActivity, "brazeInternalBridge");
+    }
+    return localObject;
+  }
+}

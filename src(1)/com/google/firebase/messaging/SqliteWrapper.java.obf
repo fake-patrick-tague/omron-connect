@@ -1,0 +1,177 @@
+package com.google.firebase.messaging;
+
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
+
+final class g0
+{
+  private static byte[] a(Queue<byte[]> paramQueue, int paramInt)
+  {
+    if (paramQueue.isEmpty()) {
+      return new byte[0];
+    }
+    byte[] arrayOfByte1 = (byte[])paramQueue.remove();
+    if (arrayOfByte1.length == paramInt) {
+      return arrayOfByte1;
+    }
+    int i = paramInt - arrayOfByte1.length;
+    arrayOfByte1 = Arrays.copyOf(arrayOfByte1, paramInt);
+    while (i > 0)
+    {
+      byte[] arrayOfByte2 = (byte[])paramQueue.remove();
+      int j = Math.min(i, arrayOfByte2.length);
+      System.arraycopy(arrayOfByte2, 0, arrayOfByte1, paramInt - i, j);
+      i -= j;
+    }
+    return arrayOfByte1;
+  }
+  
+  public static InputStream b(InputStream paramInputStream, long paramLong)
+  {
+    return new a(paramInputStream, paramLong);
+  }
+  
+  private static int c(long paramLong)
+  {
+    if (paramLong > 2147483647L) {
+      return Integer.MAX_VALUE;
+    }
+    if (paramLong < -2147483648L) {
+      return Integer.MIN_VALUE;
+    }
+    return (int)paramLong;
+  }
+  
+  public static byte[] d(InputStream paramInputStream)
+    throws IOException
+  {
+    return e(paramInputStream, new ArrayDeque(20), 0);
+  }
+  
+  private static byte[] e(InputStream paramInputStream, Queue<byte[]> paramQueue, int paramInt)
+    throws IOException
+  {
+    long l;
+    for (int i = Math.min(8192, Math.max(128, Integer.highestOneBit(paramInt) * 2)); paramInt < 2147483639; i = c(l * i))
+    {
+      int k = Math.min(i, 2147483639 - paramInt);
+      byte[] arrayOfByte = new byte[k];
+      paramQueue.add(arrayOfByte);
+      int j = 0;
+      while (j < k)
+      {
+        int m = paramInputStream.read(arrayOfByte, j, k - j);
+        if (m == -1) {
+          return a(paramQueue, paramInt);
+        }
+        j += m;
+        paramInt += m;
+      }
+      l = i;
+      if (i < 4096) {
+        i = 4;
+      } else {
+        i = 2;
+      }
+    }
+    if (paramInputStream.read() == -1) {
+      return a(paramQueue, 2147483639);
+    }
+    throw new OutOfMemoryError("input is too large to fit in a byte array");
+  }
+  
+  private static final class a
+    extends FilterInputStream
+  {
+    private long b;
+    private long c = -1L;
+    
+    a(InputStream paramInputStream, long paramLong)
+    {
+      super();
+      b = paramLong;
+    }
+    
+    public int available()
+      throws IOException
+    {
+      return (int)Math.min(in.available(), b);
+    }
+    
+    public void mark(int paramInt)
+    {
+      try
+      {
+        in.mark(paramInt);
+        c = b;
+        return;
+      }
+      finally
+      {
+        localObject = finally;
+        throw localObject;
+      }
+    }
+    
+    public int read()
+      throws IOException
+    {
+      if (b == 0L) {
+        return -1;
+      }
+      int i = in.read();
+      if (i != -1) {
+        b -= 1L;
+      }
+      return i;
+    }
+    
+    public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+      throws IOException
+    {
+      long l = b;
+      if (l == 0L) {
+        return -1;
+      }
+      paramInt2 = (int)Math.min(paramInt2, l);
+      paramInt1 = in.read(paramArrayOfByte, paramInt1, paramInt2);
+      if (paramInt1 != -1) {
+        b -= paramInt1;
+      }
+      return paramInt1;
+    }
+    
+    public void reset()
+      throws IOException
+    {
+      try
+      {
+        if (in.markSupported())
+        {
+          if (c != -1L)
+          {
+            in.reset();
+            b = c;
+            return;
+          }
+          throw new IOException("Mark not set");
+        }
+        throw new IOException("Mark not supported");
+      }
+      finally {}
+    }
+    
+    public long skip(long paramLong)
+      throws IOException
+    {
+      paramLong = Math.min(paramLong, b);
+      paramLong = in.skip(paramLong);
+      b -= paramLong;
+      return paramLong;
+    }
+  }
+}

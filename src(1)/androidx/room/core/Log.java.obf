@@ -1,0 +1,116 @@
+package androidx.room.q;
+
+import android.database.AbstractWindowedCursor;
+import android.database.Cursor;
+import android.database.CursorWindow;
+import android.os.Build.VERSION;
+import android.os.CancellationSignal;
+import androidx.room.RoomDatabase;
+import c.t.a.e;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class c
+{
+  public static void a(c.t.a.b paramB)
+  {
+    Object localObject2 = new ArrayList();
+    Object localObject1 = paramB.query("SELECT name FROM sqlite_master WHERE type = 'trigger'");
+    try
+    {
+      while (((Cursor)localObject1).moveToNext()) {
+        ((List)localObject2).add(((Cursor)localObject1).getString(0));
+      }
+      ((Cursor)localObject1).close();
+      localObject1 = ((List)localObject2).iterator();
+      while (((Iterator)localObject1).hasNext())
+      {
+        localObject2 = (String)((Iterator)localObject1).next();
+        if (((String)localObject2).startsWith("room_fts_content_sync_"))
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("DROP TRIGGER IF EXISTS ");
+          localStringBuilder.append((String)localObject2);
+          paramB.execSQL(localStringBuilder.toString());
+        }
+      }
+      return;
+    }
+    finally
+    {
+      ((Cursor)localObject1).close();
+    }
+  }
+  
+  public static Cursor b(RoomDatabase paramRoomDatabase, e paramE, boolean paramBoolean, CancellationSignal paramCancellationSignal)
+  {
+    paramE = paramRoomDatabase.q(paramE, paramCancellationSignal);
+    paramRoomDatabase = paramE;
+    if (paramBoolean)
+    {
+      paramRoomDatabase = paramE;
+      if ((paramE instanceof AbstractWindowedCursor))
+      {
+        paramCancellationSignal = (AbstractWindowedCursor)paramE;
+        int j = paramCancellationSignal.getCount();
+        int i;
+        if (paramCancellationSignal.hasWindow()) {
+          i = paramCancellationSignal.getWindow().getNumRows();
+        } else {
+          i = j;
+        }
+        if (Build.VERSION.SDK_INT >= 23)
+        {
+          paramRoomDatabase = paramE;
+          if (i >= j) {}
+        }
+        else
+        {
+          paramRoomDatabase = b.a(paramCancellationSignal);
+        }
+      }
+    }
+    return paramRoomDatabase;
+  }
+  
+  public static int c(File paramFile)
+    throws IOException
+  {
+    Object localObject2 = null;
+    Object localObject1 = localObject2;
+    try
+    {
+      ByteBuffer localByteBuffer = ByteBuffer.allocate(4);
+      localObject1 = localObject2;
+      paramFile = new FileInputStream(paramFile).getChannel();
+      localObject1 = paramFile;
+      paramFile.tryLock(60L, 4L, true);
+      localObject1 = paramFile;
+      paramFile.position(60L);
+      localObject1 = paramFile;
+      if (paramFile.read(localByteBuffer) == 4)
+      {
+        localObject1 = paramFile;
+        localByteBuffer.rewind();
+        localObject1 = paramFile;
+        int i = localByteBuffer.getInt();
+        paramFile.close();
+        return i;
+      }
+      localObject1 = paramFile;
+      throw new IOException("Bad database header, unable to read 4 bytes at offset 60");
+    }
+    finally
+    {
+      if (localObject1 != null) {
+        ((FileChannel)localObject1).close();
+      }
+    }
+  }
+}

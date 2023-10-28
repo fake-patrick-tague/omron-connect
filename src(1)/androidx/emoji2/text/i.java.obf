@@ -1,0 +1,114 @@
+package androidx.emoji2.text;
+
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import androidx.emoji2.text.q.a;
+import androidx.emoji2.text.q.b;
+
+public class h
+{
+  private static final ThreadLocal<a> a = new ThreadLocal();
+  private final int b;
+  private final m c;
+  private volatile int d = 0;
+  
+  h(m paramM, int paramInt)
+  {
+    c = paramM;
+    b = paramInt;
+  }
+  
+  private a g()
+  {
+    ThreadLocal localThreadLocal = a;
+    a localA2 = (a)localThreadLocal.get();
+    a localA1 = localA2;
+    if (localA2 == null)
+    {
+      localA1 = new a();
+      localThreadLocal.set(localA1);
+    }
+    c.d().j(localA1, b);
+    return localA1;
+  }
+  
+  public void a(Canvas paramCanvas, float paramFloat1, float paramFloat2, Paint paramPaint)
+  {
+    Typeface localTypeface1 = c.g();
+    Typeface localTypeface2 = paramPaint.getTypeface();
+    paramPaint.setTypeface(localTypeface1);
+    int i = b;
+    paramCanvas.drawText(c.c(), i * 2, 2, paramFloat1, paramFloat2, paramPaint);
+    paramPaint.setTypeface(localTypeface2);
+  }
+  
+  public int b(int paramInt)
+  {
+    return g().h(paramInt);
+  }
+  
+  public int c()
+  {
+    return g().i();
+  }
+  
+  public int d()
+  {
+    return d;
+  }
+  
+  public short e()
+  {
+    return g().k();
+  }
+  
+  public int f()
+  {
+    return g().l();
+  }
+  
+  public short h()
+  {
+    return g().m();
+  }
+  
+  public short i()
+  {
+    return g().n();
+  }
+  
+  public boolean j()
+  {
+    return g().j();
+  }
+  
+  public void k(boolean paramBoolean)
+  {
+    int i;
+    if (paramBoolean) {
+      i = 2;
+    } else {
+      i = 1;
+    }
+    d = i;
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(super.toString());
+    localStringBuilder.append(", id:");
+    localStringBuilder.append(Integer.toHexString(f()));
+    localStringBuilder.append(", codepoints:");
+    int j = c();
+    int i = 0;
+    while (i < j)
+    {
+      localStringBuilder.append(Integer.toHexString(b(i)));
+      localStringBuilder.append(" ");
+      i += 1;
+    }
+    return localStringBuilder.toString();
+  }
+}

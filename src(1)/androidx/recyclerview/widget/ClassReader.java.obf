@@ -1,0 +1,271 @@
+package androidx.recyclerview.widget;
+
+import android.content.Context;
+import android.graphics.PointF;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class t
+  extends x
+{
+  private s d;
+  private s e;
+  
+  public t() {}
+  
+  private int k(View paramView, s paramS)
+  {
+    return paramS.g(paramView) + paramS.e(paramView) / 2 - (paramS.m() + paramS.n() / 2);
+  }
+  
+  private View l(RecyclerView.o paramO, s paramS)
+  {
+    int n = paramO.g0();
+    Object localObject = null;
+    if (n == 0) {
+      return null;
+    }
+    int i1 = paramS.m();
+    int i2 = paramS.n() / 2;
+    int j = Integer.MAX_VALUE;
+    int i = 0;
+    while (i < n)
+    {
+      View localView = paramO.f0(i);
+      int m = Math.abs(paramS.g(localView) + paramS.e(localView) / 2 - (i1 + i2));
+      int k = j;
+      if (m < j)
+      {
+        localObject = localView;
+        k = m;
+      }
+      i += 1;
+      j = k;
+    }
+    return localObject;
+  }
+  
+  private s m(RecyclerView.o paramO)
+  {
+    s localS = e;
+    if ((localS == null) || (a != paramO)) {
+      e = s.a(paramO);
+    }
+    return e;
+  }
+  
+  private s n(RecyclerView.o paramO)
+  {
+    if (paramO.I()) {
+      return o(paramO);
+    }
+    if (paramO.H()) {
+      return m(paramO);
+    }
+    return null;
+  }
+  
+  private s o(RecyclerView.o paramO)
+  {
+    s localS = d;
+    if ((localS == null) || (a != paramO)) {
+      d = s.c(paramO);
+    }
+    return d;
+  }
+  
+  private boolean p(RecyclerView.o paramO, int paramInt1, int paramInt2)
+  {
+    if (paramO.H()) {
+      return paramInt1 > 0;
+    }
+    return paramInt2 > 0;
+  }
+  
+  private boolean q(RecyclerView.o paramO)
+  {
+    int i = paramO.v0();
+    boolean bool3 = paramO instanceof RecyclerView.x.b;
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (bool3)
+    {
+      paramO = ((RecyclerView.x.b)paramO).d(i - 1);
+      bool1 = bool2;
+      if (paramO != null) {
+        if (x >= 0.0F)
+        {
+          bool1 = bool2;
+          if (y >= 0.0F) {}
+        }
+        else
+        {
+          bool1 = true;
+        }
+      }
+    }
+    return bool1;
+  }
+  
+  public int[] c(RecyclerView.o paramO, View paramView)
+  {
+    int[] arrayOfInt = new int[2];
+    if (paramO.H()) {
+      arrayOfInt[0] = k(paramView, m(paramO));
+    } else {
+      arrayOfInt[0] = 0;
+    }
+    if (paramO.I())
+    {
+      arrayOfInt[1] = k(paramView, o(paramO));
+      return arrayOfInt;
+    }
+    arrayOfInt[1] = 0;
+    return arrayOfInt;
+  }
+  
+  protected RecyclerView.x d(RecyclerView.o paramO)
+  {
+    if (!(paramO instanceof RecyclerView.x.b)) {
+      return null;
+    }
+    return new a(a.getContext());
+  }
+  
+  public View f(RecyclerView.o paramO)
+  {
+    if (paramO.I()) {
+      return l(paramO, o(paramO));
+    }
+    if (paramO.H()) {
+      return l(paramO, m(paramO));
+    }
+    return null;
+  }
+  
+  public int g(RecyclerView.o paramO, int paramInt1, int paramInt2)
+  {
+    int i2 = paramO.v0();
+    if (i2 == 0) {
+      return -1;
+    }
+    s localS = n(paramO);
+    if (localS == null) {
+      return -1;
+    }
+    int j = Integer.MIN_VALUE;
+    int m = Integer.MAX_VALUE;
+    int i3 = paramO.g0();
+    int k = 0;
+    Object localObject2 = null;
+    Object localObject1 = null;
+    while (k < i3)
+    {
+      View localView = paramO.f0(k);
+      int i1;
+      Object localObject4;
+      if (localView == null)
+      {
+        i1 = m;
+        localObject4 = localObject2;
+      }
+      else
+      {
+        int n = k(localView, localS);
+        int i = j;
+        Object localObject3 = localObject1;
+        if (n <= 0)
+        {
+          i = j;
+          localObject3 = localObject1;
+          if (n > j)
+          {
+            localObject3 = localView;
+            i = n;
+          }
+        }
+        j = i;
+        i1 = m;
+        localObject4 = localObject2;
+        localObject1 = localObject3;
+        if (n >= 0)
+        {
+          j = i;
+          i1 = m;
+          localObject4 = localObject2;
+          localObject1 = localObject3;
+          if (n < m)
+          {
+            localObject1 = localObject3;
+            localObject4 = localView;
+            i1 = n;
+            j = i;
+          }
+        }
+      }
+      k += 1;
+      m = i1;
+      localObject2 = localObject4;
+    }
+    boolean bool = p(paramO, paramInt1, paramInt2);
+    if ((bool) && (localObject2 != null)) {
+      return paramO.A0(localObject2);
+    }
+    if ((!bool) && (localObject1 != null)) {
+      return paramO.A0(localObject1);
+    }
+    if (bool) {
+      localObject2 = localObject1;
+    }
+    if (localObject2 == null) {
+      return -1;
+    }
+    paramInt2 = paramO.A0(localObject2);
+    if (q(paramO) == bool) {
+      paramInt1 = -1;
+    } else {
+      paramInt1 = 1;
+    }
+    paramInt1 = paramInt2 + paramInt1;
+    if (paramInt1 >= 0)
+    {
+      if (paramInt1 >= i2) {
+        return -1;
+      }
+      return paramInt1;
+    }
+    return -1;
+  }
+  
+  class a
+    extends o
+  {
+    a(Context paramContext)
+    {
+      super();
+    }
+    
+    protected void o(View paramView, RecyclerView.y paramY, RecyclerView.x.a paramA)
+    {
+      paramY = t.this;
+      paramView = paramY.c(a.getLayoutManager(), paramView);
+      int i = paramView[0];
+      int j = paramView[1];
+      int k = w(Math.max(Math.abs(i), Math.abs(j)));
+      if (k > 0) {
+        paramA.d(i, j, k, this.j);
+      }
+    }
+    
+    protected float v(DisplayMetrics paramDisplayMetrics)
+    {
+      return 100.0F / densityDpi;
+    }
+    
+    protected int x(int paramInt)
+    {
+      return Math.min(100, super.x(paramInt));
+    }
+  }
+}

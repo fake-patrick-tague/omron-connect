@@ -1,0 +1,1703 @@
+package com.braze;
+
+import bo.app.d0;
+import bo.app.d5;
+import bo.app.j.a;
+import bo.app.j2;
+import bo.app.q6;
+import bo.app.r5;
+import bo.app.x1;
+import bo.app.z1;
+import com.braze.enums.BrazeDateFormat;
+import com.braze.enums.Gender;
+import com.braze.enums.Month;
+import com.braze.enums.NotificationSubscriptionType;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.DateTimeUtils;
+import com.braze.support.ValidationUtils;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import kotlin.t;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import org.json.JSONObject;
+
+public final class BrazeUser
+{
+  private final z1 brazeManager;
+  private volatile String internalUserId;
+  private final j2 locationManager;
+  private final d5 serverConfigStorageProvider;
+  private final q6 userCache;
+  private final ReentrantLock userIdLock;
+  
+  public BrazeUser(q6 paramQ6, z1 paramZ1, String paramString, j2 paramJ2, d5 paramD5)
+  {
+    userCache = paramQ6;
+    brazeManager = paramZ1;
+    internalUserId = paramString;
+    locationManager = paramJ2;
+    serverConfigStorageProvider = paramD5;
+    userIdLock = new ReentrantLock();
+  }
+  
+  public final boolean addAlias(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "alias");
+    i.e(paramString2, "label");
+    if (g.o(paramString1))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, a.b, 2, null);
+      return false;
+    }
+    if (g.o(paramString2))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, b.b, 2, null);
+      return false;
+    }
+    try
+    {
+      paramString2 = bo.app.j.h.g(paramString1, paramString2);
+      if (paramString2 != null)
+      {
+        boolean bool = brazeManager.a(paramString2);
+        return bool;
+      }
+    }
+    catch (Exception paramString2)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramString2, new c(paramString1));
+    }
+    return false;
+  }
+  
+  public final boolean addToCustomAttributeArray(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "key");
+    i.e(paramString2, "value");
+    try
+    {
+      if (!d0.a(paramString1, serverConfigStorageProvider.b()))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, d.b, 2, null);
+        return false;
+      }
+      if (!d0.b(paramString2)) {
+        return false;
+      }
+      String str = ValidationUtils.ensureBrazeFieldLength(paramString1);
+      paramString2 = ValidationUtils.ensureBrazeFieldLength(paramString2);
+      paramString2 = bo.app.j.h.a(str, paramString2);
+      if (paramString2 == null) {
+        return false;
+      }
+      boolean bool = brazeManager.a(paramString2);
+      return bool;
+    }
+    catch (Exception paramString2)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramString2, new e(paramString1));
+    }
+    return false;
+  }
+  
+  public final boolean addToSubscriptionGroup(String paramString)
+  {
+    i.e(paramString, "subscriptionGroupId");
+    try
+    {
+      if (g.o(paramString))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, f.b, 2, null);
+        return false;
+      }
+      x1 localX1 = bo.app.j.h.a(paramString, r5.b);
+      if (localX1 != null) {
+        brazeManager.a(localX1);
+      }
+      return true;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new g(paramString));
+    }
+    return false;
+  }
+  
+  public final String getUserId()
+  {
+    ReentrantLock localReentrantLock = userIdLock;
+    localReentrantLock.lock();
+    try
+    {
+      String str = internalUserId;
+      return str;
+    }
+    finally
+    {
+      localReentrantLock.unlock();
+    }
+  }
+  
+  public final boolean incrementCustomUserAttribute(String paramString, final int paramInt)
+  {
+    i.e(paramString, "key");
+    try
+    {
+      if (!d0.a(paramString, serverConfigStorageProvider.b())) {
+        return false;
+      }
+      Object localObject = ValidationUtils.ensureBrazeFieldLength(paramString);
+      localObject = bo.app.j.h.a((String)localObject, paramInt);
+      if (localObject == null) {
+        return false;
+      }
+      boolean bool = brazeManager.a((x1)localObject);
+      return bool;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new h(paramString, paramInt));
+    }
+    return false;
+  }
+  
+  public final boolean removeFromCustomAttributeArray(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "key");
+    i.e(paramString2, "value");
+    try
+    {
+      if (!d0.a(paramString1, serverConfigStorageProvider.b()))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, i.b, 2, null);
+        return false;
+      }
+      if (!d0.b(paramString2)) {
+        return false;
+      }
+      String str = ValidationUtils.ensureBrazeFieldLength(paramString1);
+      paramString2 = ValidationUtils.ensureBrazeFieldLength(paramString2);
+      paramString2 = bo.app.j.h.f(str, paramString2);
+      if (paramString2 == null) {
+        return false;
+      }
+      boolean bool = brazeManager.a(paramString2);
+      return bool;
+    }
+    catch (Exception paramString2)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramString2, new j(paramString1));
+    }
+    return false;
+  }
+  
+  public final boolean removeFromSubscriptionGroup(String paramString)
+  {
+    i.e(paramString, "subscriptionGroupId");
+    try
+    {
+      if (g.o(paramString))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, k.b, 2, null);
+        return false;
+      }
+      x1 localX1 = bo.app.j.h.a(paramString, r5.c);
+      if (localX1 != null) {
+        brazeManager.a(localX1);
+      }
+      return true;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new l(paramString));
+    }
+    return false;
+  }
+  
+  public final boolean setCountry(String paramString)
+  {
+    if (paramString != null) {}
+    for (;;)
+    {
+      try
+      {
+        if (g.o(paramString) != true) {
+          break label74;
+        }
+        i = 1;
+        if (i != 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, n.b, 2, null);
+          return false;
+        }
+        userCache.a(paramString);
+        return true;
+      }
+      catch (Exception localException)
+      {
+        Throwable localThrowable;
+        continue;
+      }
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localThrowable, new o(paramString));
+      return false;
+      label74:
+      int i = 0;
+    }
+  }
+  
+  public final boolean setCustomAttribute(String paramString, final Object paramObject, boolean paramBoolean)
+  {
+    i.e(paramString, "key");
+    i.e(paramObject, "value");
+    if (!d0.a(paramString, serverConfigStorageProvider.b()))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, p.b, 2, null);
+      return false;
+    }
+    String str = ValidationUtils.ensureBrazeFieldLength(paramString);
+    final Object localObject = d0.a(d0.a, paramObject, 0, 2, null);
+    if (localObject == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new q(paramString, paramObject), 2, null);
+      return false;
+    }
+    if (((localObject instanceof JSONObject)) && (paramBoolean))
+    {
+      paramString = bo.app.j.h.a(str, (JSONObject)localObject);
+      if (paramString == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new r(str, localObject), 2, null);
+        return false;
+      }
+      return brazeManager.a(paramString);
+    }
+    return userCache.a(str, localObject);
+  }
+  
+  public final boolean setCustomAttributeArray(String paramString, String[] paramArrayOfString)
+  {
+    i.e(paramString, "key");
+    i.e(paramArrayOfString, "values");
+    try
+    {
+      if (!d0.a(paramString, serverConfigStorageProvider.b())) {
+        return false;
+      }
+      String str = ValidationUtils.ensureBrazeFieldLength(paramString);
+      paramArrayOfString = d0.a(paramArrayOfString);
+      paramArrayOfString = bo.app.j.h.a(str, paramArrayOfString);
+      if (paramArrayOfString == null) {
+        return false;
+      }
+      boolean bool = brazeManager.a(paramArrayOfString);
+      return bool;
+    }
+    catch (Exception paramArrayOfString)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramArrayOfString, new s(paramString));
+    }
+    return false;
+  }
+  
+  public final boolean setCustomAttributeToSecondsFromEpoch(String paramString, long paramLong)
+  {
+    i.e(paramString, "key");
+    return setCustomAttribute$default(this, paramString, DateTimeUtils.createDate(paramLong), false, 4, null);
+  }
+  
+  public final boolean setCustomUserAttribute(String paramString, double paramDouble)
+  {
+    i.e(paramString, "key");
+    try
+    {
+      boolean bool = setCustomAttribute$default(this, paramString, Double.valueOf(paramDouble), false, 4, null);
+      return bool;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new y(paramString));
+    }
+    return false;
+  }
+  
+  public final boolean setCustomUserAttribute(String paramString, float paramFloat)
+  {
+    i.e(paramString, "key");
+    try
+    {
+      boolean bool = setCustomAttribute$default(this, paramString, Float.valueOf(paramFloat), false, 4, null);
+      return bool;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new v(paramString));
+    }
+    return false;
+  }
+  
+  public final boolean setCustomUserAttribute(String paramString, int paramInt)
+  {
+    i.e(paramString, "key");
+    try
+    {
+      boolean bool = setCustomAttribute$default(this, paramString, Integer.valueOf(paramInt), false, 4, null);
+      return bool;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new u(paramString));
+    }
+    return false;
+  }
+  
+  public final boolean setCustomUserAttribute(String paramString, long paramLong)
+  {
+    i.e(paramString, "key");
+    try
+    {
+      boolean bool = setCustomAttribute$default(this, paramString, Long.valueOf(paramLong), false, 4, null);
+      return bool;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new w(paramString));
+    }
+    return false;
+  }
+  
+  public final boolean setCustomUserAttribute(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "key");
+    i.e(paramString2, "value");
+    try
+    {
+      boolean bool = setCustomAttribute$default(this, paramString1, paramString2, false, 4, null);
+      return bool;
+    }
+    catch (Exception paramString2)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramString2, new x(paramString1));
+    }
+    return false;
+  }
+  
+  public final boolean setCustomUserAttribute(String paramString, boolean paramBoolean)
+  {
+    i.e(paramString, "key");
+    try
+    {
+      paramBoolean = setCustomAttribute$default(this, paramString, Boolean.valueOf(paramBoolean), false, 4, null);
+      return paramBoolean;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new t(paramString));
+    }
+    return false;
+  }
+  
+  public final boolean setCustomUserAttributeToSecondsFromEpoch(String paramString, final long paramLong)
+  {
+    i.e(paramString, "key");
+    try
+    {
+      boolean bool = setCustomAttributeToSecondsFromEpoch(paramString, paramLong);
+      return bool;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new c0(paramString, paramLong));
+    }
+    return false;
+  }
+  
+  public final boolean setDateOfBirth(int paramInt1, final Month paramMonth, final int paramInt2)
+  {
+    i.e(paramMonth, "month");
+    try
+    {
+      String str = DateTimeUtils.formatDate$default(DateTimeUtils.createDate$default(paramInt1, paramMonth.getValue(), paramInt2, 0, 0, 0, 56, null), BrazeDateFormat.SHORT, null, 2, null);
+      boolean bool = userCache.b(str);
+      return bool;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new d0(paramInt1, paramMonth, paramInt2));
+    }
+    return false;
+  }
+  
+  public final boolean setEmail(String paramString)
+  {
+    int i;
+    int j;
+    int k;
+    int m;
+    if (paramString != null)
+    {
+      try
+      {
+        if (g.o(paramString) != true) {
+          break label178;
+        }
+        i = 1;
+        if (i != 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, e0.b, 2, null);
+          return false;
+        }
+        if (paramString == null) {
+          break label246;
+        }
+        i = paramString.length() - 1;
+        j = 0;
+        k = j;
+      }
+      catch (Exception localException)
+      {
+        label82:
+        String str;
+        for (;;) {}
+      }
+      if (i.f(paramString.charAt(m), 32) > 0) {
+        break label205;
+      }
+      m = 1;
+      break label208;
+      str = paramString.subSequence(j, i + 1).toString();
+    }
+    for (;;)
+    {
+      if ((str != null) && (!ValidationUtils.isValidEmailAddress(str)))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new f0(paramString), 3, null);
+        return false;
+      }
+      boolean bool = userCache.c(str);
+      return bool;
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, str, new g0(paramString));
+      return false;
+      label178:
+      i = 0;
+      break;
+      for (;;)
+      {
+        if (j > i) {
+          break label244;
+        }
+        if (k == 0)
+        {
+          m = j;
+          break;
+        }
+        m = i;
+        break;
+        label205:
+        m = 0;
+        label208:
+        if (k == 0)
+        {
+          if (m == 0) {
+            k = 1;
+          } else {
+            j += 1;
+          }
+        }
+        else
+        {
+          if (m == 0) {
+            break label82;
+          }
+          i -= 1;
+        }
+      }
+      label244:
+      break label82;
+      label246:
+      Object localObject = null;
+    }
+  }
+  
+  public final boolean setEmailNotificationSubscriptionType(NotificationSubscriptionType paramNotificationSubscriptionType)
+  {
+    i.e(paramNotificationSubscriptionType, "emailNotificationSubscriptionType");
+    try
+    {
+      userCache.a(paramNotificationSubscriptionType);
+      return true;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new h0(paramNotificationSubscriptionType));
+    }
+    return false;
+  }
+  
+  public final boolean setFirstName(String paramString)
+  {
+    if (paramString != null) {}
+    for (;;)
+    {
+      try
+      {
+        if (g.o(paramString) != true) {
+          break label74;
+        }
+        i = 1;
+        if (i != 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, i0.b, 2, null);
+          return false;
+        }
+        userCache.d(paramString);
+        return true;
+      }
+      catch (Exception localException)
+      {
+        Throwable localThrowable;
+        continue;
+      }
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localThrowable, new j0(paramString));
+      return false;
+      label74:
+      int i = 0;
+    }
+  }
+  
+  public final boolean setGender(Gender paramGender)
+  {
+    i.e(paramGender, "gender");
+    try
+    {
+      userCache.a(paramGender);
+      return true;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new k0(paramGender));
+    }
+    return false;
+  }
+  
+  public final boolean setHomeCity(String paramString)
+  {
+    if (paramString != null) {}
+    for (;;)
+    {
+      try
+      {
+        if (g.o(paramString) != true) {
+          break label74;
+        }
+        i = 1;
+        if (i != 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, l0.b, 2, null);
+          return false;
+        }
+        userCache.e(paramString);
+        return true;
+      }
+      catch (Exception localException)
+      {
+        Throwable localThrowable;
+        continue;
+      }
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localThrowable, new m0(paramString));
+      return false;
+      label74:
+      int i = 0;
+    }
+  }
+  
+  public final boolean setLanguage(String paramString)
+  {
+    if (paramString != null) {}
+    for (;;)
+    {
+      try
+      {
+        if (g.o(paramString) != true) {
+          break label74;
+        }
+        i = 1;
+        if (i != 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, n0.b, 2, null);
+          return false;
+        }
+        userCache.f(paramString);
+        return true;
+      }
+      catch (Exception localException)
+      {
+        Throwable localThrowable;
+        continue;
+      }
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localThrowable, new o0(paramString));
+      return false;
+      label74:
+      int i = 0;
+    }
+  }
+  
+  public final boolean setLastName(String paramString)
+  {
+    if (paramString != null) {}
+    for (;;)
+    {
+      try
+      {
+        if (g.o(paramString) != true) {
+          break label74;
+        }
+        i = 1;
+        if (i != 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, q0.b, 2, null);
+          return false;
+        }
+        userCache.g(paramString);
+        return true;
+      }
+      catch (Exception localException)
+      {
+        Throwable localThrowable;
+        continue;
+      }
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localThrowable, new r0(paramString));
+      return false;
+      label74:
+      int i = 0;
+    }
+  }
+  
+  public final void setLocationCustomAttribute(String paramString, final double paramDouble1, double paramDouble2)
+  {
+    i.e(paramString, "key");
+    try
+    {
+      if (!d0.a(paramString, serverConfigStorageProvider.b()))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, s0.b, 2, null);
+        return;
+      }
+      if (!ValidationUtils.isValidLocation(paramDouble1, paramDouble2))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new t0(paramDouble1, paramDouble2), 2, null);
+        return;
+      }
+      Object localObject = ValidationUtils.ensureBrazeFieldLength(paramString);
+      localObject = bo.app.j.h.a((String)localObject, paramDouble1, paramDouble2);
+      if (localObject != null)
+      {
+        brazeManager.a((x1)localObject);
+        return;
+      }
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new u0(paramString, paramDouble1, paramDouble2));
+    }
+  }
+  
+  public final boolean setPhoneNumber(String paramString)
+  {
+    int i;
+    int j;
+    int k;
+    int m;
+    if (paramString != null)
+    {
+      try
+      {
+        if (g.o(paramString) != true) {
+          break label181;
+        }
+        i = 1;
+        if (i != 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, v0.b, 2, null);
+          return false;
+        }
+        if (paramString == null) {
+          break label249;
+        }
+        i = paramString.length() - 1;
+        j = 0;
+        k = j;
+      }
+      catch (Exception localException)
+      {
+        label82:
+        String str;
+        for (;;) {}
+      }
+      if (i.f(paramString.charAt(m), 32) > 0) {
+        break label208;
+      }
+      m = 1;
+      break label211;
+      str = paramString.subSequence(j, i + 1).toString();
+    }
+    for (;;)
+    {
+      if ((str != null) && (!ValidationUtils.isValidPhoneNumber(str)))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new w0(str), 2, null);
+        return false;
+      }
+      boolean bool = userCache.h(str);
+      return bool;
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, str, new x0(paramString));
+      return false;
+      label181:
+      i = 0;
+      break;
+      for (;;)
+      {
+        if (j > i) {
+          break label247;
+        }
+        if (k == 0)
+        {
+          m = j;
+          break;
+        }
+        m = i;
+        break;
+        label208:
+        m = 0;
+        label211:
+        if (k == 0)
+        {
+          if (m == 0) {
+            k = 1;
+          } else {
+            j += 1;
+          }
+        }
+        else
+        {
+          if (m == 0) {
+            break label82;
+          }
+          i -= 1;
+        }
+      }
+      label247:
+      break label82;
+      label249:
+      Object localObject = null;
+    }
+  }
+  
+  public final boolean setPushNotificationSubscriptionType(NotificationSubscriptionType paramNotificationSubscriptionType)
+  {
+    i.e(paramNotificationSubscriptionType, "pushNotificationSubscriptionType");
+    try
+    {
+      userCache.b(paramNotificationSubscriptionType);
+      return true;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, new y0(paramNotificationSubscriptionType));
+    }
+    return false;
+  }
+  
+  public final void setUserId(String paramString)
+  {
+    i.e(paramString, "userId");
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, new d1(paramString), 2, null);
+    ReentrantLock localReentrantLock = userIdLock;
+    localReentrantLock.lock();
+    try
+    {
+      if ((!i.a(internalUserId, "")) && (!i.a(internalUserId, paramString)))
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("setExternalId can not be used to change the external ID of a UserCache from a non-empty value to a new value. Was: [");
+        localStringBuilder.append(internalUserId);
+        localStringBuilder.append("], tried to change to: [");
+        localStringBuilder.append(paramString);
+        localStringBuilder.append(']');
+        throw new IllegalArgumentException(localStringBuilder.toString());
+      }
+      internalUserId = paramString;
+      userCache.i(paramString);
+      paramString = t.a;
+      return;
+    }
+    finally
+    {
+      localReentrantLock.unlock();
+    }
+  }
+  
+  static final class a
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final a b = new a();
+    
+    a()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid alias parameter: alias is required to be non-null and non-empty. Not adding alias.";
+    }
+  }
+  
+  static final class b
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final b b = new b();
+    
+    b()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid label parameter: label is required to be non-null and non-empty. Not adding alias.";
+    }
+  }
+  
+  static final class c
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    c(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set alias: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class c0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    c0(String paramString, long paramLong)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom attribute ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" to ");
+      localStringBuilder.append(paramLong);
+      localStringBuilder.append(" seconds from epoch.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class d
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final d b = new d();
+    
+    d()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Custom attribute key was invalid. Not adding to attribute array.";
+    }
+  }
+  
+  static final class d0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    d0(int paramInt1, Month paramMonth, int paramInt2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set date of birth to: ");
+      localStringBuilder.append(b);
+      localStringBuilder.append('-');
+      localStringBuilder.append(paramMonth.getValue());
+      localStringBuilder.append('-');
+      localStringBuilder.append(paramInt2);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class d1
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    d1(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("User object user id set to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class e
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    e(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to add custom attribute with key '");
+      localStringBuilder.append(b);
+      localStringBuilder.append("'.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class e0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final e0 b = new e0();
+    
+    e0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid email parameter: email is required to be non-empty. Not setting email.";
+    }
+  }
+  
+  static final class f
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final f b = new f();
+    
+    f()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid subscription group ID: subscription group ID is required to be non-null and non-empty. Not adding user to subscription group.";
+    }
+  }
+  
+  static final class f0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    f0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Email address is not valid: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class g
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    g(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to add user to subscription group ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class g0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    g0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set email to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class h
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    h(String paramString, int paramInt)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to increment custom attribute ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" by ");
+      localStringBuilder.append(paramInt);
+      localStringBuilder.append('.');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class h0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    h0(NotificationSubscriptionType paramNotificationSubscriptionType)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set email notification subscription to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class i
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final i b = new i();
+    
+    i()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Custom attribute key was invalid. Not removing from attribute array.";
+    }
+  }
+  
+  static final class i0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final i0 b = new i0();
+    
+    i0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid first name parameter: first name is required to be non-empty. Not setting first name.";
+    }
+  }
+  
+  static final class j
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    j(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to remove custom attribute with key '");
+      localStringBuilder.append(b);
+      localStringBuilder.append("'.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class j0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    j0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set first name to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class k
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final k b = new k();
+    
+    k()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid subscription group ID: subscription group ID is required to be non-null and non-empty. Not removing user from subscription group.";
+    }
+  }
+  
+  static final class k0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    k0(Gender paramGender)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set gender to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class l
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    l(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to remove user from subscription group ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class l0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final l0 b = new l0();
+    
+    l0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid home city parameter: home city is required to be non-blank. Not setting home city.";
+    }
+  }
+  
+  static final class m0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    m0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set home city to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class n
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final n b = new n();
+    
+    n()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid country parameter: country is required to be non-blank. Not setting country.";
+    }
+  }
+  
+  static final class n0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final n0 b = new n0();
+    
+    n0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid language parameter: language is required to be non-empty. Not setting language.";
+    }
+  }
+  
+  static final class o
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    o(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set country to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class o0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    o0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set language to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class p
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final p b = new p();
+    
+    p()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Custom attribute key cannot be null.";
+    }
+  }
+  
+  static final class q
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    q(String paramString, Object paramObject)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Could not add unsupported custom attribute value with key: ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" and value: ");
+      localStringBuilder.append(paramObject);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class q0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final q0 b = new q0();
+    
+    q0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid last name parameter: last name is required to be non-empty. Not setting last name.";
+    }
+  }
+  
+  static final class r
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    r(String paramString, Object paramObject)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Could not build NestedCustomAttributeEvent for key ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" and ");
+      localStringBuilder.append(localObject);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class r0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    r0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set last name to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class s
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    s(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom attribute array with key: '");
+      localStringBuilder.append(b);
+      localStringBuilder.append("'.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class s0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final s0 b = new s0();
+    
+    s0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Custom location attribute key was invalid. Not setting attribute.";
+    }
+  }
+  
+  static final class t
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    t(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom boolean attribute ");
+      localStringBuilder.append(b);
+      localStringBuilder.append('.');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class t0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    t0(double paramDouble1, double paramDouble2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Cannot set custom location attribute due with invalid latitude '");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" and longitude '");
+      localStringBuilder.append(c);
+      localStringBuilder.append('\'');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class u
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    u(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom integer attribute ");
+      localStringBuilder.append(b);
+      localStringBuilder.append('.');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class u0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    u0(String paramString, double paramDouble1, double paramDouble2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom location attribute with key '");
+      localStringBuilder.append(b);
+      localStringBuilder.append("' and latitude '");
+      localStringBuilder.append(paramDouble1);
+      localStringBuilder.append("' and longitude '");
+      localStringBuilder.append(d);
+      localStringBuilder.append('\'');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class v
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    v(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom float attribute ");
+      localStringBuilder.append(b);
+      localStringBuilder.append('.');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class v0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final v0 b = new v0();
+    
+    v0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Invalid phone number parameter: phone number is required to be non-empty. Not setting phone number.";
+    }
+  }
+  
+  static final class w
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    w(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom long attribute ");
+      localStringBuilder.append(b);
+      localStringBuilder.append('.');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class w0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    w0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Phone number contains invalid characters (allowed are digits, spaces, or any of the following +.-()): ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class x
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    x(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom string attribute ");
+      localStringBuilder.append(b);
+      localStringBuilder.append('.');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class x0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    x0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set phone number to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class y
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    y(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set custom double attribute ");
+      localStringBuilder.append(b);
+      localStringBuilder.append('.');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class y0
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    y0(NotificationSubscriptionType paramNotificationSubscriptionType)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set push notification subscription to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+}

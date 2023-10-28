@@ -1,0 +1,106 @@
+package com.google.android.gms.measurement.internal;
+
+import android.util.Pair;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
+import com.google.android.gms.common.util.Clock;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+public final class zzju
+  extends zzkn
+{
+  public final zzez zza;
+  public final zzez zzb;
+  public final zzez zzc;
+  public final zzez zzd;
+  public final zzez zze;
+  private final Map zzg = new HashMap();
+  
+  zzju(zzkz paramZzkz)
+  {
+    super(paramZzkz);
+    paramZzkz = zzs.zzm();
+    paramZzkz.getClass();
+    zza = new zzez(paramZzkz, "last_delete_stale", 0L);
+    paramZzkz = zzs.zzm();
+    paramZzkz.getClass();
+    zzb = new zzez(paramZzkz, "backoff", 0L);
+    paramZzkz = zzs.zzm();
+    paramZzkz.getClass();
+    zzc = new zzez(paramZzkz, "last_upload", 0L);
+    paramZzkz = zzs.zzm();
+    paramZzkz.getClass();
+    zzd = new zzez(paramZzkz, "last_upload_attempt", 0L);
+    paramZzkz = zzs.zzm();
+    paramZzkz.getClass();
+    zze = new zzez(paramZzkz, "midnight_offset", 0L);
+  }
+  
+  @Deprecated
+  final Pair zza(String paramString)
+  {
+    zzg();
+    long l = zzs.zzav().elapsedRealtime();
+    Object localObject = (zzjt)zzg.get(paramString);
+    if ((localObject != null) && (l < zzc)) {
+      return new Pair(zza, Boolean.valueOf(zzb));
+    }
+    AdvertisingIdClient.setShouldSkipGmsCoreVersionCheck(true);
+    l += zzs.zzf().zzi(paramString, zzeb.zza);
+    zzjt localZzjt;
+    try
+    {
+      localObject = AdvertisingIdClient.getAdvertisingIdInfo(zzs.zzau());
+      if (localObject == null) {
+        return new Pair("", Boolean.FALSE);
+      }
+      String str = ((AdvertisingIdClient.Info)localObject).getId();
+      if (str != null) {
+        localObject = new zzjt(str, ((AdvertisingIdClient.Info)localObject).isLimitAdTrackingEnabled(), l);
+      } else {
+        localObject = new zzjt("", ((AdvertisingIdClient.Info)localObject).isLimitAdTrackingEnabled(), l);
+      }
+    }
+    catch (Exception localException)
+    {
+      zzs.zzay().zzc().zzb("Unable to get advertising id", localException);
+      localZzjt = new zzjt("", false, l);
+    }
+    zzg.put(paramString, localZzjt);
+    AdvertisingIdClient.setShouldSkipGmsCoreVersionCheck(false);
+    return new Pair(zza, Boolean.valueOf(zzb));
+  }
+  
+  protected final boolean zzb()
+  {
+    return false;
+  }
+  
+  final Pair zzd(String paramString, zzai paramZzai)
+  {
+    if (paramZzai.zzi(zzah.zza)) {
+      return zza(paramString);
+    }
+    return new Pair("", Boolean.FALSE);
+  }
+  
+  @Deprecated
+  final String zzf(String paramString, boolean paramBoolean)
+  {
+    zzg();
+    if (paramBoolean) {
+      paramString = (String)zzafirst;
+    } else {
+      paramString = "00000000-0000-0000-0000-000000000000";
+    }
+    MessageDigest localMessageDigest = zzlh.zzF();
+    if (localMessageDigest == null) {
+      return null;
+    }
+    return String.format(Locale.US, "%032X", new Object[] { new BigInteger(1, localMessageDigest.digest(paramString.getBytes())) });
+  }
+}

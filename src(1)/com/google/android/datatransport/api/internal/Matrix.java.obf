@@ -1,0 +1,47 @@
+package com.google.android.datatransport.cct.internal;
+
+import android.util.JsonReader;
+import android.util.JsonToken;
+import java.io.IOException;
+import java.io.Reader;
+
+public abstract class m
+{
+  public m() {}
+  
+  static m a(long paramLong)
+  {
+    return new h(paramLong);
+  }
+  
+  public static m b(Reader paramReader)
+    throws IOException
+  {
+    paramReader = new JsonReader(paramReader);
+    try
+    {
+      paramReader.beginObject();
+      while (paramReader.hasNext())
+      {
+        if (paramReader.nextName().equals("nextRequestWaitMillis"))
+        {
+          if (paramReader.peek() == JsonToken.STRING)
+          {
+            localM = a(Long.parseLong(paramReader.nextString()));
+            return localM;
+          }
+          m localM = a(paramReader.nextLong());
+          return localM;
+        }
+        paramReader.skipValue();
+      }
+      throw new IOException("Response is missing nextRequestWaitMillis field.");
+    }
+    finally
+    {
+      paramReader.close();
+    }
+  }
+  
+  public abstract long c();
+}

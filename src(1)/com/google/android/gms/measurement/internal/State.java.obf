@@ -1,0 +1,317 @@
+package com.google.android.gms.measurement.internal;
+
+import android.util.Log;
+import c.e.a;
+import com.google.android.gms.internal.measurement.zzel;
+import com.google.android.gms.internal.measurement.zzfs;
+import com.google.android.gms.internal.measurement.zzfw;
+import com.google.android.gms.internal.measurement.zzny;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+final class zzx
+  extends zzy
+{
+  private final com.google.android.gms.internal.measurement.zzej zzh;
+  
+  zzx(zzaa paramZzaa, String paramString, int paramInt, com.google.android.gms.internal.measurement.zzej paramZzej)
+  {
+    super(paramString, paramInt);
+    zzh = paramZzej;
+  }
+  
+  final int zza()
+  {
+    return zzh.zzb();
+  }
+  
+  final boolean zzb()
+  {
+    return zzh.zzo();
+  }
+  
+  final boolean zzc()
+  {
+    return false;
+  }
+  
+  final boolean zzd(Long paramLong1, Long paramLong2, zzfs paramZzfs, long paramLong, zzas paramZzas, boolean paramBoolean)
+  {
+    zzny.zzc();
+    boolean bool1 = zza.zzs.zzf().zzs(zzb, zzeb.zzW);
+    if (zzh.zzn()) {
+      paramLong = zze;
+    }
+    boolean bool2 = Log.isLoggable(zza.zzs.zzay().zzq(), 2);
+    Object localObject1 = null;
+    Object localObject2 = null;
+    Object localObject3 = null;
+    Object localObject4;
+    int i;
+    if (bool2)
+    {
+      localObject4 = zza.zzs.zzay().zzj();
+      i = zzc;
+      if (zzh.zzp()) {
+        paramZzas = Integer.valueOf(zzh.zzb());
+      } else {
+        paramZzas = null;
+      }
+      ((zzem)localObject4).zzd("Evaluating filter. audience, filter, event", Integer.valueOf(i), paramZzas, zza.zzs.zzj().zzd(zzh.zzg()));
+      zza.zzs.zzay().zzj().zzb("Filter definition", zza.zzf.zzu().zzo(zzh));
+    }
+    if ((zzh.zzp()) && (zzh.zzb() <= 256))
+    {
+      bool2 = zzh.zzk();
+      boolean bool3 = zzh.zzm();
+      boolean bool4 = zzh.zzn();
+      if ((!bool2) && (!bool3) && (!bool4)) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if ((paramBoolean) && (i == 0))
+      {
+        paramLong2 = zza.zzs.zzay().zzj();
+        i = zzc;
+        paramLong1 = (Long)localObject3;
+        if (zzh.zzp()) {
+          paramLong1 = Integer.valueOf(zzh.zzb());
+        }
+        paramLong2.zzc("Event filter already evaluated true and it is not associated with an enhanced audience. audience ID, filter ID", Integer.valueOf(i), paramLong1);
+        return true;
+      }
+      localObject4 = zzh;
+      localObject2 = paramZzfs.zzh();
+      if (((com.google.android.gms.internal.measurement.zzej)localObject4).zzo())
+      {
+        paramZzas = zzy.zzh(paramLong, ((com.google.android.gms.internal.measurement.zzej)localObject4).zzf());
+        if (paramZzas == null)
+        {
+          paramZzas = (zzas)localObject1;
+          break label1478;
+        }
+        if (!paramZzas.booleanValue())
+        {
+          paramZzas = Boolean.FALSE;
+          break label1478;
+        }
+      }
+      Object localObject5 = new HashSet();
+      paramZzas = ((com.google.android.gms.internal.measurement.zzej)localObject4).zzh().iterator();
+      while (paramZzas.hasNext())
+      {
+        localObject3 = (zzel)paramZzas.next();
+        if (((zzel)localObject3).zze().isEmpty())
+        {
+          zza.zzs.zzay().zzk().zzb("null or empty param name in filter. event", zza.zzs.zzj().zzd((String)localObject2));
+          paramZzas = (zzas)localObject1;
+          break label1478;
+        }
+        ((Set)localObject5).add(((zzel)localObject3).zze());
+      }
+      localObject3 = new a();
+      Object localObject6 = paramZzfs.zzi().iterator();
+      while (((Iterator)localObject6).hasNext())
+      {
+        paramZzas = (zzfw)((Iterator)localObject6).next();
+        if (((Set)localObject5).contains(paramZzas.zzg()))
+        {
+          String str;
+          if (paramZzas.zzw())
+          {
+            str = paramZzas.zzg();
+            if (paramZzas.zzw()) {
+              paramZzas = Long.valueOf(paramZzas.zzd());
+            } else {
+              paramZzas = null;
+            }
+            ((Map)localObject3).put(str, paramZzas);
+          }
+          else if (paramZzas.zzu())
+          {
+            str = paramZzas.zzg();
+            if (paramZzas.zzu()) {
+              paramZzas = Double.valueOf(paramZzas.zza());
+            } else {
+              paramZzas = null;
+            }
+            ((Map)localObject3).put(str, paramZzas);
+          }
+          else if (paramZzas.zzy())
+          {
+            ((Map)localObject3).put(paramZzas.zzg(), paramZzas.zzh());
+          }
+          else
+          {
+            zza.zzs.zzay().zzk().zzc("Unknown value for param. event, param", zza.zzs.zzj().zzd((String)localObject2), zza.zzs.zzj().zze(paramZzas.zzg()));
+            paramZzas = (zzas)localObject1;
+            break label1478;
+          }
+        }
+      }
+      localObject4 = ((com.google.android.gms.internal.measurement.zzej)localObject4).zzh().iterator();
+      while (((Iterator)localObject4).hasNext())
+      {
+        paramZzas = (zzel)((Iterator)localObject4).next();
+        if ((paramZzas.zzh()) && (paramZzas.zzg())) {
+          paramBoolean = true;
+        } else {
+          paramBoolean = false;
+        }
+        localObject5 = paramZzas.zze();
+        if (((String)localObject5).isEmpty())
+        {
+          zza.zzs.zzay().zzk().zzb("Event has empty param name. event", zza.zzs.zzj().zzd((String)localObject2));
+          paramZzas = (zzas)localObject1;
+          break label1478;
+        }
+        localObject6 = ((Map)localObject3).get(localObject5);
+        if ((localObject6 instanceof Long))
+        {
+          if (!paramZzas.zzi())
+          {
+            zza.zzs.zzay().zzk().zzc("No number filter for long param. event, param", zza.zzs.zzj().zzd((String)localObject2), zza.zzs.zzj().zze((String)localObject5));
+            paramZzas = (zzas)localObject1;
+            break label1478;
+          }
+          paramZzas = zzy.zzh(((Long)localObject6).longValue(), paramZzas.zzc());
+          if (paramZzas == null)
+          {
+            paramZzas = (zzas)localObject1;
+            break label1478;
+          }
+          if (paramZzas.booleanValue() == paramBoolean)
+          {
+            paramZzas = Boolean.FALSE;
+            break label1478;
+          }
+        }
+        else if ((localObject6 instanceof Double))
+        {
+          if (!paramZzas.zzi())
+          {
+            zza.zzs.zzay().zzk().zzc("No number filter for double param. event, param", zza.zzs.zzj().zzd((String)localObject2), zza.zzs.zzj().zze((String)localObject5));
+            paramZzas = (zzas)localObject1;
+            break label1478;
+          }
+          paramZzas = zzy.zzg(((Double)localObject6).doubleValue(), paramZzas.zzc());
+          if (paramZzas == null)
+          {
+            paramZzas = (zzas)localObject1;
+            break label1478;
+          }
+          if (paramZzas.booleanValue() == paramBoolean)
+          {
+            paramZzas = Boolean.FALSE;
+            break label1478;
+          }
+        }
+        else if ((localObject6 instanceof String))
+        {
+          if (paramZzas.zzk())
+          {
+            paramZzas = zzy.zzf((String)localObject6, paramZzas.zzd(), zza.zzs.zzay());
+          }
+          else
+          {
+            if (!paramZzas.zzi()) {
+              break label1299;
+            }
+            localObject6 = (String)localObject6;
+            if (!zzlb.zzx((String)localObject6)) {
+              break label1243;
+            }
+            paramZzas = zzy.zzi((String)localObject6, paramZzas.zzc());
+          }
+          if (paramZzas == null)
+          {
+            paramZzas = (zzas)localObject1;
+            break label1478;
+          }
+          if (paramZzas.booleanValue() == paramBoolean)
+          {
+            paramZzas = Boolean.FALSE;
+            break label1478;
+            label1243:
+            zza.zzs.zzay().zzk().zzc("Invalid param value for number filter. event, param", zza.zzs.zzj().zzd((String)localObject2), zza.zzs.zzj().zze((String)localObject5));
+            paramZzas = (zzas)localObject1;
+            break label1478;
+            label1299:
+            zza.zzs.zzay().zzk().zzc("No filter for String param. event, param", zza.zzs.zzj().zzd((String)localObject2), zza.zzs.zzj().zze((String)localObject5));
+            paramZzas = (zzas)localObject1;
+            break label1478;
+          }
+        }
+        else
+        {
+          if (localObject6 == null)
+          {
+            zza.zzs.zzay().zzj().zzc("Missing param for filter. event, param", zza.zzs.zzj().zzd((String)localObject2), zza.zzs.zzj().zze((String)localObject5));
+            paramZzas = Boolean.FALSE;
+            break label1478;
+          }
+          zza.zzs.zzay().zzk().zzc("Unknown param type. event, param", zza.zzs.zzj().zzd((String)localObject2), zza.zzs.zzj().zze((String)localObject5));
+          paramZzas = (zzas)localObject1;
+          break label1478;
+        }
+      }
+      paramZzas = Boolean.TRUE;
+      label1478:
+      localObject2 = zza.zzs.zzay().zzj();
+      if (paramZzas == null) {
+        localObject1 = "null";
+      } else {
+        localObject1 = paramZzas;
+      }
+      ((zzem)localObject2).zzb("Event filter result", localObject1);
+      if (paramZzas == null) {
+        return false;
+      }
+      localObject1 = Boolean.TRUE;
+      zzd = ((Boolean)localObject1);
+      if (!paramZzas.booleanValue()) {
+        return true;
+      }
+      zze = ((Boolean)localObject1);
+      if ((i != 0) && (paramZzfs.zzu()))
+      {
+        paramZzfs = Long.valueOf(paramZzfs.zzd());
+        if (zzh.zzm())
+        {
+          paramLong2 = paramZzfs;
+          if (bool1) {
+            if (!zzh.zzo()) {
+              paramLong2 = paramZzfs;
+            } else {
+              paramLong2 = paramLong1;
+            }
+          }
+          zzg = paramLong2;
+          return true;
+        }
+        paramLong1 = paramZzfs;
+        if (bool1)
+        {
+          paramLong1 = paramZzfs;
+          if (zzh.zzo()) {
+            paramLong1 = paramLong2;
+          }
+        }
+        zzf = paramLong1;
+      }
+      return true;
+    }
+    paramLong2 = zza.zzs.zzay().zzk();
+    paramZzfs = zzeo.zzn(zzb);
+    paramLong1 = (Long)localObject2;
+    if (zzh.zzp()) {
+      paramLong1 = Integer.valueOf(zzh.zzb());
+    }
+    paramLong2.zzc("Invalid event filter ID. appId, id", paramZzfs, String.valueOf(paramLong1));
+    return false;
+  }
+}

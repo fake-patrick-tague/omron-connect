@@ -1,0 +1,106 @@
+package com.google.android.datatransport.cct;
+
+import com.google.android.datatransport.b;
+import com.google.android.datatransport.h.h;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+public final class c
+  implements h
+{
+  static final String a;
+  static final String b;
+  private static final String c;
+  private static final Set<b> d;
+  public static final c e;
+  public static final c f;
+  private final String g;
+  private final String h;
+  
+  static
+  {
+    String str1 = e.a("hts/frbslgiggolai.o/0clgbthfra=snpoo", "tp:/ieaeogn.ogepscmvc/o/ac?omtjo_rt3");
+    a = str1;
+    String str2 = e.a("hts/frbslgigp.ogepscmv/ieo/eaybtho", "tp:/ieaeogn-agolai.o/1frlglgc/aclg");
+    b = str2;
+    String str3 = e.a("AzSCki82AwsLzKd5O8zo", "IayckHiZRO1EFl1aGoK");
+    c = str3;
+    d = Collections.unmodifiableSet(new HashSet(Arrays.asList(new b[] { b.b("proto"), b.b("json") })));
+    e = new c(str1, null);
+    f = new c(str2, str3);
+  }
+  
+  public c(String paramString1, String paramString2)
+  {
+    g = paramString1;
+    h = paramString2;
+  }
+  
+  public static c c(byte[] paramArrayOfByte)
+  {
+    paramArrayOfByte = new String(paramArrayOfByte, Charset.forName("UTF-8"));
+    if (paramArrayOfByte.startsWith("1$"))
+    {
+      paramArrayOfByte = paramArrayOfByte.substring(2).split(Pattern.quote("\\"), 2);
+      if (paramArrayOfByte.length == 2)
+      {
+        byte b2 = paramArrayOfByte[0];
+        if (!b2.isEmpty())
+        {
+          byte b1 = paramArrayOfByte[1];
+          paramArrayOfByte = b1;
+          if (b1.isEmpty()) {
+            paramArrayOfByte = null;
+          }
+          return new c(b2, paramArrayOfByte);
+        }
+        throw new IllegalArgumentException("Missing endpoint in CCTDestination extras");
+      }
+      throw new IllegalArgumentException("Extra is not a valid encoded LegacyFlgDestination");
+    }
+    throw new IllegalArgumentException("Version marker missing from extras");
+  }
+  
+  public Set<b> a()
+  {
+    return d;
+  }
+  
+  public byte[] b()
+  {
+    String str2 = h;
+    if ((str2 == null) && (g == null)) {
+      return null;
+    }
+    String str3 = g;
+    String str1 = str2;
+    if (str2 == null) {
+      str1 = "";
+    }
+    return String.format("%s%s%s%s", new Object[] { "1$", str3, "\\", str1 }).getBytes(Charset.forName("UTF-8"));
+  }
+  
+  public String d()
+  {
+    return h;
+  }
+  
+  public String e()
+  {
+    return g;
+  }
+  
+  public byte[] getExtras()
+  {
+    return b();
+  }
+  
+  public String getName()
+  {
+    return "cct";
+  }
+}

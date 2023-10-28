@@ -1,0 +1,812 @@
+package com.google.android.material.bottomappbar;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Rect;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.ClassLoaderCreator;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.ImageButton;
+import androidx.appcompat.app.ActionBar.LayoutParams;
+import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar.LayoutParams;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.b;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.e;
+import androidx.customview.view.AbsSavedState;
+import c.h.q.f0;
+import com.google.android.material.behavior.HideBottomViewOnScrollBehavior;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton.b;
+import com.google.android.material.internal.j;
+import d.c.a.a.d;
+import d.c.a.a.x.g;
+import d.c.a.a.x.h;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+public class BottomAppBar
+  extends Toolbar
+  implements CoordinatorLayout.b
+{
+  private static final int b0 = d.c.a.a.k.o;
+  private final int c0;
+  private final g d0;
+  private Animator e0;
+  private Animator f0;
+  private int g0;
+  private int h0;
+  private boolean i0;
+  private int j0;
+  private ArrayList<g> k0;
+  private int l0;
+  private boolean m0;
+  private boolean n0;
+  private Behavior o0;
+  private int p0;
+  private int q0;
+  private int r0;
+  AnimatorListenerAdapter s0;
+  d.c.a.a.m.k<FloatingActionButton> t0;
+  
+  private void C0(ActionMenuView paramActionMenuView, int paramInt, boolean paramBoolean)
+  {
+    D0(paramActionMenuView, paramInt, paramBoolean, false);
+  }
+  
+  private void D0(final ActionMenuView paramActionMenuView, final int paramInt, final boolean paramBoolean1, boolean paramBoolean2)
+  {
+    e localE = new e(paramActionMenuView, paramInt, paramBoolean1);
+    if (paramBoolean2)
+    {
+      paramActionMenuView.post(localE);
+      return;
+    }
+    localE.run();
+  }
+  
+  private ActionMenuView getActionMenuView()
+  {
+    int i = 0;
+    while (i < getChildCount())
+    {
+      View localView = getChildAt(i);
+      if ((localView instanceof ActionMenuView)) {
+        return (ActionMenuView)localView;
+      }
+      i += 1;
+    }
+    return null;
+  }
+  
+  private int getBottomInset()
+  {
+    return p0;
+  }
+  
+  private float getFabTranslationX()
+  {
+    return t0(g0);
+  }
+  
+  private float getFabTranslationY()
+  {
+    return -getTopEdgeTreatment().d();
+  }
+  
+  private int getLeftInset()
+  {
+    return r0;
+  }
+  
+  private int getRightInset()
+  {
+    return q0;
+  }
+  
+  private a getTopEdgeTreatment()
+  {
+    return (a)d0.C().p();
+  }
+  
+  private void j0(FloatingActionButton paramFloatingActionButton)
+  {
+    paramFloatingActionButton.e(s0);
+    paramFloatingActionButton.f(new f());
+    paramFloatingActionButton.g(t0);
+  }
+  
+  private void k0()
+  {
+    Animator localAnimator = f0;
+    if (localAnimator != null) {
+      localAnimator.cancel();
+    }
+    localAnimator = e0;
+    if (localAnimator != null) {
+      localAnimator.cancel();
+    }
+  }
+  
+  private void m0(int paramInt, List<Animator> paramList)
+  {
+    ObjectAnimator localObjectAnimator = ObjectAnimator.ofFloat(q0(), "translationX", new float[] { t0(paramInt) });
+    localObjectAnimator.setDuration(300L);
+    paramList.add(localObjectAnimator);
+  }
+  
+  private void n0(final int paramInt, final boolean paramBoolean, List<Animator> paramList)
+  {
+    Object localObject = getActionMenuView();
+    if (localObject == null) {
+      return;
+    }
+    ObjectAnimator localObjectAnimator1 = ObjectAnimator.ofFloat(localObject, "alpha", new float[] { 1.0F });
+    if (Math.abs(((ViewGroup)localObject).getTranslationX() - s0((ActionMenuView)localObject, paramInt, paramBoolean)) > 1.0F)
+    {
+      ObjectAnimator localObjectAnimator2 = ObjectAnimator.ofFloat(localObject, "alpha", new float[] { 0.0F });
+      localObjectAnimator2.addListener(new d((ActionMenuView)localObject, paramInt, paramBoolean));
+      localObject = new AnimatorSet();
+      ((AnimatorSet)localObject).setDuration(150L);
+      ((AnimatorSet)localObject).playSequentially(new Animator[] { localObjectAnimator2, localObjectAnimator1 });
+      paramList.add(localObject);
+      return;
+    }
+    if (((ViewGroup)localObject).getAlpha() < 1.0F) {
+      paramList.add(localObjectAnimator1);
+    }
+  }
+  
+  private void o0()
+  {
+    int i = j0 - 1;
+    j0 = i;
+    if (i == 0)
+    {
+      Object localObject = k0;
+      if (localObject != null)
+      {
+        localObject = ((ArrayList)localObject).iterator();
+        while (((Iterator)localObject).hasNext()) {
+          ((g)((Iterator)localObject).next()).b(this);
+        }
+      }
+    }
+  }
+  
+  private void p0()
+  {
+    int i = j0;
+    j0 = (i + 1);
+    if (i == 0)
+    {
+      Object localObject = k0;
+      if (localObject != null)
+      {
+        localObject = ((ArrayList)localObject).iterator();
+        while (((Iterator)localObject).hasNext()) {
+          ((g)((Iterator)localObject).next()).a(this);
+        }
+      }
+    }
+  }
+  
+  private FloatingActionButton q0()
+  {
+    View localView = r0();
+    if ((localView instanceof FloatingActionButton)) {
+      return (FloatingActionButton)localView;
+    }
+    return null;
+  }
+  
+  private View r0()
+  {
+    if (!(getParent() instanceof CoordinatorLayout)) {
+      return null;
+    }
+    Iterator localIterator = ((CoordinatorLayout)getParent()).s(this).iterator();
+    while (localIterator.hasNext())
+    {
+      View localView = (View)localIterator.next();
+      if (((localView instanceof FloatingActionButton)) || ((localView instanceof ExtendedFloatingActionButton))) {
+        return localView;
+      }
+    }
+    return null;
+  }
+  
+  private float t0(int paramInt)
+  {
+    boolean bool = j.d(this);
+    int i = 1;
+    if (paramInt == 1)
+    {
+      if (bool) {
+        paramInt = r0;
+      } else {
+        paramInt = q0;
+      }
+      int j = c0;
+      int k = getMeasuredWidth() / 2;
+      if (bool) {
+        i = -1;
+      }
+      return (k - (j + paramInt)) * i;
+    }
+    return 0.0F;
+  }
+  
+  private boolean u0()
+  {
+    FloatingActionButton localFloatingActionButton = q0();
+    return (localFloatingActionButton != null) && (localFloatingActionButton.o());
+  }
+  
+  private void v0(int paramInt, boolean paramBoolean)
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge Z and I\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  private void w0(int paramInt)
+  {
+    if (g0 != paramInt)
+    {
+      if (!f0.T(this)) {
+        return;
+      }
+      Object localObject = e0;
+      if (localObject != null) {
+        ((Animator)localObject).cancel();
+      }
+      localObject = new ArrayList();
+      if (h0 == 1) {
+        m0(paramInt, (List)localObject);
+      } else {
+        l0(paramInt, (List)localObject);
+      }
+      AnimatorSet localAnimatorSet = new AnimatorSet();
+      localAnimatorSet.playTogether((Collection)localObject);
+      e0 = localAnimatorSet;
+      localAnimatorSet.addListener(new a());
+      e0.start();
+    }
+  }
+  
+  private void y0()
+  {
+    ActionMenuView localActionMenuView = getActionMenuView();
+    if ((localActionMenuView != null) && (f0 == null))
+    {
+      localActionMenuView.setAlpha(1.0F);
+      if (!u0())
+      {
+        C0(localActionMenuView, 0, false);
+        return;
+      }
+      C0(localActionMenuView, g0, n0);
+    }
+  }
+  
+  private void z0()
+  {
+    getTopEdgeTreatment().m(getFabTranslationX());
+    View localView = r0();
+    g localG = d0;
+    float f;
+    if ((n0) && (u0())) {
+      f = 1.0F;
+    } else {
+      f = 0.0F;
+    }
+    localG.Y(f);
+    if (localView != null)
+    {
+      localView.setTranslationY(getFabTranslationY());
+      localView.setTranslationX(getFabTranslationX());
+    }
+  }
+  
+  public void A0(int paramInt1, int paramInt2)
+  {
+    l0 = paramInt2;
+    m0 = true;
+    v0(paramInt1, n0);
+    w0(paramInt1);
+    g0 = paramInt1;
+  }
+  
+  boolean B0(int paramInt)
+  {
+    float f = paramInt;
+    if (f != getTopEdgeTreatment().g())
+    {
+      getTopEdgeTreatment().l(f);
+      d0.invalidateSelf();
+      return true;
+    }
+    return false;
+  }
+  
+  public ColorStateList getBackgroundTint()
+  {
+    return d0.E();
+  }
+  
+  public Behavior getBehavior()
+  {
+    if (o0 == null) {
+      o0 = new Behavior();
+    }
+    return o0;
+  }
+  
+  public float getCradleVerticalOffset()
+  {
+    return getTopEdgeTreatment().d();
+  }
+  
+  public int getFabAlignmentMode()
+  {
+    return g0;
+  }
+  
+  public int getFabAnimationMode()
+  {
+    return h0;
+  }
+  
+  public float getFabCradleMargin()
+  {
+    return getTopEdgeTreatment().e();
+  }
+  
+  public float getFabCradleRoundedCornerRadius()
+  {
+    return getTopEdgeTreatment().f();
+  }
+  
+  public boolean getHideOnScroll()
+  {
+    return i0;
+  }
+  
+  protected void l0(final int paramInt, List<Animator> paramList)
+  {
+    paramList = q0();
+    if (paramList != null)
+    {
+      if (paramList.n()) {
+        return;
+      }
+      p0();
+      paramList.l(new b(paramInt));
+    }
+  }
+  
+  protected void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    h.f(this, d0);
+    if ((getParent() instanceof ViewGroup)) {
+      ((ViewGroup)getParent()).setClipChildren(false);
+    }
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onLayout(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    if (paramBoolean)
+    {
+      k0();
+      z0();
+    }
+    y0();
+  }
+  
+  protected void onRestoreInstanceState(Parcelable paramParcelable)
+  {
+    if (!(paramParcelable instanceof SavedState))
+    {
+      super.onRestoreInstanceState(paramParcelable);
+      return;
+    }
+    paramParcelable = (SavedState)paramParcelable;
+    super.onRestoreInstanceState(paramParcelable.a());
+    g0 = d;
+    n0 = e;
+  }
+  
+  protected Parcelable onSaveInstanceState()
+  {
+    SavedState localSavedState = new SavedState(super.onSaveInstanceState());
+    d = g0;
+    e = n0;
+    return localSavedState;
+  }
+  
+  protected int s0(ActionMenuView paramActionMenuView, int paramInt, boolean paramBoolean)
+  {
+    if (paramInt == 1)
+    {
+      if (!paramBoolean) {
+        return 0;
+      }
+      paramBoolean = j.d(this);
+      if (paramBoolean) {
+        paramInt = getMeasuredWidth();
+      } else {
+        paramInt = 0;
+      }
+      int j = 0;
+      for (int i = paramInt; j < getChildCount(); i = paramInt)
+      {
+        View localView = getChildAt(j);
+        int k;
+        if (((localView.getLayoutParams() instanceof Toolbar.LayoutParams)) && ((getLayoutParamsa & 0x800007) == 8388611)) {
+          k = 1;
+        } else {
+          k = 0;
+        }
+        paramInt = i;
+        if (k != 0) {
+          if (paramBoolean) {
+            paramInt = Math.min(i, localView.getLeft());
+          } else {
+            paramInt = Math.max(i, localView.getRight());
+          }
+        }
+        j += 1;
+      }
+      if (paramBoolean) {
+        paramInt = paramActionMenuView.getRight();
+      } else {
+        paramInt = paramActionMenuView.getLeft();
+      }
+      if (paramBoolean) {
+        j = q0;
+      } else {
+        j = -r0;
+      }
+      return i - (paramInt + j);
+    }
+    return 0;
+  }
+  
+  public void setBackgroundTint(ColorStateList paramColorStateList)
+  {
+    androidx.core.graphics.drawable.a.o(d0, paramColorStateList);
+  }
+  
+  public void setCradleVerticalOffset(float paramFloat)
+  {
+    if (paramFloat != getCradleVerticalOffset())
+    {
+      getTopEdgeTreatment().i(paramFloat);
+      d0.invalidateSelf();
+      z0();
+    }
+  }
+  
+  public void setElevation(float paramFloat)
+  {
+    d0.W(paramFloat);
+    int i = d0.B();
+    int j = d0.A();
+    getBehavior().G(this, i - j);
+  }
+  
+  public void setFabAlignmentMode(int paramInt)
+  {
+    A0(paramInt, 0);
+  }
+  
+  public void setFabAnimationMode(int paramInt)
+  {
+    h0 = paramInt;
+  }
+  
+  public void setFabCradleMargin(float paramFloat)
+  {
+    if (paramFloat != getFabCradleMargin())
+    {
+      getTopEdgeTreatment().j(paramFloat);
+      d0.invalidateSelf();
+    }
+  }
+  
+  public void setFabCradleRoundedCornerRadius(float paramFloat)
+  {
+    if (paramFloat != getFabCradleRoundedCornerRadius())
+    {
+      getTopEdgeTreatment().k(paramFloat);
+      d0.invalidateSelf();
+    }
+  }
+  
+  public void setHideOnScroll(boolean paramBoolean)
+  {
+    i0 = paramBoolean;
+  }
+  
+  public void setSubtitle(CharSequence paramCharSequence) {}
+  
+  public void setTitle(CharSequence paramCharSequence) {}
+  
+  public void x0(int paramInt)
+  {
+    if (paramInt != 0)
+    {
+      l0 = 0;
+      getMenu().clear();
+      x(paramInt);
+    }
+  }
+  
+  public static class Behavior
+    extends HideBottomViewOnScrollBehavior<BottomAppBar>
+  {
+    private final Rect e = new Rect();
+    private WeakReference<BottomAppBar> f;
+    private int g;
+    private final View.OnLayoutChangeListener h = new a();
+    
+    public Behavior() {}
+    
+    public Behavior(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      super(paramAttributeSet);
+    }
+    
+    public boolean M(CoordinatorLayout paramCoordinatorLayout, BottomAppBar paramBottomAppBar, int paramInt)
+    {
+      f = new WeakReference(paramBottomAppBar);
+      Object localObject = BottomAppBar.h0(paramBottomAppBar);
+      if ((localObject != null) && (!f0.T((View)localObject)))
+      {
+        CoordinatorLayout.e localE = (CoordinatorLayout.e)((View)localObject).getLayoutParams();
+        d = 49;
+        g = bottomMargin;
+        if ((localObject instanceof FloatingActionButton))
+        {
+          localObject = (FloatingActionButton)localObject;
+          ((ImageButton)localObject).addOnLayoutChangeListener(h);
+          BottomAppBar.i0(paramBottomAppBar, (FloatingActionButton)localObject);
+        }
+        BottomAppBar.T(paramBottomAppBar);
+      }
+      paramCoordinatorLayout.I(paramBottomAppBar, paramInt);
+      return super.l(paramCoordinatorLayout, paramBottomAppBar, paramInt);
+    }
+    
+    public boolean N(CoordinatorLayout paramCoordinatorLayout, BottomAppBar paramBottomAppBar, View paramView1, View paramView2, int paramInt1, int paramInt2)
+    {
+      return (paramBottomAppBar.getHideOnScroll()) && (super.A(paramCoordinatorLayout, paramBottomAppBar, paramView1, paramView2, paramInt1, paramInt2));
+    }
+    
+    class a
+      implements View.OnLayoutChangeListener
+    {
+      a() {}
+      
+      public void onLayoutChange(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8)
+      {
+        BottomAppBar localBottomAppBar = (BottomAppBar)BottomAppBar.Behavior.J(BottomAppBar.Behavior.this).get();
+        if ((localBottomAppBar != null) && ((paramView instanceof FloatingActionButton)))
+        {
+          FloatingActionButton localFloatingActionButton = (FloatingActionButton)paramView;
+          localFloatingActionButton.j(BottomAppBar.Behavior.K(BottomAppBar.Behavior.this));
+          paramInt1 = BottomAppBar.Behavior.K(BottomAppBar.Behavior.this).height();
+          localBottomAppBar.B0(paramInt1);
+          paramView = (CoordinatorLayout.e)paramView.getLayoutParams();
+          if (BottomAppBar.Behavior.L(BottomAppBar.Behavior.this) == 0)
+          {
+            paramInt1 = (localFloatingActionButton.getMeasuredHeight() - paramInt1) / 2;
+            paramInt2 = localBottomAppBar.getResources().getDimensionPixelOffset(d.K);
+            bottomMargin = (BottomAppBar.d0(localBottomAppBar) + (paramInt2 - paramInt1));
+            leftMargin = BottomAppBar.e0(localBottomAppBar);
+            rightMargin = BottomAppBar.f0(localBottomAppBar);
+            if (j.d(localFloatingActionButton))
+            {
+              leftMargin += BottomAppBar.g0(localBottomAppBar);
+              return;
+            }
+            rightMargin += BottomAppBar.g0(localBottomAppBar);
+          }
+          return;
+        }
+        paramView.removeOnLayoutChangeListener(this);
+      }
+    }
+  }
+  
+  static class SavedState
+    extends AbsSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    int d;
+    boolean e;
+    
+    public SavedState(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      super(paramClassLoader);
+      d = paramParcel.readInt();
+      boolean bool;
+      if (paramParcel.readInt() != 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      e = bool;
+    }
+    
+    public SavedState(Parcelable paramParcelable)
+    {
+      super();
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    static final class a
+      implements Parcelable.ClassLoaderCreator<BottomAppBar.SavedState>
+    {
+      a() {}
+      
+      public BottomAppBar.SavedState a(Parcel paramParcel)
+      {
+        return new BottomAppBar.SavedState(paramParcel, null);
+      }
+      
+      public BottomAppBar.SavedState b(Parcel paramParcel, ClassLoader paramClassLoader)
+      {
+        return new BottomAppBar.SavedState(paramParcel, paramClassLoader);
+      }
+      
+      public BottomAppBar.SavedState[] c(int paramInt)
+      {
+        return new BottomAppBar.SavedState[paramInt];
+      }
+    }
+  }
+  
+  class a
+    extends AnimatorListenerAdapter
+  {
+    a() {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      BottomAppBar.V(BottomAppBar.this);
+      BottomAppBar.W(BottomAppBar.this, null);
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      BottomAppBar.U(BottomAppBar.this);
+    }
+  }
+  
+  class b
+    extends FloatingActionButton.b
+  {
+    b(int paramInt) {}
+    
+    public void a(FloatingActionButton paramFloatingActionButton)
+    {
+      paramFloatingActionButton.setTranslationX(BottomAppBar.X(BottomAppBar.this, paramInt));
+      paramFloatingActionButton.s(new a());
+    }
+    
+    class a
+      extends FloatingActionButton.b
+    {
+      a() {}
+      
+      public void b(FloatingActionButton paramFloatingActionButton)
+      {
+        BottomAppBar.V(BottomAppBar.this);
+      }
+    }
+  }
+  
+  class c
+    extends AnimatorListenerAdapter
+  {
+    c() {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      BottomAppBar.V(BottomAppBar.this);
+      BottomAppBar.S(BottomAppBar.this, false);
+      BottomAppBar.Y(BottomAppBar.this, null);
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      BottomAppBar.U(BottomAppBar.this);
+    }
+  }
+  
+  class d
+    extends AnimatorListenerAdapter
+  {
+    public boolean a;
+    
+    d(ActionMenuView paramActionMenuView, int paramInt, boolean paramBoolean) {}
+    
+    public void onAnimationCancel(Animator paramAnimator)
+    {
+      a = true;
+    }
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      if (!a)
+      {
+        boolean bool;
+        if (BottomAppBar.Z(BottomAppBar.this) != 0) {
+          bool = true;
+        } else {
+          bool = false;
+        }
+        paramAnimator = BottomAppBar.this;
+        paramAnimator.x0(BottomAppBar.Z(paramAnimator));
+        BottomAppBar.a0(BottomAppBar.this, b, paramInt, paramBoolean, bool);
+      }
+    }
+  }
+  
+  class e
+    implements Runnable
+  {
+    e(ActionMenuView paramActionMenuView, int paramInt, boolean paramBoolean) {}
+    
+    public void run()
+    {
+      ActionMenuView localActionMenuView = paramActionMenuView;
+      localActionMenuView.setTranslationX(s0(localActionMenuView, paramInt, paramBoolean1));
+    }
+  }
+  
+  class f
+    extends AnimatorListenerAdapter
+  {
+    f() {}
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      s0.onAnimationStart(paramAnimator);
+      paramAnimator = BottomAppBar.b0(BottomAppBar.this);
+      if (paramAnimator != null) {
+        paramAnimator.setTranslationX(BottomAppBar.c0(BottomAppBar.this));
+      }
+    }
+  }
+  
+  static abstract interface g
+  {
+    public abstract void a(BottomAppBar paramBottomAppBar);
+    
+    public abstract void b(BottomAppBar paramBottomAppBar);
+  }
+}

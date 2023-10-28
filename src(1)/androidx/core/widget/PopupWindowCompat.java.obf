@@ -1,0 +1,135 @@
+package androidx.core.widget;
+
+import android.os.Build.VERSION;
+import android.util.Log;
+import android.view.View;
+import android.widget.PopupWindow;
+import c.h.q.f0;
+import c.h.q.k;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public final class h
+{
+  private static Method a;
+  private static boolean b;
+  private static Field c;
+  private static boolean d;
+  
+  public static void a(PopupWindow paramPopupWindow, boolean paramBoolean)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 23)
+    {
+      b.c(paramPopupWindow, paramBoolean);
+      return;
+    }
+    if (i >= 21)
+    {
+      if (!d)
+      {
+        try
+        {
+          Field localField1 = PopupWindow.class.getDeclaredField("mOverlapAnchor");
+          c = localField1;
+          localField1.setAccessible(true);
+        }
+        catch (NoSuchFieldException localNoSuchFieldException)
+        {
+          Log.i("PopupWindowCompatApi21", "Could not fetch mOverlapAnchor field from PopupWindow", localNoSuchFieldException);
+        }
+        d = true;
+      }
+      Field localField2 = c;
+      if (localField2 != null) {
+        try
+        {
+          localField2.set(paramPopupWindow, Boolean.valueOf(paramBoolean));
+          return;
+        }
+        catch (IllegalAccessException paramPopupWindow)
+        {
+          Log.i("PopupWindowCompatApi21", "Could not set overlap anchor field in PopupWindow", paramPopupWindow);
+        }
+      }
+    }
+  }
+  
+  public static void b(PopupWindow paramPopupWindow, int paramInt)
+  {
+    if (Build.VERSION.SDK_INT >= 23)
+    {
+      b.d(paramPopupWindow, paramInt);
+      return;
+    }
+    if (!b) {}
+    try
+    {
+      localMethod = PopupWindow.class.getDeclaredMethod("setWindowLayoutType", new Class[] { Integer.TYPE });
+      a = localMethod;
+      localMethod.setAccessible(true);
+      b = true;
+      localMethod = a;
+      if (localMethod == null) {}
+    }
+    catch (Exception localException)
+    {
+      for (;;)
+      {
+        try
+        {
+          Method localMethod;
+          localMethod.invoke(paramPopupWindow, new Object[] { Integer.valueOf(paramInt) });
+          return;
+        }
+        catch (Exception paramPopupWindow) {}
+        localException = localException;
+      }
+    }
+  }
+  
+  public static void c(PopupWindow paramPopupWindow, View paramView, int paramInt1, int paramInt2, int paramInt3)
+  {
+    if (Build.VERSION.SDK_INT >= 19)
+    {
+      a.a(paramPopupWindow, paramView, paramInt1, paramInt2, paramInt3);
+      return;
+    }
+    int i = paramInt1;
+    if ((k.b(paramInt3, f0.D(paramView)) & 0x7) == 5) {
+      i = paramInt1 - (paramPopupWindow.getWidth() - paramView.getWidth());
+    }
+    paramPopupWindow.showAsDropDown(paramView, i, paramInt2);
+  }
+  
+  static class a
+  {
+    static void a(PopupWindow paramPopupWindow, View paramView, int paramInt1, int paramInt2, int paramInt3)
+    {
+      paramPopupWindow.showAsDropDown(paramView, paramInt1, paramInt2, paramInt3);
+    }
+  }
+  
+  static class b
+  {
+    static boolean a(PopupWindow paramPopupWindow)
+    {
+      return paramPopupWindow.getOverlapAnchor();
+    }
+    
+    static int b(PopupWindow paramPopupWindow)
+    {
+      return paramPopupWindow.getWindowLayoutType();
+    }
+    
+    static void c(PopupWindow paramPopupWindow, boolean paramBoolean)
+    {
+      paramPopupWindow.setOverlapAnchor(paramBoolean);
+    }
+    
+    static void d(PopupWindow paramPopupWindow, int paramInt)
+    {
+      paramPopupWindow.setWindowLayoutType(paramInt);
+    }
+  }
+}

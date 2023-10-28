@@ -1,0 +1,168 @@
+package com.alivecor.ai;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import com.alivecor.neuralsuite.NeuralSuite.InversionResult;
+import com.google.gson.v.c;
+import java.io.Serializable;
+
+public class u
+  extends r<b>
+  implements Parcelable, Serializable
+{
+  public static final Parcelable.Creator<u> CREATOR = new a();
+  
+  public u() {}
+  
+  protected u(Parcel paramParcel)
+  {
+    b = paramParcel.readString();
+    c = paramParcel.readString();
+    d = paramParcel.readString();
+    a = ((Serializable)paramParcel.readParcelable(getClass().getClassLoader()));
+  }
+  
+  public u(NeuralSuite.InversionResult paramInversionResult)
+  {
+    if (status == 0)
+    {
+      b localB = new b();
+      a = localB;
+      b.a(localB, probability);
+      localB = (b)a;
+      int i;
+      if (inverted) {
+        i = 1;
+      } else {
+        i = 2;
+      }
+      b.a(localB, i);
+    }
+  }
+  
+  public int describeContents()
+  {
+    return 0;
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("InversionData{result=");
+    localStringBuilder.append(a);
+    localStringBuilder.append(", kardiaAiVersionMajor='");
+    localStringBuilder.append(b);
+    localStringBuilder.append('\'');
+    localStringBuilder.append(", kardiaAiVersionMinor='");
+    localStringBuilder.append(c);
+    localStringBuilder.append('\'');
+    localStringBuilder.append(", kardiaAiVersionRev='");
+    localStringBuilder.append(d);
+    localStringBuilder.append('\'');
+    localStringBuilder.append('}');
+    return localStringBuilder.toString();
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramParcel.writeString(b);
+    paramParcel.writeString(c);
+    paramParcel.writeString(d);
+    paramParcel.writeParcelable((Parcelable)a, paramInt);
+  }
+  
+  class a
+    implements Parcelable.Creator<u>
+  {
+    a() {}
+    
+    public u a(Parcel paramParcel)
+    {
+      return new u(paramParcel);
+    }
+    
+    public u[] a(int paramInt)
+    {
+      return new u[paramInt];
+    }
+  }
+  
+  public static class b
+    implements Parcelable, Serializable
+  {
+    public static final Parcelable.Creator<b> CREATOR = new a();
+    public static final int a = 1;
+    public static final int b = 2;
+    @c("inverted")
+    private int c;
+    @c("inversion_probability")
+    private float d;
+    
+    public b() {}
+    
+    protected b(Parcel paramParcel)
+    {
+      c = paramParcel.readInt();
+      d = paramParcel.readFloat();
+    }
+    
+    public float a()
+    {
+      return d;
+    }
+    
+    public void a(float paramFloat)
+    {
+      d = paramFloat;
+    }
+    
+    public void a(int paramInt)
+    {
+      c = paramInt;
+    }
+    
+    public int b()
+    {
+      return c;
+    }
+    
+    public int describeContents()
+    {
+      return 0;
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Result{inverted=");
+      localStringBuilder.append(c);
+      localStringBuilder.append(", inversionProb=");
+      localStringBuilder.append(d);
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      paramParcel.writeInt(c);
+      paramParcel.writeFloat(d);
+    }
+    
+    class a
+      implements Parcelable.Creator<u.b>
+    {
+      a() {}
+      
+      public u.b a(Parcel paramParcel)
+      {
+        return new u.b(paramParcel);
+      }
+      
+      public u.b[] a(int paramInt)
+      {
+        return new u.b[paramInt];
+      }
+    }
+  }
+}

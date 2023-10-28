@@ -1,0 +1,352 @@
+package com.google.android.gms.fitness.data;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import android.util.Log;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+import com.google.android.gms.internal.fitness.zzkn;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+@SafeParcelable.Class(creator="DataSetCreator")
+@SafeParcelable.Reserved({2, 5})
+public final class DataSet
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<DataSet> CREATOR = new zzi();
+  @SafeParcelable.VersionField(getter="getVersionCode", id=1000)
+  private final int versionCode;
+  @SafeParcelable.Field(getter="getDataSource", id=1)
+  private final DataSource zzkq;
+  @SafeParcelable.Field(getter="getRawDataPoints", id=3, type="java.util.List")
+  private final List<DataPoint> zzlq;
+  @SafeParcelable.Field(getter="getUniqueDataSources", id=4)
+  private final List<DataSource> zzlr;
+  
+  @SafeParcelable.Constructor
+  DataSet(@SafeParcelable.Param(id=1000) int paramInt, @SafeParcelable.Param(id=1) DataSource paramDataSource, @SafeParcelable.Param(id=3) List<RawDataPoint> paramList, @SafeParcelable.Param(id=4) List<DataSource> paramList1)
+  {
+    versionCode = paramInt;
+    zzkq = paramDataSource;
+    zzlq = new ArrayList(paramList.size());
+    if (paramInt < 2) {
+      paramList1 = Collections.singletonList(paramDataSource);
+    }
+    zzlr = paramList1;
+    paramDataSource = paramList.iterator();
+    while (paramDataSource.hasNext())
+    {
+      paramList = (RawDataPoint)paramDataSource.next();
+      zzlq.add(new DataPoint(zzlr, paramList));
+    }
+  }
+  
+  @ShowFirstParty
+  private DataSet(DataSource paramDataSource)
+  {
+    versionCode = 3;
+    paramDataSource = (DataSource)Preconditions.checkNotNull(paramDataSource);
+    zzkq = paramDataSource;
+    zzlq = new ArrayList();
+    ArrayList localArrayList = new ArrayList();
+    zzlr = localArrayList;
+    localArrayList.add(paramDataSource);
+  }
+  
+  public DataSet(@RecentlyNonNull RawDataSet paramRawDataSet, @RecentlyNonNull List<DataSource> paramList)
+  {
+    versionCode = 3;
+    zzkq = ((DataSource)paramList.get(zzoa));
+    zzlr = paramList;
+    paramRawDataSet = zzoc;
+    zzlq = new ArrayList(paramRawDataSet.size());
+    paramRawDataSet = paramRawDataSet.iterator();
+    while (paramRawDataSet.hasNext())
+    {
+      paramList = (RawDataPoint)paramRawDataSet.next();
+      zzlq.add(new DataPoint(zzlr, paramList));
+    }
+  }
+  
+  @RecentlyNonNull
+  public static Builder builder(@RecentlyNonNull DataSource paramDataSource)
+  {
+    Preconditions.checkNotNull(paramDataSource, "DataSource should be specified");
+    return new Builder(paramDataSource, null);
+  }
+  
+  @RecentlyNonNull
+  public static DataSet create(@RecentlyNonNull DataSource paramDataSource)
+  {
+    Preconditions.checkNotNull(paramDataSource, "DataSource should be specified");
+    return new DataSet(paramDataSource);
+  }
+  
+  @Deprecated
+  @ShowFirstParty
+  private final void zza(DataPoint paramDataPoint)
+  {
+    zzlq.add(paramDataPoint);
+    paramDataPoint = paramDataPoint.getOriginalDataSource();
+    if ((paramDataPoint != null) && (!zzlr.contains(paramDataPoint))) {
+      zzlr.add(paramDataPoint);
+    }
+  }
+  
+  public static void zzb(@RecentlyNonNull DataPoint paramDataPoint)
+  {
+    Object localObject2 = zzl.zzb(paramDataPoint.getDataType().getName());
+    Object localObject1 = "DataPoint out of range";
+    if (localObject2 != null)
+    {
+      localObject2 = paramDataPoint.getDataType();
+      int i = 0;
+      while (i < ((DataType)localObject2).getFields().size())
+      {
+        Object localObject3 = ((Field)((DataType)localObject2).getFields().get(i)).getName();
+        if (!paramDataPoint.zzb(i).isSet())
+        {
+          if ((!Boolean.TRUE.equals(((Field)((DataType)localObject2).getFields().get(i)).isOptional())) && (!zzah.zzom.contains(localObject3)))
+          {
+            localObject1 = String.valueOf(localObject3).concat(" not set");
+            break label366;
+          }
+        }
+        else
+        {
+          double d = ((Field)((DataType)localObject2).getFields().get(i)).getFormat();
+          if (d == 1.0D)
+          {
+            d = paramDataPoint.zzb(i).asInt();
+          }
+          else
+          {
+            if (d != 2.0D) {
+              break label290;
+            }
+            d = paramDataPoint.zzb(i).asFloat();
+          }
+          Object localObject4 = zzah.zzt().zzi((String)localObject3);
+          if ((localObject4 != null) && (!((zzaj)localObject4).zza(d)))
+          {
+            localObject1 = "Field out of range";
+          }
+          else
+          {
+            localObject4 = ((DataType)localObject2).getName();
+            localObject3 = zzah.zzt().zza((String)localObject4, (String)localObject3);
+            if (localObject3 != null)
+            {
+              localObject4 = TimeUnit.NANOSECONDS;
+              long l = paramDataPoint.getEndTime((TimeUnit)localObject4) - paramDataPoint.getStartTime((TimeUnit)localObject4);
+              if (l == 0L)
+              {
+                if (d == 0.0D) {
+                  break label363;
+                }
+                break label366;
+              }
+              if (!((zzaj)localObject3).zza(d / l)) {
+                break label366;
+              }
+            }
+          }
+        }
+        label290:
+        i += 1;
+      }
+      if ("com.google.activity.segment".equals(paramDataPoint.getDataSource().getDataType().getName()))
+      {
+        localObject1 = paramDataPoint.getValue(Field.FIELD_ACTIVITY);
+        if (localObject1 == null)
+        {
+          localObject1 = "activity is not set";
+          break label366;
+        }
+        if (zzkn.zza(((Value)localObject1).asInt(), zzkn.zzaig).zzdz())
+        {
+          localObject1 = "Sleep types are not a valid activity for com.google.activity.segment";
+          break label366;
+        }
+      }
+    }
+    label363:
+    localObject1 = null;
+    label366:
+    if (localObject1 == null) {
+      return;
+    }
+    paramDataPoint = String.valueOf(paramDataPoint);
+    localObject2 = new StringBuilder(paramDataPoint.length() + 20);
+    ((StringBuilder)localObject2).append("Invalid data point: ");
+    ((StringBuilder)localObject2).append(paramDataPoint);
+    Log.w("Fitness", ((StringBuilder)localObject2).toString());
+    throw new IllegalArgumentException((String)localObject1);
+  }
+  
+  private final List<RawDataPoint> zzi()
+  {
+    return zza(zzlr);
+  }
+  
+  @Deprecated
+  public final void add(@RecentlyNonNull DataPoint paramDataPoint)
+  {
+    DataSource localDataSource = paramDataPoint.getDataSource();
+    Preconditions.checkArgument(localDataSource.getStreamIdentifier().equals(zzkq.getStreamIdentifier()), "Conflicting data sources found %s vs %s", new Object[] { localDataSource, zzkq });
+    paramDataPoint.zzh();
+    zzb(paramDataPoint);
+    zza(paramDataPoint);
+  }
+  
+  @Deprecated
+  public final void addAll(@RecentlyNonNull Iterable<DataPoint> paramIterable)
+  {
+    paramIterable = paramIterable.iterator();
+    while (paramIterable.hasNext()) {
+      add((DataPoint)paramIterable.next());
+    }
+  }
+  
+  @RecentlyNonNull
+  public final DataPoint createDataPoint()
+  {
+    return DataPoint.create(zzkq);
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (!(paramObject instanceof DataSet)) {
+      return false;
+    }
+    paramObject = (DataSet)paramObject;
+    return (Objects.equal(zzkq, zzkq)) && (Objects.equal(zzlq, zzlq));
+  }
+  
+  @RecentlyNonNull
+  public final List<DataPoint> getDataPoints()
+  {
+    return Collections.unmodifiableList(zzlq);
+  }
+  
+  @RecentlyNonNull
+  public final DataSource getDataSource()
+  {
+    return zzkq;
+  }
+  
+  @RecentlyNonNull
+  public final DataType getDataType()
+  {
+    return zzkq.getDataType();
+  }
+  
+  public final int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzkq });
+  }
+  
+  public final boolean isEmpty()
+  {
+    return zzlq.isEmpty();
+  }
+  
+  @RecentlyNonNull
+  public final String toString()
+  {
+    Object localObject = zzi();
+    Locale localLocale = Locale.US;
+    String str = zzkq.toDebugString();
+    if (zzlq.size() >= 10) {
+      localObject = String.format(localLocale, "%d data points, first 5: %s", new Object[] { Integer.valueOf(zzlq.size()), ((List)localObject).subList(0, 5) });
+    }
+    return String.format(localLocale, "DataSet{%s %s}", new Object[] { str, localObject });
+  }
+  
+  public final void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeParcelable(paramParcel, 1, getDataSource(), paramInt, false);
+    SafeParcelWriter.writeList(paramParcel, 3, zzi(), false);
+    SafeParcelWriter.writeTypedList(paramParcel, 4, zzlr, false);
+    SafeParcelWriter.writeInt(paramParcel, 1000, versionCode);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  final List<RawDataPoint> zza(List<DataSource> paramList)
+  {
+    ArrayList localArrayList = new ArrayList(zzlq.size());
+    Iterator localIterator = zzlq.iterator();
+    while (localIterator.hasNext()) {
+      localArrayList.add(new RawDataPoint((DataPoint)localIterator.next(), paramList));
+    }
+    return localArrayList;
+  }
+  
+  @Deprecated
+  @ShowFirstParty
+  public final void zza(@RecentlyNonNull Iterable<DataPoint> paramIterable)
+  {
+    paramIterable = paramIterable.iterator();
+    while (paramIterable.hasNext()) {
+      zza((DataPoint)paramIterable.next());
+    }
+  }
+  
+  public static class Builder
+  {
+    private boolean zzlp = false;
+    private final DataSet zzls;
+    
+    private Builder(DataSource paramDataSource)
+    {
+      zzls = DataSet.create(paramDataSource);
+    }
+    
+    @RecentlyNonNull
+    public Builder add(@RecentlyNonNull DataPoint paramDataPoint)
+    {
+      Preconditions.checkState(zzlp ^ true, "Builder should not be mutated after calling #build.");
+      zzls.add(paramDataPoint);
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder addAll(@RecentlyNonNull Iterable<DataPoint> paramIterable)
+    {
+      Preconditions.checkState(zzlp ^ true, "Builder should not be mutated after calling #build.");
+      zzls.addAll(paramIterable);
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public DataSet build()
+    {
+      Preconditions.checkState(zzlp ^ true, "DataSet#build() should only be called once.");
+      zzlp = true;
+      return zzls;
+    }
+  }
+}

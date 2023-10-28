@@ -1,0 +1,210 @@
+package androidx.savedstate;
+
+import android.os.Bundle;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.m;
+import c.b.a.b.b;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import kotlin.x.d.i;
+
+public final class c
+{
+  private static final b a = new b(null);
+  private final b<String, c> b = new b();
+  private boolean c;
+  private Bundle d;
+  private boolean e;
+  private Recreator.b f;
+  private boolean g = true;
+  
+  public c() {}
+  
+  private static final void d(c paramC, m paramM, Lifecycle.Event paramEvent)
+  {
+    i.e(paramC, "this$0");
+    i.e(paramM, "<anonymous parameter 0>");
+    i.e(paramEvent, "event");
+    if (paramEvent == Lifecycle.Event.ON_START)
+    {
+      g = true;
+      return;
+    }
+    if (paramEvent == Lifecycle.Event.ON_STOP) {
+      g = false;
+    }
+  }
+  
+  public final Bundle a(String paramString)
+  {
+    i.e(paramString, "key");
+    if (e)
+    {
+      Bundle localBundle1 = d;
+      if (localBundle1 != null)
+      {
+        if (localBundle1 != null) {
+          localBundle1 = localBundle1.getBundle(paramString);
+        } else {
+          localBundle1 = null;
+        }
+        Bundle localBundle2 = d;
+        if (localBundle2 != null) {
+          localBundle2.remove(paramString);
+        }
+        paramString = d;
+        int j = 0;
+        int i = j;
+        if (paramString != null)
+        {
+          i = j;
+          if (!paramString.isEmpty()) {
+            i = 1;
+          }
+        }
+        if (i == 0) {
+          d = null;
+        }
+        return localBundle1;
+      }
+      return null;
+    }
+    throw new IllegalStateException("You can consumeRestoredStateForKey only after super.onCreate of corresponding component".toString());
+  }
+  
+  public final c b(String paramString)
+  {
+    i.e(paramString, "key");
+    Iterator localIterator = b.iterator();
+    while (localIterator.hasNext())
+    {
+      Object localObject = (Map.Entry)localIterator.next();
+      i.d(localObject, "components");
+      String str = (String)((Map.Entry)localObject).getKey();
+      localObject = (c)((Map.Entry)localObject).getValue();
+      if (i.a(str, paramString)) {
+        return localObject;
+      }
+    }
+    return null;
+  }
+  
+  public final void e(Lifecycle paramLifecycle)
+  {
+    i.e(paramLifecycle, "lifecycle");
+    if ((c ^ true))
+    {
+      paramLifecycle.a(new a(this));
+      c = true;
+      return;
+    }
+    throw new IllegalStateException("SavedStateRegistry was already attached.".toString());
+  }
+  
+  public final void f(Bundle paramBundle)
+  {
+    if (c)
+    {
+      if ((e ^ true))
+      {
+        if (paramBundle != null) {
+          paramBundle = paramBundle.getBundle("androidx.lifecycle.BundlableSavedStateRegistry.key");
+        } else {
+          paramBundle = null;
+        }
+        d = paramBundle;
+        e = true;
+        return;
+      }
+      throw new IllegalStateException("SavedStateRegistry was already restored.".toString());
+    }
+    throw new IllegalStateException("You must call performAttach() before calling performRestore(Bundle).".toString());
+  }
+  
+  public final void g(Bundle paramBundle)
+  {
+    i.e(paramBundle, "outBundle");
+    Bundle localBundle = new Bundle();
+    Object localObject = d;
+    if (localObject != null) {
+      localBundle.putAll((Bundle)localObject);
+    }
+    localObject = b.c();
+    i.d(localObject, "this.components.iteratorWithAdditions()");
+    while (((Iterator)localObject).hasNext())
+    {
+      Map.Entry localEntry = (Map.Entry)((Iterator)localObject).next();
+      localBundle.putBundle((String)localEntry.getKey(), ((c)localEntry.getValue()).a());
+    }
+    if (!localBundle.isEmpty()) {
+      paramBundle.putBundle("androidx.lifecycle.BundlableSavedStateRegistry.key", localBundle);
+    }
+  }
+  
+  public final void h(String paramString, c paramC)
+  {
+    i.e(paramString, "key");
+    i.e(paramC, "provider");
+    int i;
+    if ((c)b.f(paramString, paramC) == null) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (i != 0) {
+      return;
+    }
+    throw new IllegalArgumentException("SavedStateProvider with the given key is already registered".toString());
+  }
+  
+  public final void i(Class<? extends a> paramClass)
+  {
+    i.e(paramClass, "clazz");
+    if (g)
+    {
+      Object localObject2 = f;
+      Object localObject1 = localObject2;
+      if (localObject2 == null) {
+        localObject1 = new Recreator.b(this);
+      }
+      f = ((Recreator.b)localObject1);
+      try
+      {
+        paramClass.getDeclaredConstructor(new Class[0]);
+        localObject1 = f;
+        if (localObject1 != null)
+        {
+          paramClass = paramClass.getName();
+          i.d(paramClass, "clazz.name");
+          ((Recreator.b)localObject1).b(paramClass);
+        }
+        return;
+      }
+      catch (NoSuchMethodException localNoSuchMethodException)
+      {
+        localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append("Class ");
+        ((StringBuilder)localObject2).append(paramClass.getSimpleName());
+        ((StringBuilder)localObject2).append(" must have default constructor in order to be automatically recreated");
+        throw new IllegalArgumentException(((StringBuilder)localObject2).toString(), localNoSuchMethodException);
+      }
+    }
+    throw new IllegalStateException("Can not perform this action after onSaveInstanceState".toString());
+  }
+  
+  public static abstract interface a
+  {
+    public abstract void a(e paramE);
+  }
+  
+  private static final class b
+  {
+    private b() {}
+  }
+  
+  public static abstract interface c
+  {
+    public abstract Bundle a();
+  }
+}

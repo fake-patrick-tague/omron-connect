@@ -1,0 +1,78 @@
+package com.google.android.gms.internal.measurement;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ProviderInfo;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.util.Log;
+
+public final class zzho
+{
+  static volatile zzif zza = ;
+  private static final Object zzb = new Object();
+  
+  public static boolean zza(Context paramContext, Uri arg1)
+  {
+    ??? = ???.getAuthority();
+    boolean bool1 = "com.google.android.gms.phenotype".equals(???);
+    boolean bool2 = false;
+    if (!bool1)
+    {
+      Log.e("PhenotypeClientHelper", String.valueOf(???).concat(" is an unsupported authority. Only com.google.android.gms.phenotype authority is supported."));
+      return false;
+    }
+    if (zza.zzb()) {
+      return ((Boolean)zza.zza()).booleanValue();
+    }
+    for (;;)
+    {
+      synchronized (zzb)
+      {
+        if (zza.zzb())
+        {
+          bool1 = ((Boolean)zza.zza()).booleanValue();
+          return bool1;
+        }
+        if (!"com.google.android.gms".equals(paramContext.getPackageName()))
+        {
+          Object localObject = paramContext.getPackageManager();
+          if (Build.VERSION.SDK_INT >= 29) {
+            break label227;
+          }
+          i = 0;
+          localObject = ((PackageManager)localObject).resolveContentProvider("com.google.android.gms.phenotype", i);
+          bool1 = bool2;
+          if (localObject == null) {
+            continue;
+          }
+          if (!"com.google.android.gms".equals(packageName))
+          {
+            bool1 = bool2;
+            continue;
+          }
+        }
+        paramContext = paramContext.getPackageManager();
+        try
+        {
+          paramContext = paramContext.getApplicationInfo("com.google.android.gms", 0);
+          bool1 = bool2;
+          if ((flags & 0x81) != 0) {
+            bool1 = true;
+          }
+        }
+        catch (PackageManager.NameNotFoundException paramContext)
+        {
+          bool1 = bool2;
+          continue;
+        }
+        zza = zzif.zzd(Boolean.valueOf(bool1));
+        return ((Boolean)zza.zza()).booleanValue();
+      }
+      label227:
+      int i = 268435456;
+    }
+  }
+}

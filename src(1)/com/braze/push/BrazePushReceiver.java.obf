@@ -1,0 +1,437 @@
+package com.braze.push;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import androidx.core.app.NotificationManagerCompat;
+import com.braze.Braze;
+import com.braze.Braze.Companion;
+import com.braze.BrazeInternal;
+import com.braze.Constants;
+import com.braze.IBrazeNotificationFactory;
+import com.braze.configuration.BrazeConfigurationProvider;
+import com.braze.coroutine.BrazeCoroutineScope;
+import com.braze.models.push.BrazeNotificationPayload;
+import com.braze.models.push.BrazeNotificationPayload.Companion;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.ui.inappmessage.BrazeInAppMessageManager;
+import com.braze.ui.inappmessage.BrazeInAppMessageManager.Companion;
+import com.braze.ui.inappmessage.InAppMessageManagerBase;
+import kotlin.n;
+import kotlin.t;
+import kotlin.w.d;
+import kotlin.w.i.a.f;
+import kotlin.w.i.a.l;
+import kotlin.x.c.p;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+import kotlinx.coroutines.h;
+import kotlinx.coroutines.m0;
+
+public class BrazePushReceiver
+  extends BroadcastReceiver
+{
+  public static final Companion Companion = new Companion(null);
+  
+  public BrazePushReceiver() {}
+  
+  public void onReceive(Context paramContext, Intent paramIntent)
+  {
+    i.e(paramContext, "context");
+    i.e(paramIntent, "intent");
+    Companion.handleReceivedIntent$default(Companion, paramContext, paramIntent, false, 4, null);
+  }
+  
+  public static final class Companion
+  {
+    private Companion() {}
+    
+    private final void handlePush(Context paramContext, final Intent paramIntent)
+    {
+      Context localContext = paramContext.getApplicationContext();
+      String str = paramIntent.getAction();
+      try
+      {
+        handlePush$performWork(str, localContext, paramIntent, paramContext);
+        return;
+      }
+      catch (Exception paramContext)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramContext, new j(str)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Caught exception while performing the push notification handling work. Action: ");
+            localStringBuilder.append($action);
+            localStringBuilder.append(" Intent: ");
+            localStringBuilder.append(paramIntent);
+            return localStringBuilder.toString();
+          }
+        });
+      }
+    }
+    
+    private static final void handlePush$performWork(String paramString, Context paramContext1, Intent paramIntent, Context paramContext2)
+    {
+      BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+      Companion localCompanion = BrazePushReceiver.Companion;
+      BrazeLogger.brazelog$default(localBrazeLogger, localCompanion, BrazeLogger.Priority.I, null, new j(paramIntent)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Received broadcast message. Message: ");
+          localStringBuilder.append($intent);
+          return localStringBuilder.toString();
+        }
+      }, 2, null);
+      int i;
+      if ((paramString != null) && (paramString.length() != 0)) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, localCompanion, BrazeLogger.Priority.W, null, new j(paramIntent)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Push action is null. Not handling intent: ");
+            localStringBuilder.append($intent);
+            return localStringBuilder.toString();
+          }
+        }, 2, null);
+        return;
+      }
+      i.d(paramContext1, "applicationContext");
+      BrazeInternal.applyPendingRuntimeConfiguration(paramContext1);
+      switch (paramString.hashCode())
+      {
+      default: 
+        break;
+      case 1740454061: 
+        if (paramString.equals("hms_push_service_routing_action")) {
+          break;
+        }
+        break;
+      case 1060266838: 
+        if (paramString.equals("com.amazon.device.messaging.intent.RECEIVE")) {
+          break;
+        }
+      case 34673601: 
+        if ((goto 367) || (!paramString.equals("com.braze.action.BRAZE_STORY_CLICKED"))) {
+          break label367;
+        }
+        BrazeNotificationUtils.handlePushStoryPageClicked(paramContext2, paramIntent);
+        return;
+      case -559929808: 
+        if (!paramString.equals("com.braze.action.BRAZE_PUSH_DELETED")) {
+          break label367;
+        }
+        BrazeNotificationUtils.handleNotificationDeleted(paramContext1, paramIntent);
+        return;
+      case -711830027: 
+        if (paramString.equals("com.braze.action.STORY_TRAVERSE")) {
+          break;
+        }
+      case -743092218: 
+        if ((goto 367) || (!paramString.equals("com.amazon.device.messaging.intent.REGISTRATION"))) {
+          break label367;
+        }
+        localCompanion.handleAdmRegistrationEventIfEnabled(new BrazeConfigurationProvider(paramContext1), paramContext1, paramIntent);
+        return;
+      case -1249868226: 
+        if (!paramString.equals("com.braze.action.BRAZE_PUSH_CLICKED")) {
+          break label367;
+        }
+        BrazeNotificationUtils.handleNotificationOpened(paramContext2, paramIntent);
+        return;
+      case -1584985748: 
+        if (!paramString.equals("firebase_messaging_service_routing_action")) {
+          break label367;
+        }
+        localCompanion.handlePushNotificationPayload(paramContext1, paramIntent);
+        return;
+      case -1799205286: 
+        if (!paramString.equals("com.braze.action.BRAZE_ACTION_CLICKED")) {
+          break label367;
+        }
+        BrazeNotificationActionUtils.handleNotificationActionClicked(paramContext2, paramIntent);
+        return;
+      }
+      if (paramString.equals("com.braze.action.CANCEL_NOTIFICATION"))
+      {
+        BrazeNotificationUtils.handleCancelNotificationAction(paramContext1, paramIntent);
+        return;
+      }
+      label367:
+      BrazeLogger.brazelog$default(localBrazeLogger, localCompanion, BrazeLogger.Priority.W, null, handlePush.performWork.3.INSTANCE, 2, null);
+    }
+    
+    public final BrazeNotificationPayload createPayload(Context paramContext, BrazeConfigurationProvider paramBrazeConfigurationProvider, Bundle paramBundle1, Bundle paramBundle2)
+    {
+      i.e(paramContext, "context");
+      i.e(paramBrazeConfigurationProvider, "appConfigurationProvider");
+      i.e(paramBundle1, "notificationExtras");
+      i.e(paramBundle2, "brazeExtras");
+      if (Constants.isAmazonDevice()) {
+        return new BrazeNotificationPayload(paramBundle1, BrazeNotificationPayload.Companion.getAttachedBrazeExtras(paramBundle1), paramContext, paramBrazeConfigurationProvider);
+      }
+      return new BrazeNotificationPayload(paramBundle1, paramBundle2, paramContext, paramBrazeConfigurationProvider);
+    }
+    
+    public final boolean handleAdmRegistrationEventIfEnabled(BrazeConfigurationProvider paramBrazeConfigurationProvider, Context paramContext, Intent paramIntent)
+    {
+      i.e(paramBrazeConfigurationProvider, "appConfigurationProvider");
+      i.e(paramContext, "context");
+      i.e(paramIntent, "intent");
+      BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+      BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.I, null, new j(paramIntent)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Received ADM registration. Message: ");
+          localStringBuilder.append($intent);
+          return localStringBuilder.toString();
+        }
+      }, 2, null);
+      if ((Constants.isAmazonDevice()) && (paramBrazeConfigurationProvider.isAdmMessagingRegistrationEnabled()))
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, handleAdmRegistrationEventIfEnabled.2.INSTANCE, 3, null);
+        handleAdmRegistrationIntent(paramContext, paramIntent);
+        return true;
+      }
+      BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.W, null, handleAdmRegistrationEventIfEnabled.3.INSTANCE, 2, null);
+      return false;
+    }
+    
+    public final boolean handleAdmRegistrationIntent(Context paramContext, Intent paramIntent)
+    {
+      i.e(paramContext, "context");
+      i.e(paramIntent, "intent");
+      String str1 = paramIntent.getStringExtra("error");
+      final String str2 = paramIntent.getStringExtra("error_description");
+      String str3 = paramIntent.getStringExtra("registration_id");
+      paramIntent = paramIntent.getStringExtra("unregistered");
+      if (str1 != null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new j(str1)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Error during ADM registration: ");
+            localStringBuilder.append($error);
+            localStringBuilder.append(" description: ");
+            localStringBuilder.append(str2);
+            return localStringBuilder.toString();
+          }
+        }, 2, null);
+      }
+      else if (str3 != null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, new j(str3)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Registering for ADM messages with registrationId: ");
+            localStringBuilder.append($registrationId);
+            return localStringBuilder.toString();
+          }
+        }, 2, null);
+        Braze.Companion.getInstance(paramContext).setRegisteredPushToken(str3);
+      }
+      else
+      {
+        if (paramIntent == null) {
+          break label145;
+        }
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new j(paramIntent)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("The device was un-registered from ADM: ");
+            localStringBuilder.append($unregistered);
+            return localStringBuilder.toString();
+          }
+        }, 2, null);
+      }
+      return true;
+      label145:
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, handleAdmRegistrationIntent.4.INSTANCE, 2, null);
+      return false;
+    }
+    
+    public final boolean handlePushNotificationPayload(Context paramContext, Intent paramIntent)
+    {
+      i.e(paramContext, "context");
+      i.e(paramIntent, "intent");
+      if (!BrazeNotificationUtils.isBrazePushMessage(paramIntent))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, handlePushNotificationPayload.1.INSTANCE, 3, null);
+        return false;
+      }
+      int i;
+      if (i.a("deleted_messages", paramIntent.getStringExtra("message_type")))
+      {
+        i = paramIntent.getIntExtra("total_deleted", -1);
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, new j(i)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Firebase messaging 'total_deleted' reports ");
+            localStringBuilder.append($totalDeleted);
+            localStringBuilder.append(" messages.");
+            return localStringBuilder.toString();
+          }
+        }, 2, null);
+        return false;
+      }
+      Bundle localBundle = paramIntent.getExtras();
+      if (localBundle == null) {
+        return false;
+      }
+      BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+      Object localObject2 = BrazeLogger.Priority.I;
+      BrazeLogger.brazelog$default(localBrazeLogger, this, (BrazeLogger.Priority)localObject2, null, new j(localBundle)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Push message payload received: ");
+          localStringBuilder.append($notificationExtras);
+          return localStringBuilder.toString();
+        }
+      }, 2, null);
+      Object localObject1 = BrazeNotificationPayload.Companion.getAttachedBrazeExtras(localBundle);
+      localBundle.putBundle("extra", (Bundle)localObject1);
+      if (!localBundle.containsKey("braze_push_received_timestamp")) {
+        localBundle.putLong("braze_push_received_timestamp", System.currentTimeMillis());
+      }
+      BrazeConfigurationProvider localBrazeConfigurationProvider = new BrazeConfigurationProvider(paramContext);
+      localObject1 = createPayload(paramContext, localBrazeConfigurationProvider, localBundle, (Bundle)localObject1);
+      if (((BrazeNotificationPayload)localObject1).isUninstallTrackingPush())
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, (BrazeLogger.Priority)localObject2, null, handlePushNotificationPayload.4.INSTANCE, 2, null);
+        return false;
+      }
+      BrazeNotificationUtils.handleContentCardsSerializedCardIfPresent((BrazeNotificationPayload)localObject1);
+      if ((((BrazeNotificationPayload)localObject1).getShouldFetchTestTriggers()) && (localBrazeConfigurationProvider.isInAppMessageTestPushEagerDisplayEnabled()) && (BrazeInAppMessageManager.Companion.getInstance().getActivity() != null))
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, handlePushNotificationPayload.5.INSTANCE, 3, null);
+        BrazeInternal.handleInAppMessageTestPush(paramContext, paramIntent);
+        return false;
+      }
+      if (BrazeNotificationUtils.isNotificationMessage(paramIntent))
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, handlePushNotificationPayload.6.INSTANCE, 3, null);
+        i = BrazeNotificationUtils.getNotificationId((BrazeNotificationPayload)localObject1);
+        localBundle.putInt("nid", i);
+        if (((BrazeNotificationPayload)localObject1).isPushStory())
+        {
+          if (Constants.isAmazonDevice())
+          {
+            BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, handlePushNotificationPayload.7.INSTANCE, 3, null);
+            return false;
+          }
+          if (!localBundle.containsKey("braze_story_newly_received"))
+          {
+            BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, handlePushNotificationPayload.8.INSTANCE, 3, null);
+            localBundle.putBoolean("braze_story_newly_received", true);
+          }
+        }
+        BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.V, null, new j((BrazeNotificationPayload)localObject1)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Creating notification with payload:\n");
+            localStringBuilder.append($payload);
+            return localStringBuilder.toString();
+          }
+        }, 2, null);
+        paramIntent = BrazeNotificationUtils.getActiveNotificationFactory().createNotification((BrazeNotificationPayload)localObject1);
+        if (paramIntent == null) {
+          BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, handlePushNotificationPayload.10.INSTANCE, 3, null);
+        }
+      }
+      for (;;)
+      {
+        return false;
+        localObject2 = NotificationManagerCompat.from(paramContext);
+        i.d(localObject2, "from(context)");
+        BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, new j((NotificationManagerCompat)localObject2)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Value of notificationManager.areNotificationsEnabled() = ");
+            localStringBuilder.append($notificationManager.areNotificationsEnabled());
+            return localStringBuilder.toString();
+          }
+        }, 3, null);
+        ((NotificationManagerCompat)localObject2).notify("appboy_notification", i, paramIntent);
+        BrazeNotificationUtils.sendPushMessageReceivedBroadcast(paramContext, localBundle, (BrazeNotificationPayload)localObject1);
+        BrazeNotificationUtils.wakeScreenIfAppropriate(paramContext, localBrazeConfigurationProvider, localBundle);
+        paramIntent = ((BrazeNotificationPayload)localObject1).getPushDuration();
+        if (paramIntent != null) {
+          BrazeNotificationUtils.setNotificationDurationAlarm(paramContext, BrazePushReceiver.class, i, paramIntent.intValue());
+        }
+        return true;
+        BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, handlePushNotificationPayload.13.INSTANCE, 3, null);
+        BrazeNotificationUtils.sendPushMessageReceivedBroadcast(paramContext, localBundle, (BrazeNotificationPayload)localObject1);
+        BrazeNotificationUtils.requestGeofenceRefreshIfAppropriate((BrazeNotificationPayload)localObject1);
+        BrazeNotificationUtils.refreshFeatureFlagsIfAppropriate((BrazeNotificationPayload)localObject1);
+      }
+    }
+    
+    public final void handleReceivedIntent(Context paramContext, final Intent paramIntent, boolean paramBoolean)
+    {
+      i.e(paramContext, "context");
+      i.e(paramIntent, "intent");
+      if (paramBoolean)
+      {
+        h.d(BrazeCoroutineScope.INSTANCE, null, null, new l(paramContext, paramIntent)
+        {
+          int label;
+          
+          public final d<t> create(Object paramAnonymousObject, d<?> paramAnonymousD)
+          {
+            return new 1($context, paramIntent, paramAnonymousD);
+          }
+          
+          public final Object invoke(m0 paramAnonymousM0, d<? super t> paramAnonymousD)
+          {
+            return ((1)create(paramAnonymousM0, paramAnonymousD)).invokeSuspend(t.a);
+          }
+          
+          public final Object invokeSuspend(Object paramAnonymousObject)
+          {
+            kotlin.coroutines.intrinsics.a.c();
+            if (label == 0)
+            {
+              n.b(paramAnonymousObject);
+              paramAnonymousObject = BrazePushReceiver.Companion;
+              Context localContext = $context.getApplicationContext();
+              i.d(localContext, "context.applicationContext");
+              BrazePushReceiver.Companion.access$handlePush(paramAnonymousObject, localContext, paramIntent);
+              return t.a;
+            }
+            throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+          }
+        }, 3, null);
+        return;
+      }
+      handlePush(paramContext, paramIntent);
+    }
+  }
+}

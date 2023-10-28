@@ -1,0 +1,284 @@
+package com.braze.models.outgoing;
+
+import bo.app.r;
+import com.braze.enums.BrazeDateFormat;
+import com.braze.models.IPutIntoJson;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.DateTimeUtils;
+import com.braze.support.StringUtils;
+import com.braze.support.ValidationUtils;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public final class BrazeProperties
+  implements IPutIntoJson<JSONObject>
+{
+  public static final a Companion = new a(null);
+  private JSONObject propertiesJSONObject = new JSONObject();
+  
+  public BrazeProperties() {}
+  
+  public BrazeProperties(JSONObject paramJSONObject)
+  {
+    propertiesJSONObject = clean$default(this, paramJSONObject, false, 2, null);
+  }
+  
+  private final JSONObject clean(JSONObject paramJSONObject, boolean paramBoolean)
+  {
+    Object localObject1 = new ArrayList();
+    Object localObject2 = paramJSONObject.keys();
+    Object localObject3;
+    while (((Iterator)localObject2).hasNext())
+    {
+      localObject3 = ((Iterator)localObject2).next();
+      i.d(localObject3, "jsonObjectIterator.next()");
+      ((List)localObject1).add(localObject3);
+    }
+    localObject1 = ((List)localObject1).iterator();
+    while (((Iterator)localObject1).hasNext())
+    {
+      localObject2 = (String)((Iterator)localObject1).next();
+      if ((paramBoolean) && (!Companion.a((String)localObject2)))
+      {
+        paramJSONObject.remove((String)localObject2);
+      }
+      else
+      {
+        localObject3 = paramJSONObject.get((String)localObject2);
+        if ((localObject3 instanceof Date)) {
+          paramJSONObject.put((String)localObject2, DateTimeUtils.formatDate$default((Date)localObject3, BrazeDateFormat.LONG, null, 2, null));
+        }
+        if ((localObject3 instanceof JSONArray)) {
+          paramJSONObject.put((String)localObject2, r.a((JSONArray)localObject3));
+        }
+        if ((localObject3 instanceof JSONObject)) {
+          paramJSONObject.put((String)localObject2, clean((JSONObject)localObject3, false));
+        }
+      }
+    }
+    return paramJSONObject;
+  }
+  
+  public final BrazeProperties addProperty(String paramString, Object paramObject)
+  {
+    i.e(paramString, "key");
+    if (!Companion.a(paramString)) {
+      return this;
+    }
+    try
+    {
+      if ((paramObject instanceof Long))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), ((Number)paramObject).longValue());
+        return this;
+      }
+      if ((paramObject instanceof Integer))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), ((Number)paramObject).intValue());
+        return this;
+      }
+      if ((paramObject instanceof Double))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), ((Number)paramObject).doubleValue());
+        return this;
+      }
+      if ((paramObject instanceof Boolean))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), ((Boolean)paramObject).booleanValue());
+        return this;
+      }
+      if ((paramObject instanceof Date))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), DateTimeUtils.formatDate$default((Date)paramObject, BrazeDateFormat.LONG, null, 2, null));
+        return this;
+      }
+      if ((paramObject instanceof String))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), ValidationUtils.ensureBrazeFieldLength((String)paramObject));
+        return this;
+      }
+      if ((paramObject instanceof JSONArray))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), r.a((JSONArray)paramObject));
+        return this;
+      }
+      if ((paramObject instanceof JSONObject))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), clean$default(this, (JSONObject)paramObject, false, 2, null));
+        return this;
+      }
+      if ((paramObject instanceof Map))
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), clean$default(this, new JSONObject(r.a((Map)paramObject)), false, 2, null));
+        return this;
+      }
+      if (paramObject == null)
+      {
+        propertiesJSONObject.put(ValidationUtils.ensureBrazeFieldLength(paramString), JSONObject.NULL);
+        return this;
+      }
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new b(paramString), 2, null);
+      return this;
+    }
+    catch (JSONException paramString)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramString, c.b);
+    }
+    return this;
+  }
+  
+  public final BrazeProperties clone()
+  {
+    try
+    {
+      BrazeProperties localBrazeProperties = new BrazeProperties(new JSONObject(forJsonPut().toString()));
+      return localBrazeProperties;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, d.b);
+    }
+    return null;
+  }
+  
+  public JSONObject forJsonPut()
+  {
+    return propertiesJSONObject;
+  }
+  
+  public final long getByteSize()
+  {
+    String str = propertiesJSONObject.toString();
+    i.d(str, "propertiesJSONObject.toString()");
+    return StringUtils.getByteSize(str);
+  }
+  
+  public final int getSize()
+  {
+    return propertiesJSONObject.length();
+  }
+  
+  public final boolean isInvalid()
+  {
+    return getByteSize() > 51200L;
+  }
+  
+  public static final class a
+  {
+    private a() {}
+    
+    public final boolean a(String paramString)
+    {
+      i.e(paramString, "key");
+      if (g.o(paramString))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, a.b, 2, null);
+        return false;
+      }
+      if (g.v(paramString, "$", false, 2, null))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, b.b, 2, null);
+        return false;
+      }
+      return true;
+    }
+    
+    static final class a
+      extends j
+      implements a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "The BrazeProperties key cannot be null or contain only whitespaces. Not adding property.";
+      }
+    }
+    
+    static final class b
+      extends j
+      implements a<String>
+    {
+      public static final b b = new b();
+      
+      b()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "The leading character in the key string may not be '$'. Not adding property.";
+      }
+    }
+  }
+  
+  static final class b
+    extends j
+    implements a<String>
+  {
+    b(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Value type is not supported. Cannot add property ");
+      localStringBuilder.append(b);
+      localStringBuilder.append('.');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class c
+    extends j
+    implements a<String>
+  {
+    public static final c b = new c();
+    
+    c()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Caught json exception trying to add property.";
+    }
+  }
+  
+  static final class d
+    extends j
+    implements a<String>
+  {
+    public static final d b = new d();
+    
+    d()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to clone BrazeProperties";
+    }
+  }
+}

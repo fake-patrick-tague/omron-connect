@@ -1,0 +1,128 @@
+package com.google.android.datatransport.h.y.j;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build.VERSION;
+import java.util.Arrays;
+import java.util.List;
+
+final class t0
+  extends SQLiteOpenHelper
+{
+  private static final String b;
+  static int c;
+  private static final a d;
+  private static final a e;
+  private static final a f;
+  private static final a g;
+  private static final a h;
+  private static final List<a> i;
+  private final int j;
+  private boolean k = false;
+  
+  static
+  {
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("INSERT INTO global_log_event_state VALUES (");
+    ((StringBuilder)localObject).append(System.currentTimeMillis());
+    ((StringBuilder)localObject).append(")");
+    b = ((StringBuilder)localObject).toString();
+    c = 5;
+    localObject = c0.a;
+    d = (a)localObject;
+    z localZ = z.a;
+    e = localZ;
+    a0 localA0 = a0.a;
+    f = localA0;
+    b0 localB0 = b0.a;
+    g = localB0;
+    d0 localD0 = d0.a;
+    h = localD0;
+    i = Arrays.asList(new a[] { localObject, localZ, localA0, localB0, localD0 });
+  }
+  
+  t0(Context paramContext, String paramString, int paramInt)
+  {
+    super(paramContext, paramString, null, paramInt);
+    j = paramInt;
+  }
+  
+  private void a(SQLiteDatabase paramSQLiteDatabase)
+  {
+    if (!k) {
+      onConfigure(paramSQLiteDatabase);
+    }
+  }
+  
+  private void u(SQLiteDatabase paramSQLiteDatabase, int paramInt)
+  {
+    a(paramSQLiteDatabase);
+    w(paramSQLiteDatabase, 0, paramInt);
+  }
+  
+  private void w(SQLiteDatabase paramSQLiteDatabase, int paramInt1, int paramInt2)
+  {
+    List localList = i;
+    if (paramInt2 <= localList.size())
+    {
+      while (paramInt1 < paramInt2)
+      {
+        ((a)i.get(paramInt1)).a(paramSQLiteDatabase);
+        paramInt1 += 1;
+      }
+      return;
+    }
+    paramSQLiteDatabase = new StringBuilder();
+    paramSQLiteDatabase.append("Migration from ");
+    paramSQLiteDatabase.append(paramInt1);
+    paramSQLiteDatabase.append(" to ");
+    paramSQLiteDatabase.append(paramInt2);
+    paramSQLiteDatabase.append(" was requested, but cannot be performed. Only ");
+    paramSQLiteDatabase.append(localList.size());
+    paramSQLiteDatabase.append(" migrations are provided");
+    throw new IllegalArgumentException(paramSQLiteDatabase.toString());
+  }
+  
+  public void onConfigure(SQLiteDatabase paramSQLiteDatabase)
+  {
+    k = true;
+    paramSQLiteDatabase.rawQuery("PRAGMA busy_timeout=0;", new String[0]).close();
+    if (Build.VERSION.SDK_INT >= 16) {
+      paramSQLiteDatabase.setForeignKeyConstraintsEnabled(true);
+    }
+  }
+  
+  public void onCreate(SQLiteDatabase paramSQLiteDatabase)
+  {
+    u(paramSQLiteDatabase, j);
+  }
+  
+  public void onDowngrade(SQLiteDatabase paramSQLiteDatabase, int paramInt1, int paramInt2)
+  {
+    paramSQLiteDatabase.execSQL("DROP TABLE events");
+    paramSQLiteDatabase.execSQL("DROP TABLE event_metadata");
+    paramSQLiteDatabase.execSQL("DROP TABLE transport_contexts");
+    paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS event_payloads");
+    paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS log_event_dropped");
+    paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS global_log_event_state");
+    u(paramSQLiteDatabase, paramInt2);
+  }
+  
+  public void onOpen(SQLiteDatabase paramSQLiteDatabase)
+  {
+    a(paramSQLiteDatabase);
+  }
+  
+  public void onUpgrade(SQLiteDatabase paramSQLiteDatabase, int paramInt1, int paramInt2)
+  {
+    a(paramSQLiteDatabase);
+    w(paramSQLiteDatabase, paramInt1, paramInt2);
+  }
+  
+  public static abstract interface a
+  {
+    public abstract void a(SQLiteDatabase paramSQLiteDatabase);
+  }
+}

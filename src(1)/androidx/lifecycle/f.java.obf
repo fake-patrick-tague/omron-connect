@@ -1,0 +1,298 @@
+package androidx.lifecycle;
+
+import c.b.a.b.b;
+import c.b.a.b.b.d;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
+public class n
+  extends Lifecycle
+{
+  private c.b.a.b.a<l, a> b = new c.b.a.b.a();
+  private Lifecycle.State c;
+  private final WeakReference<m> d;
+  private int e = 0;
+  private boolean f = false;
+  private boolean g = false;
+  private ArrayList<Lifecycle.State> h = new ArrayList();
+  private final boolean i;
+  
+  public n(m paramM)
+  {
+    this(paramM, true);
+  }
+  
+  private n(m paramM, boolean paramBoolean)
+  {
+    d = new WeakReference(paramM);
+    c = Lifecycle.State.c;
+    i = paramBoolean;
+  }
+  
+  private void d(m paramM)
+  {
+    Iterator localIterator = b.descendingIterator();
+    while ((localIterator.hasNext()) && (!g))
+    {
+      Map.Entry localEntry = (Map.Entry)localIterator.next();
+      a localA = (a)localEntry.getValue();
+      while ((a.compareTo(c) > 0) && (!g) && (b.contains((l)localEntry.getKey())))
+      {
+        Lifecycle.Event localEvent = Lifecycle.Event.a(a);
+        if (localEvent == null) {
+          break label124;
+        }
+        n(localEvent.b());
+        localA.a(paramM, localEvent);
+        m();
+      }
+      continue;
+      label124:
+      paramM = new StringBuilder();
+      paramM.append("no event down from ");
+      paramM.append(a);
+      throw new IllegalStateException(paramM.toString());
+    }
+  }
+  
+  private Lifecycle.State e(l paramL)
+  {
+    paramL = b.h(paramL);
+    Object localObject = null;
+    if (paramL != null) {
+      paramL = getValuea;
+    } else {
+      paramL = null;
+    }
+    if (!h.isEmpty())
+    {
+      localObject = h;
+      localObject = (Lifecycle.State)((ArrayList)localObject).get(((ArrayList)localObject).size() - 1);
+    }
+    return k(k(c, paramL), (Lifecycle.State)localObject);
+  }
+  
+  private void f(String paramString)
+  {
+    if (i)
+    {
+      if (c.b.a.a.a.e().b()) {
+        return;
+      }
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Method ");
+      localStringBuilder.append(paramString);
+      localStringBuilder.append(" must be called on the main thread");
+      throw new IllegalStateException(localStringBuilder.toString());
+    }
+  }
+  
+  private void g(m paramM)
+  {
+    b.d localD = b.c();
+    while ((localD.hasNext()) && (!g))
+    {
+      Map.Entry localEntry = (Map.Entry)localD.next();
+      a localA = (a)localEntry.getValue();
+      while ((a.compareTo(c) < 0) && (!g) && (b.contains((l)localEntry.getKey())))
+      {
+        n(a);
+        Lifecycle.Event localEvent = Lifecycle.Event.c(a);
+        if (localEvent == null) {
+          break label123;
+        }
+        localA.a(paramM, localEvent);
+        m();
+      }
+      continue;
+      label123:
+      paramM = new StringBuilder();
+      paramM.append("no event up from ");
+      paramM.append(a);
+      throw new IllegalStateException(paramM.toString());
+    }
+  }
+  
+  private boolean i()
+  {
+    if (b.size() == 0) {
+      return true;
+    }
+    Lifecycle.State localState1 = b.a().getValue()).a;
+    Lifecycle.State localState2 = b.d().getValue()).a;
+    return (localState1 == localState2) && (c == localState2);
+  }
+  
+  static Lifecycle.State k(Lifecycle.State paramState1, Lifecycle.State paramState2)
+  {
+    Lifecycle.State localState = paramState1;
+    if (paramState2 != null)
+    {
+      localState = paramState1;
+      if (paramState2.compareTo(paramState1) < 0) {
+        localState = paramState2;
+      }
+    }
+    return localState;
+  }
+  
+  private void l(Lifecycle.State paramState)
+  {
+    Lifecycle.State localState = c;
+    if (localState == paramState) {
+      return;
+    }
+    if ((localState == Lifecycle.State.c) && (paramState == Lifecycle.State.b))
+    {
+      paramState = new StringBuilder();
+      paramState.append("no event down from ");
+      paramState.append(c);
+      throw new IllegalStateException(paramState.toString());
+    }
+    c = paramState;
+    if ((!f) && (e == 0))
+    {
+      f = true;
+      p();
+      f = false;
+      if (c == Lifecycle.State.b) {
+        b = new c.b.a.b.a();
+      }
+      return;
+    }
+    g = true;
+  }
+  
+  private void m()
+  {
+    ArrayList localArrayList = h;
+    localArrayList.remove(localArrayList.size() - 1);
+  }
+  
+  private void n(Lifecycle.State paramState)
+  {
+    h.add(paramState);
+  }
+  
+  private void p()
+  {
+    m localM = (m)d.get();
+    if (localM != null)
+    {
+      while (!i())
+      {
+        g = false;
+        if (c.compareTo(b.a().getValue()).a) < 0) {
+          d(localM);
+        }
+        Map.Entry localEntry = b.d();
+        if ((!g) && (localEntry != null) && (c.compareTo(getValuea) > 0)) {
+          g(localM);
+        }
+      }
+      g = false;
+      return;
+    }
+    throw new IllegalStateException("LifecycleOwner of this LifecycleRegistry is alreadygarbage collected. It is too late to change lifecycle state.");
+  }
+  
+  public void a(l paramL)
+  {
+    f("addObserver");
+    Object localObject2 = c;
+    Object localObject1 = Lifecycle.State.b;
+    if (localObject2 != localObject1) {
+      localObject1 = Lifecycle.State.c;
+    }
+    localObject2 = new a(paramL, (Lifecycle.State)localObject1);
+    if ((a)b.f(paramL, localObject2) != null) {
+      return;
+    }
+    m localM = (m)d.get();
+    if (localM == null) {
+      return;
+    }
+    int j;
+    if ((e == 0) && (!f)) {
+      j = 0;
+    } else {
+      j = 1;
+    }
+    localObject1 = e(paramL);
+    e += 1;
+    while ((a.compareTo((Enum)localObject1) < 0) && (b.contains(paramL)))
+    {
+      n(a);
+      localObject1 = Lifecycle.Event.c(a);
+      if (localObject1 != null)
+      {
+        ((a)localObject2).a(localM, (Lifecycle.Event)localObject1);
+        m();
+        localObject1 = e(paramL);
+      }
+      else
+      {
+        paramL = new StringBuilder();
+        paramL.append("no event up from ");
+        paramL.append(a);
+        throw new IllegalStateException(paramL.toString());
+      }
+    }
+    if (j == 0) {
+      p();
+    }
+    e -= 1;
+  }
+  
+  public Lifecycle.State b()
+  {
+    return c;
+  }
+  
+  public void c(l paramL)
+  {
+    f("removeObserver");
+    b.g(paramL);
+  }
+  
+  public void h(Lifecycle.Event paramEvent)
+  {
+    f("handleLifecycleEvent");
+    l(paramEvent.b());
+  }
+  
+  @Deprecated
+  public void j(Lifecycle.State paramState)
+  {
+    f("markState");
+    o(paramState);
+  }
+  
+  public void o(Lifecycle.State paramState)
+  {
+    f("setCurrentState");
+    l(paramState);
+  }
+  
+  static class a
+  {
+    Lifecycle.State a;
+    k b;
+    
+    a(l paramL, Lifecycle.State paramState)
+    {
+      b = q.f(paramL);
+      a = paramState;
+    }
+    
+    void a(m paramM, Lifecycle.Event paramEvent)
+    {
+      Lifecycle.State localState = paramEvent.b();
+      a = n.k(a, localState);
+      b.c(paramM, paramEvent);
+      a = localState;
+    }
+  }
+}

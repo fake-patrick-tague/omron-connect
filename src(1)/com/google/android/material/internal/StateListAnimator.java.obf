@@ -1,0 +1,107 @@
+package com.google.android.material.internal;
+
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
+import android.util.StateSet;
+import java.util.ArrayList;
+
+public final class d
+{
+  private final ArrayList<b> a = new ArrayList();
+  private b b = null;
+  ValueAnimator c = null;
+  private final Animator.AnimatorListener d = new a();
+  
+  public d() {}
+  
+  private void b()
+  {
+    ValueAnimator localValueAnimator = c;
+    if (localValueAnimator != null)
+    {
+      localValueAnimator.cancel();
+      c = null;
+    }
+  }
+  
+  private void e(b paramB)
+  {
+    paramB = b;
+    c = paramB;
+    paramB.start();
+  }
+  
+  public void a(int[] paramArrayOfInt, ValueAnimator paramValueAnimator)
+  {
+    paramArrayOfInt = new b(paramArrayOfInt, paramValueAnimator);
+    paramValueAnimator.addListener(d);
+    a.add(paramArrayOfInt);
+  }
+  
+  public void c()
+  {
+    ValueAnimator localValueAnimator = c;
+    if (localValueAnimator != null)
+    {
+      localValueAnimator.end();
+      c = null;
+    }
+  }
+  
+  public void d(int[] paramArrayOfInt)
+  {
+    int j = a.size();
+    int i = 0;
+    while (i < j)
+    {
+      localB = (b)a.get(i);
+      if (StateSet.stateSetMatches(a, paramArrayOfInt))
+      {
+        paramArrayOfInt = localB;
+        break label55;
+      }
+      i += 1;
+    }
+    paramArrayOfInt = null;
+    label55:
+    b localB = b;
+    if (paramArrayOfInt == localB) {
+      return;
+    }
+    if (localB != null) {
+      b();
+    }
+    b = paramArrayOfInt;
+    if (paramArrayOfInt != null) {
+      e(paramArrayOfInt);
+    }
+  }
+  
+  class a
+    extends AnimatorListenerAdapter
+  {
+    a() {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      d localD = d.this;
+      if (c == paramAnimator) {
+        c = null;
+      }
+    }
+  }
+  
+  static class b
+  {
+    final int[] a;
+    final ValueAnimator b;
+    
+    b(int[] paramArrayOfInt, ValueAnimator paramValueAnimator)
+    {
+      a = paramArrayOfInt;
+      b = paramValueAnimator;
+    }
+  }
+}

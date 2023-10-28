@@ -1,0 +1,828 @@
+package com.google.android.gms.common.server.response;
+
+import android.os.Parcel;
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+import com.google.android.gms.common.server.converter.zaa;
+import com.google.android.gms.common.util.Base64Utils;
+import com.google.android.gms.common.util.JsonUtils;
+import com.google.android.gms.common.util.MapUtils;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+@KeepForSdk
+@ShowFirstParty
+public abstract class FastJsonResponse
+{
+  public FastJsonResponse() {}
+  
+  protected static final <O, I> I zaD(Field<I, O> paramField, Object paramObject)
+  {
+    if (Field.zac(paramField) != null) {
+      return paramField.zaf(paramObject);
+    }
+    return paramObject;
+  }
+  
+  private final <I, O> void zaE(Field<I, O> paramField, I paramI)
+  {
+    String str = zae;
+    paramI = paramField.zae(paramI);
+    int i = zac;
+    switch (i)
+    {
+    case 3: 
+    default: 
+      paramField = new StringBuilder(44);
+      paramField.append("Unsupported type for conversion: ");
+      paramField.append(i);
+      throw new IllegalStateException(paramField.toString());
+    case 8: 
+    case 9: 
+      if (paramI != null)
+      {
+        setDecodedBytesInternal(paramField, str, (byte[])paramI);
+        return;
+      }
+      zaG(str);
+      return;
+    case 7: 
+      setStringInternal(paramField, str, (String)paramI);
+      return;
+    case 6: 
+      if (paramI != null)
+      {
+        setBooleanInternal(paramField, str, ((Boolean)paramI).booleanValue());
+        return;
+      }
+      zaG(str);
+      return;
+    case 5: 
+      zab(paramField, str, (BigDecimal)paramI);
+      return;
+    case 4: 
+      if (paramI != null)
+      {
+        zan(paramField, str, ((Double)paramI).doubleValue());
+        return;
+      }
+      zaG(str);
+      return;
+    case 2: 
+      if (paramI != null)
+      {
+        setLongInternal(paramField, str, ((Long)paramI).longValue());
+        return;
+      }
+      zaG(str);
+      return;
+    case 1: 
+      zaf(paramField, str, (BigInteger)paramI);
+      return;
+    }
+    if (paramI != null)
+    {
+      setIntegerInternal(paramField, str, ((Integer)paramI).intValue());
+      return;
+    }
+    zaG(str);
+  }
+  
+  private static final void zaF(StringBuilder paramStringBuilder, Field paramField, Object paramObject)
+  {
+    int i = zaa;
+    if (i != 11)
+    {
+      if (i == 7)
+      {
+        paramStringBuilder.append("\"");
+        paramStringBuilder.append(JsonUtils.escapeString((String)paramObject));
+        paramStringBuilder.append("\"");
+        return;
+      }
+      paramStringBuilder.append(paramObject);
+      return;
+    }
+    paramField = zag;
+    Preconditions.checkNotNull(paramField);
+    paramStringBuilder.append(((FastJsonResponse)paramField.cast(paramObject)).toString());
+  }
+  
+  private static final <O> void zaG(String paramString)
+  {
+    if (Log.isLoggable("FastJsonResponse", 6))
+    {
+      StringBuilder localStringBuilder = new StringBuilder(String.valueOf(paramString).length() + 58);
+      localStringBuilder.append("Output field (");
+      localStringBuilder.append(paramString);
+      localStringBuilder.append(") has a null value, but expected a primitive");
+      Log.e("FastJsonResponse", localStringBuilder.toString());
+    }
+  }
+  
+  @KeepForSdk
+  public <T extends FastJsonResponse> void addConcreteTypeArrayInternal(Field paramField, String paramString, ArrayList<T> paramArrayList)
+  {
+    throw new UnsupportedOperationException("Concrete type array not supported");
+  }
+  
+  @KeepForSdk
+  public <T extends FastJsonResponse> void addConcreteTypeInternal(Field paramField, String paramString, T paramT)
+  {
+    throw new UnsupportedOperationException("Concrete type not supported");
+  }
+  
+  @KeepForSdk
+  public abstract Map<String, Field<?, ?>> getFieldMappings();
+  
+  @KeepForSdk
+  protected Object getFieldValue(Field paramField)
+  {
+    Object localObject = zae;
+    if (zag != null)
+    {
+      boolean bool;
+      if (getValueObject((String)localObject) == null) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkState(bool, "Concrete field shouldn't be value object: %s", new Object[] { zae });
+      try
+      {
+        char c = Character.toUpperCase(((String)localObject).charAt(0));
+        paramField = ((String)localObject).substring(1);
+        localObject = new StringBuilder(String.valueOf(paramField).length() + 4);
+        ((StringBuilder)localObject).append("get");
+        ((StringBuilder)localObject).append(c);
+        ((StringBuilder)localObject).append(paramField);
+        paramField = getClass().getMethod(((StringBuilder)localObject).toString(), new Class[0]).invoke(this, new Object[0]);
+        return paramField;
+      }
+      catch (Exception paramField)
+      {
+        throw new RuntimeException(paramField);
+      }
+    }
+    return getValueObject((String)localObject);
+  }
+  
+  @KeepForSdk
+  protected abstract Object getValueObject(String paramString);
+  
+  @KeepForSdk
+  protected boolean isFieldSet(Field paramField)
+  {
+    if (zac == 11)
+    {
+      if (zad) {
+        throw new UnsupportedOperationException("Concrete type arrays not supported");
+      }
+      throw new UnsupportedOperationException("Concrete types not supported");
+    }
+    return isPrimitiveFieldSet(zae);
+  }
+  
+  @KeepForSdk
+  protected abstract boolean isPrimitiveFieldSet(String paramString);
+  
+  @KeepForSdk
+  protected void setBooleanInternal(Field<?, ?> paramField, String paramString, boolean paramBoolean)
+  {
+    throw new UnsupportedOperationException("Boolean not supported");
+  }
+  
+  @KeepForSdk
+  protected void setDecodedBytesInternal(Field<?, ?> paramField, String paramString, byte[] paramArrayOfByte)
+  {
+    throw new UnsupportedOperationException("byte[] not supported");
+  }
+  
+  @KeepForSdk
+  protected void setIntegerInternal(Field<?, ?> paramField, String paramString, int paramInt)
+  {
+    throw new UnsupportedOperationException("Integer not supported");
+  }
+  
+  @KeepForSdk
+  protected void setLongInternal(Field<?, ?> paramField, String paramString, long paramLong)
+  {
+    throw new UnsupportedOperationException("Long not supported");
+  }
+  
+  @KeepForSdk
+  protected void setStringInternal(Field<?, ?> paramField, String paramString1, String paramString2)
+  {
+    throw new UnsupportedOperationException("String not supported");
+  }
+  
+  @KeepForSdk
+  protected void setStringMapInternal(Field<?, ?> paramField, String paramString, Map<String, String> paramMap)
+  {
+    throw new UnsupportedOperationException("String map not supported");
+  }
+  
+  @KeepForSdk
+  protected void setStringsInternal(Field<?, ?> paramField, String paramString, ArrayList<String> paramArrayList)
+  {
+    throw new UnsupportedOperationException("String list not supported");
+  }
+  
+  @KeepForSdk
+  public String toString()
+  {
+    Map localMap = getFieldMappings();
+    StringBuilder localStringBuilder = new StringBuilder(100);
+    Iterator localIterator = localMap.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      Object localObject1 = (String)localIterator.next();
+      Field localField = (Field)localMap.get(localObject1);
+      if (isFieldSet(localField))
+      {
+        Object localObject2 = zaD(localField, getFieldValue(localField));
+        if (localStringBuilder.length() == 0) {
+          localStringBuilder.append("{");
+        } else {
+          localStringBuilder.append(",");
+        }
+        localStringBuilder.append("\"");
+        localStringBuilder.append((String)localObject1);
+        localStringBuilder.append("\":");
+        if (localObject2 == null)
+        {
+          localStringBuilder.append("null");
+        }
+        else
+        {
+          int j;
+          int i;
+          switch (zac)
+          {
+          default: 
+            if (zab)
+            {
+              localObject1 = (ArrayList)localObject2;
+              localStringBuilder.append("[");
+              j = ((ArrayList)localObject1).size();
+              i = 0;
+            }
+            break;
+          case 10: 
+            MapUtils.writeStringMapToJson(localStringBuilder, (HashMap)localObject2);
+            break;
+          case 9: 
+            localStringBuilder.append("\"");
+            localStringBuilder.append(Base64Utils.encodeUrlSafe((byte[])localObject2));
+            localStringBuilder.append("\"");
+            break;
+          case 8: 
+            localStringBuilder.append("\"");
+            localStringBuilder.append(Base64Utils.encode((byte[])localObject2));
+            localStringBuilder.append("\"");
+            continue;
+            while (i < j)
+            {
+              if (i > 0) {
+                localStringBuilder.append(",");
+              }
+              localObject2 = ((ArrayList)localObject1).get(i);
+              if (localObject2 != null) {
+                zaF(localStringBuilder, localField, localObject2);
+              }
+              i += 1;
+            }
+            localStringBuilder.append("]");
+            continue;
+            zaF(localStringBuilder, localField, localObject2);
+          }
+        }
+      }
+    }
+    if (localStringBuilder.length() > 0) {
+      localStringBuilder.append("}");
+    } else {
+      localStringBuilder.append("{}");
+    }
+    return localStringBuilder.toString();
+  }
+  
+  public final <O> void zaA(Field<String, O> paramField, String paramString)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramString);
+      return;
+    }
+    setStringInternal(paramField, zae, paramString);
+  }
+  
+  public final <O> void zaB(Field<Map<String, String>, O> paramField, Map<String, String> paramMap)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramMap);
+      return;
+    }
+    setStringMapInternal(paramField, zae, paramMap);
+  }
+  
+  public final <O> void zaC(Field<ArrayList<String>, O> paramField, ArrayList<String> paramArrayList)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayList);
+      return;
+    }
+    setStringsInternal(paramField, zae, paramArrayList);
+  }
+  
+  public final <O> void zaa(Field<BigDecimal, O> paramField, BigDecimal paramBigDecimal)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramBigDecimal);
+      return;
+    }
+    zab(paramField, zae, paramBigDecimal);
+  }
+  
+  protected void zab(Field<?, ?> paramField, String paramString, BigDecimal paramBigDecimal)
+  {
+    throw new UnsupportedOperationException("BigDecimal not supported");
+  }
+  
+  public final <O> void zac(Field<ArrayList<BigDecimal>, O> paramField, ArrayList<BigDecimal> paramArrayList)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayList);
+      return;
+    }
+    zad(paramField, zae, paramArrayList);
+  }
+  
+  protected void zad(Field<?, ?> paramField, String paramString, ArrayList<BigDecimal> paramArrayList)
+  {
+    throw new UnsupportedOperationException("BigDecimal list not supported");
+  }
+  
+  public final <O> void zae(Field<BigInteger, O> paramField, BigInteger paramBigInteger)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramBigInteger);
+      return;
+    }
+    zaf(paramField, zae, paramBigInteger);
+  }
+  
+  protected void zaf(Field<?, ?> paramField, String paramString, BigInteger paramBigInteger)
+  {
+    throw new UnsupportedOperationException("BigInteger not supported");
+  }
+  
+  public final <O> void zag(Field<ArrayList<BigInteger>, O> paramField, ArrayList<BigInteger> paramArrayList)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayList);
+      return;
+    }
+    zah(paramField, zae, paramArrayList);
+  }
+  
+  protected void zah(Field<?, ?> paramField, String paramString, ArrayList<BigInteger> paramArrayList)
+  {
+    throw new UnsupportedOperationException("BigInteger list not supported");
+  }
+  
+  public final <O> void zai(Field<Boolean, O> paramField, boolean paramBoolean)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, Boolean.valueOf(paramBoolean));
+      return;
+    }
+    setBooleanInternal(paramField, zae, paramBoolean);
+  }
+  
+  public final <O> void zaj(Field<ArrayList<Boolean>, O> paramField, ArrayList<Boolean> paramArrayList)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayList);
+      return;
+    }
+    zak(paramField, zae, paramArrayList);
+  }
+  
+  protected void zak(Field<?, ?> paramField, String paramString, ArrayList<Boolean> paramArrayList)
+  {
+    throw new UnsupportedOperationException("Boolean list not supported");
+  }
+  
+  public final <O> void zal(Field<byte[], O> paramField, byte[] paramArrayOfByte)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayOfByte);
+      return;
+    }
+    setDecodedBytesInternal(paramField, zae, paramArrayOfByte);
+  }
+  
+  public final <O> void zam(Field<Double, O> paramField, double paramDouble)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, Double.valueOf(paramDouble));
+      return;
+    }
+    zan(paramField, zae, paramDouble);
+  }
+  
+  protected void zan(Field<?, ?> paramField, String paramString, double paramDouble)
+  {
+    throw new UnsupportedOperationException("Double not supported");
+  }
+  
+  public final <O> void zao(Field<ArrayList<Double>, O> paramField, ArrayList<Double> paramArrayList)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayList);
+      return;
+    }
+    zap(paramField, zae, paramArrayList);
+  }
+  
+  protected void zap(Field<?, ?> paramField, String paramString, ArrayList<Double> paramArrayList)
+  {
+    throw new UnsupportedOperationException("Double list not supported");
+  }
+  
+  public final <O> void zaq(Field<Float, O> paramField, float paramFloat)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, Float.valueOf(paramFloat));
+      return;
+    }
+    zar(paramField, zae, paramFloat);
+  }
+  
+  protected void zar(Field<?, ?> paramField, String paramString, float paramFloat)
+  {
+    throw new UnsupportedOperationException("Float not supported");
+  }
+  
+  public final <O> void zas(Field<ArrayList<Float>, O> paramField, ArrayList<Float> paramArrayList)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayList);
+      return;
+    }
+    zat(paramField, zae, paramArrayList);
+  }
+  
+  protected void zat(Field<?, ?> paramField, String paramString, ArrayList<Float> paramArrayList)
+  {
+    throw new UnsupportedOperationException("Float list not supported");
+  }
+  
+  public final <O> void zau(Field<Integer, O> paramField, int paramInt)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, Integer.valueOf(paramInt));
+      return;
+    }
+    setIntegerInternal(paramField, zae, paramInt);
+  }
+  
+  public final <O> void zav(Field<ArrayList<Integer>, O> paramField, ArrayList<Integer> paramArrayList)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayList);
+      return;
+    }
+    zaw(paramField, zae, paramArrayList);
+  }
+  
+  protected void zaw(Field<?, ?> paramField, String paramString, ArrayList<Integer> paramArrayList)
+  {
+    throw new UnsupportedOperationException("Integer list not supported");
+  }
+  
+  public final <O> void zax(Field<Long, O> paramField, long paramLong)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, Long.valueOf(paramLong));
+      return;
+    }
+    setLongInternal(paramField, zae, paramLong);
+  }
+  
+  public final <O> void zay(Field<ArrayList<Long>, O> paramField, ArrayList<Long> paramArrayList)
+  {
+    if (Field.zac(paramField) != null)
+    {
+      zaE(paramField, paramArrayList);
+      return;
+    }
+    zaz(paramField, zae, paramArrayList);
+  }
+  
+  protected void zaz(Field<?, ?> paramField, String paramString, ArrayList<Long> paramArrayList)
+  {
+    throw new UnsupportedOperationException("Long list not supported");
+  }
+  
+  @KeepForSdk
+  @ShowFirstParty
+  @SafeParcelable.Class(creator="FieldCreator")
+  @VisibleForTesting
+  public static class Field<I, O>
+    extends AbstractSafeParcelable
+  {
+    public static final zaj CREATOR = new zaj();
+    @SafeParcelable.Field(getter="getTypeIn", id=2)
+    protected final int zaa;
+    @SafeParcelable.Field(getter="isTypeInArray", id=3)
+    protected final boolean zab;
+    @SafeParcelable.Field(getter="getTypeOut", id=4)
+    protected final int zac;
+    @SafeParcelable.Field(getter="isTypeOutArray", id=5)
+    protected final boolean zad;
+    @SafeParcelable.Field(getter="getOutputFieldName", id=6)
+    protected final String zae;
+    @SafeParcelable.Field(getter="getSafeParcelableFieldId", id=7)
+    protected final int zaf;
+    protected final Class<? extends FastJsonResponse> zag;
+    @SafeParcelable.Field(getter="getConcreteTypeName", id=8)
+    protected final String zah;
+    @SafeParcelable.VersionField(getter="getVersionCode", id=1)
+    private final int zai;
+    private zan zaj;
+    @SafeParcelable.Field(getter="getWrappedConverter", id=9, type="com.google.android.gms.common.server.converter.ConverterWrapper")
+    private FastJsonResponse.FieldConverter<I, O> zak;
+    
+    @SafeParcelable.Constructor
+    Field(@SafeParcelable.Param(id=1) int paramInt1, @SafeParcelable.Param(id=2) int paramInt2, @SafeParcelable.Param(id=3) boolean paramBoolean1, @SafeParcelable.Param(id=4) int paramInt3, @SafeParcelable.Param(id=5) boolean paramBoolean2, @SafeParcelable.Param(id=6) String paramString1, @SafeParcelable.Param(id=7) int paramInt4, @SafeParcelable.Param(id=8) String paramString2, @SafeParcelable.Param(id=9) zaa paramZaa)
+    {
+      zai = paramInt1;
+      zaa = paramInt2;
+      zab = paramBoolean1;
+      zac = paramInt3;
+      zad = paramBoolean2;
+      zae = paramString1;
+      zaf = paramInt4;
+      if (paramString2 == null)
+      {
+        zag = null;
+        zah = null;
+      }
+      else
+      {
+        zag = SafeParcelResponse.class;
+        zah = paramString2;
+      }
+      if (paramZaa == null)
+      {
+        zak = null;
+        return;
+      }
+      zak = paramZaa.zab();
+    }
+    
+    protected Field(int paramInt1, boolean paramBoolean1, int paramInt2, boolean paramBoolean2, String paramString, int paramInt3, Class<? extends FastJsonResponse> paramClass, FastJsonResponse.FieldConverter<I, O> paramFieldConverter)
+    {
+      zai = 1;
+      zaa = paramInt1;
+      zab = paramBoolean1;
+      zac = paramInt2;
+      zad = paramBoolean2;
+      zae = paramString;
+      zaf = paramInt3;
+      zag = paramClass;
+      if (paramClass == null) {
+        zah = null;
+      } else {
+        zah = paramClass.getCanonicalName();
+      }
+      zak = paramFieldConverter;
+    }
+    
+    @KeepForSdk
+    @VisibleForTesting
+    public static Field<byte[], byte[]> forBase64(String paramString, int paramInt)
+    {
+      return new Field(8, false, 8, false, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    public static Field<Boolean, Boolean> forBoolean(String paramString, int paramInt)
+    {
+      return new Field(6, false, 6, false, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    public static <T extends FastJsonResponse> Field<T, T> forConcreteType(String paramString, int paramInt, Class<T> paramClass)
+    {
+      return new Field(11, false, 11, false, paramString, paramInt, paramClass, null);
+    }
+    
+    @KeepForSdk
+    public static <T extends FastJsonResponse> Field<ArrayList<T>, ArrayList<T>> forConcreteTypeArray(String paramString, int paramInt, Class<T> paramClass)
+    {
+      return new Field(11, true, 11, true, paramString, paramInt, paramClass, null);
+    }
+    
+    @KeepForSdk
+    public static Field<Double, Double> forDouble(String paramString, int paramInt)
+    {
+      return new Field(4, false, 4, false, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    public static Field<Float, Float> forFloat(String paramString, int paramInt)
+    {
+      return new Field(3, false, 3, false, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    @VisibleForTesting
+    public static Field<Integer, Integer> forInteger(String paramString, int paramInt)
+    {
+      return new Field(0, false, 0, false, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    public static Field<Long, Long> forLong(String paramString, int paramInt)
+    {
+      return new Field(2, false, 2, false, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    public static Field<String, String> forString(String paramString, int paramInt)
+    {
+      return new Field(7, false, 7, false, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    public static Field<HashMap<String, String>, HashMap<String, String>> forStringMap(String paramString, int paramInt)
+    {
+      return new Field(10, false, 10, false, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    public static Field<ArrayList<String>, ArrayList<String>> forStrings(String paramString, int paramInt)
+    {
+      return new Field(7, true, 7, true, paramString, paramInt, null, null);
+    }
+    
+    @KeepForSdk
+    public static Field withConverter(String paramString, int paramInt, FastJsonResponse.FieldConverter<?, ?> paramFieldConverter, boolean paramBoolean)
+    {
+      paramFieldConverter.zaa();
+      paramFieldConverter.zab();
+      return new Field(7, paramBoolean, 0, false, paramString, paramInt, null, paramFieldConverter);
+    }
+    
+    @KeepForSdk
+    public int getSafeParcelableFieldId()
+    {
+      return zaf;
+    }
+    
+    public final String toString()
+    {
+      Objects.ToStringHelper localToStringHelper = Objects.toStringHelper(this).add("versionCode", Integer.valueOf(zai)).add("typeIn", Integer.valueOf(zaa)).add("typeInArray", Boolean.valueOf(zab)).add("typeOut", Integer.valueOf(zac)).add("typeOutArray", Boolean.valueOf(zad)).add("outputFieldName", zae).add("safeParcelFieldId", Integer.valueOf(zaf)).add("concreteTypeName", zag());
+      Object localObject = zag;
+      if (localObject != null) {
+        localToStringHelper.add("concreteType.class", ((Class)localObject).getCanonicalName());
+      }
+      localObject = zak;
+      if (localObject != null) {
+        localToStringHelper.add("converterName", localObject.getClass().getCanonicalName());
+      }
+      return localToStringHelper.toString();
+    }
+    
+    public final void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+      SafeParcelWriter.writeInt(paramParcel, 1, zai);
+      SafeParcelWriter.writeInt(paramParcel, 2, zaa);
+      SafeParcelWriter.writeBoolean(paramParcel, 3, zab);
+      SafeParcelWriter.writeInt(paramParcel, 4, zac);
+      SafeParcelWriter.writeBoolean(paramParcel, 5, zad);
+      SafeParcelWriter.writeString(paramParcel, 6, zae, false);
+      SafeParcelWriter.writeInt(paramParcel, 7, getSafeParcelableFieldId());
+      SafeParcelWriter.writeString(paramParcel, 8, zag(), false);
+      SafeParcelWriter.writeParcelable(paramParcel, 9, zaa(), paramInt, false);
+      SafeParcelWriter.finishObjectHeader(paramParcel, i);
+    }
+    
+    final zaa zaa()
+    {
+      FastJsonResponse.FieldConverter localFieldConverter = zak;
+      if (localFieldConverter == null) {
+        return null;
+      }
+      return zaa.zaa(localFieldConverter);
+    }
+    
+    public final Field<I, O> zab()
+    {
+      return new Field(zai, zaa, zab, zac, zad, zae, zaf, zah, zaa());
+    }
+    
+    public final FastJsonResponse zad()
+      throws InstantiationException, IllegalAccessException
+    {
+      Preconditions.checkNotNull(zag);
+      Class localClass = zag;
+      if (localClass == SafeParcelResponse.class)
+      {
+        Preconditions.checkNotNull(zah);
+        Preconditions.checkNotNull(zaj, "The field mapping dictionary must be set if the concrete type is a SafeParcelResponse object.");
+        return new SafeParcelResponse(zaj, zah);
+      }
+      return (FastJsonResponse)localClass.newInstance();
+    }
+    
+    public final O zae(I paramI)
+    {
+      Preconditions.checkNotNull(zak);
+      return Preconditions.checkNotNull(zak.zac(paramI));
+    }
+    
+    public final I zaf(O paramO)
+    {
+      Preconditions.checkNotNull(zak);
+      return zak.zad(paramO);
+    }
+    
+    final String zag()
+    {
+      String str2 = zah;
+      String str1 = str2;
+      if (str2 == null) {
+        str1 = null;
+      }
+      return str1;
+    }
+    
+    public final Map<String, Field<?, ?>> zah()
+    {
+      Preconditions.checkNotNull(zah);
+      Preconditions.checkNotNull(zaj);
+      return (Map)Preconditions.checkNotNull(zaj.zab(zah));
+    }
+    
+    public final void zai(zan paramZan)
+    {
+      zaj = paramZan;
+    }
+    
+    public final boolean zaj()
+    {
+      return zak != null;
+    }
+  }
+  
+  @ShowFirstParty
+  public static abstract interface FieldConverter<I, O>
+  {
+    public abstract int zaa();
+    
+    public abstract int zab();
+    
+    public abstract O zac(I paramI);
+    
+    public abstract I zad(O paramO);
+  }
+}

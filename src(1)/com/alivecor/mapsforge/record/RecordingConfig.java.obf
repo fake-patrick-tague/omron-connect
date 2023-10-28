@@ -1,0 +1,108 @@
+package com.alivecor.ecg.record;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import com.alivecor.ecg.core.model.b;
+import com.alivecor.ecg.core.model.c;
+import java.util.Objects;
+
+public final class RecordingConfig
+  implements Parcelable
+{
+  public static final Parcelable.Creator<RecordingConfig> CREATOR = new Parcelable.Creator()
+  {
+    public RecordingConfig createFromParcel(Parcel paramAnonymousParcel)
+    {
+      return new RecordingConfig(paramAnonymousParcel);
+    }
+    
+    public RecordingConfig[] newArray(int paramAnonymousInt)
+    {
+      return new RecordingConfig[paramAnonymousInt];
+    }
+  };
+  public final b deviceLeads;
+  public final boolean restrictTriangleConnection = false;
+  public final c selectedDevice;
+  
+  protected RecordingConfig(Parcel paramParcel)
+  {
+    int i = paramParcel.readInt();
+    if (i >= 0) {
+      selectedDevice = c.values()[i];
+    } else {
+      selectedDevice = null;
+    }
+    i = paramParcel.readInt();
+    if (i > 0)
+    {
+      deviceLeads = b.values()[i];
+      return;
+    }
+    deviceLeads = null;
+  }
+  
+  public RecordingConfig(c paramC, b paramB, boolean paramBoolean)
+  {
+    selectedDevice = paramC;
+    deviceLeads = paramB;
+  }
+  
+  public int describeContents()
+  {
+    return 0;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (paramObject != null)
+    {
+      if (RecordingConfig.class != paramObject.getClass()) {
+        return false;
+      }
+      paramObject = (RecordingConfig)paramObject;
+      return (selectedDevice == selectedDevice) && (deviceLeads == deviceLeads);
+    }
+    return false;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hash(new Object[] { selectedDevice, deviceLeads, Boolean.FALSE });
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("RecordingConfig{selectedDevice=");
+    localStringBuilder.append(selectedDevice);
+    localStringBuilder.append(", deviceLeads=");
+    localStringBuilder.append(deviceLeads);
+    localStringBuilder.append(", restrictTriangleConnection=");
+    localStringBuilder.append(false);
+    localStringBuilder.append('}');
+    return localStringBuilder.toString();
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramParcel.writeByte((byte)0);
+    Object localObject = selectedDevice;
+    if (localObject != null) {
+      paramParcel.writeInt(((Enum)localObject).ordinal());
+    } else {
+      paramParcel.writeInt(-1);
+    }
+    localObject = deviceLeads;
+    if (localObject != null)
+    {
+      paramParcel.writeInt(((Enum)localObject).ordinal());
+      return;
+    }
+    paramParcel.writeInt(-1);
+  }
+}

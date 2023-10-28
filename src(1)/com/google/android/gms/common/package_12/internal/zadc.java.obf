@@ -1,0 +1,41 @@
+package com.google.android.gms.common.api.internal;
+
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+public final class zadc
+{
+  public static final Status zaa = new Status(8, "The connection to Google Play services was lost");
+  @VisibleForTesting
+  final Set<BasePendingResult<?>> zab = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap()));
+  private final zadb zac = new zadb(this);
+  
+  public zadc() {}
+  
+  final void zaa(BasePendingResult<? extends Result> paramBasePendingResult)
+  {
+    zab.add(paramBasePendingResult);
+    paramBasePendingResult.zan(zac);
+  }
+  
+  public final void zab()
+  {
+    Object localObject1 = zab;
+    int i = 0;
+    localObject1 = (BasePendingResult[])((Set)localObject1).toArray(new BasePendingResult[0]);
+    int j = localObject1.length;
+    while (i < j)
+    {
+      Object localObject2 = localObject1[i];
+      localObject2.zan(null);
+      if (localObject2.zam()) {
+        zab.remove(localObject2);
+      }
+      i += 1;
+    }
+  }
+}

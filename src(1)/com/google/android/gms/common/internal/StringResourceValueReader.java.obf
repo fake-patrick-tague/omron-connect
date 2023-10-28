@@ -1,0 +1,31 @@
+package com.google.android.gms.common.internal;
+
+import android.content.Context;
+import android.content.res.Resources;
+import com.google.android.gms.common.R.string;
+import com.google.android.gms.common.annotation.KeepForSdk;
+
+@KeepForSdk
+public class StringResourceValueReader
+{
+  private final Resources zza;
+  private final String zzb;
+  
+  public StringResourceValueReader(Context paramContext)
+  {
+    Preconditions.checkNotNull(paramContext);
+    paramContext = paramContext.getResources();
+    zza = paramContext;
+    zzb = paramContext.getResourcePackageName(R.string.common_google_play_services_unknown_issue);
+  }
+  
+  @KeepForSdk
+  public String getString(String paramString)
+  {
+    int i = zza.getIdentifier(paramString, "string", zzb);
+    if (i == 0) {
+      return null;
+    }
+    return zza.getString(i);
+  }
+}

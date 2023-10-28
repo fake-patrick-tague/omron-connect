@@ -1,0 +1,329 @@
+package androidx.core.graphics;
+
+import android.graphics.Typeface;
+import android.os.ParcelFileDescriptor;
+import android.system.ErrnoException;
+import android.system.Os;
+import android.system.OsConstants;
+import android.system.StructStat;
+import android.util.Log;
+import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+class f
+  extends k
+{
+  private static Class<?> b;
+  private static Constructor<?> c;
+  private static Method d;
+  private static Method e;
+  private static boolean f = false;
+  
+  f() {}
+  
+  private static boolean l(Object paramObject, String paramString, int paramInt, boolean paramBoolean)
+  {
+    
+    try
+    {
+      paramBoolean = ((Boolean)d.invoke(paramObject, new Object[] { paramString, Integer.valueOf(paramInt), Boolean.valueOf(paramBoolean) })).booleanValue();
+      return paramBoolean;
+    }
+    catch (InvocationTargetException paramObject) {}catch (IllegalAccessException paramObject) {}
+    throw new RuntimeException(paramObject);
+  }
+  
+  private static Typeface m(Object paramObject)
+  {
+    
+    try
+    {
+      Object localObject = Array.newInstance(b, 1);
+      Array.set(localObject, 0, paramObject);
+      paramObject = (Typeface)e.invoke(null, new Object[] { localObject });
+      return paramObject;
+    }
+    catch (InvocationTargetException paramObject) {}catch (IllegalAccessException paramObject) {}
+    throw new RuntimeException(paramObject);
+  }
+  
+  private File n(ParcelFileDescriptor paramParcelFileDescriptor)
+  {
+    try
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("/proc/self/fd/");
+      localStringBuilder.append(paramParcelFileDescriptor.getFd());
+      paramParcelFileDescriptor = Os.readlink(localStringBuilder.toString());
+      if (OsConstants.S_ISREG(statst_mode))
+      {
+        paramParcelFileDescriptor = new File(paramParcelFileDescriptor);
+        return paramParcelFileDescriptor;
+      }
+      return null;
+    }
+    catch (ErrnoException paramParcelFileDescriptor) {}
+    return null;
+  }
+  
+  private static void o()
+  {
+    if (f) {
+      return;
+    }
+    f = true;
+    Object localObject4 = null;
+    try
+    {
+      localObject2 = Class.forName("android.graphics.FontFamily");
+      Constructor localConstructor = ((Class)localObject2).getConstructor(new Class[0]);
+      localObject3 = ((Class)localObject2).getMethod("addFontWeightStyle", new Class[] { String.class, Integer.TYPE, Boolean.TYPE });
+      localMethod = Typeface.class.getMethod("createFromFamiliesWithDefault", new Class[] { Array.newInstance((Class)localObject2, 1).getClass() });
+    }
+    catch (NoSuchMethodException localNoSuchMethodException) {}catch (ClassNotFoundException localClassNotFoundException) {}
+    Log.e("TypefaceCompatApi21Impl", localClassNotFoundException.getClass().getName(), localClassNotFoundException);
+    Method localMethod = null;
+    Object localObject1 = localMethod;
+    Object localObject3 = localObject1;
+    Object localObject2 = localObject1;
+    localObject1 = localObject4;
+    c = localObject1;
+    b = (Class)localObject2;
+    d = (Method)localObject3;
+    e = localMethod;
+  }
+  
+  private static Object p()
+  {
+    
+    try
+    {
+      Object localObject = c.newInstance(new Object[0]);
+      return localObject;
+    }
+    catch (InvocationTargetException localInvocationTargetException) {}catch (InstantiationException localInstantiationException) {}catch (IllegalAccessException localIllegalAccessException) {}
+    throw new RuntimeException(localIllegalAccessException);
+  }
+  
+  /* Error */
+  public Typeface b(android.content.Context paramContext, androidx.core.content.g.g.c paramC, android.content.res.Resources paramResources, int paramInt)
+  {
+    // Byte code:
+    //   0: invokestatic 192	androidx/core/graphics/f:p	()Ljava/lang/Object;
+    //   3: astore 7
+    //   5: aload_2
+    //   6: invokevirtual 198	androidx/core/content/g/g$c:a	()[Landroidx/core/content/g/g$d;
+    //   9: astore 8
+    //   11: aload 8
+    //   13: arraylength
+    //   14: istore 5
+    //   16: iconst_0
+    //   17: istore 4
+    //   19: iload 4
+    //   21: iload 5
+    //   23: if_icmpge +107 -> 130
+    //   26: aload 8
+    //   28: iload 4
+    //   30: aaload
+    //   31: astore 9
+    //   33: aload_1
+    //   34: invokestatic 203	androidx/core/graphics/l:e	(Landroid/content/Context;)Ljava/io/File;
+    //   37: astore_2
+    //   38: aload_2
+    //   39: ifnonnull +5 -> 44
+    //   42: aconst_null
+    //   43: areturn
+    //   44: aload_2
+    //   45: aload_3
+    //   46: aload 9
+    //   48: invokevirtual 207	androidx/core/content/g/g$d:b	()I
+    //   51: invokestatic 210	androidx/core/graphics/l:c	(Ljava/io/File;Landroid/content/res/Resources;I)Z
+    //   54: istore 6
+    //   56: iload 6
+    //   58: ifne +10 -> 68
+    //   61: aload_2
+    //   62: invokevirtual 213	java/io/File:delete	()Z
+    //   65: pop
+    //   66: aconst_null
+    //   67: areturn
+    //   68: aload 7
+    //   70: aload_2
+    //   71: invokevirtual 216	java/io/File:getPath	()Ljava/lang/String;
+    //   74: aload 9
+    //   76: invokevirtual 218	androidx/core/content/g/g$d:e	()I
+    //   79: aload 9
+    //   81: invokevirtual 220	androidx/core/content/g/g$d:f	()Z
+    //   84: invokestatic 222	androidx/core/graphics/f:l	(Ljava/lang/Object;Ljava/lang/String;IZ)Z
+    //   87: istore 6
+    //   89: iload 6
+    //   91: ifne +10 -> 101
+    //   94: aload_2
+    //   95: invokevirtual 213	java/io/File:delete	()Z
+    //   98: pop
+    //   99: aconst_null
+    //   100: areturn
+    //   101: aload_2
+    //   102: invokevirtual 213	java/io/File:delete	()Z
+    //   105: pop
+    //   106: iload 4
+    //   108: iconst_1
+    //   109: iadd
+    //   110: istore 4
+    //   112: goto -93 -> 19
+    //   115: astore_1
+    //   116: aload_2
+    //   117: invokevirtual 213	java/io/File:delete	()Z
+    //   120: pop
+    //   121: aload_1
+    //   122: athrow
+    //   123: aload_2
+    //   124: invokevirtual 213	java/io/File:delete	()Z
+    //   127: pop
+    //   128: aconst_null
+    //   129: areturn
+    //   130: aload 7
+    //   132: invokestatic 224	androidx/core/graphics/f:m	(Ljava/lang/Object;)Landroid/graphics/Typeface;
+    //   135: areturn
+    //   136: astore_1
+    //   137: goto -14 -> 123
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	140	0	this	f
+    //   0	140	1	paramContext	android.content.Context
+    //   0	140	2	paramC	androidx.core.content.g.g.c
+    //   0	140	3	paramResources	android.content.res.Resources
+    //   0	140	4	paramInt	int
+    //   14	10	5	i	int
+    //   54	36	6	bool	boolean
+    //   3	128	7	localObject	Object
+    //   9	18	8	arrayOfD	androidx.core.content.g.g.d[]
+    //   31	49	9	localD	androidx.core.content.g.g.d
+    // Exception table:
+    //   from	to	target	type
+    //   44	56	115	finally
+    //   68	89	115	finally
+    //   44	56	136	java/lang/RuntimeException
+    //   68	89	136	java/lang/RuntimeException
+  }
+  
+  /* Error */
+  public Typeface c(android.content.Context paramContext, android.os.CancellationSignal paramCancellationSignal, c.h.n.g.b[] paramArrayOfB, int paramInt)
+  {
+    // Byte code:
+    //   0: aload_3
+    //   1: arraylength
+    //   2: iconst_1
+    //   3: if_icmpge +5 -> 8
+    //   6: aconst_null
+    //   7: areturn
+    //   8: aload_0
+    //   9: aload_3
+    //   10: iload 4
+    //   12: invokevirtual 231	androidx/core/graphics/k:i	([Lc/h/n/g$b;I)Lc/h/n/g$b;
+    //   15: astore_3
+    //   16: aload_1
+    //   17: invokevirtual 237	android/content/Context:getContentResolver	()Landroid/content/ContentResolver;
+    //   20: astore 5
+    //   22: aload 5
+    //   24: aload_3
+    //   25: invokevirtual 242	c/h/n/g$b:d	()Landroid/net/Uri;
+    //   28: ldc -12
+    //   30: aload_2
+    //   31: invokevirtual 250	android/content/ContentResolver:openFileDescriptor	(Landroid/net/Uri;Ljava/lang/String;Landroid/os/CancellationSignal;)Landroid/os/ParcelFileDescriptor;
+    //   34: astore_2
+    //   35: aload_2
+    //   36: ifnonnull +13 -> 49
+    //   39: aload_2
+    //   40: ifnull +7 -> 47
+    //   43: aload_2
+    //   44: invokevirtual 253	android/os/ParcelFileDescriptor:close	()V
+    //   47: aconst_null
+    //   48: areturn
+    //   49: aload_0
+    //   50: aload_2
+    //   51: invokespecial 255	androidx/core/graphics/f:n	(Landroid/os/ParcelFileDescriptor;)Ljava/io/File;
+    //   54: astore_3
+    //   55: aload_3
+    //   56: ifnull +24 -> 80
+    //   59: aload_3
+    //   60: invokevirtual 258	java/io/File:canRead	()Z
+    //   63: ifne +6 -> 69
+    //   66: goto +14 -> 80
+    //   69: aload_3
+    //   70: invokestatic 262	android/graphics/Typeface:createFromFile	(Ljava/io/File;)Landroid/graphics/Typeface;
+    //   73: astore_1
+    //   74: aload_2
+    //   75: invokevirtual 253	android/os/ParcelFileDescriptor:close	()V
+    //   78: aload_1
+    //   79: areturn
+    //   80: new 264	java/io/FileInputStream
+    //   83: dup
+    //   84: aload_2
+    //   85: invokevirtual 268	android/os/ParcelFileDescriptor:getFileDescriptor	()Ljava/io/FileDescriptor;
+    //   88: invokespecial 271	java/io/FileInputStream:<init>	(Ljava/io/FileDescriptor;)V
+    //   91: astore_3
+    //   92: aload_0
+    //   93: aload_1
+    //   94: aload_3
+    //   95: invokespecial 274	androidx/core/graphics/k:d	(Landroid/content/Context;Ljava/io/InputStream;)Landroid/graphics/Typeface;
+    //   98: astore_1
+    //   99: aload_3
+    //   100: invokevirtual 275	java/io/FileInputStream:close	()V
+    //   103: aload_2
+    //   104: invokevirtual 253	android/os/ParcelFileDescriptor:close	()V
+    //   107: aload_1
+    //   108: areturn
+    //   109: astore_1
+    //   110: aload_3
+    //   111: invokevirtual 275	java/io/FileInputStream:close	()V
+    //   114: goto +9 -> 123
+    //   117: astore_3
+    //   118: aload_1
+    //   119: aload_3
+    //   120: invokevirtual 280	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   123: aload_1
+    //   124: athrow
+    //   125: astore_1
+    //   126: aload_2
+    //   127: invokevirtual 253	android/os/ParcelFileDescriptor:close	()V
+    //   130: goto +9 -> 139
+    //   133: astore_2
+    //   134: aload_1
+    //   135: aload_2
+    //   136: invokevirtual 280	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   139: aload_1
+    //   140: athrow
+    //   141: astore_1
+    //   142: aconst_null
+    //   143: areturn
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	144	0	this	f
+    //   0	144	1	paramContext	android.content.Context
+    //   0	144	2	paramCancellationSignal	android.os.CancellationSignal
+    //   0	144	3	paramArrayOfB	c.h.n.g.b[]
+    //   0	144	4	paramInt	int
+    //   20	3	5	localContentResolver	android.content.ContentResolver
+    // Exception table:
+    //   from	to	target	type
+    //   92	99	109	finally
+    //   110	114	117	finally
+    //   49	55	125	finally
+    //   59	66	125	finally
+    //   69	74	125	finally
+    //   80	92	125	finally
+    //   99	103	125	finally
+    //   118	123	125	finally
+    //   123	125	125	finally
+    //   126	130	133	finally
+    //   22	35	141	java/io/IOException
+    //   43	47	141	java/io/IOException
+    //   74	78	141	java/io/IOException
+    //   103	107	141	java/io/IOException
+    //   134	139	141	java/io/IOException
+    //   139	141	141	java/io/IOException
+  }
+}

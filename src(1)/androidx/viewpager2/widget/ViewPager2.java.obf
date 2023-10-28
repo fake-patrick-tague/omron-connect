@@ -1,0 +1,1184 @@
+package androidx.viewpager2.widget;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Rect;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.ClassLoaderCreator;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.util.SparseArray;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.BaseSavedState;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
+import androidx.recyclerview.widget.RecyclerView.i;
+import androidx.recyclerview.widget.RecyclerView.l;
+import androidx.recyclerview.widget.RecyclerView.o;
+import androidx.recyclerview.widget.RecyclerView.p;
+import androidx.recyclerview.widget.RecyclerView.u;
+import androidx.recyclerview.widget.RecyclerView.y;
+import androidx.recyclerview.widget.t;
+import androidx.recyclerview.widget.x;
+import c.h.q.f0;
+import c.h.q.p0.c.a;
+import c.h.q.p0.c.b;
+import c.h.q.p0.f;
+import c.h.q.p0.f.a;
+import c.x.a;
+
+public final class ViewPager2
+  extends ViewGroup
+{
+  static boolean b = true;
+  private final Rect c = new Rect();
+  private final Rect d = new Rect();
+  private b e = new b(3);
+  int f;
+  boolean g = false;
+  private RecyclerView.i h = new a();
+  private LinearLayoutManager i;
+  private int j = -1;
+  private Parcelable k;
+  RecyclerView l;
+  private t m;
+  e n;
+  private b o;
+  private c p;
+  private d q;
+  private RecyclerView.l r = null;
+  private boolean s = false;
+  private boolean t = true;
+  private int u = -1;
+  e v;
+  
+  public ViewPager2(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+    b(paramContext, paramAttributeSet);
+  }
+  
+  private RecyclerView.p a()
+  {
+    return new d();
+  }
+  
+  private void b(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    if (b) {
+      localObject = new j();
+    } else {
+      localObject = new f();
+    }
+    v = ((e)localObject);
+    Object localObject = new m(paramContext);
+    l = ((RecyclerView)localObject);
+    ((ViewGroup)localObject).setId(f0.l());
+    l.setDescendantFocusability(131072);
+    localObject = new h(paramContext);
+    i = ((LinearLayoutManager)localObject);
+    l.setLayoutManager((RecyclerView.o)localObject);
+    l.setScrollingTouchSlop(1);
+    l(paramContext, paramAttributeSet);
+    l.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+    l.j(a());
+    paramContext = new e(this);
+    n = paramContext;
+    p = new c(this, paramContext, l);
+    paramContext = new l();
+    m = paramContext;
+    paramContext.b(l);
+    l.l(n);
+    paramContext = new b(3);
+    o = paramContext;
+    n.o(paramContext);
+    paramContext = new b();
+    paramAttributeSet = new c();
+    o.d(paramContext);
+    o.d(paramAttributeSet);
+    v.h(o, l);
+    o.d(e);
+    paramContext = new d(i);
+    q = paramContext;
+    o.d(paramContext);
+    paramContext = l;
+    attachViewToParent(paramContext, 0, paramContext.getLayoutParams());
+  }
+  
+  private void f(RecyclerView.Adapter<?> paramAdapter)
+  {
+    if (paramAdapter != null) {
+      paramAdapter.registerAdapterDataObserver(h);
+    }
+  }
+  
+  private void i()
+  {
+    if (j == -1) {
+      return;
+    }
+    RecyclerView.Adapter localAdapter = getAdapter();
+    if (localAdapter == null) {
+      return;
+    }
+    Parcelable localParcelable = k;
+    if (localParcelable != null)
+    {
+      if ((localAdapter instanceof androidx.viewpager2.adapter.b)) {
+        ((androidx.viewpager2.adapter.b)localAdapter).b(localParcelable);
+      }
+      k = null;
+    }
+    int i1 = Math.max(0, Math.min(j, localAdapter.getItemCount() - 1));
+    f = i1;
+    j = -1;
+    l.l1(i1);
+    v.m();
+  }
+  
+  private void l(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    int[] arrayOfInt = a.g;
+    TypedArray localTypedArray = paramContext.obtainStyledAttributes(paramAttributeSet, arrayOfInt);
+    if (Build.VERSION.SDK_INT >= 29) {
+      saveAttributeDataForStyleable(paramContext, arrayOfInt, paramAttributeSet, localTypedArray, 0, 0);
+    }
+    try
+    {
+      setOrientation(localTypedArray.getInt(a.h, 0));
+      return;
+    }
+    finally
+    {
+      localTypedArray.recycle();
+    }
+  }
+  
+  private void m(RecyclerView.Adapter<?> paramAdapter)
+  {
+    if (paramAdapter != null) {
+      paramAdapter.unregisterAdapterDataObserver(h);
+    }
+  }
+  
+  public boolean c()
+  {
+    return p.a();
+  }
+  
+  public boolean canScrollHorizontally(int paramInt)
+  {
+    return l.canScrollHorizontally(paramInt);
+  }
+  
+  public boolean canScrollVertically(int paramInt)
+  {
+    return l.canScrollVertically(paramInt);
+  }
+  
+  boolean d()
+  {
+    return i.w0() == 1;
+  }
+  
+  protected void dispatchRestoreInstanceState(SparseArray<Parcelable> paramSparseArray)
+  {
+    Parcelable localParcelable = (Parcelable)paramSparseArray.get(getId());
+    if ((localParcelable instanceof SavedState))
+    {
+      int i1 = b;
+      paramSparseArray.put(l.getId(), paramSparseArray.get(i1));
+      paramSparseArray.remove(i1);
+    }
+    super.dispatchRestoreInstanceState(paramSparseArray);
+    i();
+  }
+  
+  public boolean e()
+  {
+    return t;
+  }
+  
+  public void g(i paramI)
+  {
+    e.d(paramI);
+  }
+  
+  public CharSequence getAccessibilityClassName()
+  {
+    if (v.a()) {
+      return v.g();
+    }
+    return super.getAccessibilityClassName();
+  }
+  
+  public RecyclerView.Adapter getAdapter()
+  {
+    return l.getAdapter();
+  }
+  
+  public int getCurrentItem()
+  {
+    return f;
+  }
+  
+  public int getItemDecorationCount()
+  {
+    return l.getItemDecorationCount();
+  }
+  
+  public int getOffscreenPageLimit()
+  {
+    return u;
+  }
+  
+  public int getOrientation()
+  {
+    return i.K2();
+  }
+  
+  int getPageSize()
+  {
+    RecyclerView localRecyclerView = l;
+    int i2;
+    int i1;
+    if (getOrientation() == 0)
+    {
+      i2 = localRecyclerView.getWidth() - localRecyclerView.getPaddingLeft();
+      i1 = localRecyclerView.getPaddingRight();
+    }
+    else
+    {
+      i2 = localRecyclerView.getHeight() - localRecyclerView.getPaddingTop();
+      i1 = localRecyclerView.getPaddingBottom();
+    }
+    return i2 - i1;
+  }
+  
+  public int getScrollState()
+  {
+    return n.h();
+  }
+  
+  public void h()
+  {
+    if (q.d() == null) {
+      return;
+    }
+    double d1 = n.g();
+    int i1 = (int)d1;
+    float f1 = (float)(d1 - i1);
+    int i2 = Math.round(getPageSize() * f1);
+    q.b(i1, f1, i2);
+  }
+  
+  public void j(int paramInt, boolean paramBoolean)
+  {
+    if (!c())
+    {
+      k(paramInt, paramBoolean);
+      return;
+    }
+    throw new IllegalStateException("Cannot change current item when ViewPager2 is fake dragging");
+  }
+  
+  void k(int paramInt, boolean paramBoolean)
+  {
+    Object localObject = getAdapter();
+    if (localObject == null)
+    {
+      if (j != -1) {
+        j = Math.max(paramInt, 0);
+      }
+      return;
+    }
+    if (((RecyclerView.Adapter)localObject).getItemCount() <= 0) {
+      return;
+    }
+    int i1 = Math.min(Math.max(paramInt, 0), ((RecyclerView.Adapter)localObject).getItemCount() - 1);
+    if ((i1 == f) && (n.j())) {
+      return;
+    }
+    paramInt = f;
+    if ((i1 == paramInt) && (paramBoolean)) {
+      return;
+    }
+    double d1 = paramInt;
+    f = i1;
+    v.q();
+    if (!n.j()) {
+      d1 = n.g();
+    }
+    n.m(i1, paramBoolean);
+    if (!paramBoolean)
+    {
+      l.l1(i1);
+      return;
+    }
+    double d2 = i1;
+    if (Math.abs(d2 - d1) > 3.0D)
+    {
+      localObject = l;
+      if (d2 > d1) {
+        paramInt = i1 - 3;
+      } else {
+        paramInt = i1 + 3;
+      }
+      ((RecyclerView)localObject).l1(paramInt);
+      localObject = l;
+      ((ViewGroup)localObject).post(new n(i1, (RecyclerView)localObject));
+      return;
+    }
+    l.t1(i1);
+  }
+  
+  public void n(i paramI)
+  {
+    e.e(paramI);
+  }
+  
+  void o()
+  {
+    Object localObject = m;
+    if (localObject != null)
+    {
+      localObject = ((t)localObject).f(i);
+      if (localObject == null) {
+        return;
+      }
+      int i1 = i.A0((View)localObject);
+      if ((i1 != f) && (getScrollState() == 0)) {
+        o.c(i1);
+      }
+      g = false;
+      return;
+    }
+    throw new IllegalStateException("Design assumption violated.");
+  }
+  
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+  {
+    super.onInitializeAccessibilityNodeInfo(paramAccessibilityNodeInfo);
+    v.i(paramAccessibilityNodeInfo);
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    int i1 = l.getMeasuredWidth();
+    int i2 = l.getMeasuredHeight();
+    c.left = getPaddingLeft();
+    c.right = (paramInt3 - paramInt1 - getPaddingRight());
+    c.top = getPaddingTop();
+    c.bottom = (paramInt4 - paramInt2 - getPaddingBottom());
+    Gravity.apply(8388659, i1, i2, c, d);
+    RecyclerView localRecyclerView = l;
+    Rect localRect = d;
+    localRecyclerView.layout(left, top, right, bottom);
+    if (g) {
+      o();
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    measureChild(l, paramInt1, paramInt2);
+    int i5 = l.getMeasuredWidth();
+    int i2 = l.getMeasuredHeight();
+    int i1 = l.getMeasuredState();
+    int i6 = getPaddingLeft();
+    int i7 = getPaddingRight();
+    int i3 = getPaddingTop();
+    int i4 = getPaddingBottom();
+    i5 = Math.max(i5 + (i6 + i7), getSuggestedMinimumWidth());
+    i2 = Math.max(i2 + (i3 + i4), getSuggestedMinimumHeight());
+    setMeasuredDimension(ViewGroup.resolveSizeAndState(i5, paramInt1, i1), ViewGroup.resolveSizeAndState(i2, paramInt2, i1 << 16));
+  }
+  
+  protected void onRestoreInstanceState(Parcelable paramParcelable)
+  {
+    if (!(paramParcelable instanceof SavedState))
+    {
+      super.onRestoreInstanceState(paramParcelable);
+      return;
+    }
+    paramParcelable = (SavedState)paramParcelable;
+    super.onRestoreInstanceState(paramParcelable.getSuperState());
+    j = c;
+    k = d;
+  }
+  
+  protected Parcelable onSaveInstanceState()
+  {
+    SavedState localSavedState = new SavedState(super.onSaveInstanceState());
+    b = l.getId();
+    int i2 = j;
+    int i1 = i2;
+    if (i2 == -1) {
+      i1 = f;
+    }
+    c = i1;
+    Object localObject = k;
+    if (localObject != null)
+    {
+      d = ((Parcelable)localObject);
+      return localSavedState;
+    }
+    localObject = l.getAdapter();
+    if ((localObject instanceof androidx.viewpager2.adapter.b)) {
+      d = ((androidx.viewpager2.adapter.b)localObject).a();
+    }
+    return localSavedState;
+  }
+  
+  public void onViewAdded(View paramView)
+  {
+    paramView = new StringBuilder();
+    paramView.append(ViewPager2.class.getSimpleName());
+    paramView.append(" does not support direct child views");
+    throw new IllegalStateException(paramView.toString());
+  }
+  
+  public boolean performAccessibilityAction(int paramInt, Bundle paramBundle)
+  {
+    if (v.c(paramInt, paramBundle)) {
+      return v.l(paramInt, paramBundle);
+    }
+    return super.performAccessibilityAction(paramInt, paramBundle);
+  }
+  
+  public void setAdapter(RecyclerView.Adapter paramAdapter)
+  {
+    RecyclerView.Adapter localAdapter = l.getAdapter();
+    v.f(localAdapter);
+    m(localAdapter);
+    l.setAdapter(paramAdapter);
+    f = 0;
+    i();
+    v.e(paramAdapter);
+    f(paramAdapter);
+  }
+  
+  public void setCurrentItem(int paramInt)
+  {
+    j(paramInt, true);
+  }
+  
+  public void setLayoutDirection(int paramInt)
+  {
+    super.setLayoutDirection(paramInt);
+    v.p();
+  }
+  
+  public void setOffscreenPageLimit(int paramInt)
+  {
+    if ((paramInt < 1) && (paramInt != -1)) {
+      throw new IllegalArgumentException("Offscreen page limit must be OFFSCREEN_PAGE_LIMIT_DEFAULT or a number > 0");
+    }
+    u = paramInt;
+    l.requestLayout();
+  }
+  
+  public void setOrientation(int paramInt)
+  {
+    i.Y2(paramInt);
+    v.r();
+  }
+  
+  public void setPageTransformer(k paramK)
+  {
+    if (paramK != null)
+    {
+      if (!s)
+      {
+        r = l.getItemAnimator();
+        s = true;
+      }
+      l.setItemAnimator(null);
+    }
+    else if (s)
+    {
+      l.setItemAnimator(r);
+      r = null;
+      s = false;
+    }
+    if (paramK == q.d()) {
+      return;
+    }
+    q.e(paramK);
+    h();
+  }
+  
+  public void setUserInputEnabled(boolean paramBoolean)
+  {
+    t = paramBoolean;
+    v.s();
+  }
+  
+  static class SavedState
+    extends View.BaseSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    int b;
+    int c;
+    Parcelable d;
+    
+    SavedState(Parcel paramParcel)
+    {
+      super();
+      a(paramParcel, null);
+    }
+    
+    SavedState(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      super(paramClassLoader);
+      a(paramParcel, paramClassLoader);
+    }
+    
+    SavedState(Parcelable paramParcelable)
+    {
+      super();
+    }
+    
+    private void a(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      b = paramParcel.readInt();
+      c = paramParcel.readInt();
+      d = paramParcel.readParcelable(paramClassLoader);
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      super.writeToParcel(paramParcel, paramInt);
+      paramParcel.writeInt(b);
+      paramParcel.writeInt(c);
+      paramParcel.writeParcelable(d, paramInt);
+    }
+    
+    static final class a
+      implements Parcelable.ClassLoaderCreator<ViewPager2.SavedState>
+    {
+      a() {}
+      
+      public ViewPager2.SavedState a(Parcel paramParcel)
+      {
+        return b(paramParcel, null);
+      }
+      
+      public ViewPager2.SavedState b(Parcel paramParcel, ClassLoader paramClassLoader)
+      {
+        if (Build.VERSION.SDK_INT >= 24) {
+          return new ViewPager2.SavedState(paramParcel, paramClassLoader);
+        }
+        return new ViewPager2.SavedState(paramParcel);
+      }
+      
+      public ViewPager2.SavedState[] c(int paramInt)
+      {
+        return new ViewPager2.SavedState[paramInt];
+      }
+    }
+  }
+  
+  class a
+    extends ViewPager2.g
+  {
+    a()
+    {
+      super();
+    }
+    
+    public void a()
+    {
+      ViewPager2 localViewPager2 = ViewPager2.this;
+      g = true;
+      n.l();
+    }
+  }
+  
+  class b
+    extends ViewPager2.i
+  {
+    b() {}
+    
+    public void a(int paramInt)
+    {
+      if (paramInt == 0) {
+        o();
+      }
+    }
+    
+    public void c(int paramInt)
+    {
+      ViewPager2 localViewPager2 = ViewPager2.this;
+      if (f != paramInt)
+      {
+        f = paramInt;
+        v.q();
+      }
+    }
+  }
+  
+  class c
+    extends ViewPager2.i
+  {
+    c() {}
+    
+    public void c(int paramInt)
+    {
+      clearFocus();
+      if (hasFocus()) {
+        l.requestFocus(2);
+      }
+    }
+  }
+  
+  class d
+    implements RecyclerView.p
+  {
+    d() {}
+    
+    public void b(View paramView) {}
+    
+    public void d(View paramView)
+    {
+      paramView = (RecyclerView.LayoutParams)paramView.getLayoutParams();
+      if ((width == -1) && (height == -1)) {
+        return;
+      }
+      throw new IllegalStateException("Pages must fill the whole ViewPager2 (use match_parent)");
+    }
+  }
+  
+  private abstract class e
+  {
+    private e() {}
+    
+    boolean a()
+    {
+      return false;
+    }
+    
+    boolean b(int paramInt)
+    {
+      return false;
+    }
+    
+    boolean c(int paramInt, Bundle paramBundle)
+    {
+      return false;
+    }
+    
+    boolean d()
+    {
+      return false;
+    }
+    
+    void e(RecyclerView.Adapter<?> paramAdapter) {}
+    
+    void f(RecyclerView.Adapter<?> paramAdapter) {}
+    
+    String g()
+    {
+      throw new IllegalStateException("Not implemented.");
+    }
+    
+    void h(b paramB, RecyclerView paramRecyclerView) {}
+    
+    void i(AccessibilityNodeInfo paramAccessibilityNodeInfo) {}
+    
+    void j(c.h.q.p0.c paramC) {}
+    
+    boolean k(int paramInt)
+    {
+      throw new IllegalStateException("Not implemented.");
+    }
+    
+    boolean l(int paramInt, Bundle paramBundle)
+    {
+      throw new IllegalStateException("Not implemented.");
+    }
+    
+    void m() {}
+    
+    CharSequence n()
+    {
+      throw new IllegalStateException("Not implemented.");
+    }
+    
+    void o(AccessibilityEvent paramAccessibilityEvent) {}
+    
+    void p() {}
+    
+    void q() {}
+    
+    void r() {}
+    
+    void s() {}
+  }
+  
+  class f
+    extends ViewPager2.e
+  {
+    f()
+    {
+      super(null);
+    }
+    
+    public boolean b(int paramInt)
+    {
+      return ((paramInt == 8192) || (paramInt == 4096)) && (!e());
+    }
+    
+    public boolean d()
+    {
+      return true;
+    }
+    
+    public void j(c.h.q.p0.c paramC)
+    {
+      if (!e())
+      {
+        paramC.Q(c.a.n);
+        paramC.Q(c.a.m);
+        paramC.q0(false);
+      }
+    }
+    
+    public boolean k(int paramInt)
+    {
+      if (b(paramInt)) {
+        return false;
+      }
+      throw new IllegalStateException();
+    }
+    
+    public CharSequence n()
+    {
+      if (d()) {
+        return "androidx.viewpager.widget.ViewPager";
+      }
+      throw new IllegalStateException();
+    }
+  }
+  
+  private static abstract class g
+    extends RecyclerView.i
+  {
+    private g() {}
+    
+    public final void b(int paramInt1, int paramInt2)
+    {
+      a();
+    }
+    
+    public final void c(int paramInt1, int paramInt2, Object paramObject)
+    {
+      a();
+    }
+    
+    public final void d(int paramInt1, int paramInt2)
+    {
+      a();
+    }
+    
+    public final void e(int paramInt1, int paramInt2, int paramInt3)
+    {
+      a();
+    }
+    
+    public final void f(int paramInt1, int paramInt2)
+    {
+      a();
+    }
+  }
+  
+  private class h
+    extends LinearLayoutManager
+  {
+    h(Context paramContext)
+    {
+      super();
+    }
+    
+    public boolean B1(RecyclerView.u paramU, RecyclerView.y paramY, int paramInt, Bundle paramBundle)
+    {
+      if (v.b(paramInt)) {
+        return v.k(paramInt);
+      }
+      return super.B1(paramU, paramY, paramInt, paramBundle);
+    }
+    
+    public boolean N1(RecyclerView paramRecyclerView, View paramView, Rect paramRect, boolean paramBoolean1, boolean paramBoolean2)
+    {
+      return false;
+    }
+    
+    public void h1(RecyclerView.u paramU, RecyclerView.y paramY, c.h.q.p0.c paramC)
+    {
+      super.h1(paramU, paramY, paramC);
+      v.j(paramC);
+    }
+    
+    protected void j2(RecyclerView.y paramY, int[] paramArrayOfInt)
+    {
+      int i = getOffscreenPageLimit();
+      if (i == -1)
+      {
+        super.j2(paramY, paramArrayOfInt);
+        return;
+      }
+      i = getPageSize() * i;
+      paramArrayOfInt[0] = i;
+      paramArrayOfInt[1] = i;
+    }
+  }
+  
+  public static abstract class i
+  {
+    public i() {}
+    
+    public void a(int paramInt) {}
+    
+    public void b(int paramInt1, float paramFloat, int paramInt2) {}
+    
+    public void c(int paramInt) {}
+  }
+  
+  class j
+    extends ViewPager2.e
+  {
+    private final f b = new a();
+    private final f c = new b();
+    private RecyclerView.i d;
+    
+    j()
+    {
+      super(null);
+    }
+    
+    private void t(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+    {
+      int i;
+      int j;
+      if (getAdapter() != null)
+      {
+        if (getOrientation() == 1)
+        {
+          i = getAdapter().getItemCount();
+          j = 0;
+        }
+        else
+        {
+          j = getAdapter().getItemCount();
+          i = 0;
+        }
+      }
+      else
+      {
+        i = 0;
+        j = i;
+      }
+      c.h.q.p0.c.y0(paramAccessibilityNodeInfo).a0(c.b.a(i, j, false, 0));
+    }
+    
+    private void u(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+    {
+      RecyclerView.Adapter localAdapter = getAdapter();
+      if (localAdapter == null) {
+        return;
+      }
+      int i = localAdapter.getItemCount();
+      if (i != 0)
+      {
+        if (!e()) {
+          return;
+        }
+        if (f > 0) {
+          paramAccessibilityNodeInfo.addAction(8192);
+        }
+        if (f < i - 1) {
+          paramAccessibilityNodeInfo.addAction(4096);
+        }
+        paramAccessibilityNodeInfo.setScrollable(true);
+      }
+    }
+    
+    public boolean a()
+    {
+      return true;
+    }
+    
+    public boolean c(int paramInt, Bundle paramBundle)
+    {
+      return (paramInt == 8192) || (paramInt == 4096);
+    }
+    
+    public void e(RecyclerView.Adapter<?> paramAdapter)
+    {
+      w();
+      if (paramAdapter != null) {
+        paramAdapter.registerAdapterDataObserver(d);
+      }
+    }
+    
+    public void f(RecyclerView.Adapter<?> paramAdapter)
+    {
+      if (paramAdapter != null) {
+        paramAdapter.unregisterAdapterDataObserver(d);
+      }
+    }
+    
+    public String g()
+    {
+      if (a()) {
+        return "androidx.viewpager.widget.ViewPager";
+      }
+      throw new IllegalStateException();
+    }
+    
+    public void h(b paramB, RecyclerView paramRecyclerView)
+    {
+      f0.A0(paramRecyclerView, 2);
+      d = new c();
+      if (f0.B(ViewPager2.this) == 0) {
+        f0.A0(ViewPager2.this, 1);
+      }
+    }
+    
+    public void i(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+    {
+      t(paramAccessibilityNodeInfo);
+      if (Build.VERSION.SDK_INT >= 16) {
+        u(paramAccessibilityNodeInfo);
+      }
+    }
+    
+    public boolean l(int paramInt, Bundle paramBundle)
+    {
+      if (c(paramInt, paramBundle))
+      {
+        if (paramInt == 8192) {
+          paramInt = getCurrentItem() - 1;
+        } else {
+          paramInt = getCurrentItem() + 1;
+        }
+        v(paramInt);
+        return true;
+      }
+      throw new IllegalStateException();
+    }
+    
+    public void m()
+    {
+      w();
+    }
+    
+    public void o(AccessibilityEvent paramAccessibilityEvent)
+    {
+      paramAccessibilityEvent.setSource(ViewPager2.this);
+      paramAccessibilityEvent.setClassName(g());
+    }
+    
+    public void p()
+    {
+      w();
+    }
+    
+    public void q()
+    {
+      w();
+    }
+    
+    public void r()
+    {
+      w();
+    }
+    
+    public void s()
+    {
+      w();
+      if (Build.VERSION.SDK_INT < 21) {
+        sendAccessibilityEvent(2048);
+      }
+    }
+    
+    void v(int paramInt)
+    {
+      if (e()) {
+        k(paramInt, true);
+      }
+    }
+    
+    void w()
+    {
+      ViewPager2 localViewPager2 = ViewPager2.this;
+      int j = 16908360;
+      f0.j0(localViewPager2, 16908360);
+      f0.j0(localViewPager2, 16908361);
+      f0.j0(localViewPager2, 16908358);
+      f0.j0(localViewPager2, 16908359);
+      if (getAdapter() == null) {
+        return;
+      }
+      int k = getAdapter().getItemCount();
+      if (k == 0) {
+        return;
+      }
+      if (!e()) {
+        return;
+      }
+      if (getOrientation() == 0)
+      {
+        boolean bool = d();
+        int i;
+        if (bool) {
+          i = 16908360;
+        } else {
+          i = 16908361;
+        }
+        if (bool) {
+          j = 16908361;
+        }
+        if (f < k - 1) {
+          f0.l0(localViewPager2, new c.a(i, null), null, b);
+        }
+        if (f > 0) {
+          f0.l0(localViewPager2, new c.a(j, null), null, c);
+        }
+      }
+      else
+      {
+        if (f < k - 1) {
+          f0.l0(localViewPager2, new c.a(16908359, null), null, b);
+        }
+        if (f > 0) {
+          f0.l0(localViewPager2, new c.a(16908358, null), null, c);
+        }
+      }
+    }
+    
+    class a
+      implements f
+    {
+      a() {}
+      
+      public boolean a(View paramView, f.a paramA)
+      {
+        paramView = (ViewPager2)paramView;
+        v(paramView.getCurrentItem() + 1);
+        return true;
+      }
+    }
+    
+    class b
+      implements f
+    {
+      b() {}
+      
+      public boolean a(View paramView, f.a paramA)
+      {
+        paramView = (ViewPager2)paramView;
+        v(paramView.getCurrentItem() - 1);
+        return true;
+      }
+    }
+    
+    class c
+      extends ViewPager2.g
+    {
+      c()
+      {
+        super();
+      }
+      
+      public void a()
+      {
+        w();
+      }
+    }
+  }
+  
+  public static abstract interface k
+  {
+    public abstract void a(View paramView, float paramFloat);
+  }
+  
+  private class l
+    extends t
+  {
+    l() {}
+    
+    public View f(RecyclerView.o paramO)
+    {
+      if (c()) {
+        return null;
+      }
+      return super.f(paramO);
+    }
+  }
+  
+  private class m
+    extends RecyclerView
+  {
+    m(Context paramContext)
+    {
+      super();
+    }
+    
+    public CharSequence getAccessibilityClassName()
+    {
+      if (v.d()) {
+        return v.n();
+      }
+      return super.getAccessibilityClassName();
+    }
+    
+    public void onInitializeAccessibilityEvent(AccessibilityEvent paramAccessibilityEvent)
+    {
+      super.onInitializeAccessibilityEvent(paramAccessibilityEvent);
+      paramAccessibilityEvent.setFromIndex(f);
+      paramAccessibilityEvent.setToIndex(f);
+      v.o(paramAccessibilityEvent);
+    }
+    
+    public boolean onInterceptTouchEvent(MotionEvent paramMotionEvent)
+    {
+      return (e()) && (super.onInterceptTouchEvent(paramMotionEvent));
+    }
+    
+    public boolean onTouchEvent(MotionEvent paramMotionEvent)
+    {
+      return (e()) && (super.onTouchEvent(paramMotionEvent));
+    }
+  }
+  
+  private static class n
+    implements Runnable
+  {
+    private final int b;
+    private final RecyclerView c;
+    
+    n(int paramInt, RecyclerView paramRecyclerView)
+    {
+      b = paramInt;
+      c = paramRecyclerView;
+    }
+    
+    public void run()
+    {
+      c.t1(b);
+    }
+  }
+}

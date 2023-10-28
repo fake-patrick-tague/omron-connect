@@ -1,0 +1,355 @@
+package androidx.fragment.app;
+
+import android.graphics.Rect;
+import android.transition.Transition;
+import android.transition.Transition.EpicenterCallback;
+import android.transition.Transition.TransitionListener;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
+import android.view.View;
+import android.view.ViewGroup;
+import c.h.m.e;
+import java.util.ArrayList;
+import java.util.List;
+
+class c0
+  extends d0
+{
+  c0() {}
+  
+  private static boolean v(Transition paramTransition)
+  {
+    return (!d0.i(paramTransition.getTargetIds())) || (!d0.i(paramTransition.getTargetNames())) || (!d0.i(paramTransition.getTargetTypes()));
+  }
+  
+  public void a(Object paramObject, View paramView)
+  {
+    if (paramObject != null) {
+      ((Transition)paramObject).addTarget(paramView);
+    }
+  }
+  
+  public void b(Object paramObject, ArrayList<View> paramArrayList)
+  {
+    paramObject = (Transition)paramObject;
+    if (paramObject == null) {
+      return;
+    }
+    boolean bool = paramObject instanceof TransitionSet;
+    int j = 0;
+    int i = 0;
+    if (bool)
+    {
+      paramObject = (TransitionSet)paramObject;
+      j = paramObject.getTransitionCount();
+      while (i < j)
+      {
+        b(paramObject.getTransitionAt(i), paramArrayList);
+        i += 1;
+      }
+    }
+    if ((!v(paramObject)) && (d0.i(paramObject.getTargets())))
+    {
+      int k = paramArrayList.size();
+      i = j;
+      while (i < k)
+      {
+        paramObject.addTarget((View)paramArrayList.get(i));
+        i += 1;
+      }
+    }
+  }
+  
+  public void c(ViewGroup paramViewGroup, Object paramObject)
+  {
+    TransitionManager.beginDelayedTransition(paramViewGroup, (Transition)paramObject);
+  }
+  
+  public boolean e(Object paramObject)
+  {
+    return paramObject instanceof Transition;
+  }
+  
+  public Object f(Object paramObject)
+  {
+    if (paramObject != null) {
+      return ((Transition)paramObject).clone();
+    }
+    return null;
+  }
+  
+  public Object j(Object paramObject1, Object paramObject2, Object paramObject3)
+  {
+    paramObject1 = (Transition)paramObject1;
+    paramObject2 = (Transition)paramObject2;
+    paramObject3 = (Transition)paramObject3;
+    if ((paramObject1 != null) && (paramObject2 != null)) {
+      paramObject1 = new TransitionSet().addTransition(paramObject1).addTransition(paramObject2).setOrdering(1);
+    } else if (paramObject1 == null) {
+      if (paramObject2 != null) {
+        paramObject1 = paramObject2;
+      } else {
+        paramObject1 = null;
+      }
+    }
+    if (paramObject3 != null)
+    {
+      paramObject2 = new TransitionSet();
+      if (paramObject1 != null) {
+        paramObject2.addTransition(paramObject1);
+      }
+      paramObject2.addTransition(paramObject3);
+      return paramObject2;
+    }
+    return paramObject1;
+  }
+  
+  public Object k(Object paramObject1, Object paramObject2, Object paramObject3)
+  {
+    TransitionSet localTransitionSet = new TransitionSet();
+    if (paramObject1 != null) {
+      localTransitionSet.addTransition((Transition)paramObject1);
+    }
+    if (paramObject2 != null) {
+      localTransitionSet.addTransition((Transition)paramObject2);
+    }
+    if (paramObject3 != null) {
+      localTransitionSet.addTransition((Transition)paramObject3);
+    }
+    return localTransitionSet;
+  }
+  
+  public void m(Object paramObject, final View paramView, final ArrayList<View> paramArrayList)
+  {
+    ((Transition)paramObject).addListener(new b(paramView, paramArrayList));
+  }
+  
+  public void n(Object paramObject1, final Object paramObject2, final ArrayList<View> paramArrayList1, final Object paramObject3, final ArrayList<View> paramArrayList2, final Object paramObject4, final ArrayList<View> paramArrayList3)
+  {
+    ((Transition)paramObject1).addListener(new c(paramObject2, paramArrayList1, paramObject3, paramArrayList2, paramObject4, paramArrayList3));
+  }
+  
+  public void o(Object paramObject, final Rect paramRect)
+  {
+    if (paramObject != null) {
+      ((Transition)paramObject).setEpicenterCallback(new e(paramRect));
+    }
+  }
+  
+  public void p(Object paramObject, View paramView)
+  {
+    if (paramView != null)
+    {
+      paramObject = (Transition)paramObject;
+      final Rect localRect = new Rect();
+      h(paramView, localRect);
+      paramObject.setEpicenterCallback(new a(localRect));
+    }
+  }
+  
+  public void q(Fragment paramFragment, Object paramObject, e paramE, final Runnable paramRunnable)
+  {
+    ((Transition)paramObject).addListener(new d(paramRunnable));
+  }
+  
+  public void s(Object paramObject, View paramView, ArrayList<View> paramArrayList)
+  {
+    paramObject = (TransitionSet)paramObject;
+    List localList = paramObject.getTargets();
+    localList.clear();
+    int j = paramArrayList.size();
+    int i = 0;
+    while (i < j)
+    {
+      d0.d(localList, (View)paramArrayList.get(i));
+      i += 1;
+    }
+    localList.add(paramView);
+    paramArrayList.add(paramView);
+    b(paramObject, paramArrayList);
+  }
+  
+  public void t(Object paramObject, ArrayList<View> paramArrayList1, ArrayList<View> paramArrayList2)
+  {
+    paramObject = (TransitionSet)paramObject;
+    if (paramObject != null)
+    {
+      paramObject.getTargets().clear();
+      paramObject.getTargets().addAll(paramArrayList2);
+      w(paramObject, paramArrayList1, paramArrayList2);
+    }
+  }
+  
+  public Object u(Object paramObject)
+  {
+    if (paramObject == null) {
+      return null;
+    }
+    TransitionSet localTransitionSet = new TransitionSet();
+    localTransitionSet.addTransition((Transition)paramObject);
+    return localTransitionSet;
+  }
+  
+  public void w(Object paramObject, ArrayList<View> paramArrayList1, ArrayList<View> paramArrayList2)
+  {
+    paramObject = (Transition)paramObject;
+    boolean bool = paramObject instanceof TransitionSet;
+    int j = 0;
+    int i = 0;
+    if (bool)
+    {
+      paramObject = (TransitionSet)paramObject;
+      j = paramObject.getTransitionCount();
+      while (i < j)
+      {
+        w(paramObject.getTransitionAt(i), paramArrayList1, paramArrayList2);
+        i += 1;
+      }
+    }
+    if (!v(paramObject))
+    {
+      List localList = paramObject.getTargets();
+      if ((localList != null) && (localList.size() == paramArrayList1.size()) && (localList.containsAll(paramArrayList1)))
+      {
+        if (paramArrayList2 == null) {
+          i = 0;
+        } else {
+          i = paramArrayList2.size();
+        }
+        while (j < i)
+        {
+          paramObject.addTarget((View)paramArrayList2.get(j));
+          j += 1;
+        }
+        i = paramArrayList1.size() - 1;
+        while (i >= 0)
+        {
+          paramObject.removeTarget((View)paramArrayList1.get(i));
+          i -= 1;
+        }
+      }
+    }
+  }
+  
+  class a
+    extends Transition.EpicenterCallback
+  {
+    a(Rect paramRect) {}
+    
+    public Rect onGetEpicenter(Transition paramTransition)
+    {
+      return localRect;
+    }
+  }
+  
+  class b
+    implements Transition.TransitionListener
+  {
+    b(View paramView, ArrayList paramArrayList) {}
+    
+    public void onTransitionCancel(Transition paramTransition) {}
+    
+    public void onTransitionEnd(Transition paramTransition)
+    {
+      c0.f.b(paramTransition, this);
+      paramView.setVisibility(8);
+      int j = paramArrayList.size();
+      int i = 0;
+      while (i < j)
+      {
+        ((View)paramArrayList.get(i)).setVisibility(0);
+        i += 1;
+      }
+    }
+    
+    public void onTransitionPause(Transition paramTransition) {}
+    
+    public void onTransitionResume(Transition paramTransition) {}
+    
+    public void onTransitionStart(Transition paramTransition)
+    {
+      c0.f.b(paramTransition, this);
+      c0.f.a(paramTransition, this);
+    }
+  }
+  
+  class c
+    implements Transition.TransitionListener
+  {
+    c(Object paramObject1, ArrayList paramArrayList1, Object paramObject2, ArrayList paramArrayList2, Object paramObject3, ArrayList paramArrayList3) {}
+    
+    public void onTransitionCancel(Transition paramTransition) {}
+    
+    public void onTransitionEnd(Transition paramTransition)
+    {
+      c0.f.b(paramTransition, this);
+    }
+    
+    public void onTransitionPause(Transition paramTransition) {}
+    
+    public void onTransitionResume(Transition paramTransition) {}
+    
+    public void onTransitionStart(Transition paramTransition)
+    {
+      paramTransition = paramObject2;
+      if (paramTransition != null) {
+        w(paramTransition, paramArrayList1, null);
+      }
+      paramTransition = paramObject3;
+      if (paramTransition != null) {
+        w(paramTransition, paramArrayList2, null);
+      }
+      paramTransition = paramObject4;
+      if (paramTransition != null) {
+        w(paramTransition, paramArrayList3, null);
+      }
+    }
+  }
+  
+  class d
+    implements Transition.TransitionListener
+  {
+    d(Runnable paramRunnable) {}
+    
+    public void onTransitionCancel(Transition paramTransition) {}
+    
+    public void onTransitionEnd(Transition paramTransition)
+    {
+      paramRunnable.run();
+    }
+    
+    public void onTransitionPause(Transition paramTransition) {}
+    
+    public void onTransitionResume(Transition paramTransition) {}
+    
+    public void onTransitionStart(Transition paramTransition) {}
+  }
+  
+  class e
+    extends Transition.EpicenterCallback
+  {
+    e(Rect paramRect) {}
+    
+    public Rect onGetEpicenter(Transition paramTransition)
+    {
+      paramTransition = paramRect;
+      if ((paramTransition != null) && (!paramTransition.isEmpty())) {
+        return paramRect;
+      }
+      return null;
+    }
+  }
+  
+  static class f
+  {
+    static void a(Transition paramTransition, Transition.TransitionListener paramTransitionListener)
+    {
+      paramTransition.addListener(paramTransitionListener);
+    }
+    
+    static void b(Transition paramTransition, Transition.TransitionListener paramTransitionListener)
+    {
+      paramTransition.removeListener(paramTransitionListener);
+    }
+  }
+}

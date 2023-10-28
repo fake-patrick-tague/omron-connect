@@ -1,0 +1,307 @@
+package androidx.loader.content;
+
+import android.os.Binder;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Process;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+abstract class ModernAsyncTask<Params, Progress, Result>
+{
+  private static final ThreadFactory b;
+  private static final BlockingQueue<Runnable> c;
+  public static final Executor d;
+  private static f e;
+  private static volatile Executor f;
+  private final g<Params, Result> g;
+  private final FutureTask<Result> h;
+  private volatile Status i = Status.b;
+  final AtomicBoolean j = new AtomicBoolean();
+  final AtomicBoolean k = new AtomicBoolean();
+  
+  static
+  {
+    Object localObject = new a();
+    b = (ThreadFactory)localObject;
+    LinkedBlockingQueue localLinkedBlockingQueue = new LinkedBlockingQueue(10);
+    c = localLinkedBlockingQueue;
+    localObject = new ThreadPoolExecutor(5, 128, 1L, TimeUnit.SECONDS, localLinkedBlockingQueue, (ThreadFactory)localObject);
+    d = (Executor)localObject;
+    f = (Executor)localObject;
+  }
+  
+  ModernAsyncTask()
+  {
+    b localB = new b();
+    g = localB;
+    h = new c(localB);
+  }
+  
+  private static Handler e()
+  {
+    try
+    {
+      if (e == null) {
+        e = new f();
+      }
+      f localF = e;
+      return localF;
+    }
+    finally {}
+  }
+  
+  public final boolean a(boolean paramBoolean)
+  {
+    j.set(true);
+    return h.cancel(paramBoolean);
+  }
+  
+  protected abstract Result b(Params... paramVarArgs);
+  
+  public final ModernAsyncTask<Params, Progress, Result> c(Executor paramExecutor, Params... paramVarArgs)
+  {
+    if (i != Status.b)
+    {
+      int m = d.a[i.ordinal()];
+      if (m != 1)
+      {
+        if (m != 2) {
+          throw new IllegalStateException("We should never reach this state");
+        }
+        throw new IllegalStateException("Cannot execute task: the task has already been executed (a task can be executed only once)");
+      }
+      throw new IllegalStateException("Cannot execute task: the task is already running.");
+    }
+    i = Status.c;
+    j();
+    g.b = paramVarArgs;
+    paramExecutor.execute(h);
+    return this;
+  }
+  
+  void d(Result paramResult)
+  {
+    if (f()) {
+      h(paramResult);
+    } else {
+      i(paramResult);
+    }
+    i = Status.d;
+  }
+  
+  public final boolean f()
+  {
+    return j.get();
+  }
+  
+  protected void g() {}
+  
+  protected void h(Result paramResult)
+  {
+    g();
+  }
+  
+  protected void i(Result paramResult) {}
+  
+  protected void j() {}
+  
+  protected void k(Progress... paramVarArgs) {}
+  
+  Result l(Result paramResult)
+  {
+    e().obtainMessage(1, new e(this, new Object[] { paramResult })).sendToTarget();
+    return paramResult;
+  }
+  
+  void m(Result paramResult)
+  {
+    if (!k.get()) {
+      l(paramResult);
+    }
+  }
+  
+  public static enum Status
+  {
+    static
+    {
+      Status localStatus1 = new Status("PENDING", 0);
+      b = localStatus1;
+      Status localStatus2 = new Status("RUNNING", 1);
+      c = localStatus2;
+      Status localStatus3 = new Status("FINISHED", 2);
+      d = localStatus3;
+      e = new Status[] { localStatus1, localStatus2, localStatus3 };
+    }
+  }
+  
+  static final class a
+    implements ThreadFactory
+  {
+    private final AtomicInteger b = new AtomicInteger(1);
+    
+    a() {}
+    
+    public Thread newThread(Runnable paramRunnable)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("ModernAsyncTask #");
+      localStringBuilder.append(b.getAndIncrement());
+      return new Thread(paramRunnable, localStringBuilder.toString());
+    }
+  }
+  
+  class b
+    extends ModernAsyncTask.g<Params, Result>
+  {
+    b() {}
+    
+    public Result call()
+      throws Exception
+    {
+      k.set(true);
+      Object localObject2 = null;
+      Object localObject1 = localObject2;
+      try
+      {
+        Process.setThreadPriority(10);
+        localObject1 = localObject2;
+        localObject2 = b(b);
+        localObject1 = localObject2;
+        Binder.flushPendingCommands();
+        l(localObject2);
+        return localObject2;
+      }
+      finally
+      {
+        try
+        {
+          j.set(true);
+          throw localObject3;
+        }
+        finally
+        {
+          l(localObject1);
+        }
+      }
+    }
+  }
+  
+  class c
+    extends FutureTask<Result>
+  {
+    c(Callable paramCallable)
+    {
+      super();
+    }
+    
+    /* Error */
+    protected void done()
+    {
+      // Byte code:
+      //   0: aload_0
+      //   1: invokevirtual 30	java/util/concurrent/FutureTask:get	()Ljava/lang/Object;
+      //   4: astore_1
+      //   5: aload_0
+      //   6: getfield 15	androidx/loader/content/ModernAsyncTask$c:b	Landroidx/loader/content/ModernAsyncTask;
+      //   9: aload_1
+      //   10: invokevirtual 34	androidx/loader/content/ModernAsyncTask:m	(Ljava/lang/Object;)V
+      //   13: return
+      //   14: astore_1
+      //   15: new 36	java/lang/RuntimeException
+      //   18: dup
+      //   19: ldc 38
+      //   21: aload_1
+      //   22: invokespecial 41	java/lang/RuntimeException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+      //   25: athrow
+      //   26: aload_0
+      //   27: getfield 15	androidx/loader/content/ModernAsyncTask$c:b	Landroidx/loader/content/ModernAsyncTask;
+      //   30: aconst_null
+      //   31: invokevirtual 34	androidx/loader/content/ModernAsyncTask:m	(Ljava/lang/Object;)V
+      //   34: return
+      //   35: astore_1
+      //   36: new 36	java/lang/RuntimeException
+      //   39: dup
+      //   40: ldc 38
+      //   42: aload_1
+      //   43: invokevirtual 45	java/util/concurrent/ExecutionException:getCause	()Ljava/lang/Throwable;
+      //   46: invokespecial 41	java/lang/RuntimeException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+      //   49: athrow
+      //   50: astore_1
+      //   51: ldc 47
+      //   53: aload_1
+      //   54: invokestatic 53	android/util/Log:w	(Ljava/lang/String;Ljava/lang/Throwable;)I
+      //   57: pop
+      //   58: return
+      //   59: astore_1
+      //   60: goto -34 -> 26
+      // Local variable table:
+      //   start	length	slot	name	signature
+      //   0	63	0	this	c
+      //   4	6	1	localObject	Object
+      //   14	8	1	localThrowable	Throwable
+      //   35	8	1	localExecutionException	java.util.concurrent.ExecutionException
+      //   50	4	1	localInterruptedException	InterruptedException
+      //   59	1	1	localCancellationException	java.util.concurrent.CancellationException
+      // Exception table:
+      //   from	to	target	type
+      //   0	13	14	finally
+      //   0	13	35	java/util/concurrent/ExecutionException
+      //   0	13	50	java/lang/InterruptedException
+      //   0	13	59	java/util/concurrent/CancellationException
+    }
+  }
+  
+  private static class e<Data>
+  {
+    final ModernAsyncTask a;
+    final Data[] b;
+    
+    e(ModernAsyncTask paramModernAsyncTask, Data... paramVarArgs)
+    {
+      a = paramModernAsyncTask;
+      b = paramVarArgs;
+    }
+  }
+  
+  private static class f
+    extends Handler
+  {
+    f()
+    {
+      super();
+    }
+    
+    public void handleMessage(Message paramMessage)
+    {
+      ModernAsyncTask.e localE = (ModernAsyncTask.e)obj;
+      int i = what;
+      if (i != 1)
+      {
+        if (i != 2) {
+          return;
+        }
+        a.k(b);
+        return;
+      }
+      a.d(b[0]);
+    }
+  }
+  
+  private static abstract class g<Params, Result>
+    implements Callable<Result>
+  {
+    Params[] b;
+    
+    g() {}
+  }
+}

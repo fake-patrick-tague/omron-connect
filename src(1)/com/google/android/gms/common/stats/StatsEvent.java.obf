@@ -1,0 +1,47 @@
+package com.google.android.gms.common.stats;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+
+@Deprecated
+@KeepForSdk
+public abstract class StatsEvent
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  public StatsEvent() {}
+  
+  public final String toString()
+  {
+    long l1 = zzc();
+    int i = zza();
+    long l2 = zzb();
+    String str = zzd();
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(l1);
+    localStringBuilder.append("\t");
+    localStringBuilder.append(i);
+    localStringBuilder.append("\t");
+    localStringBuilder.append(l2);
+    localStringBuilder.append(str);
+    return localStringBuilder.toString();
+  }
+  
+  public abstract int zza();
+  
+  public abstract long zzb();
+  
+  public abstract long zzc();
+  
+  public abstract String zzd();
+  
+  @KeepForSdk
+  public static abstract interface Types
+  {
+    @KeepForSdk
+    public static final int EVENT_TYPE_ACQUIRE_WAKE_LOCK = 7;
+    @KeepForSdk
+    public static final int EVENT_TYPE_RELEASE_WAKE_LOCK = 8;
+  }
+}

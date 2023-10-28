@@ -1,0 +1,187 @@
+package androidx.room;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+class g
+{
+  final Context a;
+  final String b;
+  int c;
+  final f d;
+  final f.c e;
+  d f;
+  final Executor g;
+  final c h = new a();
+  final AtomicBoolean i = new AtomicBoolean(false);
+  final ServiceConnection j;
+  final Runnable k;
+  final Runnable l;
+  private final Runnable m;
+  
+  g(Context paramContext, String paramString, f paramF, Executor paramExecutor)
+  {
+    b localB = new b();
+    j = localB;
+    k = new c();
+    l = new d();
+    m = new e();
+    paramContext = paramContext.getApplicationContext();
+    a = paramContext;
+    b = paramString;
+    d = paramF;
+    g = paramExecutor;
+    e = new f((String[])b.keySet().toArray(new String[0]));
+    paramContext.bindService(new Intent(paramContext, MultiInstanceInvalidationService.class), localB, 1);
+  }
+  
+  class a
+    extends c.a
+  {
+    a() {}
+    
+    public void a(final String[] paramArrayOfString)
+    {
+      g.execute(new a(paramArrayOfString));
+    }
+    
+    class a
+      implements Runnable
+    {
+      a(String[] paramArrayOfString) {}
+      
+      public void run()
+      {
+        d.e(paramArrayOfString);
+      }
+    }
+  }
+  
+  class b
+    implements ServiceConnection
+  {
+    b() {}
+    
+    public void onServiceConnected(ComponentName paramComponentName, IBinder paramIBinder)
+    {
+      f = d.a.e(paramIBinder);
+      paramComponentName = g.this;
+      g.execute(k);
+    }
+    
+    public void onServiceDisconnected(ComponentName paramComponentName)
+    {
+      paramComponentName = g.this;
+      g.execute(l);
+      f = null;
+    }
+  }
+  
+  class c
+    implements Runnable
+  {
+    c() {}
+    
+    public void run()
+    {
+      try
+      {
+        g localG = g.this;
+        d localD = f;
+        if (localD != null)
+        {
+          c = localD.b(h, b);
+          localG = g.this;
+          d.a(e);
+          return;
+        }
+      }
+      catch (RemoteException localRemoteException)
+      {
+        Log.w("ROOM", "Cannot register multi-instance invalidation callback", localRemoteException);
+      }
+    }
+  }
+  
+  class d
+    implements Runnable
+  {
+    d() {}
+    
+    public void run()
+    {
+      g localG = g.this;
+      d.g(e);
+    }
+  }
+  
+  class e
+    implements Runnable
+  {
+    e() {}
+    
+    public void run()
+    {
+      g localG1 = g.this;
+      d.g(e);
+      try
+      {
+        localG1 = g.this;
+        d localD = f;
+        if (localD != null) {
+          localD.d(h, c);
+        }
+      }
+      catch (RemoteException localRemoteException)
+      {
+        Log.w("ROOM", "Cannot unregister multi-instance invalidation callback", localRemoteException);
+      }
+      g localG2 = g.this;
+      a.unbindService(j);
+    }
+  }
+  
+  class f
+    extends f.c
+  {
+    f(String[] paramArrayOfString)
+    {
+      super();
+    }
+    
+    boolean a()
+    {
+      return true;
+    }
+    
+    public void b(Set<String> paramSet)
+    {
+      if (i.get()) {
+        return;
+      }
+      try
+      {
+        g localG = g.this;
+        d localD = f;
+        if (localD != null)
+        {
+          localD.c(c, (String[])paramSet.toArray(new String[0]));
+          return;
+        }
+      }
+      catch (RemoteException paramSet)
+      {
+        Log.w("ROOM", "Cannot broadcast invalidation", paramSet);
+      }
+    }
+  }
+}

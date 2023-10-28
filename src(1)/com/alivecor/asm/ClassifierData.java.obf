@@ -1,0 +1,144 @@
+package com.alivecor.ai;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import com.google.gson.v.c;
+import java.io.Serializable;
+
+public class ClassifierData
+  extends r<b>
+  implements Parcelable, Serializable
+{
+  public static final Parcelable.Creator<ClassifierData> CREATOR = new a();
+  
+  public ClassifierData() {}
+  
+  protected ClassifierData(Parcel paramParcel)
+  {
+    a = ((Serializable)paramParcel.readParcelable(b.class.getClassLoader()));
+    b = paramParcel.readString();
+    c = paramParcel.readString();
+    d = paramParcel.readString();
+  }
+  
+  public ClassifierData(o paramO)
+  {
+    b localB = new b();
+    a = localB;
+    localB.setDetermination(paramO);
+  }
+  
+  public int describeContents()
+  {
+    return 0;
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("ClassifierData{result=");
+    localStringBuilder.append(a);
+    localStringBuilder.append(", kardiaAiVersionMajor=");
+    localStringBuilder.append(b);
+    localStringBuilder.append(", kardiaAiVersionMinor=");
+    localStringBuilder.append(c);
+    localStringBuilder.append(", kardiaAiVersionRev=");
+    localStringBuilder.append(d);
+    localStringBuilder.append('}');
+    return localStringBuilder.toString();
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramParcel.writeParcelable((Parcelable)a, paramInt);
+    paramParcel.writeString(b);
+    paramParcel.writeString(c);
+    paramParcel.writeString(d);
+  }
+  
+  class a
+    implements Parcelable.Creator<ClassifierData>
+  {
+    a() {}
+    
+    public ClassifierData a(Parcel paramParcel)
+    {
+      return new ClassifierData(paramParcel);
+    }
+    
+    public ClassifierData[] a(int paramInt)
+    {
+      return new ClassifierData[paramInt];
+    }
+  }
+  
+  public static class b
+    implements Parcelable, Serializable
+  {
+    public static final Parcelable.Creator<b> CREATOR = new a();
+    @c("value")
+    private o a;
+    
+    public b() {}
+    
+    protected b(Parcel paramParcel)
+    {
+      int i = paramParcel.readInt();
+      if (i >= 0) {
+        a = o.values()[i];
+      }
+    }
+    
+    public int describeContents()
+    {
+      return 0;
+    }
+    
+    public o getDetermination()
+    {
+      return a;
+    }
+    
+    public void setDetermination(o paramO)
+    {
+      a = paramO;
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Result{determination=");
+      localStringBuilder.append(a);
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      o localO = a;
+      if (localO != null) {
+        paramInt = localO.ordinal();
+      } else {
+        paramInt = -1;
+      }
+      paramParcel.writeInt(paramInt);
+    }
+    
+    class a
+      implements Parcelable.Creator<ClassifierData.b>
+    {
+      a() {}
+      
+      public ClassifierData.b a(Parcel paramParcel)
+      {
+        return new ClassifierData.b(paramParcel);
+      }
+      
+      public ClassifierData.b[] a(int paramInt)
+      {
+        return new ClassifierData.b[paramInt];
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+package com.google.android.gms.internal.measurement;
+
+import android.os.RemoteException;
+import com.google.android.gms.common.util.Clock;
+
+abstract class zzdt
+  implements Runnable
+{
+  final long zzh;
+  final long zzi;
+  final boolean zzj;
+  
+  zzdt(zzee paramZzee, boolean paramBoolean)
+  {
+    zzh = zza.currentTimeMillis();
+    zzi = zza.elapsedRealtime();
+    zzj = paramBoolean;
+  }
+  
+  public final void run()
+  {
+    if (zzee.zzP(zzk))
+    {
+      zzb();
+      return;
+    }
+    try
+    {
+      zza();
+      return;
+    }
+    catch (Exception localException)
+    {
+      zzee.zzs(zzk, localException, false, zzj);
+      zzb();
+    }
+  }
+  
+  abstract void zza()
+    throws RemoteException;
+  
+  protected void zzb() {}
+}

@@ -1,0 +1,427 @@
+package com.google.android.datatransport.h.y.j;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseLockedException;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
+import android.os.SystemClock;
+import android.util.Base64;
+import com.google.android.datatransport.h.j;
+import com.google.android.datatransport.h.j.a;
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped;
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped.Reason;
+import com.google.android.datatransport.runtime.firebase.transport.a.a;
+import com.google.android.datatransport.runtime.firebase.transport.c;
+import com.google.android.datatransport.runtime.firebase.transport.c.a;
+import com.google.android.datatransport.runtime.firebase.transport.d.a;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+
+public class r0
+  implements j0, com.google.android.datatransport.h.z.b, i0
+{
+  private static final com.google.android.datatransport.b b = com.google.android.datatransport.b.b("proto");
+  private final t0 c;
+  private final com.google.android.datatransport.h.a0.a d;
+  private final com.google.android.datatransport.h.a0.a e;
+  private final k0 f;
+  private final g.a.a<String> g;
+  
+  r0(com.google.android.datatransport.h.a0.a paramA1, com.google.android.datatransport.h.a0.a paramA2, k0 paramK0, t0 paramT0, g.a.a<String> paramA)
+  {
+    c = paramT0;
+    d = paramA1;
+    e = paramA2;
+    f = paramK0;
+    g = paramA;
+  }
+  
+  private com.google.android.datatransport.runtime.firebase.transport.b F()
+  {
+    return com.google.android.datatransport.runtime.firebase.transport.b.b().b(com.google.android.datatransport.runtime.firebase.transport.d.c().b(w()).c(k0.a.f()).a()).a();
+  }
+  
+  private long J()
+  {
+    return C().compileStatement("PRAGMA page_count").simpleQueryForLong();
+  }
+  
+  private long K()
+  {
+    return C().compileStatement("PRAGMA page_size").simpleQueryForLong();
+  }
+  
+  private com.google.android.datatransport.runtime.firebase.transport.e L()
+  {
+    return (com.google.android.datatransport.runtime.firebase.transport.e)R(new l(d.a()));
+  }
+  
+  private Long N(SQLiteDatabase paramSQLiteDatabase, com.google.android.datatransport.h.p paramP)
+  {
+    StringBuilder localStringBuilder = new StringBuilder("backend_name = ? and priority = ?");
+    Object localObject = new ArrayList(Arrays.asList(new String[] { paramP.b(), String.valueOf(com.google.android.datatransport.h.b0.a.a(paramP.d())) }));
+    if (paramP.c() != null)
+    {
+      localStringBuilder.append(" and extras = ?");
+      ((ArrayList)localObject).add(Base64.encodeToString(paramP.c(), 0));
+    }
+    else
+    {
+      localStringBuilder.append(" and extras is null");
+    }
+    paramP = localStringBuilder.toString();
+    localObject = (String[])((ArrayList)localObject).toArray(new String[0]);
+    return (Long)l1(paramSQLiteDatabase.query("transport_contexts", new String[] { "_id" }, paramP, (String[])localObject, null, null, null), q.a);
+  }
+  
+  private boolean X()
+  {
+    return J() * K() >= f.f();
+  }
+  
+  private List<q0> Z(List<q0> paramList, Map<Long, Set<c>> paramMap)
+  {
+    ListIterator localListIterator = paramList.listIterator();
+    while (localListIterator.hasNext())
+    {
+      q0 localQ0 = (q0)localListIterator.next();
+      if (paramMap.containsKey(Long.valueOf(localQ0.c())))
+      {
+        j.a localA = localQ0.b().l();
+        Iterator localIterator = ((Set)paramMap.get(Long.valueOf(localQ0.c()))).iterator();
+        while (localIterator.hasNext())
+        {
+          c localC = (c)localIterator.next();
+          localA.c(a, b);
+        }
+        localListIterator.set(q0.a(localQ0.c(), localQ0.d(), localA.d()));
+      }
+    }
+    return paramList;
+  }
+  
+  private List<q0> d1(SQLiteDatabase paramSQLiteDatabase, com.google.android.datatransport.h.p paramP, int paramInt)
+  {
+    ArrayList localArrayList = new ArrayList();
+    Object localObject = N(paramSQLiteDatabase, paramP);
+    if (localObject == null) {
+      return localArrayList;
+    }
+    localObject = ((Long)localObject).toString();
+    l1(paramSQLiteDatabase.query("events", new String[] { "_id", "transport_name", "timestamp_ms", "uptime_ms", "payload_encoding", "payload", "code", "inline" }, "context_id = ?", new String[] { localObject }, null, null, null, String.valueOf(paramInt)), new o(this, localArrayList, paramP));
+    return localArrayList;
+  }
+  
+  private Map<Long, Set<c>> e1(SQLiteDatabase paramSQLiteDatabase, List<q0> paramList)
+  {
+    HashMap localHashMap = new HashMap();
+    StringBuilder localStringBuilder = new StringBuilder("event_id IN (");
+    int i = 0;
+    while (i < paramList.size())
+    {
+      localStringBuilder.append(((q0)paramList.get(i)).c());
+      if (i < paramList.size() - 1) {
+        localStringBuilder.append(',');
+      }
+      i += 1;
+    }
+    localStringBuilder.append(')');
+    paramList = localStringBuilder.toString();
+    l1(paramSQLiteDatabase.query("event_metadata", new String[] { "event_id", "name", "value" }, paramList, null, null, null, null), new t(localHashMap));
+    return localHashMap;
+  }
+  
+  private static byte[] f1(String paramString)
+  {
+    if (paramString == null) {
+      return null;
+    }
+    return Base64.decode(paramString, 0);
+  }
+  
+  private void g1(a.a paramA, Map<String, List<LogEventDropped>> paramMap)
+  {
+    paramMap = paramMap.entrySet().iterator();
+    while (paramMap.hasNext())
+    {
+      Map.Entry localEntry = (Map.Entry)paramMap.next();
+      paramA.a(c.c().c((String)localEntry.getKey()).b((List)localEntry.getValue()).a());
+    }
+  }
+  
+  private byte[] h1(long paramLong)
+  {
+    return (byte[])l1(C().query("event_payloads", new String[] { "bytes" }, "event_id = ?", new String[] { String.valueOf(paramLong) }, null, null, "sequence_num"), g.a);
+  }
+  
+  private <T> T i1(d<T> paramD, b<Throwable, T> paramB)
+  {
+    long l = e.a();
+    for (;;)
+    {
+      try
+      {
+        Object localObject = paramD.a();
+        return localObject;
+      }
+      catch (SQLiteDatabaseLockedException localSQLiteDatabaseLockedException)
+      {
+        if (e.a() >= f.b() + l) {
+          return paramB.apply(localSQLiteDatabaseLockedException);
+        }
+        SystemClock.sleep(50L);
+      }
+    }
+  }
+  
+  private static com.google.android.datatransport.b j1(String paramString)
+  {
+    if (paramString == null) {
+      return b;
+    }
+    return com.google.android.datatransport.b.b(paramString);
+  }
+  
+  private static String k1(Iterable<q0> paramIterable)
+  {
+    StringBuilder localStringBuilder = new StringBuilder("(");
+    paramIterable = paramIterable.iterator();
+    while (paramIterable.hasNext())
+    {
+      localStringBuilder.append(((q0)paramIterable.next()).c());
+      if (paramIterable.hasNext()) {
+        localStringBuilder.append(',');
+      }
+    }
+    localStringBuilder.append(')');
+    return localStringBuilder.toString();
+  }
+  
+  static <T> T l1(Cursor paramCursor, b<Cursor, T> paramB)
+  {
+    try
+    {
+      paramB = paramB.apply(paramCursor);
+      return paramB;
+    }
+    finally
+    {
+      paramCursor.close();
+    }
+  }
+  
+  private LogEventDropped.Reason p(int paramInt)
+  {
+    LogEventDropped.Reason localReason1 = LogEventDropped.Reason.b;
+    if (paramInt == localReason1.x()) {
+      return localReason1;
+    }
+    LogEventDropped.Reason localReason2 = LogEventDropped.Reason.c;
+    if (paramInt == localReason2.x()) {
+      return localReason2;
+    }
+    localReason2 = LogEventDropped.Reason.d;
+    if (paramInt == localReason2.x()) {
+      return localReason2;
+    }
+    localReason2 = LogEventDropped.Reason.e;
+    if (paramInt == localReason2.x()) {
+      return localReason2;
+    }
+    localReason2 = LogEventDropped.Reason.f;
+    if (paramInt == localReason2.x()) {
+      return localReason2;
+    }
+    localReason2 = LogEventDropped.Reason.g;
+    if (paramInt == localReason2.x()) {
+      return localReason2;
+    }
+    localReason2 = LogEventDropped.Reason.h;
+    if (paramInt == localReason2.x()) {
+      return localReason2;
+    }
+    com.google.android.datatransport.h.w.a.b("SQLiteEventStore", "%n is not valid. No matched LogEventDropped-Reason found. Treated it as REASON_UNKNOWN", Integer.valueOf(paramInt));
+    return localReason1;
+  }
+  
+  private void t(SQLiteDatabase paramSQLiteDatabase)
+  {
+    i1(new e(paramSQLiteDatabase), b.a);
+  }
+  
+  private long u(SQLiteDatabase paramSQLiteDatabase, com.google.android.datatransport.h.p paramP)
+  {
+    Object localObject = N(paramSQLiteDatabase, paramP);
+    if (localObject != null) {
+      return ((Long)localObject).longValue();
+    }
+    localObject = new ContentValues();
+    ((ContentValues)localObject).put("backend_name", paramP.b());
+    ((ContentValues)localObject).put("priority", Integer.valueOf(com.google.android.datatransport.h.b0.a.a(paramP.d())));
+    ((ContentValues)localObject).put("next_request_ms", Integer.valueOf(0));
+    if (paramP.c() != null) {
+      ((ContentValues)localObject).put("extras", Base64.encodeToString(paramP.c(), 0));
+    }
+    return paramSQLiteDatabase.insert("transport_contexts", null, (ContentValues)localObject);
+  }
+  
+  SQLiteDatabase C()
+  {
+    t0 localT0 = c;
+    Objects.requireNonNull(localT0);
+    return (SQLiteDatabase)i1(new f0(localT0), a.a);
+  }
+  
+  public Iterable<com.google.android.datatransport.h.p> D()
+  {
+    return (Iterable)R(x.a);
+  }
+  
+  <T> T R(b<SQLiteDatabase, T> paramB)
+  {
+    SQLiteDatabase localSQLiteDatabase = C();
+    localSQLiteDatabase.beginTransaction();
+    try
+    {
+      paramB = paramB.apply(localSQLiteDatabase);
+      localSQLiteDatabase.setTransactionSuccessful();
+      return paramB;
+    }
+    finally
+    {
+      localSQLiteDatabase.endTransaction();
+    }
+  }
+  
+  public void a()
+  {
+    R(new p(this));
+  }
+  
+  public void close()
+  {
+    c.close();
+  }
+  
+  public <T> T h(com.google.android.datatransport.h.z.b.a<T> paramA)
+  {
+    SQLiteDatabase localSQLiteDatabase = C();
+    t(localSQLiteDatabase);
+    try
+    {
+      paramA = paramA.h();
+      localSQLiteDatabase.setTransactionSuccessful();
+      return paramA;
+    }
+    finally
+    {
+      localSQLiteDatabase.endTransaction();
+    }
+  }
+  
+  public com.google.android.datatransport.runtime.firebase.transport.a i()
+  {
+    a.a localA = com.google.android.datatransport.runtime.firebase.transport.a.e();
+    return (com.google.android.datatransport.runtime.firebase.transport.a)R(new n(this, "SELECT log_source, reason, events_dropped_count FROM log_event_dropped", new HashMap(), localA));
+  }
+  
+  public q0 j0(com.google.android.datatransport.h.p paramP, j paramJ)
+  {
+    com.google.android.datatransport.h.w.a.c("SQLiteEventStore", "Storing event with priority=%s, name=%s for destination %s", new Object[] { paramP.d(), paramJ.j(), paramP.b() });
+    long l = ((Long)R(new s(this, paramJ, paramP))).longValue();
+    if (l < 1L) {
+      return null;
+    }
+    return q0.a(l, paramP, paramJ);
+  }
+  
+  public int k()
+  {
+    return ((Integer)R(new w(this, d.a() - f.c()))).intValue();
+  }
+  
+  public void l(Iterable<q0> paramIterable)
+  {
+    if (!paramIterable.iterator().hasNext()) {
+      return;
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("DELETE FROM events WHERE _id in ");
+    localStringBuilder.append(k1(paramIterable));
+    paramIterable = localStringBuilder.toString();
+    C().compileStatement(paramIterable).execute();
+  }
+  
+  public void n(long paramLong, LogEventDropped.Reason paramReason, String paramString)
+  {
+    R(new i(paramString, paramReason, paramLong));
+  }
+  
+  public long q0(com.google.android.datatransport.h.p paramP)
+  {
+    return ((Long)l1(C().rawQuery("SELECT next_request_ms FROM transport_contexts WHERE backend_name = ? and priority = ?", new String[] { paramP.b(), String.valueOf(com.google.android.datatransport.h.b0.a.a(paramP.d())) }), m.a)).longValue();
+  }
+  
+  public Iterable<q0> s(com.google.android.datatransport.h.p paramP)
+  {
+    return (Iterable)R(new d(this, paramP));
+  }
+  
+  public boolean u0(com.google.android.datatransport.h.p paramP)
+  {
+    return ((Boolean)R(new k(this, paramP))).booleanValue();
+  }
+  
+  long w()
+  {
+    return J() * K();
+  }
+  
+  public void x(com.google.android.datatransport.h.p paramP, long paramLong)
+  {
+    R(new f(paramLong, paramP));
+  }
+  
+  public void x0(Iterable<q0> paramIterable)
+  {
+    if (!paramIterable.iterator().hasNext()) {
+      return;
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("UPDATE events SET num_attempts = num_attempts + 1 WHERE _id in ");
+    localStringBuilder.append(k1(paramIterable));
+    R(new r(this, localStringBuilder.toString(), "SELECT COUNT(*), transport_name FROM events WHERE num_attempts >= 16 GROUP BY transport_name"));
+  }
+  
+  static abstract interface b<T, U>
+  {
+    public abstract U apply(T paramT);
+  }
+  
+  private static class c
+  {
+    final String a;
+    final String b;
+    
+    private c(String paramString1, String paramString2)
+    {
+      a = paramString1;
+      b = paramString2;
+    }
+  }
+  
+  static abstract interface d<T>
+  {
+    public abstract T a();
+  }
+}

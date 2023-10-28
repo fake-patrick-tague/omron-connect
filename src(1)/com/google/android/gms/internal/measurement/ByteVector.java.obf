@@ -1,0 +1,197 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+public final class zzh
+{
+  public static double zza(double paramDouble)
+  {
+    if (Double.isNaN(paramDouble)) {
+      return 0.0D;
+    }
+    if (!Double.isInfinite(paramDouble))
+    {
+      boolean bool = paramDouble < 0.0D;
+      if (bool)
+      {
+        if (!bool) {
+          return paramDouble;
+        }
+        int i;
+        if (bool) {
+          bool = true;
+        } else {
+          i = -1;
+        }
+        return i * Math.floor(Math.abs(paramDouble));
+      }
+    }
+    return paramDouble;
+  }
+  
+  public static int zzb(double paramDouble)
+  {
+    if ((!Double.isNaN(paramDouble)) && (!Double.isInfinite(paramDouble)))
+    {
+      boolean bool = paramDouble < 0.0D;
+      if (bool)
+      {
+        int i;
+        if (bool) {
+          bool = true;
+        } else {
+          i = -1;
+        }
+        return (int)(i * Math.floor(Math.abs(paramDouble)) % 4.294967296E9D);
+      }
+    }
+    return 0;
+  }
+  
+  public static int zzc(zzg paramZzg)
+  {
+    int i = zzb(paramZzg.zzd("runtime.counter").zzh().doubleValue() + 1.0D);
+    if (i <= 1000000)
+    {
+      paramZzg.zzg("runtime.counter", new zzah(Double.valueOf(i)));
+      return i;
+    }
+    throw new IllegalStateException("Instructions allowed exceeded");
+  }
+  
+  public static long zzd(double paramDouble)
+  {
+    return zzb(paramDouble) & 0xFFFFFFFF;
+  }
+  
+  public static zzbl zze(String paramString)
+  {
+    Object localObject2 = null;
+    Object localObject1 = localObject2;
+    if (paramString != null)
+    {
+      localObject1 = localObject2;
+      if (!paramString.isEmpty()) {
+        localObject1 = zzbl.zza(Integer.parseInt(paramString));
+      }
+    }
+    if (localObject1 != null) {
+      return localObject1;
+    }
+    throw new IllegalArgumentException(String.format("Unsupported commandId %s", new Object[] { paramString }));
+  }
+  
+  public static Object zzf(zzap paramZzap)
+  {
+    if (zzap.zzg.equals(paramZzap)) {
+      return null;
+    }
+    if (zzap.zzf.equals(paramZzap)) {
+      return "";
+    }
+    if ((paramZzap instanceof zzam)) {
+      return zzg((zzam)paramZzap);
+    }
+    if ((paramZzap instanceof zzae))
+    {
+      ArrayList localArrayList = new ArrayList();
+      paramZzap = ((zzae)paramZzap).iterator();
+      while (paramZzap.hasNext())
+      {
+        Object localObject = zzf((zzap)paramZzap.next());
+        if (localObject != null) {
+          localArrayList.add(localObject);
+        }
+      }
+      return localArrayList;
+    }
+    if (!paramZzap.zzh().isNaN()) {
+      return paramZzap.zzh();
+    }
+    return paramZzap.zzi();
+  }
+  
+  public static Map zzg(zzam paramZzam)
+  {
+    HashMap localHashMap = new HashMap();
+    Iterator localIterator = paramZzam.zzb().iterator();
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      Object localObject = zzf(paramZzam.zzf(str));
+      if (localObject != null) {
+        localHashMap.put(str, localObject);
+      }
+    }
+    return localHashMap;
+  }
+  
+  public static void zzh(String paramString, int paramInt, List paramList)
+  {
+    if (paramList.size() == paramInt) {
+      return;
+    }
+    throw new IllegalArgumentException(String.format("%s operation requires %s parameters found %s", new Object[] { paramString, Integer.valueOf(paramInt), Integer.valueOf(paramList.size()) }));
+  }
+  
+  public static void zzi(String paramString, int paramInt, List paramList)
+  {
+    if (paramList.size() >= paramInt) {
+      return;
+    }
+    throw new IllegalArgumentException(String.format("%s operation requires at least %s parameters found %s", new Object[] { paramString, Integer.valueOf(paramInt), Integer.valueOf(paramList.size()) }));
+  }
+  
+  public static void zzj(String paramString, int paramInt, List paramList)
+  {
+    if (paramList.size() <= paramInt) {
+      return;
+    }
+    throw new IllegalArgumentException(String.format("%s operation requires at most %s parameters found %s", new Object[] { paramString, Integer.valueOf(paramInt), Integer.valueOf(paramList.size()) }));
+  }
+  
+  public static boolean zzk(zzap paramZzap)
+  {
+    if (paramZzap == null) {
+      return false;
+    }
+    paramZzap = paramZzap.zzh();
+    return (!paramZzap.isNaN()) && (paramZzap.doubleValue() >= 0.0D) && (paramZzap.equals(Double.valueOf(Math.floor(paramZzap.doubleValue()))));
+  }
+  
+  public static boolean zzl(zzap paramZzap1, zzap paramZzap2)
+  {
+    if (!paramZzap1.getClass().equals(paramZzap2.getClass())) {
+      return false;
+    }
+    if (!(paramZzap1 instanceof zzau))
+    {
+      if ((paramZzap1 instanceof zzan)) {
+        return true;
+      }
+      if ((paramZzap1 instanceof zzah))
+      {
+        if (!Double.isNaN(paramZzap1.zzh().doubleValue()))
+        {
+          if (Double.isNaN(paramZzap2.zzh().doubleValue())) {
+            return false;
+          }
+          return paramZzap1.zzh().equals(paramZzap2.zzh());
+        }
+        return false;
+      }
+      if ((paramZzap1 instanceof zzat)) {
+        return paramZzap1.zzi().equals(paramZzap2.zzi());
+      }
+      if ((paramZzap1 instanceof zzaf)) {
+        return paramZzap1.zzg().equals(paramZzap2.zzg());
+      }
+      return paramZzap1 == paramZzap2;
+    }
+    return true;
+  }
+}

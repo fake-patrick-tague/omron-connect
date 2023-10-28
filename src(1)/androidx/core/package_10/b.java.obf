@@ -1,0 +1,72 @@
+package androidx.core.app;
+
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
+import android.os.Build.VERSION;
+import c.h.p.h;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+public class l
+{
+  final String a;
+  CharSequence b;
+  String c;
+  private boolean d;
+  private List<k> e = Collections.emptyList();
+  
+  l(NotificationChannelGroup paramNotificationChannelGroup)
+  {
+    this(paramNotificationChannelGroup, Collections.emptyList());
+  }
+  
+  l(NotificationChannelGroup paramNotificationChannelGroup, List<NotificationChannel> paramList)
+  {
+    this(paramNotificationChannelGroup.getId());
+    b = paramNotificationChannelGroup.getName();
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 28) {
+      c = paramNotificationChannelGroup.getDescription();
+    }
+    if (i >= 28)
+    {
+      d = paramNotificationChannelGroup.isBlocked();
+      e = a(paramNotificationChannelGroup.getChannels());
+      return;
+    }
+  }
+  
+  l(String paramString)
+  {
+    a = ((String)h.g(paramString));
+  }
+  
+  private List<k> a(List<NotificationChannel> paramList)
+  {
+    ArrayList localArrayList = new ArrayList();
+    paramList = paramList.iterator();
+    while (paramList.hasNext())
+    {
+      NotificationChannel localNotificationChannel = (NotificationChannel)paramList.next();
+      if (a.equals(localNotificationChannel.getGroup())) {
+        localArrayList.add(new k(localNotificationChannel));
+      }
+    }
+    return localArrayList;
+  }
+  
+  NotificationChannelGroup b()
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i < 26) {
+      return null;
+    }
+    NotificationChannelGroup localNotificationChannelGroup = new NotificationChannelGroup(a, b);
+    if (i >= 28) {
+      localNotificationChannelGroup.setDescription(c);
+    }
+    return localNotificationChannelGroup;
+  }
+}

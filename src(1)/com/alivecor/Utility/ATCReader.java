@@ -1,0 +1,112 @@
+package com.alivecor.Utility;
+
+import com.alivecor.ecgcore.BeatSeries;
+import com.alivecor.ecgcore.ECGLead;
+import com.alivecor.ecgcore.ECGSignal;
+import com.alivecor.ecgcore.ECGSignalATC;
+import com.alivecor.ecgcore.MainsFrequency;
+import com.alivecor.ecgcore.SampleRate;
+
+public class ATCReader
+{
+  private long nativeHandle;
+  
+  public ATCReader(String paramString)
+  {
+    init(paramString);
+  }
+  
+  private native void dispose();
+  
+  private native void init(String paramString);
+  
+  private native short[] nativeGetAverageBeat(int paramInt);
+  
+  private native int nativeGetAverageBeatSampleCount(int paramInt);
+  
+  private native int nativeGetECGSampleCount(int paramInt);
+  
+  private native short[] nativeGetECGSamples(int paramInt);
+  
+  private native int nativeMainsFrequency();
+  
+  private native int nativeReadStatus();
+  
+  private native int nativeSampleRate();
+  
+  public native int annotationCount();
+  
+  public native BeatSeries annotations();
+  
+  public native int atcVersion();
+  
+  public native boolean baselineFiltered();
+  
+  public native String dateRecorded();
+  
+  public native String deviceData();
+  
+  public native boolean enhancedFiltered();
+  
+  protected void finalize()
+  {
+    dispose();
+  }
+  
+  public native char flags();
+  
+  public ECGSignal getAverageBeat(ECGLead paramECGLead)
+  {
+    return new ECGSignalATC(nativeGetAverageBeat(code), sampleRate());
+  }
+  
+  public int getAverageBeatSampleCount(ECGLead paramECGLead)
+  {
+    return nativeGetAverageBeatSampleCount(code);
+  }
+  
+  public int getECGSampleCount(ECGLead paramECGLead)
+  {
+    return nativeGetECGSampleCount(code);
+  }
+  
+  public ECGSignal getECGSamples(ECGLead paramECGLead)
+  {
+    return new ECGSignalATC(nativeGetECGSamples(code), sampleRate());
+  }
+  
+  public native boolean mainsFiltered();
+  
+  public MainsFrequency mainsFrequency()
+  {
+    return MainsFrequency.fromInt(nativeMainsFrequency());
+  }
+  
+  public native boolean notchMainsFiltered();
+  
+  public native int numLeads();
+  
+  public native String phoneModel();
+  
+  public native String phoneUUID();
+  
+  public ATCStatus readStatus()
+  {
+    return ATCStatus.fromInt(nativeReadStatus());
+  }
+  
+  public native boolean readSucceeded();
+  
+  public native String recorderHardware();
+  
+  public native String recorderSoftware();
+  
+  public native String recordingUUID();
+  
+  public native int resolution();
+  
+  public SampleRate sampleRate()
+  {
+    return SampleRate.fromInt(nativeSampleRate());
+  }
+}

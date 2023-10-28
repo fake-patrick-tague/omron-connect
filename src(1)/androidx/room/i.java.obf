@@ -1,0 +1,896 @@
+package androidx.room;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
+import c.t.a.a;
+import c.t.a.c;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+
+public class f
+{
+  private static final String[] a = { "UPDATE", "DELETE", "INSERT" };
+  final HashMap<String, Integer> b;
+  final String[] c;
+  private Map<String, Set<String>> d;
+  final RoomDatabase e;
+  AtomicBoolean f;
+  private volatile boolean g;
+  volatile c.t.a.f h;
+  private b i;
+  private final e j;
+  final c.b.a.b.b<c, d> k;
+  private g l;
+  Runnable m;
+  
+  public f(RoomDatabase paramRoomDatabase, Map<String, String> paramMap, Map<String, Set<String>> paramMap1, String... paramVarArgs)
+  {
+    int n = 0;
+    f = new AtomicBoolean(false);
+    g = false;
+    k = new c.b.a.b.b();
+    m = new a();
+    e = paramRoomDatabase;
+    i = new b(paramVarArgs.length);
+    b = new HashMap();
+    d = paramMap1;
+    j = new e(paramRoomDatabase);
+    int i1 = paramVarArgs.length;
+    c = new String[i1];
+    while (n < i1)
+    {
+      paramMap1 = paramVarArgs[n];
+      paramRoomDatabase = Locale.US;
+      paramMap1 = paramMap1.toLowerCase(paramRoomDatabase);
+      b.put(paramMap1, Integer.valueOf(n));
+      String str = (String)paramMap.get(paramVarArgs[n]);
+      if (str != null) {
+        c[n] = str.toLowerCase(paramRoomDatabase);
+      } else {
+        c[n] = paramMap1;
+      }
+      n += 1;
+    }
+    paramRoomDatabase = paramMap.entrySet().iterator();
+    while (paramRoomDatabase.hasNext())
+    {
+      paramMap1 = (Map.Entry)paramRoomDatabase.next();
+      paramMap = (String)paramMap1.getValue();
+      paramVarArgs = Locale.US;
+      paramMap = paramMap.toLowerCase(paramVarArgs);
+      if (b.containsKey(paramMap))
+      {
+        paramMap1 = ((String)paramMap1.getKey()).toLowerCase(paramVarArgs);
+        paramVarArgs = b;
+        paramVarArgs.put(paramMap1, paramVarArgs.get(paramMap));
+      }
+    }
+  }
+  
+  private static void b(StringBuilder paramStringBuilder, String paramString1, String paramString2)
+  {
+    paramStringBuilder.append("`");
+    paramStringBuilder.append("room_table_modification_trigger_");
+    paramStringBuilder.append(paramString1);
+    paramStringBuilder.append("_");
+    paramStringBuilder.append(paramString2);
+    paramStringBuilder.append("`");
+  }
+  
+  private String[] h(String[] paramArrayOfString)
+  {
+    HashSet localHashSet = new HashSet();
+    int i1 = paramArrayOfString.length;
+    int n = 0;
+    while (n < i1)
+    {
+      String str1 = paramArrayOfString[n];
+      String str2 = str1.toLowerCase(Locale.US);
+      if (d.containsKey(str2)) {
+        localHashSet.addAll((Collection)d.get(str2));
+      } else {
+        localHashSet.add(str1);
+      }
+      n += 1;
+    }
+    return (String[])localHashSet.toArray(new String[localHashSet.size()]);
+  }
+  
+  private void j(c.t.a.b paramB, int paramInt)
+  {
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("INSERT OR IGNORE INTO room_table_modification_log VALUES(");
+    ((StringBuilder)localObject).append(paramInt);
+    ((StringBuilder)localObject).append(", 0)");
+    paramB.execSQL(((StringBuilder)localObject).toString());
+    localObject = c[paramInt];
+    StringBuilder localStringBuilder = new StringBuilder();
+    String[] arrayOfString = a;
+    int i1 = arrayOfString.length;
+    int n = 0;
+    while (n < i1)
+    {
+      String str = arrayOfString[n];
+      localStringBuilder.setLength(0);
+      localStringBuilder.append("CREATE TEMP TRIGGER IF NOT EXISTS ");
+      b(localStringBuilder, (String)localObject, str);
+      localStringBuilder.append(" AFTER ");
+      localStringBuilder.append(str);
+      localStringBuilder.append(" ON `");
+      localStringBuilder.append((String)localObject);
+      localStringBuilder.append("` BEGIN UPDATE ");
+      localStringBuilder.append("room_table_modification_log");
+      localStringBuilder.append(" SET ");
+      localStringBuilder.append("invalidated");
+      localStringBuilder.append(" = 1");
+      localStringBuilder.append(" WHERE ");
+      localStringBuilder.append("table_id");
+      localStringBuilder.append(" = ");
+      localStringBuilder.append(paramInt);
+      localStringBuilder.append(" AND ");
+      localStringBuilder.append("invalidated");
+      localStringBuilder.append(" = 0");
+      localStringBuilder.append("; END");
+      paramB.execSQL(localStringBuilder.toString());
+      n += 1;
+    }
+  }
+  
+  private void k(c.t.a.b paramB, int paramInt)
+  {
+    String str1 = c[paramInt];
+    StringBuilder localStringBuilder = new StringBuilder();
+    String[] arrayOfString = a;
+    int n = arrayOfString.length;
+    paramInt = 0;
+    while (paramInt < n)
+    {
+      String str2 = arrayOfString[paramInt];
+      localStringBuilder.setLength(0);
+      localStringBuilder.append("DROP TRIGGER IF EXISTS ");
+      b(localStringBuilder, str1, str2);
+      paramB.execSQL(localStringBuilder.toString());
+      paramInt += 1;
+    }
+  }
+  
+  public void a(c paramC)
+  {
+    ??? = h(a);
+    int[] arrayOfInt = new int[???.length];
+    int i1 = ???.length;
+    int n = 0;
+    while (n < i1)
+    {
+      localObject2 = (Integer)b.get(???[n].toLowerCase(Locale.US));
+      if (localObject2 != null)
+      {
+        arrayOfInt[n] = ((Integer)localObject2).intValue();
+        n += 1;
+      }
+      else
+      {
+        paramC = new StringBuilder();
+        paramC.append("There is no table with name ");
+        paramC.append(???[n]);
+        throw new IllegalArgumentException(paramC.toString());
+      }
+    }
+    Object localObject2 = new d(paramC, arrayOfInt, (String[])???);
+    synchronized (k)
+    {
+      paramC = (d)k.f(paramC, localObject2);
+      if ((paramC == null) && (i.b(arrayOfInt))) {
+        l();
+      }
+      return;
+    }
+  }
+  
+  boolean c()
+  {
+    if (!e.o()) {
+      return false;
+    }
+    if (!g) {
+      e.i().getWritableDatabase();
+    }
+    if (!g)
+    {
+      Log.e("ROOM", "database is not initialized even though it is open");
+      return false;
+    }
+    return true;
+  }
+  
+  void d(c.t.a.b paramB)
+  {
+    try
+    {
+      if (g)
+      {
+        Log.e("ROOM", "Invalidation tracker is initialized twice :/.");
+        return;
+      }
+      paramB.execSQL("PRAGMA temp_store = MEMORY;");
+      paramB.execSQL("PRAGMA recursive_triggers='ON';");
+      paramB.execSQL("CREATE TEMP TABLE room_table_modification_log(table_id INTEGER PRIMARY KEY, invalidated INTEGER NOT NULL DEFAULT 0)");
+      m(paramB);
+      h = paramB.compileStatement("UPDATE room_table_modification_log SET invalidated = 0 WHERE invalidated = 1 ");
+      g = true;
+      return;
+    }
+    finally {}
+  }
+  
+  public void e(String... paramVarArgs)
+  {
+    synchronized (k)
+    {
+      Iterator localIterator = k.iterator();
+      while (localIterator.hasNext())
+      {
+        Map.Entry localEntry = (Map.Entry)localIterator.next();
+        if (!((c)localEntry.getKey()).a()) {
+          ((d)localEntry.getValue()).b(paramVarArgs);
+        }
+      }
+      return;
+    }
+  }
+  
+  public void f()
+  {
+    if (f.compareAndSet(false, true)) {
+      e.j().execute(m);
+    }
+  }
+  
+  public void g(c paramC)
+  {
+    synchronized (k)
+    {
+      paramC = (d)k.g(paramC);
+      if ((paramC != null) && (i.c(a))) {
+        l();
+      }
+      return;
+    }
+  }
+  
+  void i(Context paramContext, String paramString)
+  {
+    l = new g(paramContext, paramString, this, e.j());
+  }
+  
+  void l()
+  {
+    if (!e.o()) {
+      return;
+    }
+    m(e.i().getWritableDatabase());
+  }
+  
+  void m(c.t.a.b paramB)
+  {
+    if (paramB.inTransaction()) {
+      return;
+    }
+    for (;;)
+    {
+      int n;
+      try
+      {
+        Lock localLock = e.h();
+        localLock.lock();
+        try
+        {
+          int[] arrayOfInt = i.a();
+          if (arrayOfInt == null) {
+            return;
+          }
+          int i1 = arrayOfInt.length;
+          paramB.beginTransaction();
+          n = 0;
+          if (n < i1)
+          {
+            int i2 = arrayOfInt[n];
+            if ((i2 != 1) && (i2 != 2)) {
+              break label171;
+            }
+          }
+          try
+          {
+            k(paramB, n);
+          }
+          finally {}
+          j(paramB, n);
+          break label171;
+          paramB.setTransactionSuccessful();
+          paramB.endTransaction();
+          i.d();
+          localLock.unlock();
+          continue;
+        }
+        finally
+        {
+          localLock.unlock();
+        }
+        Log.e("ROOM", "Cannot run invalidation tracker. Is the db closed?", paramB);
+      }
+      catch (SQLiteException paramB) {}catch (IllegalStateException paramB) {}
+      return;
+      label171:
+      n += 1;
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    private Set<Integer> a()
+    {
+      HashSet localHashSet = new HashSet();
+      Cursor localCursor = e.p(new a("SELECT * FROM room_table_modification_log WHERE invalidated = 1;"));
+      try
+      {
+        while (localCursor.moveToNext()) {
+          localHashSet.add(Integer.valueOf(localCursor.getInt(0)));
+        }
+        localCursor.close();
+        if (!localHashSet.isEmpty()) {
+          h.executeUpdateDelete();
+        }
+        return localHashSet;
+      }
+      finally
+      {
+        localCursor.close();
+      }
+    }
+    
+    /* Error */
+    public void run()
+    {
+      // Byte code:
+      //   0: aload_0
+      //   1: getfield 14	androidx/room/f$a:b	Landroidx/room/f;
+      //   4: getfield 27	androidx/room/f:e	Landroidx/room/RoomDatabase;
+      //   7: invokevirtual 86	androidx/room/RoomDatabase:h	()Ljava/util/concurrent/locks/Lock;
+      //   10: astore 7
+      //   12: aconst_null
+      //   13: astore 5
+      //   15: aconst_null
+      //   16: astore 6
+      //   18: aconst_null
+      //   19: astore 4
+      //   21: aload 5
+      //   23: astore_3
+      //   24: aload 6
+      //   26: astore_2
+      //   27: aload 7
+      //   29: invokeinterface 91 1 0
+      //   34: aload 5
+      //   36: astore_3
+      //   37: aload 6
+      //   39: astore_2
+      //   40: aload_0
+      //   41: getfield 14	androidx/room/f$a:b	Landroidx/room/f;
+      //   44: invokevirtual 94	androidx/room/f:c	()Z
+      //   47: istore_1
+      //   48: iload_1
+      //   49: ifne +11 -> 60
+      //   52: aload 7
+      //   54: invokeinterface 97 1 0
+      //   59: return
+      //   60: aload 5
+      //   62: astore_3
+      //   63: aload 6
+      //   65: astore_2
+      //   66: aload_0
+      //   67: getfield 14	androidx/room/f$a:b	Landroidx/room/f;
+      //   70: getfield 101	androidx/room/f:f	Ljava/util/concurrent/atomic/AtomicBoolean;
+      //   73: iconst_1
+      //   74: iconst_0
+      //   75: invokevirtual 107	java/util/concurrent/atomic/AtomicBoolean:compareAndSet	(ZZ)Z
+      //   78: istore_1
+      //   79: iload_1
+      //   80: ifne +11 -> 91
+      //   83: aload 7
+      //   85: invokeinterface 97 1 0
+      //   90: return
+      //   91: aload 5
+      //   93: astore_3
+      //   94: aload 6
+      //   96: astore_2
+      //   97: aload_0
+      //   98: getfield 14	androidx/room/f$a:b	Landroidx/room/f;
+      //   101: getfield 27	androidx/room/f:e	Landroidx/room/RoomDatabase;
+      //   104: invokevirtual 110	androidx/room/RoomDatabase:k	()Z
+      //   107: istore_1
+      //   108: iload_1
+      //   109: ifeq +11 -> 120
+      //   112: aload 7
+      //   114: invokeinterface 97 1 0
+      //   119: return
+      //   120: aload 5
+      //   122: astore_3
+      //   123: aload 6
+      //   125: astore_2
+      //   126: aload_0
+      //   127: getfield 14	androidx/room/f$a:b	Landroidx/room/f;
+      //   130: getfield 27	androidx/room/f:e	Landroidx/room/RoomDatabase;
+      //   133: astore 8
+      //   135: aload 5
+      //   137: astore_3
+      //   138: aload 6
+      //   140: astore_2
+      //   141: aload 8
+      //   143: getfield 114	androidx/room/RoomDatabase:g	Z
+      //   146: ifeq +94 -> 240
+      //   149: aload 5
+      //   151: astore_3
+      //   152: aload 6
+      //   154: astore_2
+      //   155: aload 8
+      //   157: invokevirtual 118	androidx/room/RoomDatabase:i	()Lc/t/a/c;
+      //   160: invokeinterface 124 1 0
+      //   165: astore 8
+      //   167: aload 5
+      //   169: astore_3
+      //   170: aload 6
+      //   172: astore_2
+      //   173: aload 8
+      //   175: invokeinterface 129 1 0
+      //   180: aload_0
+      //   181: invokespecial 131	androidx/room/f$a:a	()Ljava/util/Set;
+      //   184: astore 5
+      //   186: aload 5
+      //   188: astore 4
+      //   190: aload 8
+      //   192: invokeinterface 134 1 0
+      //   197: aload 5
+      //   199: astore_3
+      //   200: aload 5
+      //   202: astore_2
+      //   203: aload 8
+      //   205: invokeinterface 137 1 0
+      //   210: aload 5
+      //   212: astore_2
+      //   213: goto +69 -> 282
+      //   216: astore 5
+      //   218: aload 4
+      //   220: astore_3
+      //   221: aload 4
+      //   223: astore_2
+      //   224: aload 8
+      //   226: invokeinterface 137 1 0
+      //   231: aload 4
+      //   233: astore_3
+      //   234: aload 4
+      //   236: astore_2
+      //   237: aload 5
+      //   239: athrow
+      //   240: aload 5
+      //   242: astore_3
+      //   243: aload 6
+      //   245: astore_2
+      //   246: aload_0
+      //   247: invokespecial 131	androidx/room/f$a:a	()Ljava/util/Set;
+      //   250: astore 4
+      //   252: aload 4
+      //   254: astore_2
+      //   255: goto +27 -> 282
+      //   258: astore_2
+      //   259: goto +109 -> 368
+      //   262: astore 4
+      //   264: aload_3
+      //   265: astore_2
+      //   266: aload 4
+      //   268: astore_3
+      //   269: goto +4 -> 273
+      //   272: astore_3
+      //   273: ldc -117
+      //   275: ldc -115
+      //   277: aload_3
+      //   278: invokestatic 146	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+      //   281: pop
+      //   282: aload 7
+      //   284: invokeinterface 97 1 0
+      //   289: aload_2
+      //   290: ifnull +77 -> 367
+      //   293: aload_2
+      //   294: invokeinterface 149 1 0
+      //   299: ifne +68 -> 367
+      //   302: aload_0
+      //   303: getfield 14	androidx/room/f$a:b	Landroidx/room/f;
+      //   306: getfield 152	androidx/room/f:k	Lc/b/a/b/b;
+      //   309: astore_3
+      //   310: aload_3
+      //   311: monitorenter
+      //   312: aload_0
+      //   313: getfield 14	androidx/room/f$a:b	Landroidx/room/f;
+      //   316: getfield 152	androidx/room/f:k	Lc/b/a/b/b;
+      //   319: invokevirtual 158	c/b/a/b/b:iterator	()Ljava/util/Iterator;
+      //   322: astore 4
+      //   324: aload 4
+      //   326: invokeinterface 163 1 0
+      //   331: ifeq +28 -> 359
+      //   334: aload 4
+      //   336: invokeinterface 167 1 0
+      //   341: checkcast 169	java/util/Map$Entry
+      //   344: invokeinterface 172 1 0
+      //   349: checkcast 174	androidx/room/f$d
+      //   352: aload_2
+      //   353: invokevirtual 177	androidx/room/f$d:a	(Ljava/util/Set;)V
+      //   356: goto -32 -> 324
+      //   359: aload_3
+      //   360: monitorexit
+      //   361: return
+      //   362: astore_2
+      //   363: aload_3
+      //   364: monitorexit
+      //   365: aload_2
+      //   366: athrow
+      //   367: return
+      //   368: aload 7
+      //   370: invokeinterface 97 1 0
+      //   375: aload_2
+      //   376: athrow
+      // Local variable table:
+      //   start	length	slot	name	signature
+      //   0	377	0	this	a
+      //   47	62	1	bool	boolean
+      //   26	229	2	localObject1	Object
+      //   258	1	2	localObject2	Object
+      //   265	88	2	localObject3	Object
+      //   362	14	2	localObject4	Object
+      //   23	246	3	localObject5	Object
+      //   272	6	3	localIllegalStateException	IllegalStateException
+      //   309	55	3	localB	c.b.a.b.b
+      //   19	234	4	localSet1	Set
+      //   262	5	4	localSQLiteException	SQLiteException
+      //   322	13	4	localIterator	Iterator
+      //   13	198	5	localSet2	Set
+      //   216	25	5	localObject6	Object
+      //   16	228	6	localObject7	Object
+      //   10	359	7	localLock	Lock
+      //   133	92	8	localObject8	Object
+      // Exception table:
+      //   from	to	target	type
+      //   180	186	216	finally
+      //   190	197	216	finally
+      //   27	34	258	finally
+      //   40	48	258	finally
+      //   66	79	258	finally
+      //   97	108	258	finally
+      //   126	135	258	finally
+      //   141	149	258	finally
+      //   155	167	258	finally
+      //   173	180	258	finally
+      //   203	210	258	finally
+      //   224	231	258	finally
+      //   237	240	258	finally
+      //   246	252	258	finally
+      //   273	282	258	finally
+      //   27	34	262	android/database/sqlite/SQLiteException
+      //   40	48	262	android/database/sqlite/SQLiteException
+      //   66	79	262	android/database/sqlite/SQLiteException
+      //   97	108	262	android/database/sqlite/SQLiteException
+      //   126	135	262	android/database/sqlite/SQLiteException
+      //   141	149	262	android/database/sqlite/SQLiteException
+      //   155	167	262	android/database/sqlite/SQLiteException
+      //   173	180	262	android/database/sqlite/SQLiteException
+      //   203	210	262	android/database/sqlite/SQLiteException
+      //   224	231	262	android/database/sqlite/SQLiteException
+      //   237	240	262	android/database/sqlite/SQLiteException
+      //   246	252	262	android/database/sqlite/SQLiteException
+      //   27	34	272	java/lang/IllegalStateException
+      //   40	48	272	java/lang/IllegalStateException
+      //   66	79	272	java/lang/IllegalStateException
+      //   97	108	272	java/lang/IllegalStateException
+      //   126	135	272	java/lang/IllegalStateException
+      //   141	149	272	java/lang/IllegalStateException
+      //   155	167	272	java/lang/IllegalStateException
+      //   173	180	272	java/lang/IllegalStateException
+      //   203	210	272	java/lang/IllegalStateException
+      //   224	231	272	java/lang/IllegalStateException
+      //   237	240	272	java/lang/IllegalStateException
+      //   246	252	272	java/lang/IllegalStateException
+      //   312	324	362	finally
+      //   324	356	362	finally
+      //   359	361	362	finally
+      //   363	365	362	finally
+    }
+  }
+  
+  static class b
+  {
+    final long[] a;
+    final boolean[] b;
+    final int[] c;
+    boolean d;
+    boolean e;
+    
+    b(int paramInt)
+    {
+      long[] arrayOfLong = new long[paramInt];
+      a = arrayOfLong;
+      boolean[] arrayOfBoolean = new boolean[paramInt];
+      b = arrayOfBoolean;
+      c = new int[paramInt];
+      Arrays.fill(arrayOfLong, 0L);
+      Arrays.fill(arrayOfBoolean, false);
+    }
+    
+    int[] a()
+    {
+      for (;;)
+      {
+        int i;
+        int[] arrayOfInt;
+        try
+        {
+          if ((d) && (!e))
+          {
+            int k = a.length;
+            i = 0;
+            j = 1;
+            Object localObject1;
+            if (i < k)
+            {
+              if (a[i] > 0L)
+              {
+                m = 1;
+                localObject1 = b;
+                if (m != localObject1[i])
+                {
+                  arrayOfInt = c;
+                  if (m == 0) {
+                    break label128;
+                  }
+                  break label130;
+                }
+                c[i] = 0;
+                break label135;
+              }
+            }
+            else
+            {
+              e = true;
+              d = false;
+              localObject1 = c;
+              return localObject1;
+            }
+          }
+          else
+          {
+            return null;
+          }
+        }
+        finally {}
+        int m = 0;
+        continue;
+        label128:
+        int j = 2;
+        label130:
+        arrayOfInt[i] = j;
+        label135:
+        localObject2[i] = m;
+        i += 1;
+      }
+    }
+    
+    boolean b(int... paramVarArgs)
+    {
+      for (;;)
+      {
+        int i;
+        try
+        {
+          int j = paramVarArgs.length;
+          i = 0;
+          boolean bool = false;
+          if (i < j)
+          {
+            int k = paramVarArgs[i];
+            long[] arrayOfLong = a;
+            long l = arrayOfLong[k];
+            arrayOfLong[k] = (1L + l);
+            if (l == 0L)
+            {
+              d = true;
+              bool = true;
+            }
+          }
+          else
+          {
+            return bool;
+          }
+        }
+        finally {}
+        i += 1;
+      }
+    }
+    
+    boolean c(int... paramVarArgs)
+    {
+      for (;;)
+      {
+        int i;
+        try
+        {
+          int j = paramVarArgs.length;
+          i = 0;
+          boolean bool = false;
+          if (i < j)
+          {
+            int k = paramVarArgs[i];
+            long[] arrayOfLong = a;
+            long l = arrayOfLong[k];
+            arrayOfLong[k] = (l - 1L);
+            if (l == 1L)
+            {
+              d = true;
+              bool = true;
+            }
+          }
+          else
+          {
+            return bool;
+          }
+        }
+        finally {}
+        i += 1;
+      }
+    }
+    
+    void d()
+    {
+      try
+      {
+        e = false;
+        return;
+      }
+      finally {}
+    }
+  }
+  
+  public static abstract class c
+  {
+    final String[] a;
+    
+    public c(String[] paramArrayOfString)
+    {
+      a = ((String[])Arrays.copyOf(paramArrayOfString, paramArrayOfString.length));
+    }
+    
+    boolean a()
+    {
+      return false;
+    }
+    
+    public abstract void b(Set<String> paramSet);
+  }
+  
+  static class d
+  {
+    final int[] a;
+    private final String[] b;
+    final f.c c;
+    private final Set<String> d;
+    
+    d(f.c paramC, int[] paramArrayOfInt, String[] paramArrayOfString)
+    {
+      c = paramC;
+      a = paramArrayOfInt;
+      b = paramArrayOfString;
+      if (paramArrayOfInt.length == 1)
+      {
+        paramC = new HashSet();
+        paramC.add(paramArrayOfString[0]);
+        d = Collections.unmodifiableSet(paramC);
+        return;
+      }
+      d = null;
+    }
+    
+    void a(Set<Integer> paramSet)
+    {
+      int j = a.length;
+      Object localObject1 = null;
+      int i = 0;
+      while (i < j)
+      {
+        Object localObject2 = localObject1;
+        if (paramSet.contains(Integer.valueOf(a[i]))) {
+          if (j == 1)
+          {
+            localObject2 = d;
+          }
+          else
+          {
+            localObject2 = localObject1;
+            if (localObject1 == null) {
+              localObject2 = new HashSet(j);
+            }
+            ((Set)localObject2).add(b[i]);
+          }
+        }
+        i += 1;
+        localObject1 = localObject2;
+      }
+      if (localObject1 != null) {
+        c.b(localObject1);
+      }
+    }
+    
+    void b(String[] paramArrayOfString)
+    {
+      int i = b.length;
+      Object localObject2 = null;
+      int j;
+      if (i == 1)
+      {
+        j = paramArrayOfString.length;
+        i = 0;
+        for (;;)
+        {
+          localObject1 = localObject2;
+          if (i >= j) {
+            break;
+          }
+          if (paramArrayOfString[i].equalsIgnoreCase(b[0]))
+          {
+            localObject1 = d;
+            break;
+          }
+          i += 1;
+        }
+      }
+      HashSet localHashSet = new HashSet();
+      int k = paramArrayOfString.length;
+      i = 0;
+      while (i < k)
+      {
+        localObject1 = paramArrayOfString[i];
+        String[] arrayOfString = b;
+        int m = arrayOfString.length;
+        j = 0;
+        while (j < m)
+        {
+          String str = arrayOfString[j];
+          if (str.equalsIgnoreCase((String)localObject1))
+          {
+            localHashSet.add(str);
+            break;
+          }
+          j += 1;
+        }
+        i += 1;
+      }
+      Object localObject1 = localObject2;
+      if (localHashSet.size() > 0) {
+        localObject1 = localHashSet;
+      }
+      if (localObject1 != null) {
+        c.b((Set)localObject1);
+      }
+    }
+  }
+}

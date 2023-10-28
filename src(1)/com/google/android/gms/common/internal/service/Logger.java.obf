@@ -1,0 +1,48 @@
+package com.google.android.gms.common.internal.service;
+
+import android.content.Context;
+import com.google.android.gms.common.Feature;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.Api.AbstractClientBuilder;
+import com.google.android.gms.common.api.Api.ClientKey;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApi.Settings;
+import com.google.android.gms.common.api.internal.TaskApiCall;
+import com.google.android.gms.common.api.internal.TaskApiCall.Builder;
+import com.google.android.gms.common.internal.TelemetryData;
+import com.google.android.gms.common.internal.TelemetryLoggingClient;
+import com.google.android.gms.common.internal.TelemetryLoggingOptions;
+import com.google.android.gms.internal.base.zad;
+import com.google.android.gms.tasks.Task;
+
+public final class zao
+  extends GoogleApi<TelemetryLoggingOptions>
+  implements TelemetryLoggingClient
+{
+  private static final Api.ClientKey<zap> zac;
+  private static final Api.AbstractClientBuilder<zap, TelemetryLoggingOptions> zad;
+  private static final Api<TelemetryLoggingOptions> zae;
+  
+  static
+  {
+    Api.ClientKey localClientKey = new Api.ClientKey();
+    zac = localClientKey;
+    zan localZan = new zan();
+    zad = localZan;
+    zae = new Api("ClientTelemetry.API", localZan, localClientKey);
+  }
+  
+  public zao(Context paramContext, TelemetryLoggingOptions paramTelemetryLoggingOptions)
+  {
+    super(paramContext, zae, paramTelemetryLoggingOptions, GoogleApi.Settings.DEFAULT_SETTINGS);
+  }
+  
+  public final Task<Void> log(TelemetryData paramTelemetryData)
+  {
+    TaskApiCall.Builder localBuilder = TaskApiCall.builder();
+    localBuilder.setFeatures(new Feature[] { zad.zaa });
+    localBuilder.setAutoResolveMissingFeatures(false);
+    localBuilder.run(new zam(paramTelemetryData));
+    return doBestEffortWrite(localBuilder.build());
+  }
+}

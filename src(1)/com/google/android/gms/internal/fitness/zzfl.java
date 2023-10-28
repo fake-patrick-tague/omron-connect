@@ -1,0 +1,97 @@
+package com.google.android.gms.internal.fitness;
+
+final class zzfl<E>
+  extends zzfh<E>
+{
+  static final zzfl<Object> zzto = new zzfl(new Object[0], 0, null, 0, 0);
+  private final transient int mask;
+  private final transient int size;
+  private final transient Object[] zztp;
+  private final transient Object[] zztq;
+  private final transient int zztr;
+  
+  zzfl(Object[] paramArrayOfObject1, int paramInt1, Object[] paramArrayOfObject2, int paramInt2, int paramInt3)
+  {
+    zztp = paramArrayOfObject1;
+    zztq = paramArrayOfObject2;
+    mask = paramInt2;
+    zztr = paramInt1;
+    size = paramInt3;
+  }
+  
+  public final boolean contains(Object paramObject)
+  {
+    Object[] arrayOfObject = zztq;
+    if (paramObject != null)
+    {
+      if (arrayOfObject == null) {
+        return false;
+      }
+      int i = zzfa.smear(paramObject.hashCode());
+      for (;;)
+      {
+        i &= mask;
+        Object localObject = arrayOfObject[i];
+        if (localObject == null) {
+          return false;
+        }
+        if (localObject.equals(paramObject)) {
+          return true;
+        }
+        i += 1;
+      }
+    }
+    return false;
+  }
+  
+  final int get(Object[] paramArrayOfObject, int paramInt)
+  {
+    System.arraycopy(zztp, 0, paramArrayOfObject, 0, size);
+    return size + 0;
+  }
+  
+  public final int hashCode()
+  {
+    return zztr;
+  }
+  
+  public final int size()
+  {
+    return size;
+  }
+  
+  public final zzfm zzae()
+  {
+    return (zzfm)zzaf().iterator();
+  }
+  
+  final Object[] zzag()
+  {
+    return zztp;
+  }
+  
+  final int zzah()
+  {
+    return 0;
+  }
+  
+  final int zzai()
+  {
+    return size;
+  }
+  
+  final boolean zzaj()
+  {
+    return false;
+  }
+  
+  final boolean zzak()
+  {
+    return true;
+  }
+  
+  final zzfc zzal()
+  {
+    return zzfc.add(zztp, size);
+  }
+}

@@ -1,0 +1,378 @@
+package com.braze.models.inappmessage;
+
+import android.graphics.Color;
+import bo.app.b3;
+import bo.app.c3;
+import bo.app.e3;
+import bo.app.j.a;
+import bo.app.z1;
+import com.braze.enums.inappmessage.ImageStyle;
+import com.braze.enums.inappmessage.TextAlign;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import kotlin.a0.c;
+import kotlin.a0.f;
+import kotlin.collections.x;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.c.l;
+import kotlin.z.d;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public abstract class InAppMessageImmersiveBase
+  extends InAppMessageWithImageBase
+  implements IInAppMessageImmersive
+{
+  public static final a Companion = new a(null);
+  private String buttonIdClicked;
+  private int closeButtonColor = Color.parseColor("#9B9B9B");
+  private Integer frameColor;
+  private String header;
+  private TextAlign headerTextAlign = TextAlign.CENTER;
+  private int headerTextColor = Color.parseColor("#333333");
+  private ImageStyle imageStyle = ImageStyle.TOP;
+  private List<? extends MessageButton> messageButtons = kotlin.collections.i.d();
+  private boolean wasButtonClickLogged;
+  
+  protected InAppMessageImmersiveBase() {}
+  
+  public InAppMessageImmersiveBase(JSONObject paramJSONObject, z1 paramZ1)
+  {
+    this(paramJSONObject, paramZ1, str, j, k, (ImageStyle)localObject1, (TextAlign)localObject2, (TextAlign)localObject3);
+    localObject2 = paramJSONObject.optJSONArray("btns");
+    paramZ1 = c3.b(paramJSONObject);
+    localObject1 = new ArrayList();
+    if (localObject2 == null) {
+      paramJSONObject = kotlin.collections.i.d().iterator();
+    } else {
+      paramJSONObject = f.i(f.f(kotlin.collections.i.n(d.g(0, ((JSONArray)localObject2).length())), new f((JSONArray)localObject2)), new g((JSONArray)localObject2)).iterator();
+    }
+    paramJSONObject = kotlin.collections.i.j(paramJSONObject);
+    while (paramJSONObject.hasNext())
+    {
+      localObject2 = (x)paramJSONObject.next();
+      ((List)localObject1).add(new MessageButton((JSONObject)((x)localObject2).b(), paramZ1.optJSONObject(((x)localObject2).a())));
+    }
+    setMessageButtons((List)localObject1);
+  }
+  
+  private InAppMessageImmersiveBase(JSONObject paramJSONObject, z1 paramZ1, String paramString, int paramInt1, int paramInt2, ImageStyle paramImageStyle, TextAlign paramTextAlign1, TextAlign paramTextAlign2)
+  {
+    super(paramJSONObject, paramZ1);
+    setHeader(paramString);
+    setHeaderTextColor(paramInt1);
+    setCloseButtonColor(paramInt2);
+    if (paramJSONObject.has("frame_color")) {
+      setFrameColor(Integer.valueOf(paramJSONObject.optInt("frame_color")));
+    }
+    setImageStyle(paramImageStyle);
+    setHeaderTextAlign(paramTextAlign1);
+    setMessageTextAlign(paramTextAlign2);
+  }
+  
+  public void enableDarkTheme()
+  {
+    super.enableDarkTheme();
+    Object localObject = getInAppMessageDarkThemeWrapper();
+    if (localObject == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, b.b, 3, null);
+      return;
+    }
+    if (((e3)localObject).c() != null) {
+      setFrameColor(((e3)localObject).c());
+    }
+    if (((e3)localObject).b() != null) {
+      setCloseButtonColor(((e3)localObject).b().intValue());
+    }
+    if (((e3)localObject).d() != null) {
+      setHeaderTextColor(((e3)localObject).d().intValue());
+    }
+    localObject = getMessageButtons().iterator();
+    while (((Iterator)localObject).hasNext()) {
+      ((MessageButton)((Iterator)localObject).next()).enableDarkTheme();
+    }
+  }
+  
+  public JSONObject forJsonPut()
+  {
+    JSONObject localJSONObject = getJsonObject();
+    if (localJSONObject != null) {
+      return localJSONObject;
+    }
+    localJSONObject = super.forJsonPut();
+    try
+    {
+      localJSONObject.putOpt("header", getHeader());
+      localJSONObject.put("header_text_color", getHeaderTextColor());
+      localJSONObject.put("close_btn_color", getCloseButtonColor());
+      localJSONObject.putOpt("image_style", getImageStyle().toString());
+      localJSONObject.putOpt("text_align_header", getHeaderTextAlign().toString());
+      Object localObject = getFrameColor();
+      if (localObject != null) {
+        localJSONObject.put("frame_color", ((Number)localObject).intValue());
+      }
+      localObject = new JSONArray();
+      Iterator localIterator = getMessageButtons().iterator();
+      while (localIterator.hasNext()) {
+        ((JSONArray)localObject).put(((MessageButton)localIterator.next()).forJsonPut());
+      }
+      localJSONObject.put("btns", localObject);
+      return localJSONObject;
+    }
+    catch (JSONException localJSONException) {}
+    return localJSONObject;
+  }
+  
+  public int getCloseButtonColor()
+  {
+    return closeButtonColor;
+  }
+  
+  public Integer getFrameColor()
+  {
+    return frameColor;
+  }
+  
+  public String getHeader()
+  {
+    return header;
+  }
+  
+  public TextAlign getHeaderTextAlign()
+  {
+    return headerTextAlign;
+  }
+  
+  public int getHeaderTextColor()
+  {
+    return headerTextColor;
+  }
+  
+  public ImageStyle getImageStyle()
+  {
+    return imageStyle;
+  }
+  
+  public List<MessageButton> getMessageButtons()
+  {
+    return messageButtons;
+  }
+  
+  public boolean logButtonClick(MessageButton paramMessageButton)
+  {
+    kotlin.x.d.i.e(paramMessageButton, "messageButton");
+    z1 localZ1 = getBrazeManager();
+    String str = getTriggerId();
+    int i;
+    if ((str != null) && (!g.o(str))) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if (i != 0)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, c.b, 3, null);
+      return false;
+    }
+    if (wasButtonClickLogged)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, d.b, 2, null);
+      return false;
+    }
+    if (localZ1 == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, e.b, 2, null);
+      return false;
+    }
+    buttonIdClicked = paramMessageButton.getStringId();
+    paramMessageButton = bo.app.j.h.a(str, paramMessageButton);
+    if (paramMessageButton != null) {
+      localZ1.a(paramMessageButton);
+    }
+    wasButtonClickLogged = true;
+    return true;
+  }
+  
+  public void onAfterClosed()
+  {
+    super.onAfterClosed();
+    z1 localZ1 = getBrazeManager();
+    if (wasButtonClickLogged)
+    {
+      String str = getTriggerId();
+      int j = 0;
+      int i;
+      if ((str != null) && (!g.o(str))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i == 0)
+      {
+        str = buttonIdClicked;
+        if (str != null)
+        {
+          i = j;
+          if (!g.o(str)) {}
+        }
+        else
+        {
+          i = 1;
+        }
+        if ((i == 0) && (localZ1 != null)) {
+          localZ1.a(new b3(getTriggerId(), buttonIdClicked));
+        }
+      }
+    }
+  }
+  
+  public void setCloseButtonColor(int paramInt)
+  {
+    closeButtonColor = paramInt;
+  }
+  
+  public void setFrameColor(Integer paramInteger)
+  {
+    frameColor = paramInteger;
+  }
+  
+  public void setHeader(String paramString)
+  {
+    header = paramString;
+  }
+  
+  public void setHeaderTextAlign(TextAlign paramTextAlign)
+  {
+    kotlin.x.d.i.e(paramTextAlign, "<set-?>");
+    headerTextAlign = paramTextAlign;
+  }
+  
+  public void setHeaderTextColor(int paramInt)
+  {
+    headerTextColor = paramInt;
+  }
+  
+  public void setImageStyle(ImageStyle paramImageStyle)
+  {
+    kotlin.x.d.i.e(paramImageStyle, "<set-?>");
+    imageStyle = paramImageStyle;
+  }
+  
+  public void setMessageButtons(List<? extends MessageButton> paramList)
+  {
+    kotlin.x.d.i.e(paramList, "<set-?>");
+    messageButtons = paramList;
+  }
+  
+  public static final class a
+  {
+    private a() {}
+  }
+  
+  static final class b
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final b b = new b();
+    
+    b()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Cannot apply dark theme with a null themes wrapper";
+    }
+  }
+  
+  static final class c
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final c b = new c();
+    
+    c()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Trigger id not found (this is expected for test sends). Not logging button click.";
+    }
+  }
+  
+  static final class d
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final d b = new d();
+    
+    d()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Button click already logged for this message. Ignoring.";
+    }
+  }
+  
+  static final class e
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final e b = new e();
+    
+    e()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Cannot log a button click because the BrazeManager is null.";
+    }
+  }
+  
+  public static final class f
+    extends kotlin.x.d.j
+    implements l<Integer, Boolean>
+  {
+    public f(JSONArray paramJSONArray)
+    {
+      super();
+    }
+    
+    public final Boolean a(int paramInt)
+    {
+      return Boolean.valueOf(b.opt(paramInt) instanceof JSONObject);
+    }
+  }
+  
+  public static final class g
+    extends kotlin.x.d.j
+    implements l<Integer, JSONObject>
+  {
+    public g(JSONArray paramJSONArray)
+    {
+      super();
+    }
+    
+    public final JSONObject a(int paramInt)
+    {
+      Object localObject = b.get(paramInt);
+      Objects.requireNonNull(localObject, "null cannot be cast to non-null type org.json.JSONObject");
+      return (JSONObject)localObject;
+    }
+  }
+}

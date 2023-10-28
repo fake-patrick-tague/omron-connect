@@ -1,0 +1,146 @@
+package androidx.core.widget;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.widget.EdgeEffect;
+
+public final class d
+{
+  private final EdgeEffect a;
+  
+  @Deprecated
+  public d(Context paramContext)
+  {
+    a = new EdgeEffect(paramContext);
+  }
+  
+  public static EdgeEffect a(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    if (Build.VERSION.SDK_INT >= 31) {
+      return b.a(paramContext, paramAttributeSet);
+    }
+    return new EdgeEffect(paramContext);
+  }
+  
+  public static float c(EdgeEffect paramEdgeEffect)
+  {
+    if (Build.VERSION.SDK_INT >= 31) {
+      return b.b(paramEdgeEffect);
+    }
+    return 0.0F;
+  }
+  
+  public static void f(EdgeEffect paramEdgeEffect, float paramFloat1, float paramFloat2)
+  {
+    if (Build.VERSION.SDK_INT >= 21)
+    {
+      a.a(paramEdgeEffect, paramFloat1, paramFloat2);
+      return;
+    }
+    paramEdgeEffect.onPull(paramFloat1);
+  }
+  
+  public static float h(EdgeEffect paramEdgeEffect, float paramFloat1, float paramFloat2)
+  {
+    if (Build.VERSION.SDK_INT >= 31) {
+      return b.c(paramEdgeEffect, paramFloat1, paramFloat2);
+    }
+    f(paramEdgeEffect, paramFloat1, paramFloat2);
+    return paramFloat1;
+  }
+  
+  @Deprecated
+  public boolean b(Canvas paramCanvas)
+  {
+    return a.draw(paramCanvas);
+  }
+  
+  @Deprecated
+  public boolean d()
+  {
+    return a.isFinished();
+  }
+  
+  @Deprecated
+  public boolean e(int paramInt)
+  {
+    a.onAbsorb(paramInt);
+    return true;
+  }
+  
+  @Deprecated
+  public boolean g(float paramFloat)
+  {
+    a.onPull(paramFloat);
+    return true;
+  }
+  
+  @Deprecated
+  public boolean i()
+  {
+    a.onRelease();
+    return a.isFinished();
+  }
+  
+  @Deprecated
+  public void j(int paramInt1, int paramInt2)
+  {
+    a.setSize(paramInt1, paramInt2);
+  }
+  
+  static class a
+  {
+    static void a(EdgeEffect paramEdgeEffect, float paramFloat1, float paramFloat2)
+    {
+      paramEdgeEffect.onPull(paramFloat1, paramFloat2);
+    }
+  }
+  
+  private static class b
+  {
+    public static EdgeEffect a(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      try
+      {
+        paramAttributeSet = new EdgeEffect(paramContext, paramAttributeSet);
+        return paramAttributeSet;
+      }
+      finally
+      {
+        for (;;) {}
+      }
+      return new EdgeEffect(paramContext);
+    }
+    
+    public static float b(EdgeEffect paramEdgeEffect)
+    {
+      try
+      {
+        float f = paramEdgeEffect.getDistance();
+        return f;
+      }
+      finally
+      {
+        for (;;) {}
+      }
+      return 0.0F;
+    }
+    
+    public static float c(EdgeEffect paramEdgeEffect, float paramFloat1, float paramFloat2)
+    {
+      try
+      {
+        float f = paramEdgeEffect.onPullDistance(paramFloat1, paramFloat2);
+        return f;
+      }
+      finally
+      {
+        for (;;) {}
+      }
+      paramEdgeEffect.onPull(paramFloat1, paramFloat2);
+      return 0.0F;
+    }
+  }
+}

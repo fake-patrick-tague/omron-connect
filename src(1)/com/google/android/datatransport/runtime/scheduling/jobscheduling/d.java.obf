@@ -1,0 +1,84 @@
+package com.google.android.datatransport.runtime.scheduling.jobscheduling;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri.Builder;
+import android.os.Build.VERSION;
+import android.util.Base64;
+import com.google.android.datatransport.h.y.j.j0;
+
+public class p
+  implements x
+{
+  private final Context a;
+  private final j0 b;
+  private AlarmManager c;
+  private final SchedulerConfig d;
+  private final com.google.android.datatransport.h.a0.a e;
+  
+  p(Context paramContext, j0 paramJ0, AlarmManager paramAlarmManager, com.google.android.datatransport.h.a0.a paramA, SchedulerConfig paramSchedulerConfig)
+  {
+    a = paramContext;
+    b = paramJ0;
+    c = paramAlarmManager;
+    e = paramA;
+    d = paramSchedulerConfig;
+  }
+  
+  public p(Context paramContext, j0 paramJ0, com.google.android.datatransport.h.a0.a paramA, SchedulerConfig paramSchedulerConfig)
+  {
+    this(paramContext, paramJ0, (AlarmManager)paramContext.getSystemService("alarm"), paramA, paramSchedulerConfig);
+  }
+  
+  public void a(com.google.android.datatransport.h.p paramP, int paramInt)
+  {
+    b(paramP, paramInt, false);
+  }
+  
+  public void b(com.google.android.datatransport.h.p paramP, int paramInt, boolean paramBoolean)
+  {
+    Uri.Builder localBuilder = new Uri.Builder();
+    localBuilder.appendQueryParameter("backendName", paramP.b());
+    localBuilder.appendQueryParameter("priority", String.valueOf(com.google.android.datatransport.h.b0.a.a(paramP.d())));
+    if (paramP.c() != null) {
+      localBuilder.appendQueryParameter("extras", Base64.encodeToString(paramP.c(), 0));
+    }
+    Intent localIntent = new Intent(a, AlarmManagerSchedulerBroadcastReceiver.class);
+    localIntent.setData(localBuilder.build());
+    localIntent.putExtra("attemptNumber", paramInt);
+    if ((!paramBoolean) && (c(localIntent)))
+    {
+      com.google.android.datatransport.h.w.a.b("AlarmManagerScheduler", "Upload for context %s is already scheduled. Returning...", paramP);
+      return;
+    }
+    long l1 = b.q0(paramP);
+    long l2 = d.g(paramP.d(), l1, paramInt);
+    com.google.android.datatransport.h.w.a.c("AlarmManagerScheduler", "Scheduling upload for context %s in %dms(Backend next call timestamp %d). Attempt %d", new Object[] { paramP, Long.valueOf(l2), Long.valueOf(l1), Integer.valueOf(paramInt) });
+    paramP = a;
+    if (Build.VERSION.SDK_INT >= 23) {
+      paramInt = 67108864;
+    } else {
+      paramInt = 0;
+    }
+    paramP = PendingIntent.getBroadcast(paramP, 0, localIntent, paramInt);
+    c.set(3, e.a() + l2, paramP);
+  }
+  
+  boolean c(Intent paramIntent)
+  {
+    int i;
+    if (Build.VERSION.SDK_INT >= 23) {
+      i = 603979776;
+    } else {
+      i = 536870912;
+    }
+    Context localContext = a;
+    boolean bool = false;
+    if (PendingIntent.getBroadcast(localContext, 0, paramIntent, i) != null) {
+      bool = true;
+    }
+    return bool;
+  }
+}

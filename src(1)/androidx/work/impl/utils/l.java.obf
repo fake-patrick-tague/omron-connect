@@ -1,0 +1,53 @@
+package androidx.work.impl.utils;
+
+import androidx.room.RoomDatabase;
+import androidx.work.WorkInfo.State;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.d;
+import androidx.work.impl.n.q;
+
+public class j
+  implements Runnable
+{
+  private static final String b = androidx.work.j.f("StopWorkRunnable");
+  private final androidx.work.impl.j c;
+  private final String d;
+  private final boolean e;
+  
+  public j(androidx.work.impl.j paramJ, String paramString, boolean paramBoolean)
+  {
+    c = paramJ;
+    d = paramString;
+    e = paramBoolean;
+  }
+  
+  public void run()
+  {
+    WorkDatabase localWorkDatabase = c.p();
+    d localD = c.n();
+    q localQ = localWorkDatabase.B();
+    localWorkDatabase.c();
+    try
+    {
+      boolean bool = localD.h(d);
+      if (e)
+      {
+        bool = c.n().n(d);
+      }
+      else
+      {
+        if ((!bool) && (localQ.m(d) == WorkInfo.State.c)) {
+          localQ.b(WorkInfo.State.b, new String[] { d });
+        }
+        bool = c.n().o(d);
+      }
+      androidx.work.j.c().a(b, String.format("StopWorkRunnable for %s; Processor.stopWork = %s", new Object[] { d, Boolean.valueOf(bool) }), new Throwable[0]);
+      localWorkDatabase.r();
+      return;
+    }
+    finally
+    {
+      localWorkDatabase.g();
+    }
+  }
+}

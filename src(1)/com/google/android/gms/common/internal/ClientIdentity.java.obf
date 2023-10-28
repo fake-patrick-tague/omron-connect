@@ -1,0 +1,71 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+
+@KeepForSdk
+@SafeParcelable.Class(creator="ClientIdentityCreator")
+@SafeParcelable.Reserved({1000})
+public class ClientIdentity
+  extends AbstractSafeParcelable
+{
+  @KeepForSdk
+  public static final Parcelable.Creator<ClientIdentity> CREATOR = new zaa();
+  @KeepForSdk
+  @SafeParcelable.Field(defaultValueUnchecked="null", id=2)
+  public final String packageName;
+  @KeepForSdk
+  @SafeParcelable.Field(defaultValueUnchecked="0", id=1)
+  public final int uid;
+  
+  @SafeParcelable.Constructor
+  public ClientIdentity(@SafeParcelable.Param(id=1) int paramInt, @SafeParcelable.Param(id=2) String paramString)
+  {
+    uid = paramInt;
+    packageName = paramString;
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (!(paramObject instanceof ClientIdentity)) {
+      return false;
+    }
+    paramObject = (ClientIdentity)paramObject;
+    return (uid == uid) && (Objects.equal(packageName, packageName));
+  }
+  
+  public final int hashCode()
+  {
+    return uid;
+  }
+  
+  public final String toString()
+  {
+    int i = uid;
+    String str = packageName;
+    StringBuilder localStringBuilder = new StringBuilder(String.valueOf(str).length() + 12);
+    localStringBuilder.append(i);
+    localStringBuilder.append(":");
+    localStringBuilder.append(str);
+    return localStringBuilder.toString();
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, uid);
+    SafeParcelWriter.writeString(paramParcel, 2, packageName, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+}

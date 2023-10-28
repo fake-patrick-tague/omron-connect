@@ -1,0 +1,747 @@
+package com.braze.configuration;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.ApplicationInfoFlags;
+import android.os.Build.VERSION;
+import bo.app.w0;
+import bo.app.x0;
+import com.braze.enums.BrazeSdkMetadata;
+import com.braze.enums.DeviceKey;
+import com.braze.enums.LocationProviderName;
+import com.braze.enums.SdkFlavor;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.PackageUtils;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import kotlin.collections.g0;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.d.j;
+import kotlin.x.d.w;
+
+public class BrazeConfigurationProvider
+  extends CachedConfigurationProvider
+{
+  public static final a Companion = new a(null);
+  public static final int DEFAULT_IN_APP_MESSAGE_WEBVIEW_ONPAGEFINISHED_WAIT_MS = (int)TimeUnit.SECONDS.toMillis(15L);
+  private final Context context;
+  
+  public BrazeConfigurationProvider(Context paramContext)
+  {
+    super(paramContext, false, null, 6, null);
+    paramContext = paramContext.getApplicationContext();
+    kotlin.x.d.i.d(paramContext, "context.applicationContext");
+    context = paramContext;
+  }
+  
+  private final <E extends Enum<E>> EnumSet<E> getGenericEnumSetFromStringSet(Class<E> paramClass, b paramB)
+  {
+    String str = paramB.b();
+    if (getConfigurationCache().containsKey(str))
+    {
+      paramClass = getConfigurationCache().get(str);
+      Objects.requireNonNull(paramClass, "null cannot be cast to non-null type java.util.EnumSet<E of com.braze.configuration.BrazeConfigurationProvider.getGenericEnumSetFromStringSet>");
+      return (EnumSet)paramClass;
+    }
+    Set localSet = getStringSetValue(paramB.b(), new HashSet());
+    paramB = localSet;
+    if (localSet == null) {
+      paramB = new HashSet();
+    }
+    paramClass = w0.a(paramClass, paramB);
+    getConfigurationCache().put(str, paramClass);
+    return paramClass;
+  }
+  
+  private final String getServerTarget()
+  {
+    String str = getStringValue(b.f.b(), "PROD");
+    if (str == null) {
+      return "PROD";
+    }
+    return str;
+  }
+  
+  public final int getApplicationIconResourceId()
+  {
+    Object localObject;
+    if (getConfigurationCache().containsKey("application_icon"))
+    {
+      localObject = getConfigurationCache().get("application_icon");
+      Objects.requireNonNull(localObject, "null cannot be cast to non-null type kotlin.Int");
+      return ((Integer)localObject).intValue();
+    }
+    String str = context.getPackageName();
+    int i;
+    try
+    {
+      if (Build.VERSION.SDK_INT >= 33) {
+        localObject = context.getPackageManager().getApplicationInfo(str, PackageManager.ApplicationInfoFlags.of(0L));
+      } else {
+        localObject = context.getPackageManager().getApplicationInfo(str, 0);
+      }
+      kotlin.x.d.i.d(localObject, "if (Build.VERSION.SDK_IN? 0)\n                    }");
+      i = icon;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, localException, new c(str));
+      i = 0;
+    }
+    getConfigurationCache().put("application_icon", Integer.valueOf(i));
+    return i;
+  }
+  
+  public final String getBaseUrlForRequests()
+  {
+    String str = getServerTarget();
+    Locale localLocale = Locale.US;
+    kotlin.x.d.i.d(localLocale, "US");
+    str = str.toUpperCase(localLocale);
+    kotlin.x.d.i.d(str, "this as java.lang.String).toUpperCase(locale)");
+    if (kotlin.x.d.i.a("STAGING", str)) {
+      return "https://sondheim.braze.com/api/v3/";
+    }
+    return "https://sdk.iad-01.braze.com/api/v3/";
+  }
+  
+  public final bo.app.i getBrazeApiKey()
+  {
+    String str = b.e.b();
+    Object localObject1 = (String)getConfigurationCache().get(str);
+    Object localObject2 = localObject1;
+    if (localObject1 == null)
+    {
+      localObject1 = getRuntimeAppConfigurationProvider().getStringValue(str, null);
+      if (localObject1 != null) {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, e.b, 2, null);
+      } else {
+        localObject1 = getStringValue(str, null);
+      }
+      localObject2 = localObject1;
+      if (localObject1 != null)
+      {
+        getConfigurationCache().put(str, localObject1);
+        localObject2 = localObject1;
+      }
+    }
+    if (localObject2 != null) {
+      return new bo.app.i((String)localObject2);
+    }
+    localObject1 = BrazeLogger.INSTANCE;
+    localObject2 = BrazeLogger.Priority.W;
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, f.b, 2, null);
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, g.b, 2, null);
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, h.b, 2, null);
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, i.b, 2, null);
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, j.b, 2, null);
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, k.b, 2, null);
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, l.b, 2, null);
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, m.b, 2, null);
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, (BrazeLogger.Priority)localObject2, null, d.b, 2, null);
+    throw new RuntimeException("Unable to read the Braze API key from the res/values/braze.xml file or from runtime configuration via BrazeConfig. See log for more details.");
+  }
+  
+  public final Context getContext$android_sdk_base_release()
+  {
+    return context;
+  }
+  
+  public final String getCustomEndpoint()
+  {
+    return getStringValue(b.q.b(), null);
+  }
+  
+  public final String getCustomHtmlWebViewActivityClassName()
+  {
+    return getStringValue(b.I.b(), "");
+  }
+  
+  public final EnumSet<LocationProviderName> getCustomLocationProviderNames()
+  {
+    return getGenericEnumSetFromStringSet(LocationProviderName.class, b.K);
+  }
+  
+  public final int getDefaultNotificationAccentColor()
+  {
+    Integer localInteger = getColorValue(b.l.b());
+    if (localInteger != null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, n.b, 3, null);
+      return localInteger.intValue();
+    }
+    return 0;
+  }
+  
+  public final String getDefaultNotificationChannelDescription()
+  {
+    String str = getStringValue(b.s.b(), "");
+    if (str == null) {
+      return "";
+    }
+    return str;
+  }
+  
+  public final String getDefaultNotificationChannelName()
+  {
+    String str = getStringValue(b.r.b(), "General");
+    if (str == null) {
+      return "General";
+    }
+    return str;
+  }
+  
+  public final EnumSet<DeviceKey> getDeviceObjectAllowlist()
+  {
+    return getGenericEnumSetFromStringSet(DeviceKey.class, b.A);
+  }
+  
+  public final boolean getDoesHandlePushDeepLinksAutomatically()
+  {
+    return getBooleanValue(b.n.b(), false);
+  }
+  
+  public final boolean getDoesPushStoryDismissOnClick()
+  {
+    return getBooleanValue(b.E.b(), true);
+  }
+  
+  public final Set<String> getEphemeralEventKeys()
+  {
+    Set localSet2 = getStringSetValue(b.d.b(), g0.b());
+    Set localSet1 = localSet2;
+    if (localSet2 == null) {
+      localSet1 = g0.b();
+    }
+    if (localSet1.size() > 12) {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, o.b, 2, null);
+    }
+    return kotlin.collections.i.K(kotlin.collections.i.E(localSet1, 12));
+  }
+  
+  public final String getFirebaseCloudMessagingSenderIdKey()
+  {
+    return getStringValue(b.x.b(), null);
+  }
+  
+  public final int getInAppMessageWebViewClientOnPageFinishedMaxWaitMs()
+  {
+    return getIntValue(b.L.b(), DEFAULT_IN_APP_MESSAGE_WEBVIEW_ONPAGEFINISHED_WAIT_MS);
+  }
+  
+  public final int getLargeNotificationIconResourceId()
+  {
+    return getDrawableValue(b.i.b(), 0);
+  }
+  
+  public final int getLoggerInitialLogLevel()
+  {
+    return getIntValue(b.H.b(), 4);
+  }
+  
+  public final String getPushDeepLinkBackStackActivityClassName()
+  {
+    return getStringValue(b.u.b(), "");
+  }
+  
+  public final SdkFlavor getSdkFlavor()
+  {
+    Object localObject = getStringValue(b.p.b(), null);
+    int i;
+    if ((localObject != null) && (!g.o((CharSequence)localObject))) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if (i != 0) {
+      return null;
+    }
+    try
+    {
+      Locale localLocale = Locale.US;
+      kotlin.x.d.i.d(localLocale, "US");
+      localObject = ((String)localObject).toUpperCase(localLocale);
+      kotlin.x.d.i.d(localObject, "this as java.lang.String).toUpperCase(locale)");
+      localObject = SdkFlavor.valueOf((String)localObject);
+      return localObject;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, localException, p.b);
+    }
+    return null;
+  }
+  
+  public final EnumSet<BrazeSdkMetadata> getSdkMetadata()
+  {
+    Object localObject2 = b.S.b();
+    Object localObject1 = CachedConfigurationProvider.b.h;
+    localObject2 = getResourceConfigurationValue((CachedConfigurationProvider.b)localObject1, (String)localObject2, new HashSet());
+    Objects.requireNonNull(localObject2, "null cannot be cast to non-null type kotlin.collections.MutableSet<kotlin.String>");
+    localObject2 = w.a(localObject2);
+    Object localObject4 = b.T.b();
+    Object localObject3 = getResourceConfigurationValue((CachedConfigurationProvider.b)localObject1, (String)localObject4, new HashSet());
+    Objects.requireNonNull(localObject3, "null cannot be cast to non-null type kotlin.collections.Set<kotlin.String>");
+    localObject3 = (Set)localObject3;
+    localObject1 = getRuntimeConfigurationValue((CachedConfigurationProvider.b)localObject1, (String)localObject4, new HashSet());
+    Objects.requireNonNull(localObject1, "null cannot be cast to non-null type kotlin.collections.Set<kotlin.String>");
+    localObject1 = (Set)localObject1;
+    ((Set)localObject2).addAll((Collection)localObject3);
+    ((Set)localObject2).addAll((Collection)localObject1);
+    localObject1 = w0.a;
+    localObject1 = EnumSet.noneOf(BrazeSdkMetadata.class);
+    localObject2 = ((Iterable)localObject2).iterator();
+    while (((Iterator)localObject2).hasNext())
+    {
+      localObject3 = (String)((Iterator)localObject2).next();
+      try
+      {
+        localObject4 = w0.a;
+        localObject4 = Locale.US;
+        kotlin.x.d.i.d(localObject4, "US");
+        localObject4 = ((String)localObject3).toUpperCase((Locale)localObject4);
+        kotlin.x.d.i.d(localObject4, "this as java.lang.String).toUpperCase(locale)");
+        BrazeSdkMetadata[] arrayOfBrazeSdkMetadata = BrazeSdkMetadata.values();
+        int i = 0;
+        int j = arrayOfBrazeSdkMetadata.length;
+        for (;;)
+        {
+          if (i < j)
+          {
+            BrazeSdkMetadata localBrazeSdkMetadata = arrayOfBrazeSdkMetadata[i];
+            i += 1;
+            if (kotlin.x.d.i.a(localBrazeSdkMetadata.name(), localObject4))
+            {
+              ((EnumSet)localObject1).add(localBrazeSdkMetadata);
+              break;
+            }
+          }
+        }
+        throw new NoSuchElementException("Array contains no element matching the predicate.");
+      }
+      catch (Exception localException)
+      {
+        BrazeLogger.INSTANCE.brazelog(w0.a, BrazeLogger.Priority.E, localException, new x0((String)localObject3));
+      }
+    }
+    kotlin.x.d.i.d(localObject1, "result");
+    return localObject1;
+  }
+  
+  public final int getSessionTimeoutSeconds()
+  {
+    return getIntValue(b.j.b(), 10);
+  }
+  
+  public final int getSmallNotificationIconResourceId()
+  {
+    return getDrawableValue(b.h.b(), 0);
+  }
+  
+  public final long getTriggerActionMinimumTimeIntervalInSeconds()
+  {
+    return getIntValue(b.m.b(), 30);
+  }
+  
+  public final int getVersionCode()
+  {
+    Object localObject;
+    if (getConfigurationCache().containsKey("version_code"))
+    {
+      localObject = getConfigurationCache().get("version_code");
+      Objects.requireNonNull(localObject, "null cannot be cast to non-null type kotlin.Int");
+      return ((Integer)localObject).intValue();
+    }
+    int i;
+    try
+    {
+      localObject = PackageUtils.getResourcePackageName(context);
+      i = context.getPackageManager().getPackageInfo((String)localObject, 0).versionCode;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, localException, q.b);
+      i = -1;
+    }
+    getConfigurationCache().put("version_code", Integer.valueOf(i));
+    return i;
+  }
+  
+  public final boolean isAdmMessagingRegistrationEnabled()
+  {
+    return getBooleanValue(b.g.b(), false);
+  }
+  
+  public final boolean isAutomaticGeofenceRequestsEnabled()
+  {
+    return getBooleanValue(b.J.b(), true);
+  }
+  
+  public final boolean isContentCardsUnreadVisualIndicatorEnabled()
+  {
+    return getBooleanValue(b.y.b(), true);
+  }
+  
+  public final boolean isDeviceObjectAllowlistEnabled()
+  {
+    return getBooleanValue(b.z.b(), false);
+  }
+  
+  public final boolean isEphemeralEventsEnabled()
+  {
+    return getBooleanValue(b.c.b(), false);
+  }
+  
+  public final boolean isFirebaseCloudMessagingRegistrationEnabled()
+  {
+    return getBooleanValue(b.w.b(), false);
+  }
+  
+  public final boolean isGeofencesEnabled()
+  {
+    return getBooleanValue(b.F.b(), isLocationCollectionEnabled());
+  }
+  
+  public final boolean isHtmlInAppMessageApplyWindowInsetsEnabled()
+  {
+    return getBooleanValue(b.U.b(), false);
+  }
+  
+  public final boolean isInAppMessageAccessibilityExclusiveModeEnabled()
+  {
+    return getBooleanValue(b.B.b(), false);
+  }
+  
+  public final boolean isInAppMessageTestPushEagerDisplayEnabled()
+  {
+    return getBooleanValue(b.G.b(), true);
+  }
+  
+  public final boolean isLocationCollectionEnabled()
+  {
+    return getBooleanValue(b.k.b(), false);
+  }
+  
+  public final boolean isNewsfeedVisualIndicatorOn()
+  {
+    return getBooleanValue(b.o.b(), true);
+  }
+  
+  public final boolean isPushDeepLinkBackStackActivityEnabled()
+  {
+    return getBooleanValue(b.t.b(), true);
+  }
+  
+  public final boolean isPushNotificationHtmlRenderingEnabled()
+  {
+    return getBooleanValue(b.D.b(), false);
+  }
+  
+  public final boolean isPushWakeScreenForNotificationEnabled()
+  {
+    return getBooleanValue(b.C.b(), true);
+  }
+  
+  public final boolean isSdkAuthenticationEnabled()
+  {
+    return getBooleanValue(b.N.b(), false);
+  }
+  
+  public final boolean isSessionStartBasedTimeoutEnabled()
+  {
+    return getBooleanValue(b.v.b(), false);
+  }
+  
+  public final boolean isTouchModeRequiredForHtmlInAppMessages()
+  {
+    return getBooleanValue(b.O.b(), true);
+  }
+  
+  public static final class a
+  {
+    private a() {}
+  }
+  
+  public static enum b
+  {
+    private final String b;
+    
+    private b(String paramString)
+    {
+      b = paramString;
+    }
+    
+    public final String b()
+    {
+      return b;
+    }
+  }
+  
+  static final class c
+    extends j
+    implements a<String>
+  {
+    c(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Couldn't find application icon for package: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class d
+    extends j
+    implements a<String>
+  {
+    public static final d b = new d();
+    
+    d()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "****************************************************";
+    }
+  }
+  
+  static final class e
+    extends j
+    implements a<String>
+  {
+    public static final e b = new e();
+    
+    e()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Found an override api key. Using it to configure the Braze SDK";
+    }
+  }
+  
+  static final class f
+    extends j
+    implements a<String>
+  {
+    public static final f b = new f();
+    
+    f()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "****************************************************";
+    }
+  }
+  
+  static final class g
+    extends j
+    implements a<String>
+  {
+    public static final g b = new g();
+    
+    g()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "**                                                **";
+    }
+  }
+  
+  static final class h
+    extends j
+    implements a<String>
+  {
+    public static final h b = new h();
+    
+    h()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "**                 !! WARNING !!                  **";
+    }
+  }
+  
+  static final class i
+    extends j
+    implements a<String>
+  {
+    public static final i b = new i();
+    
+    i()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "**                                                **";
+    }
+  }
+  
+  static final class j
+    extends j
+    implements a<String>
+  {
+    public static final j b = new j();
+    
+    j()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "**     No API key set in res/values/braze.xml     **";
+    }
+  }
+  
+  static final class k
+    extends j
+    implements a<String>
+  {
+    public static final k b = new k();
+    
+    k()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "** No cached API Key found from Braze.configure   **";
+    }
+  }
+  
+  static final class l
+    extends j
+    implements a<String>
+  {
+    public static final l b = new l();
+    
+    l()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "**          Braze functionality disabled          **";
+    }
+  }
+  
+  static final class m
+    extends j
+    implements a<String>
+  {
+    public static final m b = new m();
+    
+    m()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "**                                                **";
+    }
+  }
+  
+  static final class n
+    extends j
+    implements a<String>
+  {
+    public static final n b = new n();
+    
+    n()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Using default notification accent color found in resources";
+    }
+  }
+  
+  static final class o
+    extends j
+    implements a<String>
+  {
+    public static final o b = new o();
+    
+    o()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "More than 12 ephemeral/graylisted events detected. Only using first 12 events. Please truncate this list!";
+    }
+  }
+  
+  static final class p
+    extends j
+    implements a<String>
+  {
+    public static final p b = new p();
+    
+    p()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Exception while parsing stored SDK flavor. Returning null.";
+    }
+  }
+  
+  static final class q
+    extends j
+    implements a<String>
+  {
+    public static final q b = new q();
+    
+    q()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Unable to read the version code.";
+    }
+  }
+}

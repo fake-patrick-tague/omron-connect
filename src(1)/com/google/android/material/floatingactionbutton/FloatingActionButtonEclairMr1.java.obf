@@ -1,0 +1,202 @@
+package com.google.android.material.floatingactionbutton;
+
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.AnimatorSet.Builder;
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build.VERSION;
+import android.view.View;
+import android.widget.ImageButton;
+import c.h.p.h;
+import d.c.a.a.x.g;
+import d.c.a.a.x.k;
+import java.util.ArrayList;
+import java.util.List;
+
+class c
+  extends b
+{
+  c(FloatingActionButton paramFloatingActionButton, d.c.a.a.w.b paramB)
+  {
+    super(paramFloatingActionButton, paramB);
+  }
+  
+  private Animator j0(float paramFloat1, float paramFloat2)
+  {
+    AnimatorSet localAnimatorSet = new AnimatorSet();
+    localAnimatorSet.play(ObjectAnimator.ofFloat(F, "elevation", new float[] { paramFloat1 }).setDuration(0L)).with(ObjectAnimator.ofFloat(F, View.TRANSLATION_Z, new float[] { paramFloat2 }).setDuration(100L));
+    localAnimatorSet.setInterpolator(b.a);
+    return localAnimatorSet;
+  }
+  
+  void A() {}
+  
+  void C()
+  {
+    f0();
+  }
+  
+  void E(int[] paramArrayOfInt)
+  {
+    if (Build.VERSION.SDK_INT == 21)
+    {
+      if (F.isEnabled())
+      {
+        F.setElevation(o);
+        if (F.isPressed())
+        {
+          F.setTranslationZ(q);
+          return;
+        }
+        if ((!F.isFocused()) && (!F.isHovered()))
+        {
+          F.setTranslationZ(0.0F);
+          return;
+        }
+        F.setTranslationZ(p);
+        return;
+      }
+      F.setElevation(0.0F);
+      F.setTranslationZ(0.0F);
+    }
+  }
+  
+  void F(float paramFloat1, float paramFloat2, float paramFloat3)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i == 21)
+    {
+      F.refreshDrawableState();
+    }
+    else
+    {
+      StateListAnimator localStateListAnimator = new StateListAnimator();
+      localStateListAnimator.addState(b.b, j0(paramFloat1, paramFloat3));
+      localStateListAnimator.addState(b.c, j0(paramFloat1, paramFloat2));
+      localStateListAnimator.addState(b.d, j0(paramFloat1, paramFloat2));
+      localStateListAnimator.addState(b.e, j0(paramFloat1, paramFloat2));
+      AnimatorSet localAnimatorSet = new AnimatorSet();
+      ArrayList localArrayList = new ArrayList();
+      localArrayList.add(ObjectAnimator.ofFloat(F, "elevation", new float[] { paramFloat1 }).setDuration(0L));
+      if ((i >= 22) && (i <= 24))
+      {
+        FloatingActionButton localFloatingActionButton = F;
+        localArrayList.add(ObjectAnimator.ofFloat(localFloatingActionButton, View.TRANSLATION_Z, new float[] { localFloatingActionButton.getTranslationZ() }).setDuration(100L));
+      }
+      localArrayList.add(ObjectAnimator.ofFloat(F, View.TRANSLATION_Z, new float[] { 0.0F }).setDuration(100L));
+      localAnimatorSet.playSequentially((Animator[])localArrayList.toArray(new Animator[0]));
+      localAnimatorSet.setInterpolator(b.a);
+      localStateListAnimator.addState(b.f, localAnimatorSet);
+      localStateListAnimator.addState(b.g, j0(0.0F, 0.0F));
+      F.setStateListAnimator(localStateListAnimator);
+    }
+    if (Z()) {
+      f0();
+    }
+  }
+  
+  boolean K()
+  {
+    return false;
+  }
+  
+  void V(ColorStateList paramColorStateList)
+  {
+    Drawable localDrawable = j;
+    if ((localDrawable instanceof RippleDrawable))
+    {
+      ((RippleDrawable)localDrawable).setColor(d.c.a.a.v.b.d(paramColorStateList));
+      return;
+    }
+    super.V(paramColorStateList);
+  }
+  
+  boolean Z()
+  {
+    return (G.c()) || (!b0());
+  }
+  
+  void d0() {}
+  
+  a i0(int paramInt, ColorStateList paramColorStateList)
+  {
+    Context localContext = F.getContext();
+    a localA = new a((k)h.g(h));
+    localA.e(androidx.core.content.a.d(localContext, d.c.a.a.c.f), androidx.core.content.a.d(localContext, d.c.a.a.c.e), androidx.core.content.a.d(localContext, d.c.a.a.c.c), androidx.core.content.a.d(localContext, d.c.a.a.c.d));
+    localA.d(paramInt);
+    localA.c(paramColorStateList);
+    return localA;
+  }
+  
+  g j()
+  {
+    return new a((k)h.g(h));
+  }
+  
+  public float n()
+  {
+    return F.getElevation();
+  }
+  
+  void s(Rect paramRect)
+  {
+    if (G.c())
+    {
+      super.s(paramRect);
+      return;
+    }
+    if (!b0())
+    {
+      int i = (r - F.getSizeDimension()) / 2;
+      paramRect.set(i, i, i, i);
+      return;
+    }
+    paramRect.set(0, 0, 0, 0);
+  }
+  
+  void x(ColorStateList paramColorStateList1, PorterDuff.Mode paramMode, ColorStateList paramColorStateList2, int paramInt)
+  {
+    g localG = j();
+    i = localG;
+    localG.setTintList(paramColorStateList1);
+    if (paramMode != null) {
+      i.setTintMode(paramMode);
+    }
+    i.M(F.getContext());
+    if (paramInt > 0)
+    {
+      k = i0(paramInt, paramColorStateList1);
+      paramColorStateList1 = new LayerDrawable(new Drawable[] { (Drawable)h.g(k), (Drawable)h.g(i) });
+    }
+    else
+    {
+      k = null;
+      paramColorStateList1 = i;
+    }
+    paramColorStateList1 = new RippleDrawable(d.c.a.a.v.b.d(paramColorStateList2), paramColorStateList1, null);
+    j = paramColorStateList1;
+    l = paramColorStateList1;
+  }
+  
+  static class a
+    extends g
+  {
+    a(k paramK)
+    {
+      super();
+    }
+    
+    public boolean isStateful()
+    {
+      return true;
+    }
+  }
+}

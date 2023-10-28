@@ -1,0 +1,266 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.internal.ConnectionCallbacks;
+import com.google.android.gms.common.api.internal.OnConnectionFailedListener;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.internal.base.zaq;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.checkerframework.checker.initialization.qual.NotOnlyInitialized;
+
+public final class zak
+  implements Handler.Callback
+{
+  @VisibleForTesting
+  final ArrayList<GoogleApiClient.ConnectionCallbacks> zaa = new ArrayList();
+  @NotOnlyInitialized
+  private final zaj zab;
+  private final ArrayList<GoogleApiClient.ConnectionCallbacks> zac = new ArrayList();
+  private final ArrayList<GoogleApiClient.OnConnectionFailedListener> zad = new ArrayList();
+  private volatile boolean zae = false;
+  private final AtomicInteger zaf = new AtomicInteger(0);
+  private boolean zag = false;
+  private final Handler zah;
+  private final Object zai = new Object();
+  
+  public zak(Looper paramLooper, zaj paramZaj)
+  {
+    zab = paramZaj;
+    zah = new zaq(paramLooper, this);
+  }
+  
+  public final boolean handleMessage(Message arg1)
+  {
+    int i = what;
+    if (i == 1)
+    {
+      GoogleApiClient.ConnectionCallbacks localConnectionCallbacks = (GoogleApiClient.ConnectionCallbacks)obj;
+      synchronized (zai)
+      {
+        if ((zae) && (zab.isConnected()) && (zac.contains(localConnectionCallbacks))) {
+          localConnectionCallbacks.onConnected(null);
+        }
+        return true;
+      }
+    }
+    ??? = new StringBuilder(45);
+    ???.append("Don't know how to handle message: ");
+    ???.append(i);
+    Exception localException = new Exception();
+    Log.wtf("GmsClientEvents", ???.toString(), localException);
+    return false;
+  }
+  
+  public final void zaa()
+  {
+    zae = false;
+    zaf.incrementAndGet();
+  }
+  
+  public final void zab()
+  {
+    zae = true;
+  }
+  
+  @VisibleForTesting
+  public final void zac(ConnectionResult paramConnectionResult)
+  {
+    Preconditions.checkHandlerThread(zah, "onConnectionFailure must only be called on the Handler thread");
+    zah.removeMessages(1);
+    synchronized (zai)
+    {
+      Object localObject2 = new ArrayList(zad);
+      int i = zaf.get();
+      localObject2 = ((ArrayList)localObject2).iterator();
+      while (((Iterator)localObject2).hasNext())
+      {
+        GoogleApiClient.OnConnectionFailedListener localOnConnectionFailedListener = (GoogleApiClient.OnConnectionFailedListener)((Iterator)localObject2).next();
+        if ((zae) && (zaf.get() == i))
+        {
+          if (zad.contains(localOnConnectionFailedListener)) {
+            localOnConnectionFailedListener.onConnectionFailed(paramConnectionResult);
+          }
+        }
+        else {
+          return;
+        }
+      }
+      return;
+    }
+  }
+  
+  @VisibleForTesting
+  public final void zad(Bundle paramBundle)
+  {
+    Preconditions.checkHandlerThread(zah, "onConnectionSuccess must only be called on the Handler thread");
+    synchronized (zai)
+    {
+      Preconditions.checkState(zag ^ true);
+      zah.removeMessages(1);
+      zag = true;
+      Preconditions.checkState(zaa.isEmpty());
+      Object localObject2 = new ArrayList(zac);
+      int i = zaf.get();
+      localObject2 = ((ArrayList)localObject2).iterator();
+      while (((Iterator)localObject2).hasNext())
+      {
+        GoogleApiClient.ConnectionCallbacks localConnectionCallbacks = (GoogleApiClient.ConnectionCallbacks)((Iterator)localObject2).next();
+        if ((!zae) || (!zab.isConnected()) || (zaf.get() != i)) {
+          break;
+        }
+        if (!zaa.contains(localConnectionCallbacks)) {
+          localConnectionCallbacks.onConnected(paramBundle);
+        }
+      }
+      zaa.clear();
+      zag = false;
+      return;
+    }
+  }
+  
+  @VisibleForTesting
+  public final void zae(int paramInt)
+  {
+    Preconditions.checkHandlerThread(zah, "onUnintentionalDisconnection must only be called on the Handler thread");
+    zah.removeMessages(1);
+    synchronized (zai)
+    {
+      zag = true;
+      Object localObject2 = new ArrayList(zac);
+      int i = zaf.get();
+      localObject2 = ((ArrayList)localObject2).iterator();
+      while (((Iterator)localObject2).hasNext())
+      {
+        GoogleApiClient.ConnectionCallbacks localConnectionCallbacks = (GoogleApiClient.ConnectionCallbacks)((Iterator)localObject2).next();
+        if ((!zae) || (zaf.get() != i)) {
+          break;
+        }
+        if (zac.contains(localConnectionCallbacks)) {
+          localConnectionCallbacks.onConnectionSuspended(paramInt);
+        }
+      }
+      zaa.clear();
+      zag = false;
+      return;
+    }
+  }
+  
+  public final void zaf(GoogleApiClient.ConnectionCallbacks paramConnectionCallbacks)
+  {
+    Preconditions.checkNotNull(paramConnectionCallbacks);
+    synchronized (zai)
+    {
+      if (zac.contains(paramConnectionCallbacks))
+      {
+        String str = String.valueOf(paramConnectionCallbacks);
+        StringBuilder localStringBuilder = new StringBuilder(str.length() + 62);
+        localStringBuilder.append("registerConnectionCallbacks(): listener ");
+        localStringBuilder.append(str);
+        localStringBuilder.append(" is already registered");
+        Log.w("GmsClientEvents", localStringBuilder.toString());
+      }
+      else
+      {
+        zac.add(paramConnectionCallbacks);
+      }
+      if (zab.isConnected())
+      {
+        ??? = zah;
+        ((Handler)???).sendMessage(((Handler)???).obtainMessage(1, paramConnectionCallbacks));
+      }
+      return;
+    }
+  }
+  
+  public final void zag(GoogleApiClient.OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    Preconditions.checkNotNull(paramOnConnectionFailedListener);
+    synchronized (zai)
+    {
+      if (zad.contains(paramOnConnectionFailedListener))
+      {
+        paramOnConnectionFailedListener = String.valueOf(paramOnConnectionFailedListener);
+        StringBuilder localStringBuilder = new StringBuilder(paramOnConnectionFailedListener.length() + 67);
+        localStringBuilder.append("registerConnectionFailedListener(): listener ");
+        localStringBuilder.append(paramOnConnectionFailedListener);
+        localStringBuilder.append(" is already registered");
+        Log.w("GmsClientEvents", localStringBuilder.toString());
+      }
+      else
+      {
+        zad.add(paramOnConnectionFailedListener);
+      }
+      return;
+    }
+  }
+  
+  public final void zah(GoogleApiClient.ConnectionCallbacks paramConnectionCallbacks)
+  {
+    Preconditions.checkNotNull(paramConnectionCallbacks);
+    synchronized (zai)
+    {
+      if (!zac.remove(paramConnectionCallbacks))
+      {
+        paramConnectionCallbacks = String.valueOf(paramConnectionCallbacks);
+        StringBuilder localStringBuilder = new StringBuilder(paramConnectionCallbacks.length() + 52);
+        localStringBuilder.append("unregisterConnectionCallbacks(): listener ");
+        localStringBuilder.append(paramConnectionCallbacks);
+        localStringBuilder.append(" not found");
+        Log.w("GmsClientEvents", localStringBuilder.toString());
+      }
+      else if (zag)
+      {
+        zaa.add(paramConnectionCallbacks);
+      }
+      return;
+    }
+  }
+  
+  public final void zai(GoogleApiClient.OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    Preconditions.checkNotNull(paramOnConnectionFailedListener);
+    synchronized (zai)
+    {
+      if (!zad.remove(paramOnConnectionFailedListener))
+      {
+        paramOnConnectionFailedListener = String.valueOf(paramOnConnectionFailedListener);
+        StringBuilder localStringBuilder = new StringBuilder(paramOnConnectionFailedListener.length() + 57);
+        localStringBuilder.append("unregisterConnectionFailedListener(): listener ");
+        localStringBuilder.append(paramOnConnectionFailedListener);
+        localStringBuilder.append(" not found");
+        Log.w("GmsClientEvents", localStringBuilder.toString());
+      }
+      return;
+    }
+  }
+  
+  public final boolean zaj(GoogleApiClient.ConnectionCallbacks paramConnectionCallbacks)
+  {
+    Preconditions.checkNotNull(paramConnectionCallbacks);
+    synchronized (zai)
+    {
+      boolean bool = zac.contains(paramConnectionCallbacks);
+      return bool;
+    }
+  }
+  
+  public final boolean zak(GoogleApiClient.OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    Preconditions.checkNotNull(paramOnConnectionFailedListener);
+    synchronized (zai)
+    {
+      boolean bool = zad.contains(paramOnConnectionFailedListener);
+      return bool;
+    }
+  }
+}

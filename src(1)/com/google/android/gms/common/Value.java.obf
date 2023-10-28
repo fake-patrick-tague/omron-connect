@@ -1,0 +1,33 @@
+package com.google.android.gms.common;
+
+import java.lang.ref.WeakReference;
+
+abstract class zzl
+  extends zzj
+{
+  private static final WeakReference zza = new WeakReference(null);
+  private WeakReference zzb = zza;
+  
+  zzl(byte[] paramArrayOfByte)
+  {
+    super(paramArrayOfByte);
+  }
+  
+  protected abstract byte[] zzb();
+  
+  final byte[] zzf()
+  {
+    try
+    {
+      byte[] arrayOfByte2 = (byte[])zzb.get();
+      byte[] arrayOfByte1 = arrayOfByte2;
+      if (arrayOfByte2 == null)
+      {
+        arrayOfByte1 = zzb();
+        zzb = new WeakReference(arrayOfByte1);
+      }
+      return arrayOfByte1;
+    }
+    finally {}
+  }
+}

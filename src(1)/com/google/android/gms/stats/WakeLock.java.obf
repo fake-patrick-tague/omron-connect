@@ -1,0 +1,424 @@
+package com.google.android.gms.stats;
+
+import android.content.Context;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.os.WorkSource;
+import android.text.TextUtils;
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.util.Clock;
+import com.google.android.gms.common.util.DefaultClock;
+import com.google.android.gms.common.util.Strings;
+import com.google.android.gms.common.util.WorkSourceUtil;
+import com.google.android.gms.internal.stats.zzh;
+import com.google.android.gms.internal.stats.zzi;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@KeepForSdk
+@ShowFirstParty
+public class WakeLock
+{
+  private static final long zzb = TimeUnit.DAYS.toMillis(366L);
+  private static volatile ScheduledExecutorService zzc = null;
+  private static final Object zzd = new Object();
+  private static volatile zzd zze = new zzb();
+  com.google.android.gms.internal.stats.zzb zza;
+  private final Object zzf = new Object();
+  private final PowerManager.WakeLock zzg;
+  private int zzh = 0;
+  private Future<?> zzi;
+  private long zzj;
+  private final Set<zze> zzk = new HashSet();
+  private boolean zzl = true;
+  private int zzm;
+  private Clock zzn = DefaultClock.getInstance();
+  private WorkSource zzo;
+  private final String zzp;
+  private final String zzq;
+  private final Context zzr;
+  private final Map<String, zzc> zzs = new HashMap();
+  private AtomicInteger zzt = new AtomicInteger(0);
+  private final ScheduledExecutorService zzu;
+  
+  @KeepForSdk
+  public WakeLock(Context paramContext, int paramInt, String paramString)
+  {
+    Preconditions.checkNotNull(paramContext, "WakeLock: context must not be null");
+    Preconditions.checkNotEmpty(paramString, "WakeLock: wakeLockName must not be empty");
+    zzr = paramContext.getApplicationContext();
+    zzq = paramString;
+    zza = null;
+    if (!"com.google.android.gms".equals(paramContext.getPackageName()))
+    {
+      ??? = String.valueOf(paramString);
+      if (((String)???).length() != 0) {
+        ??? = "*gcore*:".concat((String)???);
+      } else {
+        ??? = new String("*gcore*:");
+      }
+      zzp = ((String)???);
+    }
+    else
+    {
+      zzp = paramString;
+    }
+    ??? = (PowerManager)paramContext.getSystemService("power");
+    if (??? == null)
+    {
+      paramContext = new StringBuilder(29);
+      paramContext.append("expected a non-null reference", 0, 29);
+      throw new zzi(paramContext.toString());
+    }
+    ??? = ((PowerManager)???).newWakeLock(paramInt, paramString);
+    zzg = ((PowerManager.WakeLock)???);
+    if (WorkSourceUtil.hasWorkSourcePermission(paramContext))
+    {
+      paramString = str;
+      if (Strings.isEmptyOrWhitespace(str)) {
+        paramString = paramContext.getPackageName();
+      }
+      paramContext = WorkSourceUtil.fromPackage(paramContext, paramString);
+      zzo = paramContext;
+      if (paramContext != null) {
+        zze((PowerManager.WakeLock)???, paramContext);
+      }
+    }
+    paramString = zzc;
+    paramContext = paramString;
+    if (paramString == null) {
+      synchronized (zzd)
+      {
+        paramString = zzc;
+        paramContext = paramString;
+        if (paramString == null)
+        {
+          zzh.zza();
+          paramContext = Executors.unconfigurableScheduledExecutorService(Executors.newScheduledThreadPool(1));
+          zzc = paramContext;
+        }
+      }
+    }
+    zzu = paramContext;
+  }
+  
+  private final String zzb(String paramString)
+  {
+    if ((zzl) && (!TextUtils.isEmpty(null))) {}
+    return null;
+  }
+  
+  private final void zzc()
+  {
+    if (zzk.isEmpty()) {
+      return;
+    }
+    Object localObject = new ArrayList(zzk);
+    zzk.clear();
+    if (((List)localObject).size() <= 0) {
+      return;
+    }
+    localObject = (zze)((List)localObject).get(0);
+    throw null;
+  }
+  
+  /* Error */
+  private final void zzd(int paramInt)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: getfield 84	com/google/android/gms/stats/WakeLock:zzf	Ljava/lang/Object;
+    //   4: astore_3
+    //   5: aload_3
+    //   6: monitorenter
+    //   7: aload_0
+    //   8: invokevirtual 237	com/google/android/gms/stats/WakeLock:isHeld	()Z
+    //   11: ifne +6 -> 17
+    //   14: aload_3
+    //   15: monitorexit
+    //   16: return
+    //   17: aload_0
+    //   18: getfield 93	com/google/android/gms/stats/WakeLock:zzl	Z
+    //   21: ifeq +25 -> 46
+    //   24: aload_0
+    //   25: getfield 86	com/google/android/gms/stats/WakeLock:zzh	I
+    //   28: iconst_1
+    //   29: isub
+    //   30: istore_1
+    //   31: aload_0
+    //   32: iload_1
+    //   33: putfield 86	com/google/android/gms/stats/WakeLock:zzh	I
+    //   36: iload_1
+    //   37: ifgt +6 -> 43
+    //   40: goto +11 -> 51
+    //   43: aload_3
+    //   44: monitorexit
+    //   45: return
+    //   46: aload_0
+    //   47: iconst_0
+    //   48: putfield 86	com/google/android/gms/stats/WakeLock:zzh	I
+    //   51: aload_0
+    //   52: invokespecial 249	com/google/android/gms/stats/WakeLock:zzc	()V
+    //   55: aload_0
+    //   56: getfield 106	com/google/android/gms/stats/WakeLock:zzs	Ljava/util/Map;
+    //   59: invokeinterface 288 1 0
+    //   64: invokeinterface 294 1 0
+    //   69: astore 4
+    //   71: aload 4
+    //   73: invokeinterface 299 1 0
+    //   78: ifeq +20 -> 98
+    //   81: aload 4
+    //   83: invokeinterface 303 1 0
+    //   88: checkcast 305	com/google/android/gms/stats/zzc
+    //   91: iconst_0
+    //   92: putfield 307	com/google/android/gms/stats/zzc:zza	I
+    //   95: goto -24 -> 71
+    //   98: aload_0
+    //   99: getfield 106	com/google/android/gms/stats/WakeLock:zzs	Ljava/util/Map;
+    //   102: invokeinterface 308 1 0
+    //   107: aload_0
+    //   108: getfield 310	com/google/android/gms/stats/WakeLock:zzi	Ljava/util/concurrent/Future;
+    //   111: astore 4
+    //   113: aload 4
+    //   115: ifnull +22 -> 137
+    //   118: aload 4
+    //   120: iconst_0
+    //   121: invokeinterface 316 2 0
+    //   126: pop
+    //   127: aload_0
+    //   128: aconst_null
+    //   129: putfield 310	com/google/android/gms/stats/WakeLock:zzi	Ljava/util/concurrent/Future;
+    //   132: aload_0
+    //   133: lconst_0
+    //   134: putfield 318	com/google/android/gms/stats/WakeLock:zzj	J
+    //   137: aload_0
+    //   138: iconst_0
+    //   139: putfield 320	com/google/android/gms/stats/WakeLock:zzm	I
+    //   142: aload_0
+    //   143: getfield 193	com/google/android/gms/stats/WakeLock:zzg	Landroid/os/PowerManager$WakeLock;
+    //   146: invokevirtual 323	android/os/PowerManager$WakeLock:isHeld	()Z
+    //   149: istore_2
+    //   150: iload_2
+    //   151: ifeq +100 -> 251
+    //   154: aload_0
+    //   155: getfield 193	com/google/android/gms/stats/WakeLock:zzg	Landroid/os/PowerManager$WakeLock;
+    //   158: invokevirtual 326	android/os/PowerManager$WakeLock:release	()V
+    //   161: aload_0
+    //   162: getfield 137	com/google/android/gms/stats/WakeLock:zza	Lcom/google/android/gms/internal/stats/zzb;
+    //   165: ifnull +105 -> 270
+    //   168: aload_0
+    //   169: aconst_null
+    //   170: putfield 137	com/google/android/gms/stats/WakeLock:zza	Lcom/google/android/gms/internal/stats/zzb;
+    //   173: goto +97 -> 270
+    //   176: astore 4
+    //   178: goto +58 -> 236
+    //   181: astore 4
+    //   183: aload 4
+    //   185: invokevirtual 330	java/lang/Object:getClass	()Ljava/lang/Class;
+    //   188: ldc_w 282
+    //   191: invokevirtual 331	java/lang/Object:equals	(Ljava/lang/Object;)Z
+    //   194: ifeq +39 -> 233
+    //   197: ldc -17
+    //   199: aload_0
+    //   200: getfield 164	com/google/android/gms/stats/WakeLock:zzp	Ljava/lang/String;
+    //   203: invokestatic 149	java/lang/String:valueOf	(Ljava/lang/Object;)Ljava/lang/String;
+    //   206: ldc_w 333
+    //   209: invokevirtual 159	java/lang/String:concat	(Ljava/lang/String;)Ljava/lang/String;
+    //   212: aload 4
+    //   214: invokestatic 336	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    //   217: pop
+    //   218: aload_0
+    //   219: getfield 137	com/google/android/gms/stats/WakeLock:zza	Lcom/google/android/gms/internal/stats/zzb;
+    //   222: ifnull +48 -> 270
+    //   225: aload_0
+    //   226: aconst_null
+    //   227: putfield 137	com/google/android/gms/stats/WakeLock:zza	Lcom/google/android/gms/internal/stats/zzb;
+    //   230: goto +40 -> 270
+    //   233: aload 4
+    //   235: athrow
+    //   236: aload_0
+    //   237: getfield 137	com/google/android/gms/stats/WakeLock:zza	Lcom/google/android/gms/internal/stats/zzb;
+    //   240: ifnull +8 -> 248
+    //   243: aload_0
+    //   244: aconst_null
+    //   245: putfield 137	com/google/android/gms/stats/WakeLock:zza	Lcom/google/android/gms/internal/stats/zzb;
+    //   248: aload 4
+    //   250: athrow
+    //   251: ldc -17
+    //   253: aload_0
+    //   254: getfield 164	com/google/android/gms/stats/WakeLock:zzp	Ljava/lang/String;
+    //   257: invokestatic 149	java/lang/String:valueOf	(Ljava/lang/Object;)Ljava/lang/String;
+    //   260: ldc_w 338
+    //   263: invokevirtual 159	java/lang/String:concat	(Ljava/lang/String;)Ljava/lang/String;
+    //   266: invokestatic 247	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;)I
+    //   269: pop
+    //   270: aload_3
+    //   271: monitorexit
+    //   272: return
+    //   273: astore 4
+    //   275: aload_3
+    //   276: monitorexit
+    //   277: aload 4
+    //   279: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	280	0	this	WakeLock
+    //   0	280	1	paramInt	int
+    //   149	2	2	bool	boolean
+    //   4	272	3	localObject1	Object
+    //   69	50	4	localObject2	Object
+    //   176	1	4	localObject3	Object
+    //   181	68	4	localRuntimeException	RuntimeException
+    //   273	5	4	localObject4	Object
+    // Exception table:
+    //   from	to	target	type
+    //   154	161	176	finally
+    //   183	218	176	finally
+    //   233	236	176	finally
+    //   154	161	181	java/lang/RuntimeException
+    //   7	16	273	finally
+    //   17	36	273	finally
+    //   43	45	273	finally
+    //   46	51	273	finally
+    //   51	71	273	finally
+    //   71	95	273	finally
+    //   98	113	273	finally
+    //   118	137	273	finally
+    //   137	150	273	finally
+    //   161	173	273	finally
+    //   218	230	273	finally
+    //   236	248	273	finally
+    //   248	251	273	finally
+    //   251	270	273	finally
+    //   270	272	273	finally
+    //   275	277	273	finally
+  }
+  
+  private static void zze(PowerManager.WakeLock paramWakeLock, WorkSource paramWorkSource)
+  {
+    try
+    {
+      paramWakeLock.setWorkSource(paramWorkSource);
+      return;
+    }
+    catch (ArrayIndexOutOfBoundsException paramWakeLock) {}catch (IllegalArgumentException paramWakeLock) {}
+    Log.wtf("WakeLock", paramWakeLock.toString());
+  }
+  
+  @KeepForSdk
+  public void acquire(long paramLong)
+  {
+    zzt.incrementAndGet();
+    long l1 = zzb;
+    long l2 = Long.MAX_VALUE;
+    long l3 = Math.max(Math.min(Long.MAX_VALUE, l1), 1L);
+    l1 = l3;
+    if (paramLong > 0L) {
+      l1 = Math.min(paramLong, l3);
+    }
+    synchronized (zzf)
+    {
+      if (!isHeld())
+      {
+        zza = com.google.android.gms.internal.stats.zzb.zza(false, null);
+        zzg.acquire();
+        zzn.elapsedRealtime();
+      }
+      zzh += 1;
+      zzm += 1;
+      zzb(null);
+      zzc localZzc = (zzc)zzs.get(null);
+      Object localObject1 = localZzc;
+      if (localZzc == null)
+      {
+        localObject1 = new zzc(null);
+        zzs.put(null, localObject1);
+      }
+      zza += 1;
+      l3 = zzn.elapsedRealtime();
+      paramLong = l2;
+      if (Long.MAX_VALUE - l3 > l1) {
+        paramLong = l3 + l1;
+      }
+      if (paramLong > zzj)
+      {
+        zzj = paramLong;
+        localObject1 = zzi;
+        if (localObject1 != null) {
+          ((Future)localObject1).cancel(false);
+        }
+        zzi = zzu.schedule(new zza(this), l1, TimeUnit.MILLISECONDS);
+      }
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public boolean isHeld()
+  {
+    for (;;)
+    {
+      synchronized (zzf)
+      {
+        if (zzh > 0)
+        {
+          bool = true;
+          return bool;
+        }
+      }
+      boolean bool = false;
+    }
+  }
+  
+  @KeepForSdk
+  public void release()
+  {
+    if (zzt.decrementAndGet() < 0) {
+      Log.e("WakeLock", String.valueOf(zzp).concat(" release without a matched acquire!"));
+    }
+    synchronized (zzf)
+    {
+      zzb(null);
+      if (zzs.containsKey(null))
+      {
+        zzc localZzc = (zzc)zzs.get(null);
+        if (localZzc != null)
+        {
+          int i = zza - 1;
+          zza = i;
+          if (i == 0) {
+            zzs.remove(null);
+          }
+        }
+      }
+      else
+      {
+        Log.w("WakeLock", String.valueOf(zzp).concat(" counter does not exist"));
+      }
+      zzd(0);
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public void setReferenceCounted(boolean paramBoolean)
+  {
+    synchronized (zzf)
+    {
+      zzl = paramBoolean;
+      return;
+    }
+  }
+}

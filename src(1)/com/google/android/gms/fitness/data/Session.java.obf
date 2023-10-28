@@ -1,0 +1,331 @@
+package com.google.android.gms.fitness.data;
+
+import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import android.text.TextUtils;
+import androidx.annotation.RecentlyNonNull;
+import androidx.annotation.RecentlyNullable;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
+import com.google.android.gms.internal.fitness.zzkn;
+import com.google.android.gms.internal.fitness.zzko;
+import java.util.concurrent.TimeUnit;
+
+@SafeParcelable.Class(creator="SessionCreator")
+@SafeParcelable.Reserved({1000})
+public class Session
+  extends AbstractSafeParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<Session> CREATOR = new zzaf();
+  @RecentlyNonNull
+  public static final String EXTRA_SESSION = "vnd.google.fitness.session";
+  @RecentlyNonNull
+  public static final String MIME_TYPE_PREFIX = "vnd.google.fitness.session/";
+  @SafeParcelable.Field(getter="getDescription", id=5)
+  private final String description;
+  @SafeParcelable.Field(getter="getName", id=3)
+  private final String name;
+  @SafeParcelable.Field(getter="getStartTimeMillis", id=1)
+  private final long zzkr;
+  @SafeParcelable.Field(getter="getEndTimeMillis", id=2)
+  private final long zzks;
+  @SafeParcelable.Field(getter="getActivityType", id=7)
+  private final int zzlg;
+  @SafeParcelable.Field(getter="getApplication", id=8)
+  private final zza zzlw;
+  @SafeParcelable.Field(getter="getIdentifier", id=4)
+  private final String zzod;
+  @SafeParcelable.Field(getter="getActiveTimeMillis", id=9)
+  private final Long zzoe;
+  
+  @SafeParcelable.Constructor
+  public Session(@SafeParcelable.Param(id=1) long paramLong1, @SafeParcelable.Param(id=2) long paramLong2, @SafeParcelable.Param(id=3) String paramString1, @SafeParcelable.Param(id=4) String paramString2, @SafeParcelable.Param(id=5) String paramString3, @SafeParcelable.Param(id=7) int paramInt, @SafeParcelable.Param(id=8) zza paramZza, @SafeParcelable.Param(id=9) Long paramLong)
+  {
+    zzkr = paramLong1;
+    zzks = paramLong2;
+    name = paramString1;
+    zzod = paramString2;
+    description = paramString3;
+    zzlg = paramInt;
+    zzlw = paramZza;
+    zzoe = paramLong;
+  }
+  
+  private Session(Builder paramBuilder)
+  {
+    this(Builder.zza(paramBuilder), Builder.zzb(paramBuilder), Builder.zzc(paramBuilder), Builder.zzd(paramBuilder), Builder.zze(paramBuilder), Builder.zzf(paramBuilder), null, Builder.zzg(paramBuilder));
+  }
+  
+  @RecentlyNullable
+  public static Session extract(@RecentlyNonNull Intent paramIntent)
+  {
+    if (paramIntent == null) {
+      return null;
+    }
+    return (Session)SafeParcelableSerializer.deserializeFromIntentExtra(paramIntent, "vnd.google.fitness.session", CREATOR);
+  }
+  
+  @RecentlyNonNull
+  public static String getMimeType(@RecentlyNonNull String paramString)
+  {
+    paramString = String.valueOf(paramString);
+    if (paramString.length() != 0) {
+      return "vnd.google.fitness.session/".concat(paramString);
+    }
+    return new String("vnd.google.fitness.session/");
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (!(paramObject instanceof Session)) {
+      return false;
+    }
+    paramObject = (Session)paramObject;
+    return (zzkr == zzkr) && (zzks == zzks) && (Objects.equal(name, name)) && (Objects.equal(zzod, zzod)) && (Objects.equal(description, description)) && (Objects.equal(zzlw, zzlw)) && (zzlg == zzlg);
+  }
+  
+  public long getActiveTime(@RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    Long localLong = zzoe;
+    if (localLong != null) {
+      return paramTimeUnit.convert(localLong.longValue(), TimeUnit.MILLISECONDS);
+    }
+    throw new IllegalStateException("Active time is not set");
+  }
+  
+  @RecentlyNonNull
+  public String getActivity()
+  {
+    return zzko.getName(zzlg);
+  }
+  
+  @RecentlyNullable
+  public String getAppPackageName()
+  {
+    zza localZza = zzlw;
+    if (localZza == null) {
+      return null;
+    }
+    return localZza.getPackageName();
+  }
+  
+  @RecentlyNonNull
+  public String getDescription()
+  {
+    return description;
+  }
+  
+  public long getEndTime(@RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzks, TimeUnit.MILLISECONDS);
+  }
+  
+  @RecentlyNonNull
+  public String getIdentifier()
+  {
+    return zzod;
+  }
+  
+  @RecentlyNullable
+  public String getName()
+  {
+    return name;
+  }
+  
+  public long getStartTime(@RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzkr, TimeUnit.MILLISECONDS);
+  }
+  
+  public boolean hasActiveTime()
+  {
+    return zzoe != null;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { Long.valueOf(zzkr), Long.valueOf(zzks), zzod });
+  }
+  
+  public boolean isOngoing()
+  {
+    return zzks == 0L;
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("startTime", Long.valueOf(zzkr)).add("endTime", Long.valueOf(zzks)).add("name", name).add("identifier", zzod).add("description", description).add("activity", Integer.valueOf(zzlg)).add("application", zzlw).toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeLong(paramParcel, 1, zzkr);
+    SafeParcelWriter.writeLong(paramParcel, 2, zzks);
+    SafeParcelWriter.writeString(paramParcel, 3, getName(), false);
+    SafeParcelWriter.writeString(paramParcel, 4, getIdentifier(), false);
+    SafeParcelWriter.writeString(paramParcel, 5, getDescription(), false);
+    SafeParcelWriter.writeInt(paramParcel, 7, zzlg);
+    SafeParcelWriter.writeParcelable(paramParcel, 8, zzlw, paramInt, false);
+    SafeParcelWriter.writeLongObject(paramParcel, 9, zzoe, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  public static class Builder
+  {
+    private String description = "";
+    private String name = null;
+    private long zzkr = 0L;
+    private long zzks = 0L;
+    private int zzlg = 4;
+    private String zzod;
+    private Long zzoe;
+    
+    public Builder() {}
+    
+    @RecentlyNonNull
+    public Session build()
+    {
+      long l = zzkr;
+      boolean bool2 = true;
+      if (l > 0L) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      Preconditions.checkState(bool1, "Start time should be specified.");
+      l = zzks;
+      boolean bool1 = bool2;
+      if (l != 0L) {
+        if (l > zzkr) {
+          bool1 = bool2;
+        } else {
+          bool1 = false;
+        }
+      }
+      Preconditions.checkState(bool1, "End time should be later than start time.");
+      if (zzod == null)
+      {
+        Object localObject2 = name;
+        Object localObject1 = localObject2;
+        if (localObject2 == null) {
+          localObject1 = "";
+        }
+        l = zzkr;
+        localObject2 = new StringBuilder(String.valueOf(localObject1).length() + 20);
+        ((StringBuilder)localObject2).append((String)localObject1);
+        ((StringBuilder)localObject2).append(l);
+        zzod = ((StringBuilder)localObject2).toString();
+      }
+      return new Session(this, null);
+    }
+    
+    @RecentlyNonNull
+    public Builder setActiveTime(long paramLong, @RecentlyNonNull TimeUnit paramTimeUnit)
+    {
+      zzoe = Long.valueOf(paramTimeUnit.toMillis(paramLong));
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setActivity(@RecentlyNonNull String paramString)
+    {
+      int j = zzko.zzo(paramString);
+      paramString = zzkn.zza(j, zzkn.zzaig);
+      int i;
+      if ((paramString.zzdz()) && (!paramString.equals(zzkn.zzahi))) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      Preconditions.checkArgument(i ^ 0x1, "Unsupported session activity type %s.", new Object[] { Integer.valueOf(j) });
+      zzlg = j;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setDescription(@RecentlyNonNull String paramString)
+    {
+      boolean bool;
+      if (paramString.length() <= 1000) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Session description cannot exceed %d characters", new Object[] { Integer.valueOf(1000) });
+      description = paramString;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setEndTime(long paramLong, @RecentlyNonNull TimeUnit paramTimeUnit)
+    {
+      boolean bool;
+      if (paramLong >= 0L) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkState(bool, "End time should be positive.");
+      zzks = paramTimeUnit.toMillis(paramLong);
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setIdentifier(@RecentlyNonNull String paramString)
+    {
+      boolean bool;
+      if ((paramString != null) && (TextUtils.getTrimmedLength(paramString) > 0)) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool);
+      zzod = paramString;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setName(@RecentlyNonNull String paramString)
+    {
+      boolean bool;
+      if (paramString.length() <= 100) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Session name cannot exceed %d characters", new Object[] { Integer.valueOf(100) });
+      name = paramString;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setStartTime(long paramLong, @RecentlyNonNull TimeUnit paramTimeUnit)
+    {
+      boolean bool;
+      if (paramLong > 0L) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkState(bool, "Start time should be positive.");
+      zzkr = paramTimeUnit.toMillis(paramLong);
+      return this;
+    }
+  }
+}

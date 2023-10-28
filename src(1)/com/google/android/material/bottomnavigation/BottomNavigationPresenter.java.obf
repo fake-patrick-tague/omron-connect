@@ -1,0 +1,148 @@
+package com.google.android.material.bottomnavigation;
+
+import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import android.view.ViewGroup;
+import androidx.appcompat.view.menu.g;
+import androidx.appcompat.view.menu.i;
+import androidx.appcompat.view.menu.m;
+import androidx.appcompat.view.menu.r;
+import com.google.android.material.badge.a;
+import com.google.android.material.internal.ParcelableSparseArray;
+
+public class BottomNavigationPresenter
+  implements m
+{
+  private g b;
+  private BottomNavigationMenuView c;
+  private boolean d = false;
+  private int e;
+  
+  public BottomNavigationPresenter() {}
+  
+  public void a(g paramG, boolean paramBoolean) {}
+  
+  public void b(BottomNavigationMenuView paramBottomNavigationMenuView)
+  {
+    c = paramBottomNavigationMenuView;
+  }
+  
+  public void c(boolean paramBoolean)
+  {
+    if (d) {
+      return;
+    }
+    if (paramBoolean)
+    {
+      c.d();
+      return;
+    }
+    c.k();
+  }
+  
+  public boolean d()
+  {
+    return false;
+  }
+  
+  public boolean e(g paramG, i paramI)
+  {
+    return false;
+  }
+  
+  public boolean f(g paramG, i paramI)
+  {
+    return false;
+  }
+  
+  public int getId()
+  {
+    return e;
+  }
+  
+  public void h(int paramInt)
+  {
+    e = paramInt;
+  }
+  
+  public void i(Context paramContext, g paramG)
+  {
+    b = paramG;
+    c.b(paramG);
+  }
+  
+  public void j(Parcelable paramParcelable)
+  {
+    if ((paramParcelable instanceof SavedState))
+    {
+      BottomNavigationMenuView localBottomNavigationMenuView = c;
+      paramParcelable = (SavedState)paramParcelable;
+      localBottomNavigationMenuView.j(b);
+      paramParcelable = a.b(c.getContext(), c);
+      c.setBadgeDrawables(paramParcelable);
+    }
+  }
+  
+  public void k(boolean paramBoolean)
+  {
+    d = paramBoolean;
+  }
+  
+  public boolean l(r paramR)
+  {
+    return false;
+  }
+  
+  public Parcelable m()
+  {
+    SavedState localSavedState = new SavedState();
+    b = c.getSelectedItemId();
+    c = a.c(c.getBadgeDrawables());
+    return localSavedState;
+  }
+  
+  static class SavedState
+    implements Parcelable
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    int b;
+    ParcelableSparseArray c;
+    
+    SavedState() {}
+    
+    SavedState(Parcel paramParcel)
+    {
+      b = paramParcel.readInt();
+      c = ((ParcelableSparseArray)paramParcel.readParcelable(SavedState.class.getClassLoader()));
+    }
+    
+    public int describeContents()
+    {
+      return 0;
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      paramParcel.writeInt(b);
+      paramParcel.writeParcelable(c, 0);
+    }
+    
+    static final class a
+      implements Parcelable.Creator<BottomNavigationPresenter.SavedState>
+    {
+      a() {}
+      
+      public BottomNavigationPresenter.SavedState a(Parcel paramParcel)
+      {
+        return new BottomNavigationPresenter.SavedState(paramParcel);
+      }
+      
+      public BottomNavigationPresenter.SavedState[] b(int paramInt)
+      {
+        return new BottomNavigationPresenter.SavedState[paramInt];
+      }
+    }
+  }
+}

@@ -1,0 +1,1660 @@
+package androidx.work.impl.n;
+
+import android.database.Cursor;
+import androidx.room.RoomDatabase;
+import androidx.room.k;
+import androidx.room.n;
+import androidx.room.q.c;
+import androidx.work.WorkInfo.State;
+import c.e.a;
+import c.e.g;
+import c.t.a.f;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+public final class r
+  implements q
+{
+  private final RoomDatabase a;
+  private final androidx.room.b<p> b;
+  private final n c;
+  private final n d;
+  private final n e;
+  private final n f;
+  private final n g;
+  private final n h;
+  private final n i;
+  private final n j;
+  
+  public r(RoomDatabase paramRoomDatabase)
+  {
+    a = paramRoomDatabase;
+    b = new a(paramRoomDatabase);
+    c = new b(paramRoomDatabase);
+    d = new c(paramRoomDatabase);
+    e = new d(paramRoomDatabase);
+    f = new e(paramRoomDatabase);
+    g = new f(paramRoomDatabase);
+    h = new g(paramRoomDatabase);
+    i = new h(paramRoomDatabase);
+    j = new i(paramRoomDatabase);
+  }
+  
+  private void w(a<String, ArrayList<androidx.work.d>> paramA)
+  {
+    Object localObject2 = paramA.keySet();
+    if (((Set)localObject2).isEmpty()) {
+      return;
+    }
+    if (paramA.size() > 999)
+    {
+      localObject1 = new a(999);
+      int i2 = paramA.size();
+      int m = 0;
+      k = m;
+      while (m < i2)
+      {
+        ((g)localObject1).put((String)paramA.i(m), (ArrayList)paramA.m(m));
+        int n = m + 1;
+        int i1 = k + 1;
+        m = n;
+        k = i1;
+        if (i1 == 999)
+        {
+          w((a)localObject1);
+          localObject1 = new a(999);
+          k = 0;
+          m = n;
+        }
+      }
+      if (k > 0) {
+        w((a)localObject1);
+      }
+      return;
+    }
+    Object localObject1 = androidx.room.q.e.b();
+    ((StringBuilder)localObject1).append("SELECT `progress`,`work_spec_id` FROM `WorkProgress` WHERE `work_spec_id` IN (");
+    int k = ((Set)localObject2).size();
+    androidx.room.q.e.a((StringBuilder)localObject1, k);
+    ((StringBuilder)localObject1).append(")");
+    localObject1 = k.n(((StringBuilder)localObject1).toString(), k + 0);
+    localObject2 = ((Set)localObject2).iterator();
+    k = 1;
+    while (((Iterator)localObject2).hasNext())
+    {
+      String str = (String)((Iterator)localObject2).next();
+      if (str == null) {
+        ((k)localObject1).bindNull(k);
+      } else {
+        ((k)localObject1).bindString(k, str);
+      }
+      k += 1;
+    }
+    localObject1 = c.b(a, (c.t.a.e)localObject1, false, null);
+    try
+    {
+      k = androidx.room.q.b.b((Cursor)localObject1, "work_spec_id");
+      if (k == -1) {
+        return;
+      }
+      while (((Cursor)localObject1).moveToNext()) {
+        if (!((Cursor)localObject1).isNull(k))
+        {
+          localObject2 = (ArrayList)paramA.get(((Cursor)localObject1).getString(k));
+          if (localObject2 != null) {
+            ((ArrayList)localObject2).add(androidx.work.d.g(((Cursor)localObject1).getBlob(0)));
+          }
+        }
+      }
+      return;
+    }
+    finally
+    {
+      ((Cursor)localObject1).close();
+    }
+  }
+  
+  private void x(a<String, ArrayList<String>> paramA)
+  {
+    Object localObject2 = paramA.keySet();
+    if (((Set)localObject2).isEmpty()) {
+      return;
+    }
+    if (paramA.size() > 999)
+    {
+      localObject1 = new a(999);
+      int i2 = paramA.size();
+      int m = 0;
+      k = m;
+      while (m < i2)
+      {
+        ((g)localObject1).put((String)paramA.i(m), (ArrayList)paramA.m(m));
+        int n = m + 1;
+        int i1 = k + 1;
+        m = n;
+        k = i1;
+        if (i1 == 999)
+        {
+          x((a)localObject1);
+          localObject1 = new a(999);
+          k = 0;
+          m = n;
+        }
+      }
+      if (k > 0) {
+        x((a)localObject1);
+      }
+      return;
+    }
+    Object localObject1 = androidx.room.q.e.b();
+    ((StringBuilder)localObject1).append("SELECT `tag`,`work_spec_id` FROM `WorkTag` WHERE `work_spec_id` IN (");
+    int k = ((Set)localObject2).size();
+    androidx.room.q.e.a((StringBuilder)localObject1, k);
+    ((StringBuilder)localObject1).append(")");
+    localObject1 = k.n(((StringBuilder)localObject1).toString(), k + 0);
+    localObject2 = ((Set)localObject2).iterator();
+    k = 1;
+    while (((Iterator)localObject2).hasNext())
+    {
+      String str = (String)((Iterator)localObject2).next();
+      if (str == null) {
+        ((k)localObject1).bindNull(k);
+      } else {
+        ((k)localObject1).bindString(k, str);
+      }
+      k += 1;
+    }
+    localObject1 = c.b(a, (c.t.a.e)localObject1, false, null);
+    try
+    {
+      k = androidx.room.q.b.b((Cursor)localObject1, "work_spec_id");
+      if (k == -1) {
+        return;
+      }
+      while (((Cursor)localObject1).moveToNext()) {
+        if (!((Cursor)localObject1).isNull(k))
+        {
+          localObject2 = (ArrayList)paramA.get(((Cursor)localObject1).getString(k));
+          if (localObject2 != null) {
+            ((ArrayList)localObject2).add(((Cursor)localObject1).getString(0));
+          }
+        }
+      }
+      return;
+    }
+    finally
+    {
+      ((Cursor)localObject1).close();
+    }
+  }
+  
+  public void a(String paramString)
+  {
+    a.b();
+    f localF = c.a();
+    if (paramString == null) {
+      localF.bindNull(1);
+    } else {
+      localF.bindString(1, paramString);
+    }
+    a.c();
+    try
+    {
+      localF.executeUpdateDelete();
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+      c.f(localF);
+    }
+  }
+  
+  public int b(WorkInfo.State paramState, String... paramVarArgs)
+  {
+    a.b();
+    Object localObject = androidx.room.q.e.b();
+    ((StringBuilder)localObject).append("UPDATE workspec SET state=");
+    ((StringBuilder)localObject).append("?");
+    ((StringBuilder)localObject).append(" WHERE id IN (");
+    androidx.room.q.e.a((StringBuilder)localObject, paramVarArgs.length);
+    ((StringBuilder)localObject).append(")");
+    localObject = ((StringBuilder)localObject).toString();
+    localObject = a.d((String)localObject);
+    ((c.t.a.d)localObject).bindLong(1, v.j(paramState));
+    int n = paramVarArgs.length;
+    int m = 2;
+    int k = 0;
+    while (k < n)
+    {
+      paramState = paramVarArgs[k];
+      if (paramState == null) {
+        ((c.t.a.d)localObject).bindNull(m);
+      } else {
+        ((c.t.a.d)localObject).bindString(m, paramState);
+      }
+      m += 1;
+      k += 1;
+    }
+    a.c();
+    try
+    {
+      k = ((f)localObject).executeUpdateDelete();
+      a.r();
+      return k;
+    }
+    finally
+    {
+      a.g();
+    }
+  }
+  
+  public int c(String paramString, long paramLong)
+  {
+    a.b();
+    f localF = h.a();
+    localF.bindLong(1, paramLong);
+    if (paramString == null) {
+      localF.bindNull(2);
+    } else {
+      localF.bindString(2, paramString);
+    }
+    a.c();
+    try
+    {
+      int k = localF.executeUpdateDelete();
+      a.r();
+      return k;
+    }
+    finally
+    {
+      a.g();
+      h.f(localF);
+    }
+  }
+  
+  public List<p.b> d(String paramString)
+  {
+    k localK = k.n("SELECT id, state FROM workspec WHERE id IN (SELECT work_spec_id FROM workname WHERE name=?)", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = c.b(a, localK, false, null);
+    try
+    {
+      int k = androidx.room.q.b.c(paramString, "id");
+      int m = androidx.room.q.b.c(paramString, "state");
+      ArrayList localArrayList = new ArrayList(paramString.getCount());
+      while (paramString.moveToNext())
+      {
+        p.b localB = new p.b();
+        a = paramString.getString(k);
+        b = v.g(paramString.getInt(m));
+        localArrayList.add(localB);
+      }
+      return localArrayList;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  public List<p> e(long paramLong)
+  {
+    k localK = k.n("SELECT `required_network_type`, `requires_charging`, `requires_device_idle`, `requires_battery_not_low`, `requires_storage_not_low`, `trigger_content_update_delay`, `trigger_max_content_delay`, `content_uri_triggers`, `WorkSpec`.`id` AS `id`, `WorkSpec`.`state` AS `state`, `WorkSpec`.`worker_class_name` AS `worker_class_name`, `WorkSpec`.`input_merger_class_name` AS `input_merger_class_name`, `WorkSpec`.`input` AS `input`, `WorkSpec`.`output` AS `output`, `WorkSpec`.`initial_delay` AS `initial_delay`, `WorkSpec`.`interval_duration` AS `interval_duration`, `WorkSpec`.`flex_duration` AS `flex_duration`, `WorkSpec`.`run_attempt_count` AS `run_attempt_count`, `WorkSpec`.`backoff_policy` AS `backoff_policy`, `WorkSpec`.`backoff_delay_duration` AS `backoff_delay_duration`, `WorkSpec`.`period_start_time` AS `period_start_time`, `WorkSpec`.`minimum_retention_duration` AS `minimum_retention_duration`, `WorkSpec`.`schedule_requested_at` AS `schedule_requested_at`, `WorkSpec`.`run_in_foreground` AS `run_in_foreground`, `WorkSpec`.`out_of_quota_policy` AS `out_of_quota_policy` FROM workspec WHERE period_start_time >= ? AND state IN (2, 3, 5) ORDER BY period_start_time DESC", 1);
+    localK.bindLong(1, paramLong);
+    a.b();
+    Cursor localCursor = c.b(a, localK, false, null);
+    for (;;)
+    {
+      try
+      {
+        i12 = androidx.room.q.b.c(localCursor, "required_network_type");
+        i14 = androidx.room.q.b.c(localCursor, "requires_charging");
+        i6 = androidx.room.q.b.c(localCursor, "requires_device_idle");
+        i4 = androidx.room.q.b.c(localCursor, "requires_battery_not_low");
+        i17 = androidx.room.q.b.c(localCursor, "requires_storage_not_low");
+        i18 = androidx.room.q.b.c(localCursor, "trigger_content_update_delay");
+        i19 = androidx.room.q.b.c(localCursor, "trigger_max_content_delay");
+        i20 = androidx.room.q.b.c(localCursor, "content_uri_triggers");
+        i9 = androidx.room.q.b.c(localCursor, "id");
+        i21 = androidx.room.q.b.c(localCursor, "state");
+        i7 = androidx.room.q.b.c(localCursor, "worker_class_name");
+        i13 = androidx.room.q.b.c(localCursor, "input_merger_class_name");
+        i22 = androidx.room.q.b.c(localCursor, "input");
+        i16 = androidx.room.q.b.c(localCursor, "output");
+      }
+      finally
+      {
+        int i12;
+        int i14;
+        int i6;
+        int i4;
+        int i17;
+        int i18;
+        int i19;
+        int i20;
+        int i9;
+        int i21;
+        int i7;
+        int i13;
+        int i22;
+        int i16;
+        int i3;
+        int i10;
+        int i15;
+        int i5;
+        int k;
+        int n;
+        int i11;
+        int i1;
+        int i2;
+        int m;
+        int i8;
+        ArrayList localArrayList;
+        localCursor.close();
+        localK.release();
+      }
+      try
+      {
+        i3 = androidx.room.q.b.c(localCursor, "initial_delay");
+        i10 = androidx.room.q.b.c(localCursor, "interval_duration");
+        i15 = androidx.room.q.b.c(localCursor, "flex_duration");
+        i5 = androidx.room.q.b.c(localCursor, "run_attempt_count");
+        k = androidx.room.q.b.c(localCursor, "backoff_policy");
+        n = androidx.room.q.b.c(localCursor, "backoff_delay_duration");
+        i11 = androidx.room.q.b.c(localCursor, "period_start_time");
+        i1 = androidx.room.q.b.c(localCursor, "minimum_retention_duration");
+        i2 = androidx.room.q.b.c(localCursor, "schedule_requested_at");
+        m = androidx.room.q.b.c(localCursor, "run_in_foreground");
+        i8 = androidx.room.q.b.c(localCursor, "out_of_quota_policy");
+        localArrayList = new ArrayList(localCursor.getCount());
+        if (localCursor.moveToNext())
+        {
+          Object localObject3 = localCursor.getString(i9);
+          String str = localCursor.getString(i7);
+          androidx.work.b localB = new androidx.work.b();
+          localB.k(v.e(localCursor.getInt(i12)));
+          if (localCursor.getInt(i14) != 0)
+          {
+            bool = true;
+            localB.m(bool);
+            if (localCursor.getInt(i6) == 0) {
+              break label815;
+            }
+            bool = true;
+            localB.n(bool);
+            if (localCursor.getInt(i4) == 0) {
+              break label821;
+            }
+            bool = true;
+            localB.l(bool);
+            if (localCursor.getInt(i17) == 0) {
+              break label827;
+            }
+            bool = true;
+            localB.o(bool);
+            localB.p(localCursor.getLong(i18));
+            localB.q(localCursor.getLong(i19));
+            localB.j(v.b(localCursor.getBlob(i20)));
+            localObject3 = new p((String)localObject3, str);
+            d = v.g(localCursor.getInt(i21));
+            f = localCursor.getString(i13);
+            g = androidx.work.d.g(localCursor.getBlob(i22));
+            h = androidx.work.d.g(localCursor.getBlob(i16));
+            i = localCursor.getLong(i3);
+            j = localCursor.getLong(i10);
+            k = localCursor.getLong(i15);
+            m = localCursor.getInt(i5);
+            n = v.d(localCursor.getInt(k));
+            o = localCursor.getLong(n);
+            p = localCursor.getLong(i11);
+            q = localCursor.getLong(i1);
+            r = localCursor.getLong(i2);
+            if (localCursor.getInt(m) == 0) {
+              break label833;
+            }
+            bool = true;
+            s = bool;
+            t = v.f(localCursor.getInt(i8));
+            l = localB;
+            localArrayList.add(localObject3);
+          }
+        }
+        else
+        {
+          localCursor.close();
+          localK.release();
+          return localArrayList;
+        }
+      }
+      finally {}
+      label815:
+      boolean bool = false;
+      continue;
+      label821:
+      bool = false;
+      continue;
+      label827:
+      bool = false;
+      continue;
+      label833:
+      bool = false;
+    }
+  }
+  
+  public List<p> f(int paramInt)
+  {
+    k localK = k.n("SELECT `required_network_type`, `requires_charging`, `requires_device_idle`, `requires_battery_not_low`, `requires_storage_not_low`, `trigger_content_update_delay`, `trigger_max_content_delay`, `content_uri_triggers`, `WorkSpec`.`id` AS `id`, `WorkSpec`.`state` AS `state`, `WorkSpec`.`worker_class_name` AS `worker_class_name`, `WorkSpec`.`input_merger_class_name` AS `input_merger_class_name`, `WorkSpec`.`input` AS `input`, `WorkSpec`.`output` AS `output`, `WorkSpec`.`initial_delay` AS `initial_delay`, `WorkSpec`.`interval_duration` AS `interval_duration`, `WorkSpec`.`flex_duration` AS `flex_duration`, `WorkSpec`.`run_attempt_count` AS `run_attempt_count`, `WorkSpec`.`backoff_policy` AS `backoff_policy`, `WorkSpec`.`backoff_delay_duration` AS `backoff_delay_duration`, `WorkSpec`.`period_start_time` AS `period_start_time`, `WorkSpec`.`minimum_retention_duration` AS `minimum_retention_duration`, `WorkSpec`.`schedule_requested_at` AS `schedule_requested_at`, `WorkSpec`.`run_in_foreground` AS `run_in_foreground`, `WorkSpec`.`out_of_quota_policy` AS `out_of_quota_policy` FROM workspec WHERE state=0 AND schedule_requested_at=-1 ORDER BY period_start_time LIMIT (SELECT MAX(?-COUNT(*), 0) FROM workspec WHERE schedule_requested_at<>-1 AND state NOT IN (2, 3, 5))", 1);
+    localK.bindLong(1, paramInt);
+    a.b();
+    Cursor localCursor = c.b(a, localK, false, null);
+    for (;;)
+    {
+      try
+      {
+        i11 = androidx.room.q.b.c(localCursor, "required_network_type");
+        i13 = androidx.room.q.b.c(localCursor, "requires_charging");
+        i4 = androidx.room.q.b.c(localCursor, "requires_device_idle");
+        i3 = androidx.room.q.b.c(localCursor, "requires_battery_not_low");
+        i16 = androidx.room.q.b.c(localCursor, "requires_storage_not_low");
+        i17 = androidx.room.q.b.c(localCursor, "trigger_content_update_delay");
+        i18 = androidx.room.q.b.c(localCursor, "trigger_max_content_delay");
+        i19 = androidx.room.q.b.c(localCursor, "content_uri_triggers");
+        i7 = androidx.room.q.b.c(localCursor, "id");
+        i20 = androidx.room.q.b.c(localCursor, "state");
+        i5 = androidx.room.q.b.c(localCursor, "worker_class_name");
+        i12 = androidx.room.q.b.c(localCursor, "input_merger_class_name");
+        i21 = androidx.room.q.b.c(localCursor, "input");
+        i15 = androidx.room.q.b.c(localCursor, "output");
+      }
+      finally
+      {
+        int i11;
+        int i13;
+        int i4;
+        int i3;
+        int i16;
+        int i17;
+        int i18;
+        int i19;
+        int i7;
+        int i20;
+        int i5;
+        int i12;
+        int i21;
+        int i15;
+        int i8;
+        int i6;
+        int i14;
+        int i2;
+        int m;
+        int i10;
+        int n;
+        int i1;
+        int k;
+        int i9;
+        ArrayList localArrayList;
+        localCursor.close();
+        localK.release();
+      }
+      try
+      {
+        i8 = androidx.room.q.b.c(localCursor, "initial_delay");
+        i6 = androidx.room.q.b.c(localCursor, "interval_duration");
+        i14 = androidx.room.q.b.c(localCursor, "flex_duration");
+        i2 = androidx.room.q.b.c(localCursor, "run_attempt_count");
+        paramInt = androidx.room.q.b.c(localCursor, "backoff_policy");
+        m = androidx.room.q.b.c(localCursor, "backoff_delay_duration");
+        i10 = androidx.room.q.b.c(localCursor, "period_start_time");
+        n = androidx.room.q.b.c(localCursor, "minimum_retention_duration");
+        i1 = androidx.room.q.b.c(localCursor, "schedule_requested_at");
+        k = androidx.room.q.b.c(localCursor, "run_in_foreground");
+        i9 = androidx.room.q.b.c(localCursor, "out_of_quota_policy");
+        localArrayList = new ArrayList(localCursor.getCount());
+        if (localCursor.moveToNext())
+        {
+          Object localObject3 = localCursor.getString(i7);
+          String str = localCursor.getString(i5);
+          androidx.work.b localB = new androidx.work.b();
+          localB.k(v.e(localCursor.getInt(i11)));
+          if (localCursor.getInt(i13) != 0)
+          {
+            bool = true;
+            localB.m(bool);
+            if (localCursor.getInt(i4) == 0) {
+              break label812;
+            }
+            bool = true;
+            localB.n(bool);
+            if (localCursor.getInt(i3) == 0) {
+              break label818;
+            }
+            bool = true;
+            localB.l(bool);
+            if (localCursor.getInt(i16) == 0) {
+              break label824;
+            }
+            bool = true;
+            localB.o(bool);
+            localB.p(localCursor.getLong(i17));
+            localB.q(localCursor.getLong(i18));
+            localB.j(v.b(localCursor.getBlob(i19)));
+            localObject3 = new p((String)localObject3, str);
+            d = v.g(localCursor.getInt(i20));
+            f = localCursor.getString(i12);
+            g = androidx.work.d.g(localCursor.getBlob(i21));
+            h = androidx.work.d.g(localCursor.getBlob(i15));
+            i = localCursor.getLong(i8);
+            j = localCursor.getLong(i6);
+            k = localCursor.getLong(i14);
+            m = localCursor.getInt(i2);
+            n = v.d(localCursor.getInt(paramInt));
+            o = localCursor.getLong(m);
+            p = localCursor.getLong(i10);
+            q = localCursor.getLong(n);
+            r = localCursor.getLong(i1);
+            if (localCursor.getInt(k) == 0) {
+              break label830;
+            }
+            bool = true;
+            s = bool;
+            t = v.f(localCursor.getInt(i9));
+            l = localB;
+            localArrayList.add(localObject3);
+          }
+        }
+        else
+        {
+          localCursor.close();
+          localK.release();
+          return localArrayList;
+        }
+      }
+      finally {}
+      label812:
+      boolean bool = false;
+      continue;
+      label818:
+      bool = false;
+      continue;
+      label824:
+      bool = false;
+      continue;
+      label830:
+      bool = false;
+    }
+  }
+  
+  public void g(p paramP)
+  {
+    a.b();
+    a.c();
+    try
+    {
+      b.h(paramP);
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+    }
+  }
+  
+  public List<p> h()
+  {
+    k localK = k.n("SELECT `required_network_type`, `requires_charging`, `requires_device_idle`, `requires_battery_not_low`, `requires_storage_not_low`, `trigger_content_update_delay`, `trigger_max_content_delay`, `content_uri_triggers`, `WorkSpec`.`id` AS `id`, `WorkSpec`.`state` AS `state`, `WorkSpec`.`worker_class_name` AS `worker_class_name`, `WorkSpec`.`input_merger_class_name` AS `input_merger_class_name`, `WorkSpec`.`input` AS `input`, `WorkSpec`.`output` AS `output`, `WorkSpec`.`initial_delay` AS `initial_delay`, `WorkSpec`.`interval_duration` AS `interval_duration`, `WorkSpec`.`flex_duration` AS `flex_duration`, `WorkSpec`.`run_attempt_count` AS `run_attempt_count`, `WorkSpec`.`backoff_policy` AS `backoff_policy`, `WorkSpec`.`backoff_delay_duration` AS `backoff_delay_duration`, `WorkSpec`.`period_start_time` AS `period_start_time`, `WorkSpec`.`minimum_retention_duration` AS `minimum_retention_duration`, `WorkSpec`.`schedule_requested_at` AS `schedule_requested_at`, `WorkSpec`.`run_in_foreground` AS `run_in_foreground`, `WorkSpec`.`out_of_quota_policy` AS `out_of_quota_policy` FROM workspec WHERE state=0 AND schedule_requested_at<>-1", 0);
+    a.b();
+    Cursor localCursor = c.b(a, localK, false, null);
+    for (;;)
+    {
+      try
+      {
+        i12 = androidx.room.q.b.c(localCursor, "required_network_type");
+        i14 = androidx.room.q.b.c(localCursor, "requires_charging");
+        i5 = androidx.room.q.b.c(localCursor, "requires_device_idle");
+        i4 = androidx.room.q.b.c(localCursor, "requires_battery_not_low");
+        i17 = androidx.room.q.b.c(localCursor, "requires_storage_not_low");
+        i18 = androidx.room.q.b.c(localCursor, "trigger_content_update_delay");
+        i19 = androidx.room.q.b.c(localCursor, "trigger_max_content_delay");
+        i20 = androidx.room.q.b.c(localCursor, "content_uri_triggers");
+        i8 = androidx.room.q.b.c(localCursor, "id");
+        i21 = androidx.room.q.b.c(localCursor, "state");
+        i6 = androidx.room.q.b.c(localCursor, "worker_class_name");
+        i22 = androidx.room.q.b.c(localCursor, "input_merger_class_name");
+        i13 = androidx.room.q.b.c(localCursor, "input");
+        i16 = androidx.room.q.b.c(localCursor, "output");
+      }
+      finally
+      {
+        int i12;
+        int i14;
+        int i5;
+        int i4;
+        int i17;
+        int i18;
+        int i19;
+        int i20;
+        int i8;
+        int i21;
+        int i6;
+        int i22;
+        int i13;
+        int i16;
+        int i9;
+        int i7;
+        int i15;
+        int i3;
+        int k;
+        int n;
+        int i11;
+        int i1;
+        int i2;
+        int m;
+        int i10;
+        ArrayList localArrayList;
+        localCursor.close();
+        localK.release();
+      }
+      try
+      {
+        i9 = androidx.room.q.b.c(localCursor, "initial_delay");
+        i7 = androidx.room.q.b.c(localCursor, "interval_duration");
+        i15 = androidx.room.q.b.c(localCursor, "flex_duration");
+        i3 = androidx.room.q.b.c(localCursor, "run_attempt_count");
+        k = androidx.room.q.b.c(localCursor, "backoff_policy");
+        n = androidx.room.q.b.c(localCursor, "backoff_delay_duration");
+        i11 = androidx.room.q.b.c(localCursor, "period_start_time");
+        i1 = androidx.room.q.b.c(localCursor, "minimum_retention_duration");
+        i2 = androidx.room.q.b.c(localCursor, "schedule_requested_at");
+        m = androidx.room.q.b.c(localCursor, "run_in_foreground");
+        i10 = androidx.room.q.b.c(localCursor, "out_of_quota_policy");
+        localArrayList = new ArrayList(localCursor.getCount());
+        if (localCursor.moveToNext())
+        {
+          Object localObject3 = localCursor.getString(i8);
+          String str = localCursor.getString(i6);
+          androidx.work.b localB = new androidx.work.b();
+          localB.k(v.e(localCursor.getInt(i12)));
+          if (localCursor.getInt(i14) != 0)
+          {
+            bool = true;
+            localB.m(bool);
+            if (localCursor.getInt(i5) == 0) {
+              break label804;
+            }
+            bool = true;
+            localB.n(bool);
+            if (localCursor.getInt(i4) == 0) {
+              break label810;
+            }
+            bool = true;
+            localB.l(bool);
+            if (localCursor.getInt(i17) == 0) {
+              break label816;
+            }
+            bool = true;
+            localB.o(bool);
+            localB.p(localCursor.getLong(i18));
+            localB.q(localCursor.getLong(i19));
+            localB.j(v.b(localCursor.getBlob(i20)));
+            localObject3 = new p((String)localObject3, str);
+            d = v.g(localCursor.getInt(i21));
+            f = localCursor.getString(i22);
+            g = androidx.work.d.g(localCursor.getBlob(i13));
+            h = androidx.work.d.g(localCursor.getBlob(i16));
+            i = localCursor.getLong(i9);
+            j = localCursor.getLong(i7);
+            k = localCursor.getLong(i15);
+            m = localCursor.getInt(i3);
+            n = v.d(localCursor.getInt(k));
+            o = localCursor.getLong(n);
+            p = localCursor.getLong(i11);
+            q = localCursor.getLong(i1);
+            r = localCursor.getLong(i2);
+            if (localCursor.getInt(m) == 0) {
+              break label822;
+            }
+            bool = true;
+            s = bool;
+            t = v.f(localCursor.getInt(i10));
+            l = localB;
+            localArrayList.add(localObject3);
+          }
+        }
+        else
+        {
+          localCursor.close();
+          localK.release();
+          return localArrayList;
+        }
+      }
+      finally {}
+      label804:
+      boolean bool = false;
+      continue;
+      label810:
+      bool = false;
+      continue;
+      label816:
+      bool = false;
+      continue;
+      label822:
+      bool = false;
+    }
+  }
+  
+  public void i(String paramString, androidx.work.d paramD)
+  {
+    a.b();
+    f localF = d.a();
+    paramD = androidx.work.d.k(paramD);
+    if (paramD == null) {
+      localF.bindNull(1);
+    } else {
+      localF.bindBlob(1, paramD);
+    }
+    if (paramString == null) {
+      localF.bindNull(2);
+    } else {
+      localF.bindString(2, paramString);
+    }
+    a.c();
+    try
+    {
+      localF.executeUpdateDelete();
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+      d.f(localF);
+    }
+  }
+  
+  public List<p> j()
+  {
+    k localK = k.n("SELECT `required_network_type`, `requires_charging`, `requires_device_idle`, `requires_battery_not_low`, `requires_storage_not_low`, `trigger_content_update_delay`, `trigger_max_content_delay`, `content_uri_triggers`, `WorkSpec`.`id` AS `id`, `WorkSpec`.`state` AS `state`, `WorkSpec`.`worker_class_name` AS `worker_class_name`, `WorkSpec`.`input_merger_class_name` AS `input_merger_class_name`, `WorkSpec`.`input` AS `input`, `WorkSpec`.`output` AS `output`, `WorkSpec`.`initial_delay` AS `initial_delay`, `WorkSpec`.`interval_duration` AS `interval_duration`, `WorkSpec`.`flex_duration` AS `flex_duration`, `WorkSpec`.`run_attempt_count` AS `run_attempt_count`, `WorkSpec`.`backoff_policy` AS `backoff_policy`, `WorkSpec`.`backoff_delay_duration` AS `backoff_delay_duration`, `WorkSpec`.`period_start_time` AS `period_start_time`, `WorkSpec`.`minimum_retention_duration` AS `minimum_retention_duration`, `WorkSpec`.`schedule_requested_at` AS `schedule_requested_at`, `WorkSpec`.`run_in_foreground` AS `run_in_foreground`, `WorkSpec`.`out_of_quota_policy` AS `out_of_quota_policy` FROM workspec WHERE state=1", 0);
+    a.b();
+    Cursor localCursor = c.b(a, localK, false, null);
+    for (;;)
+    {
+      try
+      {
+        i12 = androidx.room.q.b.c(localCursor, "required_network_type");
+        i14 = androidx.room.q.b.c(localCursor, "requires_charging");
+        i5 = androidx.room.q.b.c(localCursor, "requires_device_idle");
+        i4 = androidx.room.q.b.c(localCursor, "requires_battery_not_low");
+        i17 = androidx.room.q.b.c(localCursor, "requires_storage_not_low");
+        i18 = androidx.room.q.b.c(localCursor, "trigger_content_update_delay");
+        i19 = androidx.room.q.b.c(localCursor, "trigger_max_content_delay");
+        i20 = androidx.room.q.b.c(localCursor, "content_uri_triggers");
+        i8 = androidx.room.q.b.c(localCursor, "id");
+        i21 = androidx.room.q.b.c(localCursor, "state");
+        i6 = androidx.room.q.b.c(localCursor, "worker_class_name");
+        i22 = androidx.room.q.b.c(localCursor, "input_merger_class_name");
+        i13 = androidx.room.q.b.c(localCursor, "input");
+        i16 = androidx.room.q.b.c(localCursor, "output");
+      }
+      finally
+      {
+        int i12;
+        int i14;
+        int i5;
+        int i4;
+        int i17;
+        int i18;
+        int i19;
+        int i20;
+        int i8;
+        int i21;
+        int i6;
+        int i22;
+        int i13;
+        int i16;
+        int i9;
+        int i7;
+        int i15;
+        int i3;
+        int k;
+        int n;
+        int i11;
+        int i1;
+        int i2;
+        int m;
+        int i10;
+        ArrayList localArrayList;
+        localCursor.close();
+        localK.release();
+      }
+      try
+      {
+        i9 = androidx.room.q.b.c(localCursor, "initial_delay");
+        i7 = androidx.room.q.b.c(localCursor, "interval_duration");
+        i15 = androidx.room.q.b.c(localCursor, "flex_duration");
+        i3 = androidx.room.q.b.c(localCursor, "run_attempt_count");
+        k = androidx.room.q.b.c(localCursor, "backoff_policy");
+        n = androidx.room.q.b.c(localCursor, "backoff_delay_duration");
+        i11 = androidx.room.q.b.c(localCursor, "period_start_time");
+        i1 = androidx.room.q.b.c(localCursor, "minimum_retention_duration");
+        i2 = androidx.room.q.b.c(localCursor, "schedule_requested_at");
+        m = androidx.room.q.b.c(localCursor, "run_in_foreground");
+        i10 = androidx.room.q.b.c(localCursor, "out_of_quota_policy");
+        localArrayList = new ArrayList(localCursor.getCount());
+        if (localCursor.moveToNext())
+        {
+          Object localObject3 = localCursor.getString(i8);
+          String str = localCursor.getString(i6);
+          androidx.work.b localB = new androidx.work.b();
+          localB.k(v.e(localCursor.getInt(i12)));
+          if (localCursor.getInt(i14) != 0)
+          {
+            bool = true;
+            localB.m(bool);
+            if (localCursor.getInt(i5) == 0) {
+              break label804;
+            }
+            bool = true;
+            localB.n(bool);
+            if (localCursor.getInt(i4) == 0) {
+              break label810;
+            }
+            bool = true;
+            localB.l(bool);
+            if (localCursor.getInt(i17) == 0) {
+              break label816;
+            }
+            bool = true;
+            localB.o(bool);
+            localB.p(localCursor.getLong(i18));
+            localB.q(localCursor.getLong(i19));
+            localB.j(v.b(localCursor.getBlob(i20)));
+            localObject3 = new p((String)localObject3, str);
+            d = v.g(localCursor.getInt(i21));
+            f = localCursor.getString(i22);
+            g = androidx.work.d.g(localCursor.getBlob(i13));
+            h = androidx.work.d.g(localCursor.getBlob(i16));
+            i = localCursor.getLong(i9);
+            j = localCursor.getLong(i7);
+            k = localCursor.getLong(i15);
+            m = localCursor.getInt(i3);
+            n = v.d(localCursor.getInt(k));
+            o = localCursor.getLong(n);
+            p = localCursor.getLong(i11);
+            q = localCursor.getLong(i1);
+            r = localCursor.getLong(i2);
+            if (localCursor.getInt(m) == 0) {
+              break label822;
+            }
+            bool = true;
+            s = bool;
+            t = v.f(localCursor.getInt(i10));
+            l = localB;
+            localArrayList.add(localObject3);
+          }
+        }
+        else
+        {
+          localCursor.close();
+          localK.release();
+          return localArrayList;
+        }
+      }
+      finally {}
+      label804:
+      boolean bool = false;
+      continue;
+      label810:
+      bool = false;
+      continue;
+      label816:
+      bool = false;
+      continue;
+      label822:
+      bool = false;
+    }
+  }
+  
+  public boolean k()
+  {
+    boolean bool2 = false;
+    k localK = k.n("SELECT COUNT(*) > 0 FROM workspec WHERE state NOT IN (2, 3, 5) LIMIT 1", 0);
+    a.b();
+    Cursor localCursor = c.b(a, localK, false, null);
+    boolean bool1 = bool2;
+    try
+    {
+      if (localCursor.moveToFirst())
+      {
+        int k = localCursor.getInt(0);
+        bool1 = bool2;
+        if (k != 0) {
+          bool1 = true;
+        }
+      }
+      return bool1;
+    }
+    finally
+    {
+      localCursor.close();
+      localK.release();
+    }
+  }
+  
+  public List<String> l(String paramString)
+  {
+    k localK = k.n("SELECT id FROM workspec WHERE state NOT IN (2, 3, 5) AND id IN (SELECT work_spec_id FROM workname WHERE name=?)", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = c.b(a, localK, false, null);
+    try
+    {
+      ArrayList localArrayList = new ArrayList(paramString.getCount());
+      while (paramString.moveToNext()) {
+        localArrayList.add(paramString.getString(0));
+      }
+      return localArrayList;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  public WorkInfo.State m(String paramString)
+  {
+    k localK = k.n("SELECT state FROM workspec WHERE id=?", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    Object localObject = a;
+    paramString = null;
+    localObject = c.b((RoomDatabase)localObject, localK, false, null);
+    try
+    {
+      if (((Cursor)localObject).moveToFirst()) {
+        paramString = v.g(((Cursor)localObject).getInt(0));
+      }
+      return paramString;
+    }
+    finally
+    {
+      ((Cursor)localObject).close();
+      localK.release();
+    }
+  }
+  
+  public p n(String paramString)
+  {
+    k localK = k.n("SELECT `required_network_type`, `requires_charging`, `requires_device_idle`, `requires_battery_not_low`, `requires_storage_not_low`, `trigger_content_update_delay`, `trigger_max_content_delay`, `content_uri_triggers`, `WorkSpec`.`id` AS `id`, `WorkSpec`.`state` AS `state`, `WorkSpec`.`worker_class_name` AS `worker_class_name`, `WorkSpec`.`input_merger_class_name` AS `input_merger_class_name`, `WorkSpec`.`input` AS `input`, `WorkSpec`.`output` AS `output`, `WorkSpec`.`initial_delay` AS `initial_delay`, `WorkSpec`.`interval_duration` AS `interval_duration`, `WorkSpec`.`flex_duration` AS `flex_duration`, `WorkSpec`.`run_attempt_count` AS `run_attempt_count`, `WorkSpec`.`backoff_policy` AS `backoff_policy`, `WorkSpec`.`backoff_delay_duration` AS `backoff_delay_duration`, `WorkSpec`.`period_start_time` AS `period_start_time`, `WorkSpec`.`minimum_retention_duration` AS `minimum_retention_duration`, `WorkSpec`.`schedule_requested_at` AS `schedule_requested_at`, `WorkSpec`.`run_in_foreground` AS `run_in_foreground`, `WorkSpec`.`out_of_quota_policy` AS `out_of_quota_policy` FROM workspec WHERE id=?", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    Cursor localCursor = c.b(a, localK, false, null);
+    for (;;)
+    {
+      try
+      {
+        k = androidx.room.q.b.c(localCursor, "required_network_type");
+        m = androidx.room.q.b.c(localCursor, "requires_charging");
+        n = androidx.room.q.b.c(localCursor, "requires_device_idle");
+        i1 = androidx.room.q.b.c(localCursor, "requires_battery_not_low");
+        i2 = androidx.room.q.b.c(localCursor, "requires_storage_not_low");
+        i3 = androidx.room.q.b.c(localCursor, "trigger_content_update_delay");
+        i4 = androidx.room.q.b.c(localCursor, "trigger_max_content_delay");
+        i5 = androidx.room.q.b.c(localCursor, "content_uri_triggers");
+        i6 = androidx.room.q.b.c(localCursor, "id");
+        i7 = androidx.room.q.b.c(localCursor, "state");
+        i8 = androidx.room.q.b.c(localCursor, "worker_class_name");
+        i9 = androidx.room.q.b.c(localCursor, "input_merger_class_name");
+        i10 = androidx.room.q.b.c(localCursor, "input");
+        i11 = androidx.room.q.b.c(localCursor, "output");
+      }
+      finally
+      {
+        int k;
+        int m;
+        int n;
+        int i1;
+        int i2;
+        int i3;
+        int i4;
+        int i5;
+        int i6;
+        int i7;
+        int i8;
+        int i9;
+        int i10;
+        int i11;
+        int i12;
+        int i13;
+        int i14;
+        int i15;
+        int i16;
+        int i17;
+        int i18;
+        int i19;
+        int i20;
+        int i21;
+        int i22;
+        localCursor.close();
+        localK.release();
+      }
+      try
+      {
+        i12 = androidx.room.q.b.c(localCursor, "initial_delay");
+        i13 = androidx.room.q.b.c(localCursor, "interval_duration");
+        i14 = androidx.room.q.b.c(localCursor, "flex_duration");
+        i15 = androidx.room.q.b.c(localCursor, "run_attempt_count");
+        i16 = androidx.room.q.b.c(localCursor, "backoff_policy");
+        i17 = androidx.room.q.b.c(localCursor, "backoff_delay_duration");
+        i18 = androidx.room.q.b.c(localCursor, "period_start_time");
+        i19 = androidx.room.q.b.c(localCursor, "minimum_retention_duration");
+        i20 = androidx.room.q.b.c(localCursor, "schedule_requested_at");
+        i21 = androidx.room.q.b.c(localCursor, "run_in_foreground");
+        i22 = androidx.room.q.b.c(localCursor, "out_of_quota_policy");
+        if (localCursor.moveToFirst())
+        {
+          paramString = localCursor.getString(i6);
+          String str = localCursor.getString(i8);
+          androidx.work.b localB = new androidx.work.b();
+          localB.k(v.e(localCursor.getInt(k)));
+          if (localCursor.getInt(m) == 0) {
+            continue;
+          }
+          bool = true;
+          localB.m(bool);
+          if (localCursor.getInt(n) == 0) {
+            break label779;
+          }
+          bool = true;
+          localB.n(bool);
+          if (localCursor.getInt(i1) == 0) {
+            break label785;
+          }
+          bool = true;
+          localB.l(bool);
+          if (localCursor.getInt(i2) == 0) {
+            break label791;
+          }
+          bool = true;
+          localB.o(bool);
+          localB.p(localCursor.getLong(i3));
+          localB.q(localCursor.getLong(i4));
+          localB.j(v.b(localCursor.getBlob(i5)));
+          paramString = new p(paramString, str);
+          d = v.g(localCursor.getInt(i7));
+          f = localCursor.getString(i9);
+          g = androidx.work.d.g(localCursor.getBlob(i10));
+          h = androidx.work.d.g(localCursor.getBlob(i11));
+          i = localCursor.getLong(i12);
+          j = localCursor.getLong(i13);
+          k = localCursor.getLong(i14);
+          m = localCursor.getInt(i15);
+          n = v.d(localCursor.getInt(i16));
+          o = localCursor.getLong(i17);
+          p = localCursor.getLong(i18);
+          q = localCursor.getLong(i19);
+          r = localCursor.getLong(i20);
+          if (localCursor.getInt(i21) == 0) {
+            break label797;
+          }
+          bool = true;
+          s = bool;
+          t = v.f(localCursor.getInt(i22));
+          l = localB;
+        }
+        else
+        {
+          paramString = null;
+        }
+        localCursor.close();
+        localK.release();
+        return paramString;
+      }
+      finally {}
+      label779:
+      boolean bool = false;
+      continue;
+      label785:
+      bool = false;
+      continue;
+      label791:
+      bool = false;
+      continue;
+      label797:
+      bool = false;
+    }
+  }
+  
+  public int o(String paramString)
+  {
+    a.b();
+    f localF = g.a();
+    if (paramString == null) {
+      localF.bindNull(1);
+    } else {
+      localF.bindString(1, paramString);
+    }
+    a.c();
+    try
+    {
+      int k = localF.executeUpdateDelete();
+      a.r();
+      return k;
+    }
+    finally
+    {
+      a.g();
+      g.f(localF);
+    }
+  }
+  
+  public List<p.c> p(String paramString)
+  {
+    k localK = k.n("SELECT id, state, output, run_attempt_count FROM workspec WHERE id IN (SELECT work_spec_id FROM worktag WHERE tag=?)", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    a.c();
+    for (;;)
+    {
+      try
+      {
+        Cursor localCursor = c.b(a, localK, true, null);
+        try
+        {
+          int k = androidx.room.q.b.c(localCursor, "id");
+          int m = androidx.room.q.b.c(localCursor, "state");
+          int n = androidx.room.q.b.c(localCursor, "output");
+          int i1 = androidx.room.q.b.c(localCursor, "run_attempt_count");
+          a localA1 = new a();
+          a localA2 = new a();
+          if (localCursor.moveToNext())
+          {
+            if (!localCursor.isNull(k))
+            {
+              paramString = localCursor.getString(k);
+              if ((ArrayList)localA1.get(paramString) == null) {
+                localA1.put(paramString, new ArrayList());
+              }
+            }
+            if (localCursor.isNull(k)) {
+              continue;
+            }
+            paramString = localCursor.getString(k);
+            if ((ArrayList)localA2.get(paramString) != null) {
+              continue;
+            }
+            localA2.put(paramString, new ArrayList());
+            continue;
+          }
+          localCursor.moveToPosition(-1);
+          x(localA1);
+          w(localA2);
+          ArrayList localArrayList = new ArrayList(localCursor.getCount());
+          if (localCursor.moveToNext())
+          {
+            if (!localCursor.isNull(k))
+            {
+              paramString = (ArrayList)localA1.get(localCursor.getString(k));
+              Object localObject1 = paramString;
+              if (paramString == null) {
+                localObject1 = new ArrayList();
+              }
+              if (localCursor.isNull(k)) {
+                break label505;
+              }
+              paramString = (ArrayList)localA2.get(localCursor.getString(k));
+              Object localObject2 = paramString;
+              if (paramString == null) {
+                localObject2 = new ArrayList();
+              }
+              paramString = new p.c();
+              a = localCursor.getString(k);
+              b = v.g(localCursor.getInt(m));
+              c = androidx.work.d.g(localCursor.getBlob(n));
+              d = localCursor.getInt(i1);
+              e = ((List)localObject1);
+              f = ((List)localObject2);
+              localArrayList.add(paramString);
+            }
+          }
+          else
+          {
+            a.r();
+            localCursor.close();
+            localK.release();
+            return localArrayList;
+          }
+        }
+        finally
+        {
+          localCursor.close();
+          localK.release();
+        }
+        paramString = null;
+      }
+      finally
+      {
+        a.g();
+      }
+      continue;
+      label505:
+      paramString = null;
+    }
+  }
+  
+  public List<String> q(String paramString)
+  {
+    k localK = k.n("SELECT id FROM workspec WHERE state NOT IN (2, 3, 5) AND id IN (SELECT work_spec_id FROM worktag WHERE tag=?)", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = c.b(a, localK, false, null);
+    try
+    {
+      ArrayList localArrayList = new ArrayList(paramString.getCount());
+      while (paramString.moveToNext()) {
+        localArrayList.add(paramString.getString(0));
+      }
+      return localArrayList;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  public List<androidx.work.d> r(String paramString)
+  {
+    k localK = k.n("SELECT output FROM workspec WHERE id IN (SELECT prerequisite_id FROM dependency WHERE work_spec_id=?)", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = c.b(a, localK, false, null);
+    try
+    {
+      ArrayList localArrayList = new ArrayList(paramString.getCount());
+      while (paramString.moveToNext()) {
+        localArrayList.add(androidx.work.d.g(paramString.getBlob(0)));
+      }
+      return localArrayList;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  public int s(String paramString)
+  {
+    a.b();
+    f localF = f.a();
+    if (paramString == null) {
+      localF.bindNull(1);
+    } else {
+      localF.bindString(1, paramString);
+    }
+    a.c();
+    try
+    {
+      int k = localF.executeUpdateDelete();
+      a.r();
+      return k;
+    }
+    finally
+    {
+      a.g();
+      f.f(localF);
+    }
+  }
+  
+  public void t(String paramString, long paramLong)
+  {
+    a.b();
+    f localF = e.a();
+    localF.bindLong(1, paramLong);
+    if (paramString == null) {
+      localF.bindNull(2);
+    } else {
+      localF.bindString(2, paramString);
+    }
+    a.c();
+    try
+    {
+      localF.executeUpdateDelete();
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+      e.f(localF);
+    }
+  }
+  
+  public List<p> u(int paramInt)
+  {
+    k localK = k.n("SELECT `required_network_type`, `requires_charging`, `requires_device_idle`, `requires_battery_not_low`, `requires_storage_not_low`, `trigger_content_update_delay`, `trigger_max_content_delay`, `content_uri_triggers`, `WorkSpec`.`id` AS `id`, `WorkSpec`.`state` AS `state`, `WorkSpec`.`worker_class_name` AS `worker_class_name`, `WorkSpec`.`input_merger_class_name` AS `input_merger_class_name`, `WorkSpec`.`input` AS `input`, `WorkSpec`.`output` AS `output`, `WorkSpec`.`initial_delay` AS `initial_delay`, `WorkSpec`.`interval_duration` AS `interval_duration`, `WorkSpec`.`flex_duration` AS `flex_duration`, `WorkSpec`.`run_attempt_count` AS `run_attempt_count`, `WorkSpec`.`backoff_policy` AS `backoff_policy`, `WorkSpec`.`backoff_delay_duration` AS `backoff_delay_duration`, `WorkSpec`.`period_start_time` AS `period_start_time`, `WorkSpec`.`minimum_retention_duration` AS `minimum_retention_duration`, `WorkSpec`.`schedule_requested_at` AS `schedule_requested_at`, `WorkSpec`.`run_in_foreground` AS `run_in_foreground`, `WorkSpec`.`out_of_quota_policy` AS `out_of_quota_policy` FROM workspec WHERE state=0 ORDER BY period_start_time LIMIT ?", 1);
+    localK.bindLong(1, paramInt);
+    a.b();
+    Cursor localCursor = c.b(a, localK, false, null);
+    for (;;)
+    {
+      try
+      {
+        i11 = androidx.room.q.b.c(localCursor, "required_network_type");
+        i13 = androidx.room.q.b.c(localCursor, "requires_charging");
+        i4 = androidx.room.q.b.c(localCursor, "requires_device_idle");
+        i3 = androidx.room.q.b.c(localCursor, "requires_battery_not_low");
+        i16 = androidx.room.q.b.c(localCursor, "requires_storage_not_low");
+        i17 = androidx.room.q.b.c(localCursor, "trigger_content_update_delay");
+        i18 = androidx.room.q.b.c(localCursor, "trigger_max_content_delay");
+        i19 = androidx.room.q.b.c(localCursor, "content_uri_triggers");
+        i7 = androidx.room.q.b.c(localCursor, "id");
+        i20 = androidx.room.q.b.c(localCursor, "state");
+        i5 = androidx.room.q.b.c(localCursor, "worker_class_name");
+        i12 = androidx.room.q.b.c(localCursor, "input_merger_class_name");
+        i21 = androidx.room.q.b.c(localCursor, "input");
+        i15 = androidx.room.q.b.c(localCursor, "output");
+      }
+      finally
+      {
+        int i11;
+        int i13;
+        int i4;
+        int i3;
+        int i16;
+        int i17;
+        int i18;
+        int i19;
+        int i7;
+        int i20;
+        int i5;
+        int i12;
+        int i21;
+        int i15;
+        int i8;
+        int i6;
+        int i14;
+        int i2;
+        int m;
+        int i10;
+        int n;
+        int i1;
+        int k;
+        int i9;
+        ArrayList localArrayList;
+        localCursor.close();
+        localK.release();
+      }
+      try
+      {
+        i8 = androidx.room.q.b.c(localCursor, "initial_delay");
+        i6 = androidx.room.q.b.c(localCursor, "interval_duration");
+        i14 = androidx.room.q.b.c(localCursor, "flex_duration");
+        i2 = androidx.room.q.b.c(localCursor, "run_attempt_count");
+        paramInt = androidx.room.q.b.c(localCursor, "backoff_policy");
+        m = androidx.room.q.b.c(localCursor, "backoff_delay_duration");
+        i10 = androidx.room.q.b.c(localCursor, "period_start_time");
+        n = androidx.room.q.b.c(localCursor, "minimum_retention_duration");
+        i1 = androidx.room.q.b.c(localCursor, "schedule_requested_at");
+        k = androidx.room.q.b.c(localCursor, "run_in_foreground");
+        i9 = androidx.room.q.b.c(localCursor, "out_of_quota_policy");
+        localArrayList = new ArrayList(localCursor.getCount());
+        if (localCursor.moveToNext())
+        {
+          Object localObject3 = localCursor.getString(i7);
+          String str = localCursor.getString(i5);
+          androidx.work.b localB = new androidx.work.b();
+          localB.k(v.e(localCursor.getInt(i11)));
+          if (localCursor.getInt(i13) != 0)
+          {
+            bool = true;
+            localB.m(bool);
+            if (localCursor.getInt(i4) == 0) {
+              break label812;
+            }
+            bool = true;
+            localB.n(bool);
+            if (localCursor.getInt(i3) == 0) {
+              break label818;
+            }
+            bool = true;
+            localB.l(bool);
+            if (localCursor.getInt(i16) == 0) {
+              break label824;
+            }
+            bool = true;
+            localB.o(bool);
+            localB.p(localCursor.getLong(i17));
+            localB.q(localCursor.getLong(i18));
+            localB.j(v.b(localCursor.getBlob(i19)));
+            localObject3 = new p((String)localObject3, str);
+            d = v.g(localCursor.getInt(i20));
+            f = localCursor.getString(i12);
+            g = androidx.work.d.g(localCursor.getBlob(i21));
+            h = androidx.work.d.g(localCursor.getBlob(i15));
+            i = localCursor.getLong(i8);
+            j = localCursor.getLong(i6);
+            k = localCursor.getLong(i14);
+            m = localCursor.getInt(i2);
+            n = v.d(localCursor.getInt(paramInt));
+            o = localCursor.getLong(m);
+            p = localCursor.getLong(i10);
+            q = localCursor.getLong(n);
+            r = localCursor.getLong(i1);
+            if (localCursor.getInt(k) == 0) {
+              break label830;
+            }
+            bool = true;
+            s = bool;
+            t = v.f(localCursor.getInt(i9));
+            l = localB;
+            localArrayList.add(localObject3);
+          }
+        }
+        else
+        {
+          localCursor.close();
+          localK.release();
+          return localArrayList;
+        }
+      }
+      finally {}
+      label812:
+      boolean bool = false;
+      continue;
+      label818:
+      bool = false;
+      continue;
+      label824:
+      bool = false;
+      continue;
+      label830:
+      bool = false;
+    }
+  }
+  
+  public int v()
+  {
+    a.b();
+    f localF = i.a();
+    a.c();
+    try
+    {
+      int k = localF.executeUpdateDelete();
+      a.r();
+      return k;
+    }
+    finally
+    {
+      a.g();
+      i.f(localF);
+    }
+  }
+  
+  class a
+    extends androidx.room.b<p>
+  {
+    a(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "INSERT OR IGNORE INTO `WorkSpec` (`id`,`state`,`worker_class_name`,`input_merger_class_name`,`input`,`output`,`initial_delay`,`interval_duration`,`flex_duration`,`run_attempt_count`,`backoff_policy`,`backoff_delay_duration`,`period_start_time`,`minimum_retention_duration`,`schedule_requested_at`,`run_in_foreground`,`out_of_quota_policy`,`required_network_type`,`requires_charging`,`requires_device_idle`,`requires_battery_not_low`,`requires_storage_not_low`,`trigger_content_update_delay`,`trigger_max_content_delay`,`content_uri_triggers`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    }
+    
+    public void i(f paramF, p paramP)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:539)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+  }
+  
+  class b
+    extends n
+  {
+    b(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "DELETE FROM workspec WHERE id=?";
+    }
+  }
+  
+  class c
+    extends n
+  {
+    c(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "UPDATE workspec SET output=? WHERE id=?";
+    }
+  }
+  
+  class d
+    extends n
+  {
+    d(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "UPDATE workspec SET period_start_time=? WHERE id=?";
+    }
+  }
+  
+  class e
+    extends n
+  {
+    e(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "UPDATE workspec SET run_attempt_count=run_attempt_count+1 WHERE id=?";
+    }
+  }
+  
+  class f
+    extends n
+  {
+    f(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "UPDATE workspec SET run_attempt_count=0 WHERE id=?";
+    }
+  }
+  
+  class g
+    extends n
+  {
+    g(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "UPDATE workspec SET schedule_requested_at=? WHERE id=?";
+    }
+  }
+  
+  class h
+    extends n
+  {
+    h(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "UPDATE workspec SET schedule_requested_at=-1 WHERE state NOT IN (2, 3, 5)";
+    }
+  }
+  
+  class i
+    extends n
+  {
+    i(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "DELETE FROM workspec WHERE state IN (2, 3, 5) AND (SELECT COUNT(*)=0 FROM dependency WHERE     prerequisite_id=id AND     work_spec_id NOT IN         (SELECT id FROM workspec WHERE state IN (2, 3, 5)))";
+    }
+  }
+}

@@ -1,0 +1,164 @@
+package com.google.firebase.messaging;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import java.util.Map;
+
+@SafeParcelable.Class(creator="RemoteMessageCreator")
+@SafeParcelable.Reserved({1})
+public final class RemoteMessage
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<RemoteMessage> CREATOR = new w0();
+  @SafeParcelable.Field(id=2)
+  Bundle b;
+  private Map<String, String> c;
+  private b d;
+  
+  @SafeParcelable.Constructor
+  public RemoteMessage(@SafeParcelable.Param(id=2) Bundle paramBundle)
+  {
+    b = paramBundle;
+  }
+  
+  public b a()
+  {
+    if ((d == null) && (s0.t(b))) {
+      d = new b(new s0(b), null);
+    }
+    return d;
+  }
+  
+  public Map<String, String> getData()
+  {
+    if (c == null) {
+      c = i0.a.a(b);
+    }
+    return c;
+  }
+  
+  public String getFrom()
+  {
+    return b.getString("from");
+  }
+  
+  public String getMessageId()
+  {
+    String str2 = b.getString("google.message_id");
+    String str1 = str2;
+    if (str2 == null) {
+      str1 = b.getString("message_id");
+    }
+    return str1;
+  }
+  
+  public String getTo()
+  {
+    return b.getString("google.to");
+  }
+  
+  void h(Intent paramIntent)
+  {
+    paramIntent.putExtras(b);
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    w0.c(this, paramParcel, paramInt);
+  }
+  
+  public static class b
+  {
+    private final String a;
+    private final String b;
+    private final String[] c;
+    private final String d;
+    private final String e;
+    private final String[] f;
+    private final String g;
+    private final String h;
+    private final String i;
+    private final String j;
+    private final String k;
+    private final String l;
+    private final String m;
+    private final Uri n;
+    private final String o;
+    private final Integer p;
+    private final Integer q;
+    private final Integer r;
+    private final int[] s;
+    private final Long t;
+    private final boolean u;
+    private final boolean v;
+    private final boolean w;
+    private final boolean x;
+    private final boolean y;
+    private final long[] z;
+    
+    private b(s0 paramS0)
+    {
+      a = paramS0.p("gcm.n.title");
+      b = paramS0.h("gcm.n.title");
+      c = b(paramS0, "gcm.n.title");
+      d = paramS0.p("gcm.n.body");
+      e = paramS0.h("gcm.n.body");
+      f = b(paramS0, "gcm.n.body");
+      g = paramS0.p("gcm.n.icon");
+      i = paramS0.o();
+      j = paramS0.p("gcm.n.tag");
+      k = paramS0.p("gcm.n.color");
+      l = paramS0.p("gcm.n.click_action");
+      m = paramS0.p("gcm.n.android_channel_id");
+      n = paramS0.f();
+      h = paramS0.p("gcm.n.image");
+      o = paramS0.p("gcm.n.ticker");
+      p = paramS0.b("gcm.n.notification_priority");
+      q = paramS0.b("gcm.n.visibility");
+      r = paramS0.b("gcm.n.notification_count");
+      u = paramS0.a("gcm.n.sticky");
+      v = paramS0.a("gcm.n.local_only");
+      w = paramS0.a("gcm.n.default_sound");
+      x = paramS0.a("gcm.n.default_vibrate_timings");
+      y = paramS0.a("gcm.n.default_light_settings");
+      t = paramS0.j("gcm.n.event_time");
+      s = paramS0.e();
+      z = paramS0.q();
+    }
+    
+    private static String[] b(s0 paramS0, String paramString)
+    {
+      paramS0 = paramS0.g(paramString);
+      if (paramS0 == null) {
+        return null;
+      }
+      paramString = new String[paramS0.length];
+      int i1 = 0;
+      while (i1 < paramS0.length)
+      {
+        paramString[i1] = String.valueOf(paramS0[i1]);
+        i1 += 1;
+      }
+      return paramString;
+    }
+    
+    public String a()
+    {
+      return d;
+    }
+    
+    public String c()
+    {
+      return a;
+    }
+  }
+}

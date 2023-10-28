@@ -1,0 +1,644 @@
+package com.google.android.material.button;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.text.TextUtils.TruncateAt;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import c.h.q.f;
+import c.h.q.f0;
+import c.h.q.n;
+import c.h.q.p0.c.b;
+import c.h.q.p0.c.c;
+import com.google.android.material.internal.i;
+import com.google.android.material.internal.j;
+import d.c.a.a.b;
+import d.c.a.a.l;
+import d.c.a.a.x.k.b;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+public class MaterialButtonToggleGroup
+  extends LinearLayout
+{
+  private static final String b = MaterialButtonToggleGroup.class.getSimpleName();
+  private static final int c = d.c.a.a.k.w;
+  private final List<d> d = new ArrayList();
+  private final c e = new c(null);
+  private final f f = new f(null);
+  private final LinkedHashSet<e> g = new LinkedHashSet();
+  private final Comparator<MaterialButton> h = new a();
+  private Integer[] i;
+  private boolean j = false;
+  private boolean k;
+  private boolean l;
+  private int m;
+  
+  public MaterialButtonToggleGroup(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, b.v);
+  }
+  
+  public MaterialButtonToggleGroup(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(com.google.android.material.theme.a.a.c(paramContext, paramAttributeSet, paramInt, n), paramAttributeSet, paramInt);
+    paramContext = i.h(getContext(), paramAttributeSet, l.q3, paramInt, n, new int[0]);
+    setSingleSelection(paramContext.getBoolean(l.t3, false));
+    m = paramContext.getResourceId(l.r3, -1);
+    l = paramContext.getBoolean(l.s3, false);
+    setChildrenDrawingOrderEnabled(true);
+    paramContext.recycle();
+    f0.A0(this, 1);
+  }
+  
+  private int getFirstVisibleChildIndex()
+  {
+    int i1 = getChildCount();
+    int n = 0;
+    while (n < i1)
+    {
+      if (p(n)) {
+        return n;
+      }
+      n += 1;
+    }
+    return -1;
+  }
+  
+  private int getLastVisibleChildIndex()
+  {
+    int n = getChildCount() - 1;
+    while (n >= 0)
+    {
+      if (p(n)) {
+        return n;
+      }
+      n -= 1;
+    }
+    return -1;
+  }
+  
+  private int getVisibleButtonCount()
+  {
+    int n = 0;
+    int i2;
+    for (int i1 = 0; n < getChildCount(); i1 = i2)
+    {
+      i2 = i1;
+      if ((getChildAt(n) instanceof MaterialButton))
+      {
+        i2 = i1;
+        if (p(n)) {
+          i2 = i1 + 1;
+        }
+      }
+      n += 1;
+    }
+    return i1;
+  }
+  
+  private void h()
+  {
+    int i1 = getFirstVisibleChildIndex();
+    if (i1 == -1) {
+      return;
+    }
+    int n = i1 + 1;
+    while (n < getChildCount())
+    {
+      MaterialButton localMaterialButton = m(n);
+      Object localObject = m(n - 1);
+      int i2 = Math.min(localMaterialButton.getStrokeWidth(), ((MaterialButton)localObject).getStrokeWidth());
+      localObject = i(localMaterialButton);
+      if (getOrientation() == 0)
+      {
+        n.c((ViewGroup.MarginLayoutParams)localObject, 0);
+        n.d((ViewGroup.MarginLayoutParams)localObject, -i2);
+        topMargin = 0;
+      }
+      else
+      {
+        bottomMargin = 0;
+        topMargin = (-i2);
+        n.d((ViewGroup.MarginLayoutParams)localObject, 0);
+      }
+      localMaterialButton.setLayoutParams((ViewGroup.LayoutParams)localObject);
+      n += 1;
+    }
+    r(i1);
+  }
+  
+  private LinearLayout.LayoutParams i(View paramView)
+  {
+    paramView = paramView.getLayoutParams();
+    if ((paramView instanceof LinearLayout.LayoutParams)) {
+      return (LinearLayout.LayoutParams)paramView;
+    }
+    return new LinearLayout.LayoutParams(width, height);
+  }
+  
+  private void j(int paramInt)
+  {
+    s(paramInt, true);
+    u(paramInt, true);
+    setCheckedId(paramInt);
+  }
+  
+  private void l(int paramInt, boolean paramBoolean)
+  {
+    Iterator localIterator = g.iterator();
+    while (localIterator.hasNext()) {
+      ((e)localIterator.next()).a(this, paramInt, paramBoolean);
+    }
+  }
+  
+  private MaterialButton m(int paramInt)
+  {
+    return (MaterialButton)getChildAt(paramInt);
+  }
+  
+  private int n(View paramView)
+  {
+    if (!(paramView instanceof MaterialButton)) {
+      return -1;
+    }
+    int n = 0;
+    int i2;
+    for (int i1 = 0; n < getChildCount(); i1 = i2)
+    {
+      if (getChildAt(n) == paramView) {
+        return i1;
+      }
+      i2 = i1;
+      if ((getChildAt(n) instanceof MaterialButton))
+      {
+        i2 = i1;
+        if (p(n)) {
+          i2 = i1 + 1;
+        }
+      }
+      n += 1;
+    }
+    return -1;
+  }
+  
+  private d o(int paramInt1, int paramInt2, int paramInt3)
+  {
+    d localD = (d)d.get(paramInt1);
+    if (paramInt2 == paramInt3) {
+      return localD;
+    }
+    int n;
+    if (getOrientation() == 0) {
+      n = 1;
+    } else {
+      n = 0;
+    }
+    if (paramInt1 == paramInt2)
+    {
+      if (n != 0) {
+        return d.e(localD, this);
+      }
+      return d.f(localD);
+    }
+    if (paramInt1 == paramInt3)
+    {
+      if (n != 0) {
+        return d.b(localD, this);
+      }
+      return d.a(localD);
+    }
+    return null;
+  }
+  
+  private boolean p(int paramInt)
+  {
+    return getChildAt(paramInt).getVisibility() != 8;
+  }
+  
+  private void r(int paramInt)
+  {
+    if (getChildCount() != 0)
+    {
+      if (paramInt == -1) {
+        return;
+      }
+      LinearLayout.LayoutParams localLayoutParams = (LinearLayout.LayoutParams)m(paramInt).getLayoutParams();
+      if (getOrientation() == 1)
+      {
+        topMargin = 0;
+        bottomMargin = 0;
+        return;
+      }
+      n.c(localLayoutParams, 0);
+      n.d(localLayoutParams, 0);
+      leftMargin = 0;
+      rightMargin = 0;
+    }
+  }
+  
+  private void s(int paramInt, boolean paramBoolean)
+  {
+    View localView = findViewById(paramInt);
+    if ((localView instanceof MaterialButton))
+    {
+      j = true;
+      ((MaterialButton)localView).setChecked(paramBoolean);
+      j = false;
+    }
+  }
+  
+  private void setCheckedId(int paramInt)
+  {
+    m = paramInt;
+    l(paramInt, true);
+  }
+  
+  private void setGeneratedIdIfNeeded(MaterialButton paramMaterialButton)
+  {
+    if (paramMaterialButton.getId() == -1) {
+      paramMaterialButton.setId(f0.l());
+    }
+  }
+  
+  private void setupButtonChild(MaterialButton paramMaterialButton)
+  {
+    paramMaterialButton.setMaxLines(1);
+    paramMaterialButton.setEllipsize(TextUtils.TruncateAt.END);
+    paramMaterialButton.setCheckable(true);
+    paramMaterialButton.a(e);
+    paramMaterialButton.setOnPressedChangeListenerInternal(f);
+    paramMaterialButton.setShouldDrawSurfaceColorStroke(true);
+  }
+  
+  private static void t(k.b paramB, d paramD)
+  {
+    if (paramD == null)
+    {
+      paramB.o(0.0F);
+      return;
+    }
+    paramB.B(b).t(e).F(c).x(d);
+  }
+  
+  private boolean u(int paramInt, boolean paramBoolean)
+  {
+    Object localObject = getCheckedButtonIds();
+    if ((l) && (((List)localObject).isEmpty()))
+    {
+      s(paramInt, true);
+      m = paramInt;
+      return false;
+    }
+    if ((paramBoolean) && (k))
+    {
+      ((List)localObject).remove(Integer.valueOf(paramInt));
+      localObject = ((List)localObject).iterator();
+      while (((Iterator)localObject).hasNext())
+      {
+        paramInt = ((Integer)((Iterator)localObject).next()).intValue();
+        s(paramInt, false);
+        l(paramInt, false);
+      }
+    }
+    return true;
+  }
+  
+  private void v()
+  {
+    TreeMap localTreeMap = new TreeMap(h);
+    int i1 = getChildCount();
+    int n = 0;
+    while (n < i1)
+    {
+      localTreeMap.put(m(n), Integer.valueOf(n));
+      n += 1;
+    }
+    i = ((Integer[])localTreeMap.values().toArray(new Integer[0]));
+  }
+  
+  public void addView(View paramView, int paramInt, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    if (!(paramView instanceof MaterialButton))
+    {
+      Log.e(b, "Child views must be of type MaterialButton.");
+      return;
+    }
+    super.addView(paramView, paramInt, paramLayoutParams);
+    paramView = (MaterialButton)paramView;
+    setGeneratedIdIfNeeded(paramView);
+    setupButtonChild(paramView);
+    if (paramView.isChecked())
+    {
+      u(paramView.getId(), true);
+      setCheckedId(paramView.getId());
+    }
+    paramLayoutParams = paramView.getShapeAppearanceModel();
+    d.add(new d(paramLayoutParams.r(), paramLayoutParams.j(), paramLayoutParams.t(), paramLayoutParams.l()));
+    f0.p0(paramView, new b());
+  }
+  
+  protected void dispatchDraw(Canvas paramCanvas)
+  {
+    v();
+    super.dispatchDraw(paramCanvas);
+  }
+  
+  public void g(e paramE)
+  {
+    g.add(paramE);
+  }
+  
+  public CharSequence getAccessibilityClassName()
+  {
+    return MaterialButtonToggleGroup.class.getName();
+  }
+  
+  public int getCheckedButtonId()
+  {
+    if (k) {
+      return m;
+    }
+    return -1;
+  }
+  
+  public List<Integer> getCheckedButtonIds()
+  {
+    ArrayList localArrayList = new ArrayList();
+    int n = 0;
+    while (n < getChildCount())
+    {
+      MaterialButton localMaterialButton = m(n);
+      if (localMaterialButton.isChecked()) {
+        localArrayList.add(Integer.valueOf(localMaterialButton.getId()));
+      }
+      n += 1;
+    }
+    return localArrayList;
+  }
+  
+  protected int getChildDrawingOrder(int paramInt1, int paramInt2)
+  {
+    Integer[] arrayOfInteger = i;
+    if ((arrayOfInteger != null) && (paramInt2 < arrayOfInteger.length)) {
+      return arrayOfInteger[paramInt2].intValue();
+    }
+    Log.w(b, "Child order wasn't updated");
+    return paramInt2;
+  }
+  
+  public void k()
+  {
+    j = true;
+    int n = 0;
+    while (n < getChildCount())
+    {
+      MaterialButton localMaterialButton = m(n);
+      localMaterialButton.setChecked(false);
+      l(localMaterialButton.getId(), false);
+      n += 1;
+    }
+    j = false;
+    setCheckedId(-1);
+  }
+  
+  protected void onFinishInflate()
+  {
+    super.onFinishInflate();
+    int n = m;
+    if (n != -1) {
+      j(n);
+    }
+  }
+  
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+  {
+    super.onInitializeAccessibilityNodeInfo(paramAccessibilityNodeInfo);
+    paramAccessibilityNodeInfo = c.h.q.p0.c.y0(paramAccessibilityNodeInfo);
+    int i1 = getVisibleButtonCount();
+    int n;
+    if (q()) {
+      n = 1;
+    } else {
+      n = 2;
+    }
+    paramAccessibilityNodeInfo.a0(c.b.a(1, i1, false, n));
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    w();
+    h();
+    super.onMeasure(paramInt1, paramInt2);
+  }
+  
+  public void onViewRemoved(View paramView)
+  {
+    super.onViewRemoved(paramView);
+    if ((paramView instanceof MaterialButton))
+    {
+      MaterialButton localMaterialButton = (MaterialButton)paramView;
+      localMaterialButton.h(e);
+      localMaterialButton.setOnPressedChangeListenerInternal(null);
+    }
+    int n = indexOfChild(paramView);
+    if (n >= 0) {
+      d.remove(n);
+    }
+    w();
+    h();
+  }
+  
+  public boolean q()
+  {
+    return k;
+  }
+  
+  public void setSelectionRequired(boolean paramBoolean)
+  {
+    l = paramBoolean;
+  }
+  
+  public void setSingleSelection(int paramInt)
+  {
+    setSingleSelection(getResources().getBoolean(paramInt));
+  }
+  
+  public void setSingleSelection(boolean paramBoolean)
+  {
+    if (k != paramBoolean)
+    {
+      k = paramBoolean;
+      k();
+    }
+  }
+  
+  void w()
+  {
+    int i1 = getChildCount();
+    int i2 = getFirstVisibleChildIndex();
+    int i3 = getLastVisibleChildIndex();
+    int n = 0;
+    while (n < i1)
+    {
+      MaterialButton localMaterialButton = m(n);
+      if (localMaterialButton.getVisibility() != 8)
+      {
+        k.b localB = localMaterialButton.getShapeAppearanceModel().v();
+        t(localB, o(n, i2, i3));
+        localMaterialButton.setShapeAppearanceModel(localB.m());
+      }
+      n += 1;
+    }
+  }
+  
+  class a
+    implements Comparator<MaterialButton>
+  {
+    a() {}
+    
+    public int a(MaterialButton paramMaterialButton1, MaterialButton paramMaterialButton2)
+    {
+      int i = Boolean.valueOf(paramMaterialButton1.isChecked()).compareTo(Boolean.valueOf(paramMaterialButton2.isChecked()));
+      if (i != 0) {
+        return i;
+      }
+      i = Boolean.valueOf(paramMaterialButton1.isPressed()).compareTo(Boolean.valueOf(paramMaterialButton2.isPressed()));
+      if (i != 0) {
+        return i;
+      }
+      return Integer.valueOf(indexOfChild(paramMaterialButton1)).compareTo(Integer.valueOf(indexOfChild(paramMaterialButton2)));
+    }
+  }
+  
+  class b
+    extends f
+  {
+    b() {}
+    
+    public void g(View paramView, c.h.q.p0.c paramC)
+    {
+      super.g(paramView, paramC);
+      paramC.b0(c.c.a(0, 1, MaterialButtonToggleGroup.a(MaterialButtonToggleGroup.this, paramView), 1, false, ((MaterialButton)paramView).isChecked()));
+    }
+  }
+  
+  private class c
+    implements MaterialButton.a
+  {
+    private c() {}
+    
+    public void a(MaterialButton paramMaterialButton, boolean paramBoolean)
+    {
+      if (MaterialButtonToggleGroup.b(MaterialButtonToggleGroup.this)) {
+        return;
+      }
+      if (MaterialButtonToggleGroup.c(MaterialButtonToggleGroup.this))
+      {
+        MaterialButtonToggleGroup localMaterialButtonToggleGroup = MaterialButtonToggleGroup.this;
+        int i;
+        if (paramBoolean) {
+          i = paramMaterialButton.getId();
+        } else {
+          i = -1;
+        }
+        MaterialButtonToggleGroup.d(localMaterialButtonToggleGroup, i);
+      }
+      if (MaterialButtonToggleGroup.e(MaterialButtonToggleGroup.this, paramMaterialButton.getId(), paramBoolean)) {
+        MaterialButtonToggleGroup.f(MaterialButtonToggleGroup.this, paramMaterialButton.getId(), paramMaterialButton.isChecked());
+      }
+      invalidate();
+    }
+  }
+  
+  private static class d
+  {
+    private static final d.c.a.a.x.c a = new d.c.a.a.x.a(0.0F);
+    d.c.a.a.x.c b;
+    d.c.a.a.x.c c;
+    d.c.a.a.x.c d;
+    d.c.a.a.x.c e;
+    
+    d(d.c.a.a.x.c paramC1, d.c.a.a.x.c paramC2, d.c.a.a.x.c paramC3, d.c.a.a.x.c paramC4)
+    {
+      b = paramC1;
+      c = paramC3;
+      d = paramC4;
+      e = paramC2;
+    }
+    
+    public static d a(d paramD)
+    {
+      d.c.a.a.x.c localC = a;
+      return new d(localC, e, localC, d);
+    }
+    
+    public static d b(d paramD, View paramView)
+    {
+      if (j.d(paramView)) {
+        return c(paramD);
+      }
+      return d(paramD);
+    }
+    
+    public static d c(d paramD)
+    {
+      d.c.a.a.x.c localC1 = b;
+      paramD = e;
+      d.c.a.a.x.c localC2 = a;
+      return new d(localC1, paramD, localC2, localC2);
+    }
+    
+    public static d d(d paramD)
+    {
+      d.c.a.a.x.c localC = a;
+      return new d(localC, localC, c, d);
+    }
+    
+    public static d e(d paramD, View paramView)
+    {
+      if (j.d(paramView)) {
+        return d(paramD);
+      }
+      return c(paramD);
+    }
+    
+    public static d f(d paramD)
+    {
+      d.c.a.a.x.c localC1 = b;
+      d.c.a.a.x.c localC2 = a;
+      return new d(localC1, localC2, c, localC2);
+    }
+  }
+  
+  public static abstract interface e
+  {
+    public abstract void a(MaterialButtonToggleGroup paramMaterialButtonToggleGroup, int paramInt, boolean paramBoolean);
+  }
+  
+  private class f
+    implements MaterialButton.b
+  {
+    private f() {}
+    
+    public void a(MaterialButton paramMaterialButton, boolean paramBoolean)
+    {
+      invalidate();
+    }
+  }
+}

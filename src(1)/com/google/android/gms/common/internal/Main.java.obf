@@ -1,0 +1,53 @@
+package com.google.android.gms.common.internal;
+
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.IBinder;
+import com.google.android.gms.common.util.VisibleForTesting;
+
+@VisibleForTesting
+public final class zze
+  implements ServiceConnection
+{
+  private final int zzb;
+  
+  public zze(BaseGmsClient paramBaseGmsClient, int paramInt)
+  {
+    zzb = paramInt;
+  }
+  
+  public final void onServiceConnected(ComponentName paramComponentName, IBinder paramIBinder)
+  {
+    paramComponentName = zza;
+    if (paramIBinder == null)
+    {
+      BaseGmsClient.zzk(paramComponentName, 16);
+      return;
+    }
+    synchronized (BaseGmsClient.zzd(paramComponentName))
+    {
+      BaseGmsClient localBaseGmsClient = zza;
+      paramComponentName = paramIBinder.queryLocalInterface("com.google.android.gms.common.internal.IGmsServiceBroker");
+      if ((paramComponentName != null) && ((paramComponentName instanceof IGmsServiceBroker))) {
+        paramComponentName = (IGmsServiceBroker)paramComponentName;
+      } else {
+        paramComponentName = new zzac(paramIBinder);
+      }
+      BaseGmsClient.zzh(localBaseGmsClient, paramComponentName);
+      zza.zzl(0, null, zzb);
+      return;
+    }
+  }
+  
+  public final void onServiceDisconnected(ComponentName arg1)
+  {
+    synchronized (BaseGmsClient.zzd(zza))
+    {
+      BaseGmsClient.zzh(zza, null);
+      ??? = zza.zzb;
+      ???.sendMessage(???.obtainMessage(6, zzb, 1));
+      return;
+    }
+  }
+}

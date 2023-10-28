@@ -1,0 +1,107 @@
+package com.google.android.material.behavior;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewPropertyAnimator;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.Behavior;
+import d.c.a.a.m.a;
+
+public class HideBottomViewOnScrollBehavior<V extends View>
+  extends CoordinatorLayout.Behavior<V>
+{
+  private int a = 0;
+  private int b = 2;
+  private int c = 0;
+  private ViewPropertyAnimator d;
+  
+  public HideBottomViewOnScrollBehavior() {}
+  
+  public HideBottomViewOnScrollBehavior(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+  }
+  
+  private void F(V paramV, int paramInt, long paramLong, TimeInterpolator paramTimeInterpolator)
+  {
+    d = paramV.animate().translationY(paramInt).setInterpolator(paramTimeInterpolator).setDuration(paramLong).setListener(new a());
+  }
+  
+  public boolean A(CoordinatorLayout paramCoordinatorLayout, V paramV, View paramView1, View paramView2, int paramInt1, int paramInt2)
+  {
+    return paramInt1 == 2;
+  }
+  
+  public void G(V paramV, int paramInt)
+  {
+    c = paramInt;
+    if (b == 1) {
+      paramV.setTranslationY(a + paramInt);
+    }
+  }
+  
+  public void H(V paramV)
+  {
+    if (b == 1) {
+      return;
+    }
+    ViewPropertyAnimator localViewPropertyAnimator = d;
+    if (localViewPropertyAnimator != null)
+    {
+      localViewPropertyAnimator.cancel();
+      paramV.clearAnimation();
+    }
+    b = 1;
+    F(paramV, a + c, 175L, a.c);
+  }
+  
+  public void I(V paramV)
+  {
+    if (b == 2) {
+      return;
+    }
+    ViewPropertyAnimator localViewPropertyAnimator = d;
+    if (localViewPropertyAnimator != null)
+    {
+      localViewPropertyAnimator.cancel();
+      paramV.clearAnimation();
+    }
+    b = 2;
+    F(paramV, 0, 225L, a.d);
+  }
+  
+  public boolean l(CoordinatorLayout paramCoordinatorLayout, V paramV, int paramInt)
+  {
+    ViewGroup.MarginLayoutParams localMarginLayoutParams = (ViewGroup.MarginLayoutParams)paramV.getLayoutParams();
+    a = (paramV.getMeasuredHeight() + bottomMargin);
+    return super.l(paramCoordinatorLayout, paramV, paramInt);
+  }
+  
+  public void t(CoordinatorLayout paramCoordinatorLayout, V paramV, View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int[] paramArrayOfInt)
+  {
+    if (paramInt2 > 0)
+    {
+      H(paramV);
+      return;
+    }
+    if (paramInt2 < 0) {
+      I(paramV);
+    }
+  }
+  
+  class a
+    extends AnimatorListenerAdapter
+  {
+    a() {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      HideBottomViewOnScrollBehavior.E(HideBottomViewOnScrollBehavior.this, null);
+    }
+  }
+}

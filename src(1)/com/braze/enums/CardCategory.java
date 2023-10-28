@@ -1,0 +1,44 @@
+package com.braze.enums;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+
+public enum CardCategory
+{
+  private static final Map<String, CardCategory> CARD_CATEGORY_HASH_MAP;
+  
+  static
+  {
+    Object localObject = new CardCategory("ADVERTISING", 0);
+    ADVERTISING = (CardCategory)localObject;
+    CardCategory localCardCategory1 = new CardCategory("ANNOUNCEMENTS", 1);
+    ANNOUNCEMENTS = localCardCategory1;
+    CardCategory localCardCategory2 = new CardCategory("NEWS", 2);
+    NEWS = localCardCategory2;
+    CardCategory localCardCategory3 = new CardCategory("SOCIAL", 3);
+    SOCIAL = localCardCategory3;
+    CardCategory localCardCategory4 = new CardCategory("NO_CATEGORY", 4);
+    NO_CATEGORY = localCardCategory4;
+    $VALUES = new CardCategory[] { localObject, localCardCategory1, localCardCategory2, localCardCategory3, localCardCategory4 };
+    CARD_CATEGORY_HASH_MAP = new HashMap();
+    localObject = EnumSet.allOf(CardCategory.class).iterator();
+    while (((Iterator)localObject).hasNext())
+    {
+      localCardCategory1 = (CardCategory)((Iterator)localObject).next();
+      CARD_CATEGORY_HASH_MAP.put(localCardCategory1.toString(), localCardCategory1);
+    }
+  }
+  
+  public static CardCategory format(String paramString)
+  {
+    return (CardCategory)CARD_CATEGORY_HASH_MAP.get(paramString.toUpperCase(Locale.US));
+  }
+  
+  public static EnumSet getAllCategories()
+  {
+    return EnumSet.allOf(CardCategory.class);
+  }
+}

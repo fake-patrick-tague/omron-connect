@@ -1,0 +1,178 @@
+package androidx.work.impl.utils;
+
+import androidx.room.RoomDatabase;
+import androidx.work.WorkInfo.State;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.c;
+import androidx.work.impl.d;
+import androidx.work.impl.e;
+import androidx.work.impl.f;
+import androidx.work.impl.j;
+import androidx.work.impl.n.b;
+import androidx.work.impl.n.q;
+import androidx.work.l;
+import androidx.work.l.b.a;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
+public abstract class a
+  implements Runnable
+{
+  private final c b = new c();
+  
+  public a() {}
+  
+  public static a b(final UUID paramUUID, j paramJ)
+  {
+    return new a(paramJ, paramUUID);
+  }
+  
+  public static a c(final String paramString, j paramJ, final boolean paramBoolean)
+  {
+    return new c(paramJ, paramString, paramBoolean);
+  }
+  
+  public static a d(final String paramString, j paramJ)
+  {
+    return new b(paramJ, paramString);
+  }
+  
+  private void f(WorkDatabase paramWorkDatabase, String paramString)
+  {
+    q localQ = paramWorkDatabase.B();
+    paramWorkDatabase = paramWorkDatabase.t();
+    LinkedList localLinkedList = new LinkedList();
+    localLinkedList.add(paramString);
+    while (!localLinkedList.isEmpty())
+    {
+      paramString = (String)localLinkedList.remove();
+      WorkInfo.State localState = localQ.m(paramString);
+      if ((localState != WorkInfo.State.d) && (localState != WorkInfo.State.e)) {
+        localQ.b(WorkInfo.State.g, new String[] { paramString });
+      }
+      localLinkedList.addAll(paramWorkDatabase.b(paramString));
+    }
+  }
+  
+  void a(j paramJ, String paramString)
+  {
+    f(paramJ.p(), paramString);
+    paramJ.n().l(paramString);
+    paramJ = paramJ.o().iterator();
+    while (paramJ.hasNext()) {
+      ((e)paramJ.next()).e(paramString);
+    }
+  }
+  
+  public l e()
+  {
+    return b;
+  }
+  
+  void g(j paramJ)
+  {
+    f.b(paramJ.j(), paramJ.p(), paramJ.o());
+  }
+  
+  abstract void h();
+  
+  public void run()
+  {
+    try
+    {
+      h();
+      b.a(l.a);
+      return;
+    }
+    finally
+    {
+      b.a(new l.b.a(localThrowable));
+    }
+  }
+  
+  class a
+    extends a
+  {
+    a(UUID paramUUID) {}
+    
+    void h()
+    {
+      WorkDatabase localWorkDatabase = p();
+      localWorkDatabase.c();
+      try
+      {
+        a(a.this, paramUUID.toString());
+        localWorkDatabase.r();
+        localWorkDatabase.g();
+        g(a.this);
+        return;
+      }
+      finally
+      {
+        localWorkDatabase.g();
+      }
+    }
+  }
+  
+  class b
+    extends a
+  {
+    b(String paramString) {}
+    
+    void h()
+    {
+      WorkDatabase localWorkDatabase = p();
+      localWorkDatabase.c();
+      try
+      {
+        Iterator localIterator = localWorkDatabase.B().q(paramString).iterator();
+        while (localIterator.hasNext())
+        {
+          String str = (String)localIterator.next();
+          a(a.this, str);
+        }
+        localWorkDatabase.r();
+        localWorkDatabase.g();
+        g(a.this);
+        return;
+      }
+      finally
+      {
+        localWorkDatabase.g();
+      }
+    }
+  }
+  
+  class c
+    extends a
+  {
+    c(String paramString, boolean paramBoolean) {}
+    
+    void h()
+    {
+      WorkDatabase localWorkDatabase = p();
+      localWorkDatabase.c();
+      try
+      {
+        Iterator localIterator = localWorkDatabase.B().l(paramString).iterator();
+        while (localIterator.hasNext())
+        {
+          String str = (String)localIterator.next();
+          a(a.this, str);
+        }
+        localWorkDatabase.r();
+        localWorkDatabase.g();
+        if (paramBoolean) {
+          g(a.this);
+        }
+        return;
+      }
+      finally
+      {
+        localWorkDatabase.g();
+      }
+    }
+  }
+}

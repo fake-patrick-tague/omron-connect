@@ -1,0 +1,58 @@
+package com.google.android.gms.internal.fitness;
+
+import android.app.PendingIntent;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.fitness.SessionsApi;
+import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.fitness.request.SessionInsertRequest;
+import com.google.android.gms.fitness.request.SessionReadRequest;
+import com.google.android.gms.fitness.result.SessionReadResult;
+import com.google.android.gms.fitness.result.SessionStopResult;
+import java.util.concurrent.TimeUnit;
+
+public final class zzeb
+  implements SessionsApi
+{
+  public zzeb() {}
+  
+  public final PendingResult<Status> insertSession(GoogleApiClient paramGoogleApiClient, SessionInsertRequest paramSessionInsertRequest)
+  {
+    return paramGoogleApiClient.enqueue(new zzec(this, paramGoogleApiClient, paramSessionInsertRequest));
+  }
+  
+  public final PendingResult<SessionReadResult> readSession(GoogleApiClient paramGoogleApiClient, SessionReadRequest paramSessionReadRequest)
+  {
+    return paramGoogleApiClient.enqueue(new zzef(this, paramGoogleApiClient, paramSessionReadRequest));
+  }
+  
+  public final PendingResult<Status> registerForSessions(GoogleApiClient paramGoogleApiClient, PendingIntent paramPendingIntent)
+  {
+    return paramGoogleApiClient.execute(new zzee(this, paramGoogleApiClient, paramPendingIntent));
+  }
+  
+  public final PendingResult<Status> startSession(GoogleApiClient paramGoogleApiClient, Session paramSession)
+  {
+    Preconditions.checkNotNull(paramSession, "Session cannot be null");
+    boolean bool;
+    if (paramSession.getEndTime(TimeUnit.MILLISECONDS) == 0L) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    Preconditions.checkArgument(bool, "Cannot start a session which has already ended");
+    return paramGoogleApiClient.execute(new zzea(this, paramGoogleApiClient, paramSession));
+  }
+  
+  public final PendingResult<SessionStopResult> stopSession(GoogleApiClient paramGoogleApiClient, String paramString)
+  {
+    return paramGoogleApiClient.execute(new zzed(this, paramGoogleApiClient, null, paramString));
+  }
+  
+  public final PendingResult<Status> unregisterForSessions(GoogleApiClient paramGoogleApiClient, PendingIntent paramPendingIntent)
+  {
+    return paramGoogleApiClient.execute(new zzeh(this, paramGoogleApiClient, paramPendingIntent));
+  }
+}

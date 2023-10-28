@@ -1,0 +1,212 @@
+package androidx.lifecycle;
+
+import android.os.Binder;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Size;
+import android.util.SizeF;
+import android.util.SparseArray;
+import androidx.savedstate.c.c;
+import c.h.m.d;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import kotlin.collections.a0;
+import kotlin.l;
+import kotlin.q;
+import kotlin.x.d.i;
+
+public final class x
+{
+  public static final a a = new a(null);
+  private static final Class<? extends Object>[] b;
+  private final Map<String, Object> c;
+  private final Map<String, c.c> d;
+  private final Map<String, ?> e;
+  private final Map<String, kotlinx.coroutines.flow.a<Object>> f;
+  private final c.c g;
+  
+  static
+  {
+    Class localClass2 = Boolean.TYPE;
+    Class localClass3 = Double.TYPE;
+    Class localClass1 = Integer.TYPE;
+    Class localClass4 = Long.TYPE;
+    Class localClass5 = Byte.TYPE;
+    Class localClass6 = Character.TYPE;
+    Class localClass7 = Float.TYPE;
+    Class localClass8 = Short.TYPE;
+    int i = Build.VERSION.SDK_INT;
+    Object localObject2;
+    if (i >= 21) {
+      localObject2 = Size.class;
+    } else {
+      localObject2 = localClass1;
+    }
+    Object localObject1 = localClass1;
+    if (i >= 21) {
+      localObject1 = SizeF.class;
+    }
+    b = new Class[] { localClass2, [Z.class, localClass3, [D.class, localClass1, [I.class, localClass4, [J.class, String.class, [Ljava.lang.String.class, Binder.class, Bundle.class, localClass5, [B.class, localClass6, [C.class, CharSequence.class, [Ljava.lang.CharSequence.class, ArrayList.class, localClass7, [F.class, Parcelable.class, [Landroid.os.Parcelable.class, Serializable.class, localClass8, [S.class, SparseArray.class, localObject2, localObject1 };
+  }
+  
+  public x()
+  {
+    c = new LinkedHashMap();
+    d = new LinkedHashMap();
+    e = new LinkedHashMap();
+    f = new LinkedHashMap();
+    g = new a(this);
+  }
+  
+  public x(Map<String, ? extends Object> paramMap)
+  {
+    LinkedHashMap localLinkedHashMap = new LinkedHashMap();
+    c = localLinkedHashMap;
+    d = new LinkedHashMap();
+    e = new LinkedHashMap();
+    f = new LinkedHashMap();
+    g = new a(this);
+    localLinkedHashMap.putAll(paramMap);
+  }
+  
+  public static final x b(Bundle paramBundle1, Bundle paramBundle2)
+  {
+    return a.a(paramBundle1, paramBundle2);
+  }
+  
+  private static final Bundle e(x paramX)
+  {
+    i.e(paramX, "this$0");
+    Object localObject1 = a0.k(d).entrySet().iterator();
+    while (((Iterator)localObject1).hasNext())
+    {
+      localObject2 = (Map.Entry)((Iterator)localObject1).next();
+      paramX.f((String)((Map.Entry)localObject2).getKey(), ((c.c)((Map.Entry)localObject2).getValue()).a());
+    }
+    Object localObject3 = c.keySet();
+    localObject1 = new ArrayList(((Set)localObject3).size());
+    Object localObject2 = new ArrayList(((ArrayList)localObject1).size());
+    localObject3 = ((Set)localObject3).iterator();
+    while (((Iterator)localObject3).hasNext())
+    {
+      String str = (String)((Iterator)localObject3).next();
+      ((ArrayList)localObject1).add(str);
+      ((ArrayList)localObject2).add(c.get(str));
+    }
+    return d.a(new l[] { q.a("keys", localObject1), q.a("values", localObject2) });
+  }
+  
+  public final c.c d()
+  {
+    return g;
+  }
+  
+  public final <T> void f(String paramString, T paramT)
+  {
+    i.e(paramString, "key");
+    if (a.b(paramT))
+    {
+      Object localObject = e.get(paramString);
+      if ((localObject instanceof s)) {
+        localObject = (s)localObject;
+      } else {
+        localObject = null;
+      }
+      if (localObject != null) {
+        ((s)localObject).setValue(paramT);
+      } else {
+        c.put(paramString, paramT);
+      }
+      paramString = (kotlinx.coroutines.flow.a)f.get(paramString);
+      if (paramString == null) {
+        return;
+      }
+      paramString.setValue(paramT);
+      return;
+    }
+    paramString = new StringBuilder();
+    paramString.append("Can't put value with type ");
+    i.b(paramT);
+    paramString.append(paramT.getClass());
+    paramString.append(" into saved state");
+    throw new IllegalArgumentException(paramString.toString());
+  }
+  
+  public static final class a
+  {
+    private a() {}
+    
+    public final x a(Bundle paramBundle1, Bundle paramBundle2)
+    {
+      Object localObject1;
+      Object localObject2;
+      if (paramBundle1 == null)
+      {
+        if (paramBundle2 == null) {
+          return new x();
+        }
+        paramBundle1 = new HashMap();
+        localObject1 = paramBundle2.keySet().iterator();
+        while (((Iterator)localObject1).hasNext())
+        {
+          localObject2 = (String)((Iterator)localObject1).next();
+          i.d(localObject2, "key");
+          paramBundle1.put(localObject2, paramBundle2.get((String)localObject2));
+        }
+        return new x(paramBundle1);
+      }
+      paramBundle2 = paramBundle1.getParcelableArrayList("keys");
+      paramBundle1 = paramBundle1.getParcelableArrayList("values");
+      int j = 0;
+      int i;
+      if ((paramBundle2 != null) && (paramBundle1 != null) && (paramBundle2.size() == paramBundle1.size())) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        localObject1 = new LinkedHashMap();
+        int k = paramBundle2.size();
+        i = j;
+        while (i < k)
+        {
+          localObject2 = paramBundle2.get(i);
+          Objects.requireNonNull(localObject2, "null cannot be cast to non-null type kotlin.String");
+          ((Map)localObject1).put((String)localObject2, paramBundle1.get(i));
+          i += 1;
+        }
+        return new x((Map)localObject1);
+      }
+      throw new IllegalStateException("Invalid bundle passed as restored state".toString());
+    }
+    
+    public final boolean b(Object paramObject)
+    {
+      if (paramObject == null) {
+        return true;
+      }
+      Class[] arrayOfClass = x.a();
+      int j = arrayOfClass.length;
+      int i = 0;
+      while (i < j)
+      {
+        Class localClass = arrayOfClass[i];
+        i.b(localClass);
+        if (localClass.isInstance(paramObject)) {
+          return true;
+        }
+        i += 1;
+      }
+      return false;
+    }
+  }
+}

@@ -1,0 +1,703 @@
+package com.google.android.gms.common.server.response;
+
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import android.util.SparseArray;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelReader;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelReader.ParseException;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+import com.google.android.gms.common.util.ArrayUtils;
+import com.google.android.gms.common.util.Base64Utils;
+import com.google.android.gms.common.util.JsonUtils;
+import com.google.android.gms.common.util.MapUtils;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+@KeepForSdk
+@SafeParcelable.Class(creator="SafeParcelResponseCreator")
+@VisibleForTesting
+public class SafeParcelResponse
+  extends FastSafeParcelableJsonResponse
+{
+  @KeepForSdk
+  public static final Parcelable.Creator<SafeParcelResponse> CREATOR = new zaq();
+  @SafeParcelable.VersionField(getter="getVersionCode", id=1)
+  private final int zaa;
+  @SafeParcelable.Field(getter="getParcel", id=2)
+  private final Parcel zab;
+  private final int zac;
+  @SafeParcelable.Field(getter="getFieldMappingDictionary", id=3)
+  private final zan zad;
+  private final String zae;
+  private int zaf;
+  private int zag;
+  
+  @SafeParcelable.Constructor
+  SafeParcelResponse(@SafeParcelable.Param(id=1) int paramInt, @SafeParcelable.Param(id=2) Parcel paramParcel, @SafeParcelable.Param(id=3) zan paramZan)
+  {
+    zaa = paramInt;
+    zab = ((Parcel)Preconditions.checkNotNull(paramParcel));
+    zac = 2;
+    zad = paramZan;
+    if (paramZan == null) {
+      paramParcel = null;
+    } else {
+      paramParcel = paramZan.zaa();
+    }
+    zae = paramParcel;
+    zaf = 2;
+  }
+  
+  private SafeParcelResponse(SafeParcelable paramSafeParcelable, zan paramZan, String paramString)
+  {
+    zaa = 1;
+    Parcel localParcel = Parcel.obtain();
+    zab = localParcel;
+    paramSafeParcelable.writeToParcel(localParcel, 0);
+    zac = 1;
+    zad = ((zan)Preconditions.checkNotNull(paramZan));
+    zae = ((String)Preconditions.checkNotNull(paramString));
+    zaf = 2;
+  }
+  
+  public SafeParcelResponse(zan paramZan, String paramString)
+  {
+    zaa = 1;
+    zab = Parcel.obtain();
+    zac = 0;
+    zad = ((zan)Preconditions.checkNotNull(paramZan));
+    zae = ((String)Preconditions.checkNotNull(paramString));
+    zaf = 0;
+  }
+  
+  @KeepForSdk
+  public static <T extends FastJsonResponse,  extends SafeParcelable> SafeParcelResponse from(T paramT)
+  {
+    String str = (String)Preconditions.checkNotNull(paramT.getClass().getCanonicalName());
+    zan localZan = new zan(paramT.getClass());
+    zaF(localZan, paramT);
+    localZan.zac();
+    localZan.zad();
+    return new SafeParcelResponse((SafeParcelable)paramT, localZan, str);
+  }
+  
+  private static void zaF(zan paramZan, FastJsonResponse paramFastJsonResponse)
+  {
+    Object localObject = paramFastJsonResponse.getClass();
+    if (!paramZan.zaf((Class)localObject))
+    {
+      Map localMap = paramFastJsonResponse.getFieldMappings();
+      paramZan.zae((Class)localObject, localMap);
+      localObject = localMap.keySet().iterator();
+      while (((Iterator)localObject).hasNext())
+      {
+        paramFastJsonResponse = (FastJsonResponse.Field)localMap.get((String)((Iterator)localObject).next());
+        Class localClass = zag;
+        if (localClass != null) {
+          try
+          {
+            zaF(paramZan, (FastJsonResponse)localClass.newInstance());
+          }
+          catch (IllegalAccessException localIllegalAccessException)
+          {
+            paramZan = String.valueOf(((Class)Preconditions.checkNotNull(zag)).getCanonicalName());
+            if (paramZan.length() != 0) {
+              paramZan = "Could not access object of type ".concat(paramZan);
+            } else {
+              paramZan = new String("Could not access object of type ");
+            }
+            throw new IllegalStateException(paramZan, localIllegalAccessException);
+          }
+          catch (InstantiationException localInstantiationException)
+          {
+            paramZan = String.valueOf(((Class)Preconditions.checkNotNull(zag)).getCanonicalName());
+            if (paramZan.length() != 0) {
+              paramZan = "Could not instantiate an object of type ".concat(paramZan);
+            } else {
+              paramZan = new String("Could not instantiate an object of type ");
+            }
+            throw new IllegalStateException(paramZan, localInstantiationException);
+          }
+        }
+      }
+    }
+  }
+  
+  private final void zaG(FastJsonResponse.Field<?, ?> paramField)
+  {
+    if (zaf != -1)
+    {
+      paramField = zab;
+      if (paramField != null)
+      {
+        int i = zaf;
+        if (i != 0)
+        {
+          if (i == 1) {
+            return;
+          }
+          throw new IllegalStateException("Attempted to parse JSON with a SafeParcelResponse object that is already filled with data.");
+        }
+        zag = SafeParcelWriter.beginObjectHeader(paramField);
+        zaf = 1;
+        return;
+      }
+      throw new IllegalStateException("Internal Parcel object is null.");
+    }
+    throw new IllegalStateException("Field does not have a valid safe parcelable field id.");
+  }
+  
+  private final void zaH(StringBuilder paramStringBuilder, Map<String, FastJsonResponse.Field<?, ?>> paramMap, Parcel paramParcel)
+  {
+    SparseArray localSparseArray = new SparseArray();
+    paramMap = paramMap.entrySet().iterator();
+    Object localObject1;
+    while (paramMap.hasNext())
+    {
+      localObject1 = (Map.Entry)paramMap.next();
+      localSparseArray.put(((FastJsonResponse.Field)((Map.Entry)localObject1).getValue()).getSafeParcelableFieldId(), localObject1);
+    }
+    paramStringBuilder.append('{');
+    int j = SafeParcelReader.validateObjectHeader(paramParcel);
+    int i = 0;
+    while (paramParcel.dataPosition() < j)
+    {
+      int k = SafeParcelReader.readHeader(paramParcel);
+      paramMap = (Map.Entry)localSparseArray.get(SafeParcelReader.getFieldId(k));
+      if (paramMap != null)
+      {
+        if (i != 0) {
+          paramStringBuilder.append(",");
+        }
+        localObject1 = (String)paramMap.getKey();
+        paramMap = (FastJsonResponse.Field)paramMap.getValue();
+        paramStringBuilder.append("\"");
+        paramStringBuilder.append((String)localObject1);
+        paramStringBuilder.append("\":");
+        Object localObject2;
+        if (paramMap.zaj())
+        {
+          i = zac;
+          switch (i)
+          {
+          default: 
+            paramStringBuilder = new StringBuilder(36);
+            paramStringBuilder.append("Unknown field out type = ");
+            paramStringBuilder.append(i);
+            throw new IllegalArgumentException(paramStringBuilder.toString());
+          case 11: 
+            throw new IllegalArgumentException("Method does not accept concrete type.");
+          case 10: 
+            localObject1 = SafeParcelReader.createBundle(paramParcel, k);
+            localObject2 = new HashMap();
+            Iterator localIterator = ((Bundle)localObject1).keySet().iterator();
+            while (localIterator.hasNext())
+            {
+              String str = (String)localIterator.next();
+              ((HashMap)localObject2).put(str, (String)Preconditions.checkNotNull(((Bundle)localObject1).getString(str)));
+            }
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, localObject2));
+            break;
+          case 8: 
+          case 9: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, SafeParcelReader.createByteArray(paramParcel, k)));
+            break;
+          case 7: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, SafeParcelReader.createString(paramParcel, k)));
+            break;
+          case 6: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, Boolean.valueOf(SafeParcelReader.readBoolean(paramParcel, k))));
+            break;
+          case 5: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, SafeParcelReader.createBigDecimal(paramParcel, k)));
+            break;
+          case 4: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, Double.valueOf(SafeParcelReader.readDouble(paramParcel, k))));
+            break;
+          case 3: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, Float.valueOf(SafeParcelReader.readFloat(paramParcel, k))));
+            break;
+          case 2: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, Long.valueOf(SafeParcelReader.readLong(paramParcel, k))));
+            break;
+          case 1: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, SafeParcelReader.createBigInteger(paramParcel, k)));
+            break;
+          case 0: 
+            zaJ(paramStringBuilder, paramMap, FastJsonResponse.zaD(paramMap, Integer.valueOf(SafeParcelReader.readInt(paramParcel, k))));
+          }
+        }
+        for (;;)
+        {
+          i = 1;
+          break;
+          if (zad)
+          {
+            paramStringBuilder.append("[");
+            switch (zac)
+            {
+            default: 
+              throw new IllegalStateException("Unknown field type out.");
+            case 11: 
+              localObject1 = SafeParcelReader.createParcelArray(paramParcel, k);
+              k = localObject1.length;
+              i = 0;
+            }
+            while (i < k)
+            {
+              if (i > 0) {
+                paramStringBuilder.append(",");
+              }
+              localObject1[i].setDataPosition(0);
+              zaH(paramStringBuilder, paramMap.zah(), localObject1[i]);
+              i += 1;
+              continue;
+              throw new UnsupportedOperationException("List of type BASE64, BASE64_URL_SAFE, or STRING_MAP is not supported");
+              ArrayUtils.writeStringArray(paramStringBuilder, SafeParcelReader.createStringArray(paramParcel, k));
+              break;
+              ArrayUtils.writeArray(paramStringBuilder, SafeParcelReader.createBooleanArray(paramParcel, k));
+              break;
+              ArrayUtils.writeArray(paramStringBuilder, SafeParcelReader.createBigDecimalArray(paramParcel, k));
+              break;
+              ArrayUtils.writeArray(paramStringBuilder, SafeParcelReader.createDoubleArray(paramParcel, k));
+              break;
+              ArrayUtils.writeArray(paramStringBuilder, SafeParcelReader.createFloatArray(paramParcel, k));
+              break;
+              ArrayUtils.writeArray(paramStringBuilder, SafeParcelReader.createLongArray(paramParcel, k));
+              break;
+              ArrayUtils.writeArray(paramStringBuilder, SafeParcelReader.createBigIntegerArray(paramParcel, k));
+              break;
+              ArrayUtils.writeArray(paramStringBuilder, SafeParcelReader.createIntArray(paramParcel, k));
+            }
+            paramStringBuilder.append("]");
+          }
+          else
+          {
+            switch (zac)
+            {
+            default: 
+              throw new IllegalStateException("Unknown field type out");
+            case 11: 
+              localObject1 = SafeParcelReader.createParcel(paramParcel, k);
+              ((Parcel)localObject1).setDataPosition(0);
+              zaH(paramStringBuilder, paramMap.zah(), (Parcel)localObject1);
+              break;
+            case 10: 
+              paramMap = SafeParcelReader.createBundle(paramParcel, k);
+              localObject1 = paramMap.keySet();
+              paramStringBuilder.append("{");
+              localObject1 = ((Set)localObject1).iterator();
+              for (i = 1; ((Iterator)localObject1).hasNext(); i = 0)
+              {
+                localObject2 = (String)((Iterator)localObject1).next();
+                if (i == 0) {
+                  paramStringBuilder.append(",");
+                }
+                paramStringBuilder.append("\"");
+                paramStringBuilder.append((String)localObject2);
+                paramStringBuilder.append("\":\"");
+                paramStringBuilder.append(JsonUtils.escapeString(paramMap.getString((String)localObject2)));
+                paramStringBuilder.append("\"");
+              }
+              paramStringBuilder.append("}");
+              break;
+            case 9: 
+              paramMap = SafeParcelReader.createByteArray(paramParcel, k);
+              paramStringBuilder.append("\"");
+              paramStringBuilder.append(Base64Utils.encodeUrlSafe(paramMap));
+              paramStringBuilder.append("\"");
+              break;
+            case 8: 
+              paramMap = SafeParcelReader.createByteArray(paramParcel, k);
+              paramStringBuilder.append("\"");
+              paramStringBuilder.append(Base64Utils.encode(paramMap));
+              paramStringBuilder.append("\"");
+              break;
+            case 7: 
+              paramMap = SafeParcelReader.createString(paramParcel, k);
+              paramStringBuilder.append("\"");
+              paramStringBuilder.append(JsonUtils.escapeString(paramMap));
+              paramStringBuilder.append("\"");
+              break;
+            case 6: 
+              paramStringBuilder.append(SafeParcelReader.readBoolean(paramParcel, k));
+              break;
+            case 5: 
+              paramStringBuilder.append(SafeParcelReader.createBigDecimal(paramParcel, k));
+              break;
+            case 4: 
+              paramStringBuilder.append(SafeParcelReader.readDouble(paramParcel, k));
+              break;
+            case 3: 
+              paramStringBuilder.append(SafeParcelReader.readFloat(paramParcel, k));
+              break;
+            case 2: 
+              paramStringBuilder.append(SafeParcelReader.readLong(paramParcel, k));
+              break;
+            case 1: 
+              paramStringBuilder.append(SafeParcelReader.createBigInteger(paramParcel, k));
+              break;
+            case 0: 
+              paramStringBuilder.append(SafeParcelReader.readInt(paramParcel, k));
+            }
+          }
+        }
+      }
+    }
+    if (paramParcel.dataPosition() == j)
+    {
+      paramStringBuilder.append('}');
+      return;
+    }
+    paramStringBuilder = new StringBuilder(37);
+    paramStringBuilder.append("Overread allowed size end=");
+    paramStringBuilder.append(j);
+    throw new SafeParcelReader.ParseException(paramStringBuilder.toString(), paramParcel);
+  }
+  
+  private static final void zaI(StringBuilder paramStringBuilder, int paramInt, Object paramObject)
+  {
+    switch (paramInt)
+    {
+    default: 
+      paramStringBuilder = new StringBuilder(26);
+      paramStringBuilder.append("Unknown type = ");
+      paramStringBuilder.append(paramInt);
+      throw new IllegalArgumentException(paramStringBuilder.toString());
+    case 11: 
+      throw new IllegalArgumentException("Method does not accept concrete type.");
+    case 10: 
+      MapUtils.writeStringMapToJson(paramStringBuilder, (HashMap)Preconditions.checkNotNull(paramObject));
+      return;
+    case 9: 
+      paramStringBuilder.append("\"");
+      paramStringBuilder.append(Base64Utils.encodeUrlSafe((byte[])paramObject));
+      paramStringBuilder.append("\"");
+      return;
+    case 8: 
+      paramStringBuilder.append("\"");
+      paramStringBuilder.append(Base64Utils.encode((byte[])paramObject));
+      paramStringBuilder.append("\"");
+      return;
+    case 7: 
+      paramStringBuilder.append("\"");
+      paramStringBuilder.append(JsonUtils.escapeString(Preconditions.checkNotNull(paramObject).toString()));
+      paramStringBuilder.append("\"");
+      return;
+    }
+    paramStringBuilder.append(paramObject);
+  }
+  
+  private static final void zaJ(StringBuilder paramStringBuilder, FastJsonResponse.Field<?, ?> paramField, Object paramObject)
+  {
+    if (zab)
+    {
+      paramObject = (ArrayList)paramObject;
+      paramStringBuilder.append("[");
+      int j = paramObject.size();
+      int i = 0;
+      while (i < j)
+      {
+        if (i != 0) {
+          paramStringBuilder.append(",");
+        }
+        zaI(paramStringBuilder, zaa, paramObject.get(i));
+        i += 1;
+      }
+      paramStringBuilder.append("]");
+      return;
+    }
+    zaI(paramStringBuilder, zaa, paramObject);
+  }
+  
+  public final <T extends FastJsonResponse> void addConcreteTypeArrayInternal(FastJsonResponse.Field paramField, String paramString, ArrayList<T> paramArrayList)
+  {
+    zaG(paramField);
+    paramString = new ArrayList();
+    ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    int j = paramArrayList.size();
+    int i = 0;
+    while (i < j)
+    {
+      paramString.add(((SafeParcelResponse)paramArrayList.get(i)).zaE());
+      i += 1;
+    }
+    SafeParcelWriter.writeParcelList(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  public final <T extends FastJsonResponse> void addConcreteTypeInternal(FastJsonResponse.Field paramField, String paramString, T paramT)
+  {
+    zaG(paramField);
+    paramString = ((SafeParcelResponse)paramT).zaE();
+    SafeParcelWriter.writeParcel(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  public final Map<String, FastJsonResponse.Field<?, ?>> getFieldMappings()
+  {
+    zan localZan = zad;
+    if (localZan == null) {
+      return null;
+    }
+    return localZan.zab((String)Preconditions.checkNotNull(zae));
+  }
+  
+  public final Object getValueObject(String paramString)
+  {
+    throw new UnsupportedOperationException("Converting to JSON does not require this method.");
+  }
+  
+  public final boolean isPrimitiveFieldSet(String paramString)
+  {
+    throw new UnsupportedOperationException("Converting to JSON does not require this method.");
+  }
+  
+  protected final void setBooleanInternal(FastJsonResponse.Field<?, ?> paramField, String paramString, boolean paramBoolean)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeBoolean(zab, paramField.getSafeParcelableFieldId(), paramBoolean);
+  }
+  
+  protected final void setDecodedBytesInternal(FastJsonResponse.Field<?, ?> paramField, String paramString, byte[] paramArrayOfByte)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeByteArray(zab, paramField.getSafeParcelableFieldId(), paramArrayOfByte, true);
+  }
+  
+  protected final void setIntegerInternal(FastJsonResponse.Field<?, ?> paramField, String paramString, int paramInt)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeInt(zab, paramField.getSafeParcelableFieldId(), paramInt);
+  }
+  
+  protected final void setLongInternal(FastJsonResponse.Field<?, ?> paramField, String paramString, long paramLong)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeLong(zab, paramField.getSafeParcelableFieldId(), paramLong);
+  }
+  
+  protected final void setStringInternal(FastJsonResponse.Field<?, ?> paramField, String paramString1, String paramString2)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeString(zab, paramField.getSafeParcelableFieldId(), paramString2, true);
+  }
+  
+  protected final void setStringMapInternal(FastJsonResponse.Field<?, ?> paramField, String paramString, Map<String, String> paramMap)
+  {
+    zaG(paramField);
+    paramString = new Bundle();
+    Iterator localIterator = ((Map)Preconditions.checkNotNull(paramMap)).keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      paramString.putString(str, (String)paramMap.get(str));
+    }
+    SafeParcelWriter.writeBundle(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  protected final void setStringsInternal(FastJsonResponse.Field<?, ?> paramField, String paramString, ArrayList<String> paramArrayList)
+  {
+    zaG(paramField);
+    int j = ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    paramString = new String[j];
+    int i = 0;
+    while (i < j)
+    {
+      paramString[i] = ((String)paramArrayList.get(i));
+      i += 1;
+    }
+    SafeParcelWriter.writeStringArray(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  public final String toString()
+  {
+    Preconditions.checkNotNull(zad, "Cannot convert to JSON on client side.");
+    Parcel localParcel = zaE();
+    localParcel.setDataPosition(0);
+    StringBuilder localStringBuilder = new StringBuilder(100);
+    zaH(localStringBuilder, (Map)Preconditions.checkNotNull(zad.zab((String)Preconditions.checkNotNull(zae))), localParcel);
+    return localStringBuilder.toString();
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zaa);
+    SafeParcelWriter.writeParcel(paramParcel, 2, zaE(), false);
+    int j = zac;
+    zan localZan;
+    if (j != 0)
+    {
+      if (j != 1) {
+        localZan = zad;
+      } else {
+        localZan = zad;
+      }
+    }
+    else {
+      localZan = null;
+    }
+    SafeParcelWriter.writeParcelable(paramParcel, 3, localZan, paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  public final Parcel zaE()
+  {
+    int i = zaf;
+    if (i != 0)
+    {
+      if (i == 1)
+      {
+        SafeParcelWriter.finishObjectHeader(zab, zag);
+        zaf = 2;
+      }
+    }
+    else
+    {
+      i = SafeParcelWriter.beginObjectHeader(zab);
+      zag = i;
+      SafeParcelWriter.finishObjectHeader(zab, i);
+      zaf = 2;
+    }
+    return zab;
+  }
+  
+  protected final void zab(FastJsonResponse.Field<?, ?> paramField, String paramString, BigDecimal paramBigDecimal)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeBigDecimal(zab, paramField.getSafeParcelableFieldId(), paramBigDecimal, true);
+  }
+  
+  protected final void zad(FastJsonResponse.Field<?, ?> paramField, String paramString, ArrayList<BigDecimal> paramArrayList)
+  {
+    zaG(paramField);
+    int j = ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    paramString = new BigDecimal[j];
+    int i = 0;
+    while (i < j)
+    {
+      paramString[i] = ((BigDecimal)paramArrayList.get(i));
+      i += 1;
+    }
+    SafeParcelWriter.writeBigDecimalArray(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  protected final void zaf(FastJsonResponse.Field<?, ?> paramField, String paramString, BigInteger paramBigInteger)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeBigInteger(zab, paramField.getSafeParcelableFieldId(), paramBigInteger, true);
+  }
+  
+  protected final void zah(FastJsonResponse.Field<?, ?> paramField, String paramString, ArrayList<BigInteger> paramArrayList)
+  {
+    zaG(paramField);
+    int j = ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    paramString = new BigInteger[j];
+    int i = 0;
+    while (i < j)
+    {
+      paramString[i] = ((BigInteger)paramArrayList.get(i));
+      i += 1;
+    }
+    SafeParcelWriter.writeBigIntegerArray(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  protected final void zak(FastJsonResponse.Field<?, ?> paramField, String paramString, ArrayList<Boolean> paramArrayList)
+  {
+    zaG(paramField);
+    int j = ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    paramString = new boolean[j];
+    int i = 0;
+    while (i < j)
+    {
+      paramString[i] = ((Boolean)paramArrayList.get(i)).booleanValue();
+      i += 1;
+    }
+    SafeParcelWriter.writeBooleanArray(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  protected final void zan(FastJsonResponse.Field<?, ?> paramField, String paramString, double paramDouble)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeDouble(zab, paramField.getSafeParcelableFieldId(), paramDouble);
+  }
+  
+  protected final void zap(FastJsonResponse.Field<?, ?> paramField, String paramString, ArrayList<Double> paramArrayList)
+  {
+    zaG(paramField);
+    int j = ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    paramString = new double[j];
+    int i = 0;
+    while (i < j)
+    {
+      paramString[i] = ((Double)paramArrayList.get(i)).doubleValue();
+      i += 1;
+    }
+    SafeParcelWriter.writeDoubleArray(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  protected final void zar(FastJsonResponse.Field<?, ?> paramField, String paramString, float paramFloat)
+  {
+    zaG(paramField);
+    SafeParcelWriter.writeFloat(zab, paramField.getSafeParcelableFieldId(), paramFloat);
+  }
+  
+  protected final void zat(FastJsonResponse.Field<?, ?> paramField, String paramString, ArrayList<Float> paramArrayList)
+  {
+    zaG(paramField);
+    int j = ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    paramString = new float[j];
+    int i = 0;
+    while (i < j)
+    {
+      paramString[i] = ((Float)paramArrayList.get(i)).floatValue();
+      i += 1;
+    }
+    SafeParcelWriter.writeFloatArray(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  protected final void zaw(FastJsonResponse.Field<?, ?> paramField, String paramString, ArrayList<Integer> paramArrayList)
+  {
+    zaG(paramField);
+    int j = ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    paramString = new int[j];
+    int i = 0;
+    while (i < j)
+    {
+      paramString[i] = ((Integer)paramArrayList.get(i)).intValue();
+      i += 1;
+    }
+    SafeParcelWriter.writeIntArray(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+  
+  protected final void zaz(FastJsonResponse.Field<?, ?> paramField, String paramString, ArrayList<Long> paramArrayList)
+  {
+    zaG(paramField);
+    int j = ((ArrayList)Preconditions.checkNotNull(paramArrayList)).size();
+    paramString = new long[j];
+    int i = 0;
+    while (i < j)
+    {
+      paramString[i] = ((Long)paramArrayList.get(i)).longValue();
+      i += 1;
+    }
+    SafeParcelWriter.writeLongArray(zab, paramField.getSafeParcelableFieldId(), paramString, true);
+  }
+}

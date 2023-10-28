@@ -1,0 +1,126 @@
+package androidx.transition;
+
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.os.Build.VERSION;
+import android.util.Property;
+import android.view.View;
+
+class w
+{
+  private static final c0 a;
+  static final Property<View, Float> b = new a(Float.class, "translationAlpha");
+  static final Property<View, Rect> c = new b(Rect.class, "clipBounds");
+  
+  static
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 29) {
+      a = new b0();
+    } else if (i >= 23) {
+      a = new a0();
+    } else if (i >= 22) {
+      a = new z();
+    } else if (i >= 21) {
+      a = new y();
+    } else if (i >= 19) {
+      a = new x();
+    } else {
+      a = new c0();
+    }
+  }
+  
+  static void a(View paramView)
+  {
+    a.a(paramView);
+  }
+  
+  static v b(View paramView)
+  {
+    if (Build.VERSION.SDK_INT >= 18) {
+      return new u(paramView);
+    }
+    return t.e(paramView);
+  }
+  
+  static float c(View paramView)
+  {
+    return a.c(paramView);
+  }
+  
+  static f0 d(View paramView)
+  {
+    if (Build.VERSION.SDK_INT >= 18) {
+      return new e0(paramView);
+    }
+    return new d0(paramView.getWindowToken());
+  }
+  
+  static void e(View paramView)
+  {
+    a.d(paramView);
+  }
+  
+  static void f(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    a.e(paramView, paramInt1, paramInt2, paramInt3, paramInt4);
+  }
+  
+  static void g(View paramView, float paramFloat)
+  {
+    a.f(paramView, paramFloat);
+  }
+  
+  static void h(View paramView, int paramInt)
+  {
+    a.g(paramView, paramInt);
+  }
+  
+  static void i(View paramView, Matrix paramMatrix)
+  {
+    a.h(paramView, paramMatrix);
+  }
+  
+  static void j(View paramView, Matrix paramMatrix)
+  {
+    a.i(paramView, paramMatrix);
+  }
+  
+  static final class a
+    extends Property<View, Float>
+  {
+    a(Class paramClass, String paramString)
+    {
+      super(paramString);
+    }
+    
+    public Float a(View paramView)
+    {
+      return Float.valueOf(w.c(paramView));
+    }
+    
+    public void b(View paramView, Float paramFloat)
+    {
+      w.g(paramView, paramFloat.floatValue());
+    }
+  }
+  
+  static final class b
+    extends Property<View, Rect>
+  {
+    b(Class paramClass, String paramString)
+    {
+      super(paramString);
+    }
+    
+    public Rect a(View paramView)
+    {
+      return c.h.q.f0.v(paramView);
+    }
+    
+    public void b(View paramView, Rect paramRect)
+    {
+      c.h.q.f0.w0(paramView, paramRect);
+    }
+  }
+}

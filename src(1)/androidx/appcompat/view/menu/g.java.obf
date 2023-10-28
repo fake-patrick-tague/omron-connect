@@ -1,0 +1,139 @@
+package androidx.appcompat.view.menu;
+
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface.OnKeyListener;
+import android.os.IBinder;
+import android.view.KeyEvent;
+import android.view.KeyEvent.DispatcherState;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager.LayoutParams;
+import android.widget.ListAdapter;
+import androidx.appcompat.app.f;
+import androidx.appcompat.app.f.a;
+import androidx.appcompat.app.k;
+
+class h
+  implements DialogInterface.OnKeyListener, DialogInterface.OnClickListener, DialogInterface.OnDismissListener, m.a
+{
+  private g b;
+  private f c;
+  e d;
+  private m.a e;
+  
+  public h(g paramG)
+  {
+    b = paramG;
+  }
+  
+  public void a(g paramG, boolean paramBoolean)
+  {
+    if ((paramBoolean) || (paramG == b)) {
+      c();
+    }
+    m.a localA = e;
+    if (localA != null) {
+      localA.a(paramG, paramBoolean);
+    }
+  }
+  
+  public boolean b(g paramG)
+  {
+    m.a localA = e;
+    if (localA != null) {
+      return localA.b(paramG);
+    }
+    return false;
+  }
+  
+  public void c()
+  {
+    f localF = c;
+    if (localF != null) {
+      localF.dismiss();
+    }
+  }
+  
+  public void d(IBinder paramIBinder)
+  {
+    Object localObject1 = b;
+    f.a localA = new f.a(((g)localObject1).w());
+    Object localObject2 = new e(localA.b(), c.a.g.j);
+    d = ((e)localObject2);
+    ((e)localObject2).g(this);
+    b.b(d);
+    localA.c(d.b(), this);
+    localObject2 = ((g)localObject1).A();
+    if (localObject2 != null) {
+      localA.d((View)localObject2);
+    } else {
+      localA.e(((g)localObject1).y()).m(((g)localObject1).z());
+    }
+    localA.i(this);
+    localObject1 = localA.a();
+    c = ((f)localObject1);
+    ((Dialog)localObject1).setOnDismissListener(this);
+    localObject1 = c.getWindow().getAttributes();
+    type = 1003;
+    if (paramIBinder != null) {
+      token = paramIBinder;
+    }
+    flags |= 0x20000;
+    c.show();
+  }
+  
+  public void onClick(DialogInterface paramDialogInterface, int paramInt)
+  {
+    b.N((i)d.b().getItem(paramInt), 0);
+  }
+  
+  public void onDismiss(DialogInterface paramDialogInterface)
+  {
+    d.a(b, true);
+  }
+  
+  public boolean onKey(DialogInterface paramDialogInterface, int paramInt, KeyEvent paramKeyEvent)
+  {
+    if ((paramInt == 82) || (paramInt == 4)) {
+      if ((paramKeyEvent.getAction() == 0) && (paramKeyEvent.getRepeatCount() == 0))
+      {
+        paramDialogInterface = c.getWindow();
+        if (paramDialogInterface != null)
+        {
+          paramDialogInterface = paramDialogInterface.getDecorView();
+          if (paramDialogInterface != null)
+          {
+            paramDialogInterface = paramDialogInterface.getKeyDispatcherState();
+            if (paramDialogInterface != null)
+            {
+              paramDialogInterface.startTracking(paramKeyEvent, this);
+              return true;
+            }
+          }
+        }
+      }
+      else if ((paramKeyEvent.getAction() == 1) && (!paramKeyEvent.isCanceled()))
+      {
+        Object localObject = c.getWindow();
+        if (localObject != null)
+        {
+          localObject = ((Window)localObject).getDecorView();
+          if (localObject != null)
+          {
+            localObject = ((View)localObject).getKeyDispatcherState();
+            if ((localObject != null) && (((KeyEvent.DispatcherState)localObject).isTracking(paramKeyEvent)))
+            {
+              b.e(true);
+              paramDialogInterface.dismiss();
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return b.performShortcut(paramInt, paramKeyEvent, 0);
+  }
+}

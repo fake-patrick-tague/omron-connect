@@ -1,0 +1,1246 @@
+package c.a.l.a;
+
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Outline;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.Callback;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.os.Build.VERSION;
+import android.os.SystemClock;
+import android.util.DisplayMetrics;
+import android.util.SparseArray;
+import androidx.core.graphics.drawable.a;
+
+public class b
+  extends Drawable
+  implements Drawable.Callback
+{
+  private d b;
+  private Rect c;
+  private Drawable d;
+  private Drawable e;
+  private int f = 255;
+  private boolean g;
+  private int h = -1;
+  private boolean i;
+  private Runnable j;
+  private long k;
+  private long l;
+  private c m;
+  
+  public b() {}
+  
+  private void d(Drawable paramDrawable)
+  {
+    if (m == null) {
+      m = new c();
+    }
+    paramDrawable.setCallback(m.b(paramDrawable.getCallback()));
+    try
+    {
+      if ((b.A <= 0) && (g)) {
+        paramDrawable.setAlpha(f);
+      }
+      Object localObject1 = b;
+      if (E)
+      {
+        paramDrawable.setColorFilter(D);
+      }
+      else
+      {
+        if (H) {
+          a.o(paramDrawable, F);
+        }
+        localObject1 = b;
+        if (I) {
+          a.p(paramDrawable, G);
+        }
+      }
+      paramDrawable.setVisible(isVisible(), true);
+      paramDrawable.setDither(b.x);
+      paramDrawable.setState(getState());
+      paramDrawable.setLevel(getLevel());
+      paramDrawable.setBounds(getBounds());
+      int n = Build.VERSION.SDK_INT;
+      if (n >= 23) {
+        a.m(paramDrawable, a.f(this));
+      }
+      if (n >= 19) {
+        a.j(paramDrawable, b.C);
+      }
+      localObject1 = c;
+      if ((n >= 21) && (localObject1 != null)) {
+        a.l(paramDrawable, left, top, right, bottom);
+      }
+      return;
+    }
+    finally
+    {
+      paramDrawable.setCallback(m.a());
+    }
+  }
+  
+  private boolean e()
+  {
+    return (isAutoMirrored()) && (a.f(this) == 1);
+  }
+  
+  static int f(Resources paramResources, int paramInt)
+  {
+    if (paramResources != null) {
+      paramInt = getDisplayMetricsdensityDpi;
+    }
+    int n = paramInt;
+    if (paramInt == 0) {
+      n = 160;
+    }
+    return n;
+  }
+  
+  void a(boolean paramBoolean)
+  {
+    int i1 = 1;
+    g = true;
+    long l1 = SystemClock.uptimeMillis();
+    Drawable localDrawable = d;
+    long l2;
+    if (localDrawable != null)
+    {
+      l2 = k;
+      if (l2 != 0L) {
+        if (l2 <= l1)
+        {
+          localDrawable.setAlpha(f);
+          k = 0L;
+        }
+        else
+        {
+          localDrawable.setAlpha((255 - (int)((l2 - l1) * 255L) / b.A) * f / 255);
+          n = 1;
+          break label109;
+        }
+      }
+    }
+    else
+    {
+      k = 0L;
+    }
+    int n = 0;
+    label109:
+    localDrawable = e;
+    if (localDrawable != null)
+    {
+      l2 = l;
+      if (l2 != 0L) {
+        if (l2 <= l1)
+        {
+          localDrawable.setVisible(false, false);
+          e = null;
+          l = 0L;
+        }
+        else
+        {
+          localDrawable.setAlpha((int)((l2 - l1) * 255L) / b.B * f / 255);
+          n = i1;
+        }
+      }
+    }
+    else
+    {
+      l = 0L;
+    }
+    if ((paramBoolean) && (n != 0)) {
+      scheduleSelf(j, l1 + 16L);
+    }
+  }
+  
+  public void applyTheme(Resources.Theme paramTheme)
+  {
+    b.b(paramTheme);
+  }
+  
+  d b()
+  {
+    throw null;
+  }
+  
+  int c()
+  {
+    return h;
+  }
+  
+  public boolean canApplyTheme()
+  {
+    return b.canApplyTheme();
+  }
+  
+  public void draw(Canvas paramCanvas)
+  {
+    Drawable localDrawable = d;
+    if (localDrawable != null) {
+      localDrawable.draw(paramCanvas);
+    }
+    localDrawable = e;
+    if (localDrawable != null) {
+      localDrawable.draw(paramCanvas);
+    }
+  }
+  
+  boolean g(int paramInt)
+  {
+    if (paramInt == h) {
+      return false;
+    }
+    long l1 = SystemClock.uptimeMillis();
+    Object localObject;
+    if (b.B > 0)
+    {
+      localObject = e;
+      if (localObject != null) {
+        ((Drawable)localObject).setVisible(false, false);
+      }
+      localObject = d;
+      if (localObject != null)
+      {
+        e = ((Drawable)localObject);
+        l = (b.B + l1);
+      }
+      else
+      {
+        e = null;
+        l = 0L;
+      }
+    }
+    else
+    {
+      localObject = d;
+      if (localObject != null) {
+        ((Drawable)localObject).setVisible(false, false);
+      }
+    }
+    if (paramInt >= 0)
+    {
+      localObject = b;
+      if (paramInt < h)
+      {
+        localObject = ((d)localObject).g(paramInt);
+        d = ((Drawable)localObject);
+        h = paramInt;
+        if (localObject == null) {
+          break label191;
+        }
+        paramInt = b.A;
+        if (paramInt > 0) {
+          k = (l1 + paramInt);
+        }
+        d((Drawable)localObject);
+        break label191;
+      }
+    }
+    d = null;
+    h = -1;
+    label191:
+    if ((k != 0L) || (l != 0L))
+    {
+      localObject = j;
+      if (localObject == null) {
+        j = new a();
+      } else {
+        unscheduleSelf((Runnable)localObject);
+      }
+      a(true);
+    }
+    invalidateSelf();
+    return true;
+  }
+  
+  public int getAlpha()
+  {
+    return f;
+  }
+  
+  public int getChangingConfigurations()
+  {
+    return super.getChangingConfigurations() | b.getChangingConfigurations();
+  }
+  
+  public final Drawable.ConstantState getConstantState()
+  {
+    if (b.c())
+    {
+      b.d = getChangingConfigurations();
+      return b;
+    }
+    return null;
+  }
+  
+  public Drawable getCurrent()
+  {
+    return d;
+  }
+  
+  public void getHotspotBounds(Rect paramRect)
+  {
+    Rect localRect = c;
+    if (localRect != null)
+    {
+      paramRect.set(localRect);
+      return;
+    }
+    super.getHotspotBounds(paramRect);
+  }
+  
+  public int getIntrinsicHeight()
+  {
+    if (b.q()) {
+      return b.i();
+    }
+    Drawable localDrawable = d;
+    if (localDrawable != null) {
+      return localDrawable.getIntrinsicHeight();
+    }
+    return -1;
+  }
+  
+  public int getIntrinsicWidth()
+  {
+    if (b.q()) {
+      return b.m();
+    }
+    Drawable localDrawable = d;
+    if (localDrawable != null) {
+      return localDrawable.getIntrinsicWidth();
+    }
+    return -1;
+  }
+  
+  public int getMinimumHeight()
+  {
+    if (b.q()) {
+      return b.j();
+    }
+    Drawable localDrawable = d;
+    if (localDrawable != null) {
+      return localDrawable.getMinimumHeight();
+    }
+    return 0;
+  }
+  
+  public int getMinimumWidth()
+  {
+    if (b.q()) {
+      return b.k();
+    }
+    Drawable localDrawable = d;
+    if (localDrawable != null) {
+      return localDrawable.getMinimumWidth();
+    }
+    return 0;
+  }
+  
+  public int getOpacity()
+  {
+    Drawable localDrawable = d;
+    if ((localDrawable != null) && (localDrawable.isVisible())) {
+      return b.n();
+    }
+    return -2;
+  }
+  
+  public void getOutline(Outline paramOutline)
+  {
+    Drawable localDrawable = d;
+    if (localDrawable != null) {
+      b.b(localDrawable, paramOutline);
+    }
+  }
+  
+  public boolean getPadding(Rect paramRect)
+  {
+    Object localObject = b.l();
+    int n;
+    boolean bool;
+    if (localObject != null)
+    {
+      paramRect.set((Rect)localObject);
+      n = left;
+      int i1 = top;
+      int i2 = bottom;
+      if ((right | n | i1 | i2) != 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+    }
+    else
+    {
+      localObject = d;
+      if (localObject != null) {
+        bool = ((Drawable)localObject).getPadding(paramRect);
+      } else {
+        bool = super.getPadding(paramRect);
+      }
+    }
+    if (e())
+    {
+      n = left;
+      left = right;
+      right = n;
+    }
+    return bool;
+  }
+  
+  void h(d paramD)
+  {
+    b = paramD;
+    int n = h;
+    if (n >= 0)
+    {
+      paramD = paramD.g(n);
+      d = paramD;
+      if (paramD != null) {
+        d(paramD);
+      }
+    }
+    e = null;
+  }
+  
+  final void i(Resources paramResources)
+  {
+    b.y(paramResources);
+  }
+  
+  public void invalidateDrawable(Drawable paramDrawable)
+  {
+    d localD = b;
+    if (localD != null) {
+      localD.p();
+    }
+    if ((paramDrawable == d) && (getCallback() != null)) {
+      getCallback().invalidateDrawable(this);
+    }
+  }
+  
+  public boolean isAutoMirrored()
+  {
+    return b.C;
+  }
+  
+  public void jumpToCurrentState()
+  {
+    Drawable localDrawable = e;
+    int i1 = 1;
+    int n;
+    if (localDrawable != null)
+    {
+      localDrawable.jumpToCurrentState();
+      e = null;
+      n = 1;
+    }
+    else
+    {
+      n = 0;
+    }
+    localDrawable = d;
+    if (localDrawable != null)
+    {
+      localDrawable.jumpToCurrentState();
+      if (g) {
+        d.setAlpha(f);
+      }
+    }
+    if (l != 0L)
+    {
+      l = 0L;
+      n = 1;
+    }
+    if (k != 0L)
+    {
+      k = 0L;
+      n = i1;
+    }
+    if (n != 0) {
+      invalidateSelf();
+    }
+  }
+  
+  public Drawable mutate()
+  {
+    if ((!i) && (super.mutate() == this))
+    {
+      d localD = b();
+      localD.r();
+      h(localD);
+      i = true;
+    }
+    return this;
+  }
+  
+  protected void onBoundsChange(Rect paramRect)
+  {
+    Drawable localDrawable = e;
+    if (localDrawable != null) {
+      localDrawable.setBounds(paramRect);
+    }
+    localDrawable = d;
+    if (localDrawable != null) {
+      localDrawable.setBounds(paramRect);
+    }
+  }
+  
+  public boolean onLayoutDirectionChanged(int paramInt)
+  {
+    return b.w(paramInt, c());
+  }
+  
+  protected boolean onLevelChange(int paramInt)
+  {
+    Drawable localDrawable = e;
+    if (localDrawable != null) {
+      return localDrawable.setLevel(paramInt);
+    }
+    localDrawable = d;
+    if (localDrawable != null) {
+      return localDrawable.setLevel(paramInt);
+    }
+    return false;
+  }
+  
+  protected boolean onStateChange(int[] paramArrayOfInt)
+  {
+    Drawable localDrawable = e;
+    if (localDrawable != null) {
+      return localDrawable.setState(paramArrayOfInt);
+    }
+    localDrawable = d;
+    if (localDrawable != null) {
+      return localDrawable.setState(paramArrayOfInt);
+    }
+    return false;
+  }
+  
+  public void scheduleDrawable(Drawable paramDrawable, Runnable paramRunnable, long paramLong)
+  {
+    if ((paramDrawable == d) && (getCallback() != null)) {
+      getCallback().scheduleDrawable(this, paramRunnable, paramLong);
+    }
+  }
+  
+  public void setAlpha(int paramInt)
+  {
+    if ((!g) || (f != paramInt))
+    {
+      g = true;
+      f = paramInt;
+      Drawable localDrawable = d;
+      if (localDrawable != null)
+      {
+        if (k == 0L)
+        {
+          localDrawable.setAlpha(paramInt);
+          return;
+        }
+        a(false);
+      }
+    }
+  }
+  
+  public void setAutoMirrored(boolean paramBoolean)
+  {
+    Object localObject = b;
+    if (C != paramBoolean)
+    {
+      C = paramBoolean;
+      localObject = d;
+      if (localObject != null) {
+        a.j((Drawable)localObject, paramBoolean);
+      }
+    }
+  }
+  
+  public void setColorFilter(ColorFilter paramColorFilter)
+  {
+    Object localObject = b;
+    E = true;
+    if (D != paramColorFilter)
+    {
+      D = paramColorFilter;
+      localObject = d;
+      if (localObject != null) {
+        ((Drawable)localObject).setColorFilter(paramColorFilter);
+      }
+    }
+  }
+  
+  public void setDither(boolean paramBoolean)
+  {
+    Object localObject = b;
+    if (x != paramBoolean)
+    {
+      x = paramBoolean;
+      localObject = d;
+      if (localObject != null) {
+        ((Drawable)localObject).setDither(paramBoolean);
+      }
+    }
+  }
+  
+  public void setHotspot(float paramFloat1, float paramFloat2)
+  {
+    Drawable localDrawable = d;
+    if (localDrawable != null) {
+      a.k(localDrawable, paramFloat1, paramFloat2);
+    }
+  }
+  
+  public void setHotspotBounds(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    Object localObject = c;
+    if (localObject == null) {
+      c = new Rect(paramInt1, paramInt2, paramInt3, paramInt4);
+    } else {
+      ((Rect)localObject).set(paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+    localObject = d;
+    if (localObject != null) {
+      a.l((Drawable)localObject, paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+  }
+  
+  public void setTint(int paramInt)
+  {
+    setTintList(ColorStateList.valueOf(paramInt));
+  }
+  
+  public void setTintList(ColorStateList paramColorStateList)
+  {
+    d localD = b;
+    H = true;
+    if (F != paramColorStateList)
+    {
+      F = paramColorStateList;
+      a.o(d, paramColorStateList);
+    }
+  }
+  
+  public void setTintMode(PorterDuff.Mode paramMode)
+  {
+    d localD = b;
+    I = true;
+    if (G != paramMode)
+    {
+      G = paramMode;
+      a.p(d, paramMode);
+    }
+  }
+  
+  public boolean setVisible(boolean paramBoolean1, boolean paramBoolean2)
+  {
+    boolean bool = super.setVisible(paramBoolean1, paramBoolean2);
+    Drawable localDrawable = e;
+    if (localDrawable != null) {
+      localDrawable.setVisible(paramBoolean1, paramBoolean2);
+    }
+    localDrawable = d;
+    if (localDrawable != null) {
+      localDrawable.setVisible(paramBoolean1, paramBoolean2);
+    }
+    return bool;
+  }
+  
+  public void unscheduleDrawable(Drawable paramDrawable, Runnable paramRunnable)
+  {
+    if ((paramDrawable == d) && (getCallback() != null)) {
+      getCallback().unscheduleDrawable(this, paramRunnable);
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    public void run()
+    {
+      a(true);
+      invalidateSelf();
+    }
+  }
+  
+  private static class b
+  {
+    public static boolean a(Drawable.ConstantState paramConstantState)
+    {
+      return paramConstantState.canApplyTheme();
+    }
+    
+    public static void b(Drawable paramDrawable, Outline paramOutline)
+    {
+      paramDrawable.getOutline(paramOutline);
+    }
+    
+    public static Resources c(Resources.Theme paramTheme)
+    {
+      return paramTheme.getResources();
+    }
+  }
+  
+  static class c
+    implements Drawable.Callback
+  {
+    private Drawable.Callback b;
+    
+    c() {}
+    
+    public Drawable.Callback a()
+    {
+      Drawable.Callback localCallback = b;
+      b = null;
+      return localCallback;
+    }
+    
+    public c b(Drawable.Callback paramCallback)
+    {
+      b = paramCallback;
+      return this;
+    }
+    
+    public void invalidateDrawable(Drawable paramDrawable) {}
+    
+    public void scheduleDrawable(Drawable paramDrawable, Runnable paramRunnable, long paramLong)
+    {
+      Drawable.Callback localCallback = b;
+      if (localCallback != null) {
+        localCallback.scheduleDrawable(paramDrawable, paramRunnable, paramLong);
+      }
+    }
+    
+    public void unscheduleDrawable(Drawable paramDrawable, Runnable paramRunnable)
+    {
+      Drawable.Callback localCallback = b;
+      if (localCallback != null) {
+        localCallback.unscheduleDrawable(paramDrawable, paramRunnable);
+      }
+    }
+  }
+  
+  static abstract class d
+    extends Drawable.ConstantState
+  {
+    int A;
+    int B;
+    boolean C;
+    ColorFilter D;
+    boolean E;
+    ColorStateList F;
+    PorterDuff.Mode G;
+    boolean H;
+    boolean I;
+    final b a;
+    Resources b;
+    int c;
+    int d;
+    int e;
+    SparseArray<Drawable.ConstantState> f;
+    Drawable[] g;
+    int h;
+    boolean i;
+    boolean j;
+    Rect k;
+    boolean l;
+    boolean m;
+    int n;
+    int o;
+    int p;
+    int q;
+    boolean r;
+    int s;
+    boolean t;
+    boolean u;
+    boolean v;
+    boolean w;
+    boolean x;
+    boolean y;
+    int z;
+    
+    d(d paramD, b paramB, Resources paramResources)
+    {
+      int i2 = 0;
+      i = false;
+      l = false;
+      x = true;
+      A = 0;
+      B = 0;
+      a = paramB;
+      Object localObject = null;
+      if (paramResources != null) {
+        paramB = paramResources;
+      } else if (paramD != null) {
+        paramB = b;
+      } else {
+        paramB = null;
+      }
+      b = paramB;
+      if (paramD != null) {
+        i1 = c;
+      } else {
+        i1 = 0;
+      }
+      int i1 = b.f(paramResources, i1);
+      c = i1;
+      if (paramD != null)
+      {
+        d = d;
+        e = e;
+        v = true;
+        w = true;
+        i = i;
+        l = l;
+        x = x;
+        y = y;
+        z = z;
+        A = A;
+        B = B;
+        C = C;
+        D = D;
+        E = E;
+        F = F;
+        G = G;
+        H = H;
+        I = I;
+        if (c == i1)
+        {
+          if (j)
+          {
+            paramB = localObject;
+            if (k != null) {
+              paramB = new Rect(k);
+            }
+            k = paramB;
+            j = true;
+          }
+          if (m)
+          {
+            n = n;
+            o = o;
+            p = p;
+            q = q;
+            m = true;
+          }
+        }
+        if (r)
+        {
+          s = s;
+          r = true;
+        }
+        if (t)
+        {
+          u = u;
+          t = true;
+        }
+        paramB = g;
+        g = new Drawable[paramB.length];
+        h = h;
+        paramD = f;
+        if (paramD != null) {
+          f = paramD.clone();
+        } else {
+          f = new SparseArray(h);
+        }
+        int i3 = h;
+        i1 = i2;
+        while (i1 < i3)
+        {
+          if (paramB[i1] != null)
+          {
+            paramD = paramB[i1].getConstantState();
+            if (paramD != null) {
+              f.put(i1, paramD);
+            } else {
+              g[i1] = paramB[i1];
+            }
+          }
+          i1 += 1;
+        }
+      }
+      g = new Drawable[10];
+      h = 0;
+    }
+    
+    private void e()
+    {
+      Object localObject = f;
+      if (localObject != null)
+      {
+        int i2 = ((SparseArray)localObject).size();
+        int i1 = 0;
+        while (i1 < i2)
+        {
+          int i3 = f.keyAt(i1);
+          localObject = (Drawable.ConstantState)f.valueAt(i1);
+          g[i3] = s(((Drawable.ConstantState)localObject).newDrawable(b));
+          i1 += 1;
+        }
+        f = null;
+      }
+    }
+    
+    private Drawable s(Drawable paramDrawable)
+    {
+      if (Build.VERSION.SDK_INT >= 23) {
+        a.m(paramDrawable, z);
+      }
+      paramDrawable = paramDrawable.mutate();
+      paramDrawable.setCallback(a);
+      return paramDrawable;
+    }
+    
+    public final int a(Drawable paramDrawable)
+    {
+      int i1 = h;
+      if (i1 >= g.length) {
+        o(i1, i1 + 10);
+      }
+      paramDrawable.mutate();
+      paramDrawable.setVisible(false, true);
+      paramDrawable.setCallback(a);
+      g[i1] = paramDrawable;
+      h += 1;
+      int i2 = e;
+      e = (paramDrawable.getChangingConfigurations() | i2);
+      p();
+      k = null;
+      j = false;
+      m = false;
+      v = false;
+      return i1;
+    }
+    
+    final void b(Resources.Theme paramTheme)
+    {
+      if (paramTheme != null)
+      {
+        e();
+        int i2 = h;
+        Drawable[] arrayOfDrawable = g;
+        int i1 = 0;
+        while (i1 < i2)
+        {
+          if ((arrayOfDrawable[i1] != null) && (a.b(arrayOfDrawable[i1])))
+          {
+            a.a(arrayOfDrawable[i1], paramTheme);
+            e |= arrayOfDrawable[i1].getChangingConfigurations();
+          }
+          i1 += 1;
+        }
+        y(b.b.c(paramTheme));
+      }
+    }
+    
+    public boolean c()
+    {
+      if (v) {
+        return w;
+      }
+      e();
+      v = true;
+      int i2 = h;
+      Drawable[] arrayOfDrawable = g;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        if (arrayOfDrawable[i1].getConstantState() == null)
+        {
+          w = false;
+          return false;
+        }
+        i1 += 1;
+      }
+      w = true;
+      return true;
+    }
+    
+    public boolean canApplyTheme()
+    {
+      int i2 = h;
+      Drawable[] arrayOfDrawable = g;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        Object localObject = arrayOfDrawable[i1];
+        if (localObject != null)
+        {
+          if (a.b((Drawable)localObject)) {
+            return true;
+          }
+        }
+        else
+        {
+          localObject = (Drawable.ConstantState)f.get(i1);
+          if ((localObject != null) && (b.b.a((Drawable.ConstantState)localObject))) {
+            return true;
+          }
+        }
+        i1 += 1;
+      }
+      return false;
+    }
+    
+    protected void d()
+    {
+      m = true;
+      e();
+      int i2 = h;
+      Drawable[] arrayOfDrawable = g;
+      o = -1;
+      n = -1;
+      int i1 = 0;
+      q = 0;
+      p = 0;
+      while (i1 < i2)
+      {
+        Drawable localDrawable = arrayOfDrawable[i1];
+        int i3 = localDrawable.getIntrinsicWidth();
+        if (i3 > n) {
+          n = i3;
+        }
+        i3 = localDrawable.getIntrinsicHeight();
+        if (i3 > o) {
+          o = i3;
+        }
+        i3 = localDrawable.getMinimumWidth();
+        if (i3 > p) {
+          p = i3;
+        }
+        i3 = localDrawable.getMinimumHeight();
+        if (i3 > q) {
+          q = i3;
+        }
+        i1 += 1;
+      }
+    }
+    
+    final int f()
+    {
+      return g.length;
+    }
+    
+    public final Drawable g(int paramInt)
+    {
+      Object localObject = g[paramInt];
+      if (localObject != null) {
+        return localObject;
+      }
+      localObject = f;
+      if (localObject != null)
+      {
+        int i1 = ((SparseArray)localObject).indexOfKey(paramInt);
+        if (i1 >= 0)
+        {
+          localObject = s(((Drawable.ConstantState)f.valueAt(i1)).newDrawable(b));
+          g[paramInt] = localObject;
+          f.removeAt(i1);
+          if (f.size() == 0) {
+            f = null;
+          }
+          return localObject;
+        }
+      }
+      return null;
+    }
+    
+    public int getChangingConfigurations()
+    {
+      return d | e;
+    }
+    
+    public final int h()
+    {
+      return h;
+    }
+    
+    public final int i()
+    {
+      if (!m) {
+        d();
+      }
+      return o;
+    }
+    
+    public final int j()
+    {
+      if (!m) {
+        d();
+      }
+      return q;
+    }
+    
+    public final int k()
+    {
+      if (!m) {
+        d();
+      }
+      return p;
+    }
+    
+    public final Rect l()
+    {
+      boolean bool = i;
+      Object localObject1 = null;
+      if (bool) {
+        return null;
+      }
+      Object localObject2 = k;
+      if (localObject2 == null)
+      {
+        if (j) {
+          return localObject2;
+        }
+        e();
+        Rect localRect = new Rect();
+        int i2 = h;
+        Drawable[] arrayOfDrawable = g;
+        int i1 = 0;
+        while (i1 < i2)
+        {
+          Object localObject3 = localObject1;
+          if (arrayOfDrawable[i1].getPadding(localRect))
+          {
+            localObject2 = localObject1;
+            if (localObject1 == null) {
+              localObject2 = new Rect(0, 0, 0, 0);
+            }
+            int i3 = left;
+            if (i3 > left) {
+              left = i3;
+            }
+            i3 = top;
+            if (i3 > top) {
+              top = i3;
+            }
+            i3 = right;
+            if (i3 > right) {
+              right = i3;
+            }
+            i3 = bottom;
+            localObject3 = localObject2;
+            if (i3 > bottom)
+            {
+              bottom = i3;
+              localObject3 = localObject2;
+            }
+          }
+          i1 += 1;
+          localObject1 = localObject3;
+        }
+        j = true;
+        k = localObject1;
+        return localObject1;
+      }
+      return localObject2;
+    }
+    
+    public final int m()
+    {
+      if (!m) {
+        d();
+      }
+      return n;
+    }
+    
+    public final int n()
+    {
+      if (r) {
+        return s;
+      }
+      e();
+      int i3 = h;
+      Drawable[] arrayOfDrawable = g;
+      int i1;
+      if (i3 > 0) {
+        i1 = arrayOfDrawable[0].getOpacity();
+      } else {
+        i1 = -2;
+      }
+      int i2 = 1;
+      while (i2 < i3)
+      {
+        i1 = Drawable.resolveOpacity(i1, arrayOfDrawable[i2].getOpacity());
+        i2 += 1;
+      }
+      s = i1;
+      r = true;
+      return i1;
+    }
+    
+    public void o(int paramInt1, int paramInt2)
+    {
+      Drawable[] arrayOfDrawable1 = new Drawable[paramInt2];
+      Drawable[] arrayOfDrawable2 = g;
+      if (arrayOfDrawable2 != null) {
+        System.arraycopy(arrayOfDrawable2, 0, arrayOfDrawable1, 0, paramInt1);
+      }
+      g = arrayOfDrawable1;
+    }
+    
+    void p()
+    {
+      r = false;
+      t = false;
+    }
+    
+    public final boolean q()
+    {
+      return l;
+    }
+    
+    abstract void r();
+    
+    public final void t(boolean paramBoolean)
+    {
+      l = paramBoolean;
+    }
+    
+    public final void u(int paramInt)
+    {
+      A = paramInt;
+    }
+    
+    public final void v(int paramInt)
+    {
+      B = paramInt;
+    }
+    
+    final boolean w(int paramInt1, int paramInt2)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge Z and I\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    public final void x(boolean paramBoolean)
+    {
+      i = paramBoolean;
+    }
+    
+    final void y(Resources paramResources)
+    {
+      if (paramResources != null)
+      {
+        b = paramResources;
+        int i1 = b.f(paramResources, c);
+        int i2 = c;
+        c = i1;
+        if (i2 != i1)
+        {
+          m = false;
+          j = false;
+        }
+      }
+    }
+  }
+}

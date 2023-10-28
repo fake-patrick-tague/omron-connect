@@ -1,0 +1,35 @@
+package com.google.android.gms.common;
+
+import android.content.Context;
+import android.os.Message;
+import android.util.Log;
+import com.google.android.gms.internal.base.zaq;
+
+final class zac
+  extends zaq
+{
+  private final Context zab;
+  
+  public zac(GoogleApiAvailability paramGoogleApiAvailability, Context paramContext)
+  {
+    super(paramGoogleApiAvailability);
+    zab = paramContext.getApplicationContext();
+  }
+  
+  public final void handleMessage(Message paramMessage)
+  {
+    int i = what;
+    if (i != 1)
+    {
+      paramMessage = new StringBuilder(50);
+      paramMessage.append("Don't know how to handle this message: ");
+      paramMessage.append(i);
+      Log.w("GoogleApiAvailability", paramMessage.toString());
+      return;
+    }
+    i = zaa.isGooglePlayServicesAvailable(zab);
+    if (zaa.isUserResolvableError(i)) {
+      zaa.showErrorNotification(zab, i);
+    }
+  }
+}

@@ -1,0 +1,261 @@
+package androidx.recyclerview.widget;
+
+import c.e.d;
+import c.e.g;
+import c.h.p.e;
+import c.h.p.f;
+
+class z
+{
+  final g<RecyclerView.b0, a> a = new g();
+  final d<RecyclerView.b0> b = new d();
+  
+  z() {}
+  
+  private RecyclerView.l.c l(RecyclerView.b0 paramB0, int paramInt)
+  {
+    int i = a.f(paramB0);
+    if (i < 0) {
+      return null;
+    }
+    a localA = (a)a.m(i);
+    if (localA != null)
+    {
+      int j = b;
+      if ((j & paramInt) != 0)
+      {
+        j = paramInt & j;
+        b = j;
+        if (paramInt == 4)
+        {
+          paramB0 = c;
+        }
+        else
+        {
+          if (paramInt != 8) {
+            break label110;
+          }
+          paramB0 = d;
+        }
+        if ((j & 0xC) == 0)
+        {
+          a.k(i);
+          a.c(localA);
+        }
+        return paramB0;
+        label110:
+        throw new IllegalArgumentException("Must provide flag PRE or POST");
+      }
+    }
+    return null;
+  }
+  
+  void a(RecyclerView.b0 paramB0, RecyclerView.l.c paramC)
+  {
+    a localA2 = (a)a.get(paramB0);
+    a localA1 = localA2;
+    if (localA2 == null)
+    {
+      localA1 = a.b();
+      a.put(paramB0, localA1);
+    }
+    b |= 0x2;
+    c = paramC;
+  }
+  
+  void b(RecyclerView.b0 paramB0)
+  {
+    a localA2 = (a)a.get(paramB0);
+    a localA1 = localA2;
+    if (localA2 == null)
+    {
+      localA1 = a.b();
+      a.put(paramB0, localA1);
+    }
+    b |= 0x1;
+  }
+  
+  void c(long paramLong, RecyclerView.b0 paramB0)
+  {
+    b.m(paramLong, paramB0);
+  }
+  
+  void d(RecyclerView.b0 paramB0, RecyclerView.l.c paramC)
+  {
+    a localA2 = (a)a.get(paramB0);
+    a localA1 = localA2;
+    if (localA2 == null)
+    {
+      localA1 = a.b();
+      a.put(paramB0, localA1);
+    }
+    d = paramC;
+    b |= 0x8;
+  }
+  
+  void e(RecyclerView.b0 paramB0, RecyclerView.l.c paramC)
+  {
+    a localA2 = (a)a.get(paramB0);
+    a localA1 = localA2;
+    if (localA2 == null)
+    {
+      localA1 = a.b();
+      a.put(paramB0, localA1);
+    }
+    c = paramC;
+    b |= 0x4;
+  }
+  
+  void f()
+  {
+    a.clear();
+    b.c();
+  }
+  
+  RecyclerView.b0 g(long paramLong)
+  {
+    return (RecyclerView.b0)b.g(paramLong);
+  }
+  
+  boolean h(RecyclerView.b0 paramB0)
+  {
+    paramB0 = (a)a.get(paramB0);
+    return (paramB0 != null) && ((b & 0x1) != 0);
+  }
+  
+  boolean i(RecyclerView.b0 paramB0)
+  {
+    paramB0 = (a)a.get(paramB0);
+    return (paramB0 != null) && ((b & 0x4) != 0);
+  }
+  
+  void j() {}
+  
+  public void k(RecyclerView.b0 paramB0)
+  {
+    p(paramB0);
+  }
+  
+  RecyclerView.l.c m(RecyclerView.b0 paramB0)
+  {
+    return l(paramB0, 8);
+  }
+  
+  RecyclerView.l.c n(RecyclerView.b0 paramB0)
+  {
+    return l(paramB0, 4);
+  }
+  
+  void o(b paramB)
+  {
+    int i = a.size() - 1;
+    while (i >= 0)
+    {
+      RecyclerView.b0 localB0 = (RecyclerView.b0)a.i(i);
+      a localA = (a)a.k(i);
+      int j = b;
+      if ((j & 0x3) == 3)
+      {
+        paramB.a(localB0);
+      }
+      else if ((j & 0x1) != 0)
+      {
+        RecyclerView.l.c localC = c;
+        if (localC == null) {
+          paramB.a(localB0);
+        } else {
+          paramB.c(localB0, localC, d);
+        }
+      }
+      else if ((j & 0xE) == 14)
+      {
+        paramB.b(localB0, c, d);
+      }
+      else if ((j & 0xC) == 12)
+      {
+        paramB.d(localB0, c, d);
+      }
+      else if ((j & 0x4) != 0)
+      {
+        paramB.c(localB0, c, null);
+      }
+      else if ((j & 0x8) != 0)
+      {
+        paramB.b(localB0, c, d);
+      }
+      a.c(localA);
+      i -= 1;
+    }
+  }
+  
+  void p(RecyclerView.b0 paramB0)
+  {
+    paramB0 = (a)a.get(paramB0);
+    if (paramB0 == null) {
+      return;
+    }
+    b &= 0xFFFFFFFE;
+  }
+  
+  void q(RecyclerView.b0 paramB0)
+  {
+    int i = b.p() - 1;
+    while (i >= 0)
+    {
+      if (paramB0 == b.q(i))
+      {
+        b.o(i);
+        break;
+      }
+      i -= 1;
+    }
+    paramB0 = (a)a.remove(paramB0);
+    if (paramB0 != null) {
+      a.c(paramB0);
+    }
+  }
+  
+  static class a
+  {
+    static e<a> a = new f(20);
+    int b;
+    RecyclerView.l.c c;
+    RecyclerView.l.c d;
+    
+    private a() {}
+    
+    static void a()
+    {
+      while (a.b() != null) {}
+    }
+    
+    static a b()
+    {
+      a localA2 = (a)a.b();
+      a localA1 = localA2;
+      if (localA2 == null) {
+        localA1 = new a();
+      }
+      return localA1;
+    }
+    
+    static void c(a paramA)
+    {
+      b = 0;
+      c = null;
+      d = null;
+      a.a(paramA);
+    }
+  }
+  
+  static abstract interface b
+  {
+    public abstract void a(RecyclerView.b0 paramB0);
+    
+    public abstract void b(RecyclerView.b0 paramB0, RecyclerView.l.c paramC1, RecyclerView.l.c paramC2);
+    
+    public abstract void c(RecyclerView.b0 paramB0, RecyclerView.l.c paramC1, RecyclerView.l.c paramC2);
+    
+    public abstract void d(RecyclerView.b0 paramB0, RecyclerView.l.c paramC1, RecyclerView.l.c paramC2);
+  }
+}

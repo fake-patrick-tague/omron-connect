@@ -1,0 +1,245 @@
+package androidx.room;
+
+import android.database.Cursor;
+import c.t.a.b;
+import c.t.a.c.a;
+import java.util.Iterator;
+import java.util.List;
+
+public class j
+  extends c.a
+{
+  private a b;
+  private final a c;
+  private final String d;
+  private final String e;
+  
+  public j(a paramA, a paramA1, String paramString1, String paramString2)
+  {
+    super(a);
+    b = paramA;
+    c = paramA1;
+    d = paramString1;
+    e = paramString2;
+  }
+  
+  private void h(b paramB)
+  {
+    if (k(paramB))
+    {
+      localB = null;
+      Cursor localCursor = paramB.query(new c.t.a.a("SELECT identity_hash FROM room_master_table WHERE id = 42 LIMIT 1"));
+      paramB = localB;
+      try
+      {
+        if (localCursor.moveToFirst()) {
+          paramB = localCursor.getString(0);
+        }
+        localCursor.close();
+        if (d.equals(paramB)) {
+          break label121;
+        }
+        if (e.equals(paramB)) {
+          return;
+        }
+        throw new IllegalStateException("Room cannot verify the data integrity. Looks like you've changed schema but forgot to update the version number. You can simply fix this by increasing the version number.");
+      }
+      finally
+      {
+        localCursor.close();
+      }
+    }
+    b localB = c.g(paramB);
+    if (a)
+    {
+      c.e(paramB);
+      l(paramB);
+      label121:
+      return;
+    }
+    paramB = new StringBuilder();
+    paramB.append("Pre-packaged database has an invalid schema: ");
+    paramB.append(b);
+    throw new IllegalStateException(paramB.toString());
+  }
+  
+  private void i(b paramB)
+  {
+    paramB.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
+  }
+  
+  private static boolean j(b paramB)
+  {
+    paramB = paramB.query("SELECT count(*) FROM sqlite_master WHERE name != 'android_metadata'");
+    try
+    {
+      boolean bool3 = paramB.moveToFirst();
+      boolean bool2 = false;
+      boolean bool1 = bool2;
+      if (bool3)
+      {
+        int i = paramB.getInt(0);
+        bool1 = bool2;
+        if (i == 0) {
+          bool1 = true;
+        }
+      }
+      return bool1;
+    }
+    finally
+    {
+      paramB.close();
+    }
+  }
+  
+  private static boolean k(b paramB)
+  {
+    paramB = paramB.query("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name='room_master_table'");
+    try
+    {
+      boolean bool3 = paramB.moveToFirst();
+      boolean bool2 = false;
+      boolean bool1 = bool2;
+      if (bool3)
+      {
+        int i = paramB.getInt(0);
+        bool1 = bool2;
+        if (i != 0) {
+          bool1 = true;
+        }
+      }
+      return bool1;
+    }
+    finally
+    {
+      paramB.close();
+    }
+  }
+  
+  private void l(b paramB)
+  {
+    i(paramB);
+    paramB.execSQL(i.a(d));
+  }
+  
+  public void b(b paramB)
+  {
+    super.b(paramB);
+  }
+  
+  public void d(b paramB)
+  {
+    boolean bool = j(paramB);
+    c.a(paramB);
+    if (!bool)
+    {
+      b localB = c.g(paramB);
+      if (!a)
+      {
+        paramB = new StringBuilder();
+        paramB.append("Pre-packaged database has an invalid schema: ");
+        paramB.append(b);
+        throw new IllegalStateException(paramB.toString());
+      }
+    }
+    l(paramB);
+    c.c(paramB);
+  }
+  
+  public void e(b paramB, int paramInt1, int paramInt2)
+  {
+    g(paramB, paramInt1, paramInt2);
+  }
+  
+  public void f(b paramB)
+  {
+    super.f(paramB);
+    h(paramB);
+    c.d(paramB);
+    b = null;
+  }
+  
+  public void g(b paramB, int paramInt1, int paramInt2)
+  {
+    Object localObject = b;
+    if (localObject != null)
+    {
+      localObject = d.c(paramInt1, paramInt2);
+      if (localObject != null)
+      {
+        c.f(paramB);
+        localObject = ((List)localObject).iterator();
+        while (((Iterator)localObject).hasNext()) {
+          ((androidx.room.p.a)((Iterator)localObject).next()).a(paramB);
+        }
+        localObject = c.g(paramB);
+        if (a)
+        {
+          c.e(paramB);
+          l(paramB);
+          i = 1;
+          break label149;
+        }
+        paramB = new StringBuilder();
+        paramB.append("Migration didn't properly handle: ");
+        paramB.append(b);
+        throw new IllegalStateException(paramB.toString());
+      }
+    }
+    int i = 0;
+    label149:
+    if (i == 0)
+    {
+      localObject = b;
+      if ((localObject != null) && (!((a)localObject).a(paramInt1, paramInt2)))
+      {
+        c.b(paramB);
+        c.a(paramB);
+        return;
+      }
+      paramB = new StringBuilder();
+      paramB.append("A migration from ");
+      paramB.append(paramInt1);
+      paramB.append(" to ");
+      paramB.append(paramInt2);
+      paramB.append(" was required but not found. Please provide the necessary Migration path via RoomDatabase.Builder.addMigration(Migration ...) or allow for destructive migrations via one of the RoomDatabase.Builder.fallbackToDestructiveMigration* methods.");
+      throw new IllegalStateException(paramB.toString());
+    }
+  }
+  
+  public static abstract class a
+  {
+    public final int a;
+    
+    public a(int paramInt)
+    {
+      a = paramInt;
+    }
+    
+    protected abstract void a(b paramB);
+    
+    protected abstract void b(b paramB);
+    
+    protected abstract void c(b paramB);
+    
+    protected abstract void d(b paramB);
+    
+    protected abstract void e(b paramB);
+    
+    protected abstract void f(b paramB);
+    
+    protected abstract j.b g(b paramB);
+  }
+  
+  public static class b
+  {
+    public final boolean a;
+    public final String b;
+    
+    public b(boolean paramBoolean, String paramString)
+    {
+      a = paramBoolean;
+      b = paramString;
+    }
+  }
+}

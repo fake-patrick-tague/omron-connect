@@ -1,0 +1,29 @@
+package com.braze.support;
+
+import android.content.Context;
+import kotlin.x.d.i;
+
+public final class PackageUtils
+{
+  public static final PackageUtils INSTANCE = new PackageUtils();
+  private static String packageName;
+  
+  private PackageUtils() {}
+  
+  public static final String getResourcePackageName(Context paramContext)
+  {
+    i.e(paramContext, "context");
+    String str = packageName;
+    Object localObject = str;
+    if (str == null)
+    {
+      paramContext = paramContext.getPackageName();
+      packageName = paramContext;
+      localObject = paramContext;
+      if (paramContext == null) {
+        return "unknown.package";
+      }
+    }
+    return localObject;
+  }
+}

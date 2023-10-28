@@ -1,0 +1,263 @@
+package c.h.q;
+
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.text.style.ClickableSpan;
+import android.util.SparseArray;
+import android.view.View;
+import android.view.View.AccessibilityDelegate;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeProvider;
+import c.h.e;
+import c.h.q.p0.c;
+import c.h.q.p0.c.a;
+import c.h.q.p0.d;
+import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.List;
+
+public class f
+{
+  private static final View.AccessibilityDelegate a = new View.AccessibilityDelegate();
+  private final View.AccessibilityDelegate b;
+  private final View.AccessibilityDelegate c;
+  
+  public f()
+  {
+    this(a);
+  }
+  
+  public f(View.AccessibilityDelegate paramAccessibilityDelegate)
+  {
+    b = paramAccessibilityDelegate;
+    c = new a(this);
+  }
+  
+  static List<c.a> c(View paramView)
+  {
+    List localList = (List)paramView.getTag(e.W);
+    paramView = localList;
+    if (localList == null) {
+      paramView = Collections.emptyList();
+    }
+    return paramView;
+  }
+  
+  private boolean e(ClickableSpan paramClickableSpan, View paramView)
+  {
+    if (paramClickableSpan != null)
+    {
+      paramView = c.p(paramView.createAccessibilityNodeInfo().getText());
+      int i = 0;
+      while ((paramView != null) && (i < paramView.length))
+      {
+        if (paramClickableSpan.equals(paramView[i])) {
+          return true;
+        }
+        i += 1;
+      }
+    }
+    return false;
+  }
+  
+  private boolean k(int paramInt, View paramView)
+  {
+    Object localObject = (SparseArray)paramView.getTag(e.X);
+    if (localObject != null)
+    {
+      localObject = (WeakReference)((SparseArray)localObject).get(paramInt);
+      if (localObject != null)
+      {
+        localObject = (ClickableSpan)((WeakReference)localObject).get();
+        if (e((ClickableSpan)localObject, paramView))
+        {
+          ((ClickableSpan)localObject).onClick(paramView);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  public boolean a(View paramView, AccessibilityEvent paramAccessibilityEvent)
+  {
+    return b.dispatchPopulateAccessibilityEvent(paramView, paramAccessibilityEvent);
+  }
+  
+  public d b(View paramView)
+  {
+    if (Build.VERSION.SDK_INT >= 16)
+    {
+      paramView = b.a(b, paramView);
+      if (paramView != null) {
+        return new d(paramView);
+      }
+    }
+    return null;
+  }
+  
+  View.AccessibilityDelegate d()
+  {
+    return c;
+  }
+  
+  public void f(View paramView, AccessibilityEvent paramAccessibilityEvent)
+  {
+    b.onInitializeAccessibilityEvent(paramView, paramAccessibilityEvent);
+  }
+  
+  public void g(View paramView, c paramC)
+  {
+    b.onInitializeAccessibilityNodeInfo(paramView, paramC.x0());
+  }
+  
+  public void h(View paramView, AccessibilityEvent paramAccessibilityEvent)
+  {
+    b.onPopulateAccessibilityEvent(paramView, paramAccessibilityEvent);
+  }
+  
+  public boolean i(ViewGroup paramViewGroup, View paramView, AccessibilityEvent paramAccessibilityEvent)
+  {
+    return b.onRequestSendAccessibilityEvent(paramViewGroup, paramView, paramAccessibilityEvent);
+  }
+  
+  public boolean j(View paramView, int paramInt, Bundle paramBundle)
+  {
+    List localList = c(paramView);
+    boolean bool2 = false;
+    int i = 0;
+    for (;;)
+    {
+      bool1 = bool2;
+      if (i >= localList.size()) {
+        break;
+      }
+      c.a localA = (c.a)localList.get(i);
+      if (localA.b() == paramInt)
+      {
+        bool1 = localA.d(paramView, paramBundle);
+        break;
+      }
+      i += 1;
+    }
+    bool2 = bool1;
+    if (!bool1)
+    {
+      bool2 = bool1;
+      if (Build.VERSION.SDK_INT >= 16) {
+        bool2 = b.b(b, paramView, paramInt, paramBundle);
+      }
+    }
+    boolean bool1 = bool2;
+    if (!bool2)
+    {
+      bool1 = bool2;
+      if (paramInt == e.a)
+      {
+        bool1 = bool2;
+        if (paramBundle != null) {
+          bool1 = k(paramBundle.getInt("ACCESSIBILITY_CLICKABLE_SPAN_ID", -1), paramView);
+        }
+      }
+    }
+    return bool1;
+  }
+  
+  public void l(View paramView, int paramInt)
+  {
+    b.sendAccessibilityEvent(paramView, paramInt);
+  }
+  
+  public void m(View paramView, AccessibilityEvent paramAccessibilityEvent)
+  {
+    b.sendAccessibilityEventUnchecked(paramView, paramAccessibilityEvent);
+  }
+  
+  static final class a
+    extends View.AccessibilityDelegate
+  {
+    final f a;
+    
+    a(f paramF)
+    {
+      a = paramF;
+    }
+    
+    public boolean dispatchPopulateAccessibilityEvent(View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      return a.a(paramView, paramAccessibilityEvent);
+    }
+    
+    public AccessibilityNodeProvider getAccessibilityNodeProvider(View paramView)
+    {
+      paramView = a.b(paramView);
+      if (paramView != null) {
+        return (AccessibilityNodeProvider)paramView.e();
+      }
+      return null;
+    }
+    
+    public void onInitializeAccessibilityEvent(View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      a.f(paramView, paramAccessibilityEvent);
+    }
+    
+    public void onInitializeAccessibilityNodeInfo(View paramView, AccessibilityNodeInfo paramAccessibilityNodeInfo)
+    {
+      c localC = c.y0(paramAccessibilityNodeInfo);
+      localC.p0(f0.W(paramView));
+      localC.h0(f0.R(paramView));
+      localC.l0(f0.q(paramView));
+      localC.t0(f0.K(paramView));
+      a.g(paramView, localC);
+      localC.e(paramAccessibilityNodeInfo.getText(), paramView);
+      paramView = f.c(paramView);
+      int i = 0;
+      while (i < paramView.size())
+      {
+        localC.b((c.a)paramView.get(i));
+        i += 1;
+      }
+    }
+    
+    public void onPopulateAccessibilityEvent(View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      a.h(paramView, paramAccessibilityEvent);
+    }
+    
+    public boolean onRequestSendAccessibilityEvent(ViewGroup paramViewGroup, View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      return a.i(paramViewGroup, paramView, paramAccessibilityEvent);
+    }
+    
+    public boolean performAccessibilityAction(View paramView, int paramInt, Bundle paramBundle)
+    {
+      return a.j(paramView, paramInt, paramBundle);
+    }
+    
+    public void sendAccessibilityEvent(View paramView, int paramInt)
+    {
+      a.l(paramView, paramInt);
+    }
+    
+    public void sendAccessibilityEventUnchecked(View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      a.m(paramView, paramAccessibilityEvent);
+    }
+  }
+  
+  static class b
+  {
+    static AccessibilityNodeProvider a(View.AccessibilityDelegate paramAccessibilityDelegate, View paramView)
+    {
+      return paramAccessibilityDelegate.getAccessibilityNodeProvider(paramView);
+    }
+    
+    static boolean b(View.AccessibilityDelegate paramAccessibilityDelegate, View paramView, int paramInt, Bundle paramBundle)
+    {
+      return paramAccessibilityDelegate.performAccessibilityAction(paramView, paramInt, paramBundle);
+    }
+  }
+}

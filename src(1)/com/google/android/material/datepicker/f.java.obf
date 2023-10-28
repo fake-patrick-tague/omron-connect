@@ -1,0 +1,88 @@
+package com.google.android.material.datepicker;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build.VERSION;
+import android.widget.TextView;
+import c.h.p.h;
+import c.h.q.f0;
+import d.c.a.a.l;
+import d.c.a.a.u.c;
+import d.c.a.a.x.g;
+import d.c.a.a.x.k;
+import d.c.a.a.x.k.b;
+
+final class a
+{
+  private final Rect a;
+  private final ColorStateList b;
+  private final ColorStateList c;
+  private final ColorStateList d;
+  private final int e;
+  private final k f;
+  
+  private a(ColorStateList paramColorStateList1, ColorStateList paramColorStateList2, ColorStateList paramColorStateList3, int paramInt, k paramK, Rect paramRect)
+  {
+    h.d(left);
+    h.d(top);
+    h.d(right);
+    h.d(bottom);
+    a = paramRect;
+    b = paramColorStateList2;
+    c = paramColorStateList1;
+    d = paramColorStateList3;
+    e = paramInt;
+    f = paramK;
+  }
+  
+  static a a(Context paramContext, int paramInt)
+  {
+    boolean bool;
+    if (paramInt != 0) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    h.b(bool, "Cannot create a CalendarItemStyle with a styleResId of 0");
+    TypedArray localTypedArray = paramContext.obtainStyledAttributes(paramInt, l.D3);
+    Rect localRect = new Rect(localTypedArray.getDimensionPixelOffset(l.E3, 0), localTypedArray.getDimensionPixelOffset(l.G3, 0), localTypedArray.getDimensionPixelOffset(l.F3, 0), localTypedArray.getDimensionPixelOffset(l.H3, 0));
+    ColorStateList localColorStateList1 = c.a(paramContext, localTypedArray, l.I3);
+    ColorStateList localColorStateList2 = c.a(paramContext, localTypedArray, l.N3);
+    ColorStateList localColorStateList3 = c.a(paramContext, localTypedArray, l.L3);
+    paramInt = localTypedArray.getDimensionPixelSize(l.M3, 0);
+    paramContext = k.b(paramContext, localTypedArray.getResourceId(l.J3, 0), localTypedArray.getResourceId(l.K3, 0)).m();
+    localTypedArray.recycle();
+    return new a(localColorStateList1, localColorStateList2, localColorStateList3, paramInt, paramContext, localRect);
+  }
+  
+  int b()
+  {
+    return a.bottom;
+  }
+  
+  int c()
+  {
+    return a.top;
+  }
+  
+  void d(TextView paramTextView)
+  {
+    Object localObject1 = new g();
+    Object localObject2 = new g();
+    ((g)localObject1).setShapeAppearanceModel(f);
+    ((g)localObject2).setShapeAppearanceModel(f);
+    ((g)localObject1).X(c);
+    ((g)localObject1).e0(e, d);
+    paramTextView.setTextColor(b);
+    if (Build.VERSION.SDK_INT >= 21) {
+      localObject1 = new RippleDrawable(b.withAlpha(30), (Drawable)localObject1, (Drawable)localObject2);
+    }
+    localObject2 = a;
+    f0.t0(paramTextView, new InsetDrawable((Drawable)localObject1, left, top, right, bottom));
+  }
+}

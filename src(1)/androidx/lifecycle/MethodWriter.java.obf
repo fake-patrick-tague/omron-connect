@@ -1,0 +1,138 @@
+package androidx.lifecycle;
+
+import android.os.Bundle;
+import androidx.lifecycle.n0.a;
+import androidx.lifecycle.n0.a.b;
+import androidx.savedstate.c.c;
+import androidx.savedstate.e;
+import java.util.Map;
+import kotlin.x.c.l;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+import kotlin.x.d.t;
+
+public final class y
+{
+  public static final a.b<e> a = new b();
+  public static final a.b<j0> b = new c();
+  public static final a.b<Bundle> c = new a();
+  
+  public static final x a(a paramA)
+  {
+    i.e(paramA, "<this>");
+    e localE = (e)paramA.a(a);
+    if (localE != null)
+    {
+      j0 localJ0 = (j0)paramA.a(b);
+      if (localJ0 != null)
+      {
+        Bundle localBundle = (Bundle)paramA.a(c);
+        paramA = (String)paramA.a(f0.c.d);
+        if (paramA != null) {
+          return b(localE, localJ0, paramA, localBundle);
+        }
+        throw new IllegalArgumentException("CreationExtras must have a value by `VIEW_MODEL_KEY`");
+      }
+      throw new IllegalArgumentException("CreationExtras must have a value by `VIEW_MODEL_STORE_OWNER_KEY`");
+    }
+    throw new IllegalArgumentException("CreationExtras must have a value by `SAVED_STATE_REGISTRY_OWNER_KEY`");
+  }
+  
+  private static final x b(e paramE, j0 paramJ0, String paramString, Bundle paramBundle)
+  {
+    z localZ = d(paramE);
+    a0 localA0 = e(paramJ0);
+    paramJ0 = (x)localA0.a().get(paramString);
+    paramE = paramJ0;
+    if (paramJ0 == null)
+    {
+      paramE = x.a.a(localZ.b(paramString), paramBundle);
+      localA0.a().put(paramString, paramE);
+    }
+    return paramE;
+  }
+  
+  public static final <T extends e,  extends j0> void c(T paramT)
+  {
+    i.e(paramT, "<this>");
+    Object localObject = paramT.getLifecycle().b();
+    i.d(localObject, "lifecycle.currentState");
+    int i;
+    if ((localObject != Lifecycle.State.c) && (localObject != Lifecycle.State.d)) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if (i != 0)
+    {
+      if (paramT.getSavedStateRegistry().b("androidx.lifecycle.internal.SavedStateHandlesProvider") == null)
+      {
+        localObject = new z(paramT.getSavedStateRegistry(), (j0)paramT);
+        paramT.getSavedStateRegistry().h("androidx.lifecycle.internal.SavedStateHandlesProvider", (c.c)localObject);
+        paramT.getLifecycle().a(new SavedStateHandleAttacher((z)localObject));
+      }
+      return;
+    }
+    throw new IllegalArgumentException("Failed requirement.".toString());
+  }
+  
+  public static final z d(e paramE)
+  {
+    i.e(paramE, "<this>");
+    paramE = paramE.getSavedStateRegistry().b("androidx.lifecycle.internal.SavedStateHandlesProvider");
+    if ((paramE instanceof z)) {
+      paramE = (z)paramE;
+    } else {
+      paramE = null;
+    }
+    if (paramE != null) {
+      return paramE;
+    }
+    throw new IllegalStateException("enableSavedStateHandles() wasn't called prior to createSavedStateHandle() call");
+  }
+  
+  public static final a0 e(j0 paramJ0)
+  {
+    i.e(paramJ0, "<this>");
+    androidx.lifecycle.n0.c localC = new androidx.lifecycle.n0.c();
+    d localD = d.b;
+    localC.a(t.a(a0.class), localD);
+    return (a0)new f0(paramJ0, localC.b()).b("androidx.lifecycle.internal.SavedStateHandlesVM", a0.class);
+  }
+  
+  public static final class a
+    implements a.b<Bundle>
+  {
+    a() {}
+  }
+  
+  public static final class b
+    implements a.b<e>
+  {
+    b() {}
+  }
+  
+  public static final class c
+    implements a.b<j0>
+  {
+    c() {}
+  }
+  
+  static final class d
+    extends j
+    implements l<a, a0>
+  {
+    public static final d b = new d();
+    
+    d()
+    {
+      super();
+    }
+    
+    public final a0 c(a paramA)
+    {
+      i.e(paramA, "$this$initializer");
+      return new a0();
+    }
+  }
+}

@@ -1,0 +1,321 @@
+package com.google.android.gms.internal.measurement;
+
+import java.io.IOException;
+import java.util.Objects;
+
+final class zzji
+  extends zzjl
+{
+  private final byte[] zzb;
+  private final int zzc;
+  private int zzd;
+  
+  zzji(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+  {
+    super(null);
+    Objects.requireNonNull(paramArrayOfByte, "buffer");
+    paramInt1 = paramArrayOfByte.length;
+    if ((paramInt1 - paramInt2 | paramInt2) >= 0)
+    {
+      zzb = paramArrayOfByte;
+      zzd = 0;
+      zzc = paramInt2;
+      return;
+    }
+    throw new IllegalArgumentException(String.format("Array range is invalid. Buffer.length=%d, offset=%d, length=%d", new Object[] { Integer.valueOf(paramInt1), Integer.valueOf(0), Integer.valueOf(paramInt2) }));
+  }
+  
+  public final int zza()
+  {
+    return zzc - zzd;
+  }
+  
+  public final void zzb(byte paramByte)
+    throws IOException
+  {
+    try
+    {
+      byte[] arrayOfByte = zzb;
+      int i = zzd;
+      zzd = (i + 1);
+      arrayOfByte[i] = paramByte;
+      return;
+    }
+    catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+    {
+      throw new zzjj(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(zzd), Integer.valueOf(zzc), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+    }
+  }
+  
+  public final void zzc(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+    throws IOException
+  {
+    try
+    {
+      System.arraycopy(paramArrayOfByte, 0, zzb, zzd, paramInt2);
+      zzd += paramInt2;
+      return;
+    }
+    catch (IndexOutOfBoundsException paramArrayOfByte)
+    {
+      throw new zzjj(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(zzd), Integer.valueOf(zzc), Integer.valueOf(paramInt2) }), paramArrayOfByte);
+    }
+  }
+  
+  public final void zzd(int paramInt, boolean paramBoolean)
+    throws IOException
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  public final void zze(int paramInt, zzjd paramZzjd)
+    throws IOException
+  {
+    zzq(paramInt << 3 | 0x2);
+    zzq(paramZzjd.zzd());
+    paramZzjd.zzh(this);
+  }
+  
+  public final void zzf(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzq(paramInt1 << 3 | 0x5);
+    zzg(paramInt2);
+  }
+  
+  public final void zzg(int paramInt)
+    throws IOException
+  {
+    try
+    {
+      byte[] arrayOfByte = zzb;
+      int j = zzd;
+      int i = j + 1;
+      zzd = i;
+      arrayOfByte[j] = ((byte)(paramInt & 0xFF));
+      j = i + 1;
+      zzd = j;
+      arrayOfByte[i] = ((byte)(paramInt >> 8 & 0xFF));
+      i = j + 1;
+      zzd = i;
+      arrayOfByte[j] = ((byte)(paramInt >> 16 & 0xFF));
+      zzd = (i + 1);
+      arrayOfByte[i] = ((byte)(paramInt >> 24 & 0xFF));
+      return;
+    }
+    catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+    {
+      throw new zzjj(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(zzd), Integer.valueOf(zzc), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+    }
+  }
+  
+  public final void zzh(int paramInt, long paramLong)
+    throws IOException
+  {
+    zzq(paramInt << 3 | 0x1);
+    zzi(paramLong);
+  }
+  
+  public final void zzi(long paramLong)
+    throws IOException
+  {
+    try
+    {
+      byte[] arrayOfByte = zzb;
+      int j = zzd;
+      int i = j + 1;
+      zzd = i;
+      arrayOfByte[j] = ((byte)((int)paramLong & 0xFF));
+      j = i + 1;
+      zzd = j;
+      arrayOfByte[i] = ((byte)((int)(paramLong >> 8) & 0xFF));
+      i = j + 1;
+      zzd = i;
+      arrayOfByte[j] = ((byte)((int)(paramLong >> 16) & 0xFF));
+      j = i + 1;
+      zzd = j;
+      arrayOfByte[i] = ((byte)((int)(paramLong >> 24) & 0xFF));
+      i = j + 1;
+      zzd = i;
+      arrayOfByte[j] = ((byte)((int)(paramLong >> 32) & 0xFF));
+      j = i + 1;
+      zzd = j;
+      arrayOfByte[i] = ((byte)((int)(paramLong >> 40) & 0xFF));
+      i = j + 1;
+      zzd = i;
+      arrayOfByte[j] = ((byte)((int)(paramLong >> 48) & 0xFF));
+      zzd = (i + 1);
+      arrayOfByte[i] = ((byte)((int)(paramLong >> 56) & 0xFF));
+      return;
+    }
+    catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+    {
+      throw new zzjj(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(zzd), Integer.valueOf(zzc), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+    }
+  }
+  
+  public final void zzj(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzq(paramInt1 << 3);
+    zzk(paramInt2);
+  }
+  
+  public final void zzk(int paramInt)
+    throws IOException
+  {
+    if (paramInt >= 0)
+    {
+      zzq(paramInt);
+      return;
+    }
+    zzs(paramInt);
+  }
+  
+  public final void zzl(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzc(paramArrayOfByte, 0, paramInt2);
+  }
+  
+  public final void zzm(int paramInt, String paramString)
+    throws IOException
+  {
+    zzq(paramInt << 3 | 0x2);
+    zzn(paramString);
+  }
+  
+  public final void zzn(String paramString)
+    throws IOException
+  {
+    int i = zzd;
+    try
+    {
+      int k = zzjl.zzA(paramString.length() * 3);
+      int j = zzjl.zzA(paramString.length());
+      if (j == k)
+      {
+        k = i + j;
+        zzd = k;
+        k = zznc.zzb(paramString, zzb, k, zzc - k);
+        zzd = i;
+        zzq(k - i - j);
+        zzd = k;
+        return;
+      }
+      zzq(zznc.zzc(paramString));
+      byte[] arrayOfByte = zzb;
+      j = zzd;
+      zzd = zznc.zzb(paramString, arrayOfByte, j, zzc - j);
+      return;
+    }
+    catch (IndexOutOfBoundsException paramString)
+    {
+      throw new zzjj(paramString);
+    }
+    catch (zznb localZznb)
+    {
+      zzd = i;
+      zzE(paramString, localZznb);
+    }
+  }
+  
+  public final void zzo(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzq(paramInt1 << 3 | paramInt2);
+  }
+  
+  public final void zzp(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzq(paramInt1 << 3);
+    zzq(paramInt2);
+  }
+  
+  public final void zzq(int paramInt)
+    throws IOException
+  {
+    for (;;)
+    {
+      if ((paramInt & 0xFFFFFF80) == 0) {}
+      try
+      {
+        arrayOfByte = zzb;
+        i = zzd;
+        zzd = (i + 1);
+        arrayOfByte[i] = ((byte)paramInt);
+        return;
+      }
+      catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+      {
+        byte[] arrayOfByte;
+        int i;
+        throw new zzjj(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(zzd), Integer.valueOf(zzc), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+      }
+      arrayOfByte = zzb;
+      i = zzd;
+      zzd = (i + 1);
+      arrayOfByte[i] = ((byte)(paramInt & 0x7F | 0x80));
+      paramInt >>>= 7;
+    }
+  }
+  
+  public final void zzr(int paramInt, long paramLong)
+    throws IOException
+  {
+    zzq(paramInt << 3);
+    zzs(paramLong);
+  }
+  
+  public final void zzs(long paramLong)
+    throws IOException
+  {
+    long l = paramLong;
+    byte[] arrayOfByte;
+    int i;
+    if (zzjl.zzF())
+    {
+      l = paramLong;
+      if (zzc - zzd >= 10) {
+        for (;;)
+        {
+          if ((paramLong & 0xFFFFFFFFFFFFFF80) == 0L)
+          {
+            arrayOfByte = zzb;
+            i = zzd;
+            zzd = (i + 1);
+            zzmx.zzn(arrayOfByte, i, (byte)(int)paramLong);
+            return;
+          }
+          arrayOfByte = zzb;
+          i = zzd;
+          zzd = (i + 1);
+          zzmx.zzn(arrayOfByte, i, (byte)((int)paramLong & 0x7F | 0x80));
+          paramLong >>>= 7;
+        }
+      }
+    }
+    for (;;)
+    {
+      if ((l & 0xFFFFFFFFFFFFFF80) == 0L) {}
+      try
+      {
+        arrayOfByte = zzb;
+        i = zzd;
+        zzd = (i + 1);
+        arrayOfByte[i] = ((byte)(int)l);
+        return;
+      }
+      catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+      {
+        throw new zzjj(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(zzd), Integer.valueOf(zzc), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+      }
+      arrayOfByte = zzb;
+      i = zzd;
+      zzd = (i + 1);
+      arrayOfByte[i] = ((byte)((int)l & 0x7F | 0x80));
+      l >>>= 7;
+    }
+  }
+}

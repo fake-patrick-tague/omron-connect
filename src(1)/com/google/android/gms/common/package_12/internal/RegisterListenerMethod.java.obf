@@ -1,0 +1,69 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.RemoteException;
+import com.google.android.gms.common.Feature;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Api.AnyClient;
+import com.google.android.gms.tasks.TaskCompletionSource;
+
+@KeepForSdk
+public abstract class RegisterListenerMethod<A extends Api.AnyClient, L>
+{
+  private final ListenerHolder<L> zaa;
+  private final Feature[] zab;
+  private final boolean zac;
+  private final int zad;
+  
+  @KeepForSdk
+  protected RegisterListenerMethod(ListenerHolder<L> paramListenerHolder)
+  {
+    this(paramListenerHolder, null, false, 0);
+  }
+  
+  @KeepForSdk
+  protected RegisterListenerMethod(ListenerHolder<L> paramListenerHolder, Feature[] paramArrayOfFeature, boolean paramBoolean)
+  {
+    this(paramListenerHolder, paramArrayOfFeature, paramBoolean, 0);
+  }
+  
+  @KeepForSdk
+  protected RegisterListenerMethod(ListenerHolder<L> paramListenerHolder, Feature[] paramArrayOfFeature, boolean paramBoolean, int paramInt)
+  {
+    zaa = paramListenerHolder;
+    zab = paramArrayOfFeature;
+    zac = paramBoolean;
+    zad = paramInt;
+  }
+  
+  @KeepForSdk
+  public void clearListener()
+  {
+    zaa.clear();
+  }
+  
+  @KeepForSdk
+  public ListenerHolder.ListenerKey<L> getListenerKey()
+  {
+    return zaa.getListenerKey();
+  }
+  
+  @KeepForSdk
+  public Feature[] getRequiredFeatures()
+  {
+    return zab;
+  }
+  
+  @KeepForSdk
+  protected abstract void registerListener(A paramA, TaskCompletionSource<Void> paramTaskCompletionSource)
+    throws RemoteException;
+  
+  public final int zaa()
+  {
+    return zad;
+  }
+  
+  public final boolean zab()
+  {
+    return zac;
+  }
+}

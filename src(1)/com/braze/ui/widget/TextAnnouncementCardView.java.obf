@@ -1,0 +1,51 @@
+package com.braze.ui.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import com.braze.models.cards.TextAnnouncementCard;
+import com.braze.support.BrazeLogger;
+import com.braze.ui.R.drawable;
+import com.braze.ui.R.id;
+import com.braze.ui.R.layout;
+import com.braze.ui.actions.IAction;
+import com.braze.ui.feed.view.BaseFeedCardView;
+
+public class TextAnnouncementCardView
+  extends BaseFeedCardView<TextAnnouncementCard>
+{
+  private static final String TAG = BrazeLogger.getBrazeLogTag(TextAnnouncementCardView.class);
+  private IAction mCardAction;
+  private final TextView mDescription = (TextView)findViewById(R.id.com_braze_text_announcement_card_description);
+  private final TextView mDomain = (TextView)findViewById(R.id.com_braze_text_announcement_card_domain);
+  private final TextView mTitle = (TextView)findViewById(R.id.com_braze_text_announcement_card_title);
+  
+  public TextAnnouncementCardView(Context paramContext)
+  {
+    this(paramContext, null);
+  }
+  
+  public TextAnnouncementCardView(Context paramContext, TextAnnouncementCard paramTextAnnouncementCard)
+  {
+    super(paramContext);
+    if (paramTextAnnouncementCard != null) {
+      setCard(paramTextAnnouncementCard);
+    }
+    setBackground(getResources().getDrawable(R.drawable.com_braze_card_background));
+  }
+  
+  protected int getLayoutResource()
+  {
+    return R.layout.com_braze_text_announcement_card;
+  }
+  
+  public void onSetCard(TextAnnouncementCard paramTextAnnouncementCard)
+  {
+    mTitle.setText(paramTextAnnouncementCard.getTitle());
+    mDescription.setText(paramTextAnnouncementCard.getDescription());
+    setOptionalTextView(mDomain, paramTextAnnouncementCard.getDomain());
+    mCardAction = BaseCardView.getUriActionForCard(paramTextAnnouncementCard);
+    setOnClickListener(new d(this, paramTextAnnouncementCard));
+  }
+}

@@ -1,0 +1,111 @@
+package androidx.work.impl;
+
+import android.content.Context;
+import android.os.Build.VERSION;
+import androidx.room.RoomDatabase;
+import androidx.work.a;
+import androidx.work.impl.background.systemalarm.SystemAlarmService;
+import androidx.work.impl.background.systemjob.SystemJobService;
+import androidx.work.impl.background.systemjob.b;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.q;
+import androidx.work.impl.utils.d;
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
+import java.util.List;
+
+public class f
+{
+  private static final String a = androidx.work.j.f("Schedulers");
+  
+  static e a(Context paramContext, j paramJ)
+  {
+    if (Build.VERSION.SDK_INT >= 23)
+    {
+      paramJ = new b(paramContext, paramJ);
+      d.a(paramContext, SystemJobService.class, true);
+      androidx.work.j.c().a(a, "Created SystemJobScheduler and enabled SystemJobService", new Throwable[0]);
+      return paramJ;
+    }
+    e localE = c(paramContext);
+    paramJ = localE;
+    if (localE == null)
+    {
+      paramJ = new androidx.work.impl.background.systemalarm.f(paramContext);
+      d.a(paramContext, SystemAlarmService.class, true);
+      androidx.work.j.c().a(a, "Created SystemAlarmScheduler", new Throwable[0]);
+    }
+    return paramJ;
+  }
+  
+  public static void b(a paramA, WorkDatabase paramWorkDatabase, List<e> paramList)
+  {
+    if (paramList != null)
+    {
+      if (paramList.size() == 0) {
+        return;
+      }
+      Object localObject1 = paramWorkDatabase.B();
+      paramWorkDatabase.c();
+      try
+      {
+        Object localObject2 = ((q)localObject1).f(paramA.h());
+        paramA = ((q)localObject1).u(200);
+        if ((localObject2 != null) && (((List)localObject2).size() > 0))
+        {
+          long l = System.currentTimeMillis();
+          Iterator localIterator = ((List)localObject2).iterator();
+          while (localIterator.hasNext()) {
+            ((q)localObject1).c(nextc, l);
+          }
+        }
+        paramWorkDatabase.r();
+        paramWorkDatabase.g();
+        if ((localObject2 != null) && (((List)localObject2).size() > 0))
+        {
+          paramWorkDatabase = (p[])((List)localObject2).toArray(new p[((List)localObject2).size()]);
+          localObject1 = paramList.iterator();
+          while (((Iterator)localObject1).hasNext())
+          {
+            localObject2 = (e)((Iterator)localObject1).next();
+            if (((e)localObject2).c()) {
+              ((e)localObject2).a(paramWorkDatabase);
+            }
+          }
+        }
+        if ((paramA != null) && (paramA.size() > 0))
+        {
+          paramA = (p[])paramA.toArray(new p[paramA.size()]);
+          paramWorkDatabase = paramList.iterator();
+          while (paramWorkDatabase.hasNext())
+          {
+            paramList = (e)paramWorkDatabase.next();
+            if (!paramList.c()) {
+              paramList.a(paramA);
+            }
+          }
+        }
+        return;
+      }
+      finally
+      {
+        paramWorkDatabase.g();
+      }
+    }
+  }
+  
+  private static e c(Context paramContext)
+  {
+    try
+    {
+      paramContext = (e)Class.forName("androidx.work.impl.background.gcm.GcmScheduler").getConstructor(new Class[] { Context.class }).newInstance(new Object[] { paramContext });
+      androidx.work.j.c().a(a, String.format("Created %s", new Object[] { "androidx.work.impl.background.gcm.GcmScheduler" }), new Throwable[0]);
+      return paramContext;
+    }
+    finally
+    {
+      androidx.work.j.c().a(a, "Unable to create GCM Scheduler", new Throwable[] { paramContext });
+    }
+    return null;
+  }
+}

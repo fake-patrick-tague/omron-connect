@@ -1,0 +1,86 @@
+package androidx.savedstate;
+
+import android.os.Bundle;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.m;
+import kotlin.x.d.i;
+
+public final class d
+{
+  public static final a a = new a(null);
+  private final e b;
+  private final c c;
+  private boolean d;
+  
+  private d(e paramE)
+  {
+    b = paramE;
+    c = new c();
+  }
+  
+  public static final d a(e paramE)
+  {
+    return a.a(paramE);
+  }
+  
+  public final c b()
+  {
+    return c;
+  }
+  
+  public final void c()
+  {
+    Lifecycle localLifecycle = b.getLifecycle();
+    i.d(localLifecycle, "owner.lifecycle");
+    int i;
+    if (localLifecycle.b() == Lifecycle.State.c) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (i != 0)
+    {
+      localLifecycle.a(new Recreator(b));
+      c.e(localLifecycle);
+      d = true;
+      return;
+    }
+    throw new IllegalStateException("Restarter must be created only during owner's initialization stage".toString());
+  }
+  
+  public final void d(Bundle paramBundle)
+  {
+    if (!d) {
+      c();
+    }
+    Lifecycle localLifecycle = b.getLifecycle();
+    i.d(localLifecycle, "owner.lifecycle");
+    if ((localLifecycle.b().a(Lifecycle.State.e) ^ true))
+    {
+      c.f(paramBundle);
+      return;
+    }
+    paramBundle = new StringBuilder();
+    paramBundle.append("performRestore cannot be called when owner is ");
+    paramBundle.append(localLifecycle.b());
+    throw new IllegalStateException(paramBundle.toString().toString());
+  }
+  
+  public final void e(Bundle paramBundle)
+  {
+    i.e(paramBundle, "outBundle");
+    c.g(paramBundle);
+  }
+  
+  public static final class a
+  {
+    private a() {}
+    
+    public final d a(e paramE)
+    {
+      i.e(paramE, "owner");
+      return new d(paramE, null);
+    }
+  }
+}

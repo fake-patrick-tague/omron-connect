@@ -1,0 +1,95 @@
+package androidx.appcompat.widget;
+
+import android.graphics.Rect;
+import android.os.Build.VERSION;
+import android.util.Log;
+import android.view.View;
+import c.h.q.f0;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+public class t0
+{
+  private static Method a;
+  static final boolean b;
+  
+  static
+  {
+    int i = Build.VERSION.SDK_INT;
+    boolean bool;
+    if (i >= 27) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    b = bool;
+    if (i >= 18) {}
+    try
+    {
+      Method localMethod = View.class.getDeclaredMethod("computeFitSystemWindows", new Class[] { Rect.class, Rect.class });
+      a = localMethod;
+      if (localMethod.isAccessible()) {
+        break label76;
+      }
+      a.setAccessible(true);
+      return;
+    }
+    catch (NoSuchMethodException localNoSuchMethodException)
+    {
+      label76:
+      for (;;) {}
+    }
+    Log.d("ViewUtils", "Could not find method computeFitSystemWindows. Oh well.");
+  }
+  
+  public static void a(View paramView, Rect paramRect1, Rect paramRect2)
+  {
+    Method localMethod = a;
+    if (localMethod != null) {
+      try
+      {
+        localMethod.invoke(paramView, new Object[] { paramRect1, paramRect2 });
+        return;
+      }
+      catch (Exception paramView)
+      {
+        Log.d("ViewUtils", "Could not invoke computeFitSystemWindows", paramView);
+      }
+    }
+  }
+  
+  public static boolean b(View paramView)
+  {
+    return f0.D(paramView) == 1;
+  }
+  
+  public static void c(View paramView)
+  {
+    if (Build.VERSION.SDK_INT >= 16) {}
+    try
+    {
+      Method localMethod = paramView.getClass().getMethod("makeOptionalFitsSystemWindows", new Class[0]);
+      if (!localMethod.isAccessible()) {
+        localMethod.setAccessible(true);
+      }
+      localMethod.invoke(paramView, new Object[0]);
+      return;
+    }
+    catch (IllegalAccessException paramView)
+    {
+      Log.d("ViewUtils", "Could not invoke makeOptionalFitsSystemWindows", paramView);
+      return;
+    }
+    catch (InvocationTargetException paramView)
+    {
+      Log.d("ViewUtils", "Could not invoke makeOptionalFitsSystemWindows", paramView);
+      return;
+      Log.d("ViewUtils", "Could not find method makeOptionalFitsSystemWindows. Oh well...");
+      return;
+    }
+    catch (NoSuchMethodException paramView)
+    {
+      for (;;) {}
+    }
+  }
+}

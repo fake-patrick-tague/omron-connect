@@ -1,0 +1,209 @@
+package com.google.android.gms.dynamic;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import java.util.LinkedList;
+
+@KeepForSdk
+public abstract class DeferredLifecycleHelper<T extends LifecycleDelegate>
+{
+  private T zaa;
+  private Bundle zab;
+  private LinkedList<zah> zac;
+  private final OnDelegateCreatedListener<T> zad = new zaa(this);
+  
+  @KeepForSdk
+  public DeferredLifecycleHelper() {}
+  
+  @KeepForSdk
+  public static void showGooglePlayUnavailableMessage(FrameLayout paramFrameLayout)
+  {
+    Object localObject = GoogleApiAvailability.getInstance();
+    Context localContext = paramFrameLayout.getContext();
+    int i = ((GoogleApiAvailability)localObject).isGooglePlayServicesAvailable(localContext);
+    String str2 = com.google.android.gms.common.internal.zac.zad(localContext, i);
+    String str1 = com.google.android.gms.common.internal.zac.zac(localContext, i);
+    LinearLayout localLinearLayout = new LinearLayout(paramFrameLayout.getContext());
+    localLinearLayout.setOrientation(1);
+    localLinearLayout.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
+    paramFrameLayout.addView(localLinearLayout);
+    paramFrameLayout = new TextView(paramFrameLayout.getContext());
+    paramFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
+    paramFrameLayout.setText(str2);
+    localLinearLayout.addView(paramFrameLayout);
+    paramFrameLayout = ((GoogleApiAvailability)localObject).getErrorResolutionIntent(localContext, i, null);
+    if (paramFrameLayout != null)
+    {
+      localObject = new Button(localContext);
+      ((Button)localObject).setId(16908313);
+      ((Button)localObject).setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
+      ((Button)localObject).setText(str1);
+      localLinearLayout.addView((View)localObject);
+      ((Button)localObject).setOnClickListener(new zae(localContext, paramFrameLayout));
+    }
+  }
+  
+  private final void zae(int paramInt)
+  {
+    while ((!zac.isEmpty()) && (((zah)zac.getLast()).zaa() >= paramInt)) {
+      zac.removeLast();
+    }
+  }
+  
+  private final void zaf(Bundle paramBundle, zah paramZah)
+  {
+    LifecycleDelegate localLifecycleDelegate = zaa;
+    if (localLifecycleDelegate != null)
+    {
+      paramZah.zab(localLifecycleDelegate);
+      return;
+    }
+    if (zac == null) {
+      zac = new LinkedList();
+    }
+    zac.add(paramZah);
+    if (paramBundle != null)
+    {
+      paramZah = zab;
+      if (paramZah == null) {
+        zab = ((Bundle)paramBundle.clone());
+      } else {
+        paramZah.putAll(paramBundle);
+      }
+    }
+    createDelegate(zad);
+  }
+  
+  @KeepForSdk
+  protected abstract void createDelegate(OnDelegateCreatedListener<T> paramOnDelegateCreatedListener);
+  
+  @KeepForSdk
+  public T getDelegate()
+  {
+    return zaa;
+  }
+  
+  @KeepForSdk
+  protected void handleGooglePlayUnavailable(FrameLayout paramFrameLayout)
+  {
+    showGooglePlayUnavailableMessage(paramFrameLayout);
+  }
+  
+  @KeepForSdk
+  public void onCreate(Bundle paramBundle)
+  {
+    zaf(paramBundle, new zac(this, paramBundle));
+  }
+  
+  @KeepForSdk
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    FrameLayout localFrameLayout = new FrameLayout(paramLayoutInflater.getContext());
+    zaf(paramBundle, new zad(this, localFrameLayout, paramLayoutInflater, paramViewGroup, paramBundle));
+    if (zaa == null) {
+      handleGooglePlayUnavailable(localFrameLayout);
+    }
+    return localFrameLayout;
+  }
+  
+  @KeepForSdk
+  public void onDestroy()
+  {
+    LifecycleDelegate localLifecycleDelegate = zaa;
+    if (localLifecycleDelegate != null)
+    {
+      localLifecycleDelegate.onDestroy();
+      return;
+    }
+    zae(1);
+  }
+  
+  @KeepForSdk
+  public void onDestroyView()
+  {
+    LifecycleDelegate localLifecycleDelegate = zaa;
+    if (localLifecycleDelegate != null)
+    {
+      localLifecycleDelegate.onDestroyView();
+      return;
+    }
+    zae(2);
+  }
+  
+  @KeepForSdk
+  public void onInflate(Activity paramActivity, Bundle paramBundle1, Bundle paramBundle2)
+  {
+    zaf(paramBundle2, new zab(this, paramActivity, paramBundle1, paramBundle2));
+  }
+  
+  @KeepForSdk
+  public void onLowMemory()
+  {
+    LifecycleDelegate localLifecycleDelegate = zaa;
+    if (localLifecycleDelegate != null) {
+      localLifecycleDelegate.onLowMemory();
+    }
+  }
+  
+  @KeepForSdk
+  public void onPause()
+  {
+    LifecycleDelegate localLifecycleDelegate = zaa;
+    if (localLifecycleDelegate != null)
+    {
+      localLifecycleDelegate.onPause();
+      return;
+    }
+    zae(5);
+  }
+  
+  @KeepForSdk
+  public void onResume()
+  {
+    zaf(null, new zag(this));
+  }
+  
+  @KeepForSdk
+  public void onSaveInstanceState(Bundle paramBundle)
+  {
+    Object localObject = zaa;
+    if (localObject != null)
+    {
+      ((LifecycleDelegate)localObject).onSaveInstanceState(paramBundle);
+      return;
+    }
+    localObject = zab;
+    if (localObject != null) {
+      paramBundle.putAll((Bundle)localObject);
+    }
+  }
+  
+  @KeepForSdk
+  public void onStart()
+  {
+    zaf(null, new zaf(this));
+  }
+  
+  @KeepForSdk
+  public void onStop()
+  {
+    LifecycleDelegate localLifecycleDelegate = zaa;
+    if (localLifecycleDelegate != null)
+    {
+      localLifecycleDelegate.onStop();
+      return;
+    }
+    zae(4);
+  }
+}

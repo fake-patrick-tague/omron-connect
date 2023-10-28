@@ -1,0 +1,146 @@
+package com.google.android.gms.common.api.internal;
+
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.Application;
+import android.app.Application.ActivityLifecycleCallbacks;
+import android.content.ComponentCallbacks2;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.util.PlatformVersion;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+@KeepForSdk
+public final class BackgroundDetector
+  implements Application.ActivityLifecycleCallbacks, ComponentCallbacks2
+{
+  private static final BackgroundDetector zza = new BackgroundDetector();
+  private final AtomicBoolean zzb = new AtomicBoolean();
+  private final AtomicBoolean zzc = new AtomicBoolean();
+  private final ArrayList zzd = new ArrayList();
+  private boolean zze = false;
+  
+  @KeepForSdk
+  private BackgroundDetector() {}
+  
+  @KeepForSdk
+  public static BackgroundDetector getInstance()
+  {
+    return zza;
+  }
+  
+  @KeepForSdk
+  public static void initialize(Application paramApplication)
+  {
+    synchronized (zza)
+    {
+      if (!zze)
+      {
+        paramApplication.registerActivityLifecycleCallbacks(???);
+        paramApplication.registerComponentCallbacks(???);
+        zze = true;
+      }
+      return;
+    }
+  }
+  
+  private final void zza(boolean paramBoolean)
+  {
+    synchronized (zza)
+    {
+      Iterator localIterator = zzd.iterator();
+      while (localIterator.hasNext()) {
+        ((BackgroundStateChangeListener)localIterator.next()).onBackgroundStateChanged(paramBoolean);
+      }
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public void addListener(BackgroundStateChangeListener paramBackgroundStateChangeListener)
+  {
+    synchronized (zza)
+    {
+      zzd.add(paramBackgroundStateChangeListener);
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public boolean isInBackground()
+  {
+    return zzb.get();
+  }
+  
+  public final void onActivityCreated(Activity paramActivity, Bundle paramBundle)
+  {
+    boolean bool = zzb.compareAndSet(true, false);
+    zzc.set(true);
+    if (bool) {
+      zza(false);
+    }
+  }
+  
+  public final void onActivityDestroyed(Activity paramActivity) {}
+  
+  public final void onActivityPaused(Activity paramActivity) {}
+  
+  public final void onActivityResumed(Activity paramActivity)
+  {
+    boolean bool = zzb.compareAndSet(true, false);
+    zzc.set(true);
+    if (bool) {
+      zza(false);
+    }
+  }
+  
+  public final void onActivitySaveInstanceState(Activity paramActivity, Bundle paramBundle) {}
+  
+  public final void onActivityStarted(Activity paramActivity) {}
+  
+  public final void onActivityStopped(Activity paramActivity) {}
+  
+  public final void onConfigurationChanged(Configuration paramConfiguration) {}
+  
+  public final void onLowMemory() {}
+  
+  public final void onTrimMemory(int paramInt)
+  {
+    if ((paramInt == 20) && (zzb.compareAndSet(false, true)))
+    {
+      zzc.set(true);
+      zza(true);
+    }
+  }
+  
+  @KeepForSdk
+  public boolean readCurrentStateIfPossible(boolean paramBoolean)
+  {
+    if (!zzc.get()) {
+      if (PlatformVersion.isAtLeastJellyBean())
+      {
+        ActivityManager.RunningAppProcessInfo localRunningAppProcessInfo = new ActivityManager.RunningAppProcessInfo();
+        ActivityManager.getMyMemoryState(localRunningAppProcessInfo);
+        if ((!zzc.getAndSet(true)) && (importance > 100)) {
+          zzb.set(true);
+        }
+      }
+      else
+      {
+        return paramBoolean;
+      }
+    }
+    return isInBackground();
+  }
+  
+  @KeepForSdk
+  public static abstract interface BackgroundStateChangeListener
+  {
+    @KeepForSdk
+    public abstract void onBackgroundStateChanged(boolean paramBoolean);
+  }
+}

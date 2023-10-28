@@ -1,0 +1,516 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.RemoteException;
+import android.util.Log;
+import android.util.Pair;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.annotation.KeepName;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.PendingResult.StatusListener;
+import com.google.android.gms.common.api.Releasable;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.ResultTransform;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.api.TransformedResult;
+import com.google.android.gms.common.internal.ICancelToken;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+@KeepForSdk
+@KeepName
+public abstract class BasePendingResult<R extends Result>
+  extends PendingResult<R>
+{
+  static final ThreadLocal<Boolean> zaa = new zaq();
+  @KeepName
+  private zas mResultGuardian;
+  protected final CallbackHandler<R> zab;
+  protected final WeakReference<GoogleApiClient> zac;
+  private final Object zae = new Object();
+  private final CountDownLatch zaf = new CountDownLatch(1);
+  private final ArrayList<PendingResult.StatusListener> zag = new ArrayList();
+  private ResultCallback<? super R> zah;
+  private final AtomicReference<zadb> zai = new AtomicReference();
+  private R zaj;
+  private Status zak;
+  private volatile boolean zal;
+  private boolean zam;
+  private boolean zan;
+  private ICancelToken zao;
+  private volatile zada<R> zap;
+  private boolean zaq = false;
+  
+  @Deprecated
+  BasePendingResult()
+  {
+    zab = new CallbackHandler(Looper.getMainLooper());
+    zac = new WeakReference(null);
+  }
+  
+  @Deprecated
+  @KeepForSdk
+  protected BasePendingResult(Looper paramLooper)
+  {
+    zab = new CallbackHandler(paramLooper);
+    zac = new WeakReference(null);
+  }
+  
+  @KeepForSdk
+  protected BasePendingResult(GoogleApiClient paramGoogleApiClient)
+  {
+    Looper localLooper;
+    if (paramGoogleApiClient != null) {
+      localLooper = paramGoogleApiClient.getLooper();
+    } else {
+      localLooper = Looper.getMainLooper();
+    }
+    zab = new CallbackHandler(localLooper);
+    zac = new WeakReference(paramGoogleApiClient);
+  }
+  
+  @KeepForSdk
+  @VisibleForTesting
+  protected BasePendingResult(CallbackHandler<R> paramCallbackHandler)
+  {
+    zab = ((CallbackHandler)Preconditions.checkNotNull(paramCallbackHandler, "CallbackHandler must not be null"));
+    zac = new WeakReference(null);
+  }
+  
+  private final R zaa()
+  {
+    synchronized (zae)
+    {
+      Preconditions.checkState(zal ^ true, "Result has already been consumed.");
+      Preconditions.checkState(isReady(), "Result is not ready.");
+      Result localResult = zaj;
+      zaj = null;
+      zah = null;
+      zal = true;
+      ??? = (zadb)zai.getAndSet(null);
+      if (??? != null) {
+        zaa.zab.remove(this);
+      }
+      return (Result)Preconditions.checkNotNull(localResult);
+    }
+  }
+  
+  private final void zab(R paramR)
+  {
+    zaj = paramR;
+    zak = paramR.getStatus();
+    zao = null;
+    zaf.countDown();
+    if (zam)
+    {
+      zah = null;
+    }
+    else
+    {
+      paramR = zah;
+      if (paramR == null)
+      {
+        if ((zaj instanceof Releasable)) {
+          mResultGuardian = new zas(this, null);
+        }
+      }
+      else
+      {
+        zab.removeMessages(2);
+        zab.zaa(paramR, zaa());
+      }
+    }
+    paramR = zag;
+    int j = paramR.size();
+    int i = 0;
+    while (i < j)
+    {
+      ((PendingResult.StatusListener)paramR.get(i)).onComplete(zak);
+      i += 1;
+    }
+    zag.clear();
+  }
+  
+  public static void zal(Result paramResult)
+  {
+    if ((paramResult instanceof Releasable)) {
+      try
+      {
+        ((Releasable)paramResult).release();
+        return;
+      }
+      catch (RuntimeException localRuntimeException)
+      {
+        paramResult = String.valueOf(paramResult);
+        paramResult.length();
+        Log.w("BasePendingResult", "Unable to release ".concat(paramResult), localRuntimeException);
+      }
+    }
+  }
+  
+  public final void addStatusListener(PendingResult.StatusListener paramStatusListener)
+  {
+    boolean bool;
+    if (paramStatusListener != null) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    Preconditions.checkArgument(bool, "Callback cannot be null.");
+    synchronized (zae)
+    {
+      if (isReady()) {
+        paramStatusListener.onComplete(zak);
+      } else {
+        zag.add(paramStatusListener);
+      }
+      return;
+    }
+  }
+  
+  public final R await()
+  {
+    Preconditions.checkNotMainThread("await must not be called on the UI thread");
+    boolean bool2 = zal;
+    boolean bool1 = true;
+    Preconditions.checkState(bool2 ^ true, "Result has already been consumed");
+    if (zap != null) {
+      bool1 = false;
+    }
+    Preconditions.checkState(bool1, "Cannot await if then() has been called.");
+    try
+    {
+      zaf.await();
+    }
+    catch (InterruptedException localInterruptedException)
+    {
+      for (;;) {}
+    }
+    forceFailureUnlessReady(Status.RESULT_INTERRUPTED);
+    Preconditions.checkState(isReady(), "Result is not ready.");
+    return zaa();
+  }
+  
+  public final R await(long paramLong, TimeUnit paramTimeUnit)
+  {
+    if (paramLong > 0L) {
+      Preconditions.checkNotMainThread("await must not be called on the UI thread when time is greater than zero.");
+    }
+    boolean bool2 = zal;
+    boolean bool1 = true;
+    Preconditions.checkState(bool2 ^ true, "Result has already been consumed.");
+    if (zap != null) {
+      bool1 = false;
+    }
+    Preconditions.checkState(bool1, "Cannot await if then() has been called.");
+    try
+    {
+      if (zaf.await(paramLong, paramTimeUnit)) {
+        break label80;
+      }
+      forceFailureUnlessReady(Status.RESULT_TIMEOUT);
+    }
+    catch (InterruptedException paramTimeUnit)
+    {
+      for (;;) {}
+    }
+    forceFailureUnlessReady(Status.RESULT_INTERRUPTED);
+    label80:
+    Preconditions.checkState(isReady(), "Result is not ready.");
+    return zaa();
+  }
+  
+  @KeepForSdk
+  public void cancel()
+  {
+    ICancelToken localICancelToken;
+    synchronized (zae)
+    {
+      if ((!zam) && (!zal))
+      {
+        localICancelToken = zao;
+        if (localICancelToken == null) {}
+      }
+    }
+    try
+    {
+      localICancelToken.cancel();
+      zal(zaj);
+      zam = true;
+      zab(createFailedResult(Status.RESULT_CANCELED));
+      return;
+      return;
+      localObject2 = finally;
+      throw localObject2;
+    }
+    catch (RemoteException localRemoteException)
+    {
+      for (;;) {}
+    }
+  }
+  
+  @KeepForSdk
+  protected abstract R createFailedResult(Status paramStatus);
+  
+  @Deprecated
+  @KeepForSdk
+  public final void forceFailureUnlessReady(Status paramStatus)
+  {
+    synchronized (zae)
+    {
+      if (!isReady())
+      {
+        setResult(createFailedResult(paramStatus));
+        zan = true;
+      }
+      return;
+    }
+  }
+  
+  public final boolean isCanceled()
+  {
+    synchronized (zae)
+    {
+      boolean bool = zam;
+      return bool;
+    }
+  }
+  
+  @KeepForSdk
+  public final boolean isReady()
+  {
+    return zaf.getCount() == 0L;
+  }
+  
+  @KeepForSdk
+  protected final void setCancelToken(ICancelToken paramICancelToken)
+  {
+    synchronized (zae)
+    {
+      zao = paramICancelToken;
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public final void setResult(R paramR)
+  {
+    synchronized (zae)
+    {
+      if ((!zan) && (!zam))
+      {
+        isReady();
+        Preconditions.checkState(isReady() ^ true, "Results have already been set");
+        Preconditions.checkState(zal ^ true, "Result has already been consumed");
+        zab(paramR);
+        return;
+      }
+      zal(paramR);
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public final void setResultCallback(ResultCallback<? super R> paramResultCallback)
+  {
+    Object localObject = zae;
+    if (paramResultCallback == null) {}
+    try
+    {
+      zah = null;
+      return;
+    }
+    finally {}
+    boolean bool2 = zal;
+    boolean bool1 = true;
+    Preconditions.checkState(bool2 ^ true, "Result has already been consumed.");
+    if (zap == null) {
+      break label47;
+    }
+    for (;;)
+    {
+      label47:
+      Preconditions.checkState(bool1, "Cannot set callbacks if then() has been called.");
+      if (isCanceled()) {
+        return;
+      }
+      if (isReady()) {
+        zab.zaa(paramResultCallback, zaa());
+      } else {
+        zah = paramResultCallback;
+      }
+      return;
+      bool1 = false;
+    }
+  }
+  
+  @KeepForSdk
+  public final void setResultCallback(ResultCallback<? super R> paramResultCallback, long paramLong, TimeUnit paramTimeUnit)
+  {
+    Object localObject = zae;
+    if (paramResultCallback == null) {}
+    try
+    {
+      zah = null;
+      return;
+    }
+    finally {}
+    boolean bool2 = zal;
+    boolean bool1 = true;
+    Preconditions.checkState(bool2 ^ true, "Result has already been consumed.");
+    if (zap == null) {
+      break label50;
+    }
+    for (;;)
+    {
+      label50:
+      Preconditions.checkState(bool1, "Cannot set callbacks if then() has been called.");
+      if (isCanceled()) {
+        return;
+      }
+      if (isReady())
+      {
+        zab.zaa(paramResultCallback, zaa());
+      }
+      else
+      {
+        zah = paramResultCallback;
+        paramResultCallback = zab;
+        paramLong = paramTimeUnit.toMillis(paramLong);
+        paramResultCallback.sendMessageDelayed(paramResultCallback.obtainMessage(2, this), paramLong);
+      }
+      return;
+      bool1 = false;
+    }
+  }
+  
+  public final <S extends Result> TransformedResult<S> then(ResultTransform<? super R, ? extends S> paramResultTransform)
+  {
+    Preconditions.checkState(zal ^ true, "Result has already been consumed.");
+    for (;;)
+    {
+      synchronized (zae)
+      {
+        zada localZada = zap;
+        boolean bool2 = false;
+        if (localZada == null)
+        {
+          bool1 = true;
+          Preconditions.checkState(bool1, "Cannot call then() twice.");
+          bool1 = bool2;
+          if (zah == null) {
+            bool1 = true;
+          }
+          Preconditions.checkState(bool1, "Cannot call then() if callbacks are set.");
+          Preconditions.checkState(zam ^ true, "Cannot call then() if result was canceled.");
+          zaq = true;
+          zap = new zada(zac);
+          paramResultTransform = zap.then(paramResultTransform);
+          if (isReady()) {
+            zab.zaa(zap, zaa());
+          } else {
+            zah = zap;
+          }
+          return paramResultTransform;
+        }
+      }
+      boolean bool1 = false;
+    }
+  }
+  
+  public final void zak()
+  {
+    boolean bool3 = zaq;
+    boolean bool2 = true;
+    boolean bool1 = bool2;
+    if (!bool3) {
+      if (((Boolean)zaa.get()).booleanValue()) {
+        bool1 = bool2;
+      } else {
+        bool1 = false;
+      }
+    }
+    zaq = bool1;
+  }
+  
+  public final boolean zam()
+  {
+    synchronized (zae)
+    {
+      if (((GoogleApiClient)zac.get() == null) || (!zaq)) {
+        cancel();
+      }
+      boolean bool = isCanceled();
+      return bool;
+    }
+  }
+  
+  public final void zan(zadb paramZadb)
+  {
+    zai.set(paramZadb);
+  }
+  
+  @VisibleForTesting
+  public static class CallbackHandler<R extends Result>
+    extends com.google.android.gms.internal.base.zaq
+  {
+    public CallbackHandler()
+    {
+      super();
+    }
+    
+    public CallbackHandler(Looper paramLooper)
+    {
+      super();
+    }
+    
+    public final void handleMessage(Message paramMessage)
+    {
+      int i = what;
+      if (i != 1)
+      {
+        if (i != 2)
+        {
+          paramMessage = new StringBuilder(45);
+          paramMessage.append("Don't know how to handle message: ");
+          paramMessage.append(i);
+          localObject = new Exception();
+          Log.wtf("BasePendingResult", paramMessage.toString(), (Throwable)localObject);
+          return;
+        }
+        ((BasePendingResult)obj).forceFailureUnlessReady(Status.RESULT_TIMEOUT);
+        return;
+      }
+      Object localObject = (Pair)obj;
+      paramMessage = (ResultCallback)first;
+      localObject = (Result)second;
+      try
+      {
+        paramMessage.onResult((Result)localObject);
+        return;
+      }
+      catch (RuntimeException paramMessage)
+      {
+        BasePendingResult.zal((Result)localObject);
+        throw paramMessage;
+      }
+    }
+    
+    public final void zaa(ResultCallback<? super R> paramResultCallback, R paramR)
+    {
+      int i = BasePendingResult.zad;
+      sendMessage(obtainMessage(1, new Pair((ResultCallback)Preconditions.checkNotNull(paramResultCallback), paramR)));
+    }
+  }
+}

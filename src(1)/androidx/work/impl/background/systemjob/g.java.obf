@@ -1,0 +1,130 @@
+package androidx.work.impl.background.systemjob;
+
+import android.app.job.JobInfo;
+import android.app.job.JobInfo.Builder;
+import android.app.job.JobInfo.TriggerContentUri;
+import android.content.ComponentName;
+import android.content.Context;
+import android.net.NetworkRequest.Builder;
+import android.os.Build.VERSION;
+import android.os.PersistableBundle;
+import androidx.work.BackoffPolicy;
+import androidx.work.NetworkType;
+import androidx.work.b;
+import androidx.work.c;
+import androidx.work.c.a;
+import androidx.work.impl.n.p;
+import androidx.work.j;
+import java.util.Iterator;
+import java.util.Set;
+
+class a
+{
+  private static final String a = j.f("SystemJobInfoConverter");
+  private final ComponentName b;
+  
+  a(Context paramContext)
+  {
+    b = new ComponentName(paramContext.getApplicationContext(), SystemJobService.class);
+  }
+  
+  private static JobInfo.TriggerContentUri b(c.a paramA)
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  static int c(NetworkType paramNetworkType)
+  {
+    int i = a.a[paramNetworkType.ordinal()];
+    if (i != 1)
+    {
+      if (i != 2)
+      {
+        if (i != 3)
+        {
+          if (i != 4)
+          {
+            if ((i == 5) && (Build.VERSION.SDK_INT >= 26)) {
+              return 4;
+            }
+          }
+          else if (Build.VERSION.SDK_INT >= 24) {
+            return 3;
+          }
+          j.c().a(a, String.format("API version too low. Cannot convert network type value %s", new Object[] { paramNetworkType }), new Throwable[0]);
+          return 1;
+        }
+        return 2;
+      }
+      return 1;
+    }
+    return 0;
+  }
+  
+  static void d(JobInfo.Builder paramBuilder, NetworkType paramNetworkType)
+  {
+    if ((Build.VERSION.SDK_INT >= 30) && (paramNetworkType == NetworkType.g))
+    {
+      paramBuilder.setRequiredNetwork(new NetworkRequest.Builder().addCapability(25).build());
+      return;
+    }
+    paramBuilder.setRequiredNetworkType(c(paramNetworkType));
+  }
+  
+  JobInfo a(p paramP, int paramInt)
+  {
+    b localB = l;
+    Object localObject = new PersistableBundle();
+    ((PersistableBundle)localObject).putString("EXTRA_WORK_SPEC_ID", c);
+    ((PersistableBundle)localObject).putBoolean("EXTRA_IS_PERIODIC", paramP.d());
+    localObject = new JobInfo.Builder(paramInt, b).setRequiresCharging(localB.g()).setRequiresDeviceIdle(localB.h()).setExtras((PersistableBundle)localObject);
+    d((JobInfo.Builder)localObject, localB.b());
+    boolean bool = localB.h();
+    int i = 0;
+    if (!bool)
+    {
+      if (n == BackoffPolicy.c) {
+        paramInt = 0;
+      } else {
+        paramInt = 1;
+      }
+      ((JobInfo.Builder)localObject).setBackoffCriteria(o, paramInt);
+    }
+    long l = Math.max(paramP.a() - System.currentTimeMillis(), 0L);
+    paramInt = Build.VERSION.SDK_INT;
+    if (paramInt <= 28) {
+      ((JobInfo.Builder)localObject).setMinimumLatency(l);
+    } else if (l > 0L) {
+      ((JobInfo.Builder)localObject).setMinimumLatency(l);
+    } else if (!s) {
+      ((JobInfo.Builder)localObject).setImportantWhileForeground(true);
+    }
+    if ((paramInt >= 24) && (localB.e()))
+    {
+      Iterator localIterator = localB.a().b().iterator();
+      while (localIterator.hasNext()) {
+        ((JobInfo.Builder)localObject).addTriggerContentUri(b((c.a)localIterator.next()));
+      }
+      ((JobInfo.Builder)localObject).setTriggerContentUpdateDelay(localB.c());
+      ((JobInfo.Builder)localObject).setTriggerContentMaxDelay(localB.d());
+    }
+    ((JobInfo.Builder)localObject).setPersisted(false);
+    if (Build.VERSION.SDK_INT >= 26)
+    {
+      ((JobInfo.Builder)localObject).setRequiresBatteryNotLow(localB.f());
+      ((JobInfo.Builder)localObject).setRequiresStorageNotLow(localB.i());
+    }
+    if (m > 0) {
+      paramInt = 1;
+    } else {
+      paramInt = 0;
+    }
+    if (l > 0L) {
+      i = 1;
+    }
+    if ((c.h.m.a.c()) && (s) && (paramInt == 0) && (i == 0)) {
+      ((JobInfo.Builder)localObject).setExpedited(true);
+    }
+    return ((JobInfo.Builder)localObject).build();
+  }
+}

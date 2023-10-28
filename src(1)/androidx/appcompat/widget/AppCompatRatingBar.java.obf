@@ -1,0 +1,42 @@
+package androidx.appcompat.widget;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.RatingBar;
+import c.a.a;
+
+public class AppCompatRatingBar
+  extends RatingBar
+{
+  private final p b;
+  
+  public AppCompatRatingBar(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, a.I);
+  }
+  
+  public AppCompatRatingBar(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(paramContext, paramAttributeSet, paramInt);
+    i0.a(this, getContext());
+    paramContext = new p(this);
+    b = paramContext;
+    paramContext.c(paramAttributeSet, paramInt);
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    try
+    {
+      super.onMeasure(paramInt1, paramInt2);
+      Bitmap localBitmap = b.b();
+      if (localBitmap != null) {
+        setMeasuredDimension(View.resolveSizeAndState(localBitmap.getWidth() * getNumStars(), paramInt1, 0), getMeasuredHeight());
+      }
+      return;
+    }
+    finally {}
+  }
+}

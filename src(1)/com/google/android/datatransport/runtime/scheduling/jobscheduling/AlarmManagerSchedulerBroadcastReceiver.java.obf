@@ -1,0 +1,30 @@
+package com.google.android.datatransport.runtime.scheduling.jobscheduling;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Base64;
+import com.google.android.datatransport.h.p;
+import com.google.android.datatransport.h.p.a;
+
+public class AlarmManagerSchedulerBroadcastReceiver
+  extends BroadcastReceiver
+{
+  public AlarmManagerSchedulerBroadcastReceiver() {}
+  
+  public void onReceive(Context paramContext, Intent paramIntent)
+  {
+    String str2 = paramIntent.getData().getQueryParameter("backendName");
+    String str1 = paramIntent.getData().getQueryParameter("extras");
+    int i = Integer.valueOf(paramIntent.getData().getQueryParameter("priority")).intValue();
+    int j = paramIntent.getExtras().getInt("attemptNumber");
+    com.google.android.datatransport.h.t.f(paramContext);
+    paramContext = p.a().b(str2).d(com.google.android.datatransport.h.b0.a.b(i));
+    if (str1 != null) {
+      paramContext.c(Base64.decode(str1, 0));
+    }
+    com.google.android.datatransport.h.t.c().e().v(paramContext.a(), j, a.b);
+  }
+}

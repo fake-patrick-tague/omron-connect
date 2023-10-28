@@ -1,0 +1,193 @@
+package com.google.firebase.messaging;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.text.TextUtils;
+import android.util.Log;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
+public class p0
+  implements Closeable
+{
+  private final URL b;
+  private volatile Future<?> c;
+  private Task<Bitmap> d;
+  
+  private p0(URL paramURL)
+  {
+    b = paramURL;
+  }
+  
+  /* Error */
+  private byte[] h()
+    throws IOException
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: getfield 21	com/google/firebase/messaging/p0:b	Ljava/net/URL;
+    //   4: invokevirtual 32	java/net/URL:openConnection	()Ljava/net/URLConnection;
+    //   7: astore_1
+    //   8: aload_1
+    //   9: invokevirtual 38	java/net/URLConnection:getContentLength	()I
+    //   12: ldc 39
+    //   14: if_icmpgt +123 -> 137
+    //   17: aload_1
+    //   18: invokevirtual 43	java/net/URLConnection:getInputStream	()Ljava/io/InputStream;
+    //   21: astore_1
+    //   22: aload_1
+    //   23: ldc2_w 44
+    //   26: invokestatic 50	com/google/firebase/messaging/g0:b	(Ljava/io/InputStream;J)Ljava/io/InputStream;
+    //   29: invokestatic 53	com/google/firebase/messaging/g0:d	(Ljava/io/InputStream;)[B
+    //   32: astore_2
+    //   33: aload_1
+    //   34: ifnull +7 -> 41
+    //   37: aload_1
+    //   38: invokevirtual 58	java/io/InputStream:close	()V
+    //   41: ldc 60
+    //   43: iconst_2
+    //   44: invokestatic 66	android/util/Log:isLoggable	(Ljava/lang/String;I)Z
+    //   47: ifeq +51 -> 98
+    //   50: new 68	java/lang/StringBuilder
+    //   53: dup
+    //   54: invokespecial 69	java/lang/StringBuilder:<init>	()V
+    //   57: astore_1
+    //   58: aload_1
+    //   59: ldc 71
+    //   61: invokevirtual 75	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   64: pop
+    //   65: aload_1
+    //   66: aload_2
+    //   67: arraylength
+    //   68: invokevirtual 78	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   71: pop
+    //   72: aload_1
+    //   73: ldc 80
+    //   75: invokevirtual 75	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   78: pop
+    //   79: aload_1
+    //   80: aload_0
+    //   81: getfield 21	com/google/firebase/messaging/p0:b	Ljava/net/URL;
+    //   84: invokevirtual 83	java/lang/StringBuilder:append	(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    //   87: pop
+    //   88: ldc 60
+    //   90: aload_1
+    //   91: invokevirtual 87	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   94: invokestatic 91	android/util/Log:v	(Ljava/lang/String;Ljava/lang/String;)I
+    //   97: pop
+    //   98: aload_2
+    //   99: arraylength
+    //   100: ldc 39
+    //   102: if_icmpgt +5 -> 107
+    //   105: aload_2
+    //   106: areturn
+    //   107: new 26	java/io/IOException
+    //   110: dup
+    //   111: ldc 93
+    //   113: invokespecial 96	java/io/IOException:<init>	(Ljava/lang/String;)V
+    //   116: athrow
+    //   117: astore_2
+    //   118: aload_1
+    //   119: ifnull +16 -> 135
+    //   122: aload_1
+    //   123: invokevirtual 58	java/io/InputStream:close	()V
+    //   126: goto +9 -> 135
+    //   129: astore_1
+    //   130: aload_2
+    //   131: aload_1
+    //   132: invokevirtual 102	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   135: aload_2
+    //   136: athrow
+    //   137: new 26	java/io/IOException
+    //   140: dup
+    //   141: ldc 104
+    //   143: invokespecial 96	java/io/IOException:<init>	(Ljava/lang/String;)V
+    //   146: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	147	0	this	p0
+    //   7	116	1	localObject1	Object
+    //   129	3	1	localThrowable	Throwable
+    //   32	74	2	arrayOfByte	byte[]
+    //   117	19	2	localObject2	Object
+    // Exception table:
+    //   from	to	target	type
+    //   22	33	117	finally
+    //   122	126	129	finally
+  }
+  
+  public static p0 i(String paramString)
+  {
+    if (TextUtils.isEmpty(paramString)) {
+      return null;
+    }
+    try
+    {
+      localObject = new p0(new URL(paramString));
+      return localObject;
+    }
+    catch (MalformedURLException localMalformedURLException)
+    {
+      Object localObject;
+      for (;;) {}
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("Not downloading image, bad URL: ");
+    ((StringBuilder)localObject).append(paramString);
+    Log.w("FirebaseMessaging", ((StringBuilder)localObject).toString());
+    return null;
+  }
+  
+  public Bitmap a()
+    throws IOException
+  {
+    if (Log.isLoggable("FirebaseMessaging", 4))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Starting download of: ");
+      ((StringBuilder)localObject).append(b);
+      Log.i("FirebaseMessaging", ((StringBuilder)localObject).toString());
+    }
+    Object localObject = h();
+    localObject = BitmapFactory.decodeByteArray((byte[])localObject, 0, localObject.length);
+    if (localObject != null)
+    {
+      if (Log.isLoggable("FirebaseMessaging", 3))
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Successfully downloaded image: ");
+        localStringBuilder.append(b);
+        Log.d("FirebaseMessaging", localStringBuilder.toString());
+      }
+      return localObject;
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("Failed to decode image: ");
+    ((StringBuilder)localObject).append(b);
+    throw new IOException(((StringBuilder)localObject).toString());
+  }
+  
+  public void close()
+  {
+    c.cancel(true);
+  }
+  
+  public Task<Bitmap> n()
+  {
+    return (Task)Preconditions.checkNotNull(d);
+  }
+  
+  public void u(ExecutorService paramExecutorService)
+  {
+    TaskCompletionSource localTaskCompletionSource = new TaskCompletionSource();
+    c = paramExecutorService.submit(new v(this, localTaskCompletionSource));
+    d = localTaskCompletionSource.getTask();
+  }
+}

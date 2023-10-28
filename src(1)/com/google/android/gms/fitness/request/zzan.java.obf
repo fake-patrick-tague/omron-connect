@@ -1,0 +1,69 @@
+package com.google.android.gms.fitness.request;
+
+import android.os.Looper;
+import com.google.android.gms.common.api.internal.ListenerHolder;
+import com.google.android.gms.common.api.internal.ListenerHolder.ListenerKey;
+import com.google.android.gms.common.api.internal.ListenerHolders;
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.HashMap;
+import java.util.Map;
+
+public final class zzan
+{
+  private static final zzan zzrr = new zzan();
+  private final Map<ListenerHolder.ListenerKey<OnDataPointListener>, zzam> zzrs = new HashMap();
+  
+  private zzan() {}
+  
+  private static ListenerHolder<OnDataPointListener> zzc(OnDataPointListener paramOnDataPointListener, Looper paramLooper)
+  {
+    return ListenerHolders.createListenerHolder(paramOnDataPointListener, paramLooper, OnDataPointListener.class.getSimpleName());
+  }
+  
+  public static zzan zzx()
+  {
+    return zzrr;
+  }
+  
+  public final zzam zza(OnDataPointListener paramOnDataPointListener, Looper paramLooper)
+  {
+    return zzc(zzc(paramOnDataPointListener, paramLooper));
+  }
+  
+  public final zzam zzb(OnDataPointListener paramOnDataPointListener, Looper paramLooper)
+  {
+    return zzd(zzc(paramOnDataPointListener, paramLooper));
+  }
+  
+  public final zzam zzc(ListenerHolder<OnDataPointListener> paramListenerHolder)
+  {
+    synchronized (zzrs)
+    {
+      ListenerHolder.ListenerKey localListenerKey = (ListenerHolder.ListenerKey)Preconditions.checkNotNull(paramListenerHolder.getListenerKey(), "Key must not be null");
+      zzam localZzam2 = (zzam)zzrs.get(localListenerKey);
+      zzam localZzam1 = localZzam2;
+      if (localZzam2 == null)
+      {
+        localZzam1 = new zzam(paramListenerHolder, null);
+        zzrs.put(localListenerKey, localZzam1);
+      }
+      return localZzam1;
+    }
+  }
+  
+  public final zzam zzd(ListenerHolder<OnDataPointListener> paramListenerHolder)
+  {
+    synchronized (zzrs)
+    {
+      paramListenerHolder = paramListenerHolder.getListenerKey();
+      if (paramListenerHolder == null) {
+        return null;
+      }
+      paramListenerHolder = (zzam)zzrs.remove(paramListenerHolder);
+      if (paramListenerHolder != null) {
+        paramListenerHolder.release();
+      }
+      return paramListenerHolder;
+    }
+  }
+}

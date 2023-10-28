@@ -1,0 +1,40 @@
+package com.google.android.gms.measurement.internal;
+
+import android.os.Bundle;
+import com.google.android.gms.common.internal.Preconditions;
+
+final class zzhm
+  implements Runnable
+{
+  zzhm(zzid paramZzid, Bundle paramBundle) {}
+  
+  public final void run()
+  {
+    zzid localZzid = zzb;
+    Object localObject1 = zza;
+    localZzid.zzg();
+    localZzid.zza();
+    Preconditions.checkNotNull(localObject1);
+    Object localObject2 = ((Bundle)localObject1).getString("name");
+    String str = ((Bundle)localObject1).getString("origin");
+    Preconditions.checkNotEmpty((String)localObject2);
+    Preconditions.checkNotEmpty(str);
+    Preconditions.checkNotNull(((Bundle)localObject1).get("value"));
+    if (!zzs.zzJ())
+    {
+      zzs.zzay().zzj().zza("Conditional property not set since app measurement is disabled");
+      return;
+    }
+    localObject2 = new zzlc((String)localObject2, ((Bundle)localObject1).getLong("triggered_timestamp"), ((Bundle)localObject1).get("value"), str);
+    try
+    {
+      zzaw localZzaw1 = zzs.zzv().zzz(((Bundle)localObject1).getString("app_id"), ((Bundle)localObject1).getString("triggered_event_name"), ((Bundle)localObject1).getBundle("triggered_event_params"), str, 0L, true, true);
+      zzaw localZzaw2 = zzs.zzv().zzz(((Bundle)localObject1).getString("app_id"), ((Bundle)localObject1).getString("timed_out_event_name"), ((Bundle)localObject1).getBundle("timed_out_event_params"), str, 0L, true, true);
+      zzaw localZzaw3 = zzs.zzv().zzz(((Bundle)localObject1).getString("app_id"), ((Bundle)localObject1).getString("expired_event_name"), ((Bundle)localObject1).getBundle("expired_event_params"), str, 0L, true, true);
+      localObject1 = new zzac(((Bundle)localObject1).getString("app_id"), str, (zzlc)localObject2, ((Bundle)localObject1).getLong("creation_timestamp"), false, ((Bundle)localObject1).getString("trigger_event_name"), localZzaw2, ((Bundle)localObject1).getLong("trigger_timeout"), localZzaw1, ((Bundle)localObject1).getLong("time_to_live"), localZzaw3);
+      zzs.zzt().zzE((zzac)localObject1);
+      return;
+    }
+    catch (IllegalArgumentException localIllegalArgumentException) {}
+  }
+}

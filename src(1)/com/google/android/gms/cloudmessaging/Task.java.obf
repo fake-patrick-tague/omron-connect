@@ -1,0 +1,181 @@
+package com.google.android.gms.cloudmessaging;
+
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.util.Log;
+import c.e.g;
+import com.google.android.gms.internal.cloudmessaging.zza;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
+import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
+public class Rpc
+{
+  private static int zza;
+  private static PendingIntent zzb;
+  private static final Executor zzc = zzz.zza;
+  private static final Pattern zzd = Pattern.compile("\\|ID\\|([^|]+)\\|:?+(.*)");
+  private final g<String, TaskCompletionSource<Bundle>> zze = new g();
+  private final Context zzf;
+  private final zzt zzg;
+  private final ScheduledExecutorService zzh;
+  private Messenger zzi;
+  private Messenger zzj;
+  private zzd zzk;
+  
+  public Rpc(Context paramContext)
+  {
+    zzf = paramContext;
+    zzg = new zzt(paramContext);
+    zzi = new Messenger(new zzaa(this, Looper.getMainLooper()));
+    paramContext = new ScheduledThreadPoolExecutor(1);
+    paramContext.setKeepAliveTime(60L, TimeUnit.SECONDS);
+    paramContext.allowCoreThreadTimeOut(true);
+    zzh = paramContext;
+  }
+  
+  private final Task<Bundle> zze(Bundle paramBundle)
+  {
+    String str = zzf();
+    TaskCompletionSource localTaskCompletionSource = new TaskCompletionSource();
+    synchronized (zze)
+    {
+      zze.put(str, localTaskCompletionSource);
+      ??? = new Intent();
+      ((Intent)???).setPackage("com.google.android.gms");
+      if (zzg.zzb() == 2) {
+        ((Intent)???).setAction("com.google.iid.TOKEN_REQUEST");
+      } else {
+        ((Intent)???).setAction("com.google.android.c2dm.intent.REGISTER");
+      }
+      ((Intent)???).putExtras(paramBundle);
+      zzg(zzf, (Intent)???);
+      paramBundle = new StringBuilder(String.valueOf(str).length() + 5);
+      paramBundle.append("|ID|");
+      paramBundle.append(str);
+      paramBundle.append("|");
+      ((Intent)???).putExtra("kid", paramBundle.toString());
+      Object localObject2;
+      if (Log.isLoggable("Rpc", 3))
+      {
+        paramBundle = String.valueOf(((Intent)???).getExtras());
+        localObject2 = new StringBuilder(paramBundle.length() + 8);
+        ((StringBuilder)localObject2).append("Sending ");
+        ((StringBuilder)localObject2).append(paramBundle);
+        Log.d("Rpc", ((StringBuilder)localObject2).toString());
+      }
+      ((Intent)???).putExtra("google.messenger", zzi);
+      if ((zzj != null) || (zzk != null))
+      {
+        paramBundle = Message.obtain();
+        obj = ???;
+      }
+      try
+      {
+        localObject2 = zzj;
+        if (localObject2 != null) {
+          ((Messenger)localObject2).send(paramBundle);
+        } else {
+          zzk.zzb(paramBundle);
+        }
+      }
+      catch (RemoteException paramBundle)
+      {
+        for (;;) {}
+      }
+      if (Log.isLoggable("Rpc", 3)) {
+        Log.d("Rpc", "Messenger failed, fallback to startService");
+      }
+      if (zzg.zzb() == 2) {
+        zzf.sendBroadcast((Intent)???);
+      } else {
+        zzf.startService((Intent)???);
+      }
+      paramBundle = zzh.schedule(new zzy(localTaskCompletionSource), 30L, TimeUnit.SECONDS);
+      localTaskCompletionSource.getTask().addOnCompleteListener(zzc, new zzw(this, str, paramBundle));
+      return localTaskCompletionSource.getTask();
+    }
+  }
+  
+  private static String zzf()
+  {
+    try
+    {
+      int i = zza;
+      zza = i + 1;
+      String str = Integer.toString(i);
+      return str;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  private static void zzg(Context paramContext, Intent paramIntent)
+  {
+    try
+    {
+      if (zzb == null)
+      {
+        Intent localIntent = new Intent();
+        localIntent.setPackage("com.google.example.invalidpackage");
+        zzb = zza.zza(paramContext, 0, localIntent, zza.zza);
+      }
+      paramIntent.putExtra("app", zzb);
+      return;
+    }
+    finally {}
+  }
+  
+  private final void zzh(String paramString, Bundle paramBundle)
+  {
+    synchronized (zze)
+    {
+      TaskCompletionSource localTaskCompletionSource = (TaskCompletionSource)zze.remove(paramString);
+      if (localTaskCompletionSource == null)
+      {
+        paramString = String.valueOf(paramString);
+        if (paramString.length() != 0) {
+          paramString = "Missing callback for ".concat(paramString);
+        } else {
+          paramString = new String("Missing callback for ");
+        }
+        Log.w("Rpc", paramString);
+        return;
+      }
+      localTaskCompletionSource.setResult(paramBundle);
+      return;
+    }
+  }
+  
+  private static boolean zzi(Bundle paramBundle)
+  {
+    return (paramBundle != null) && (paramBundle.containsKey("google.messenger"));
+  }
+  
+  public Task<Bundle> send(Bundle paramBundle)
+  {
+    if (zzg.zza() < 12000000)
+    {
+      if (zzg.zzb() != 0) {
+        return zze(paramBundle).continueWithTask(zzc, new zzu(this, paramBundle));
+      }
+      return Tasks.forException(new IOException("MISSING_INSTANCEID_SERVICE"));
+    }
+    return zzs.zzb(zzf).zzd(1, paramBundle).continueWith(zzc, zzv.zza);
+  }
+}

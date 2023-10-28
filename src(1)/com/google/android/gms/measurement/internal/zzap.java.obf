@@ -1,0 +1,63 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.Context;
+import android.os.Handler;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.Clock;
+import com.google.android.gms.internal.measurement.zzby;
+
+abstract class zzap
+{
+  private static volatile Handler zza;
+  private final zzgt zzb;
+  private final Runnable zzc;
+  private volatile long zzd;
+  
+  zzap(zzgt paramZzgt)
+  {
+    Preconditions.checkNotNull(paramZzgt);
+    zzb = paramZzgt;
+    zzc = new zzao(this, paramZzgt);
+  }
+  
+  private final Handler zzf()
+  {
+    if (zza != null) {
+      return zza;
+    }
+    try
+    {
+      if (zza == null) {
+        zza = new zzby(zzb.zzau().getMainLooper());
+      }
+      Handler localHandler = zza;
+      return localHandler;
+    }
+    finally {}
+  }
+  
+  final void zzb()
+  {
+    zzd = 0L;
+    zzf().removeCallbacks(zzc);
+  }
+  
+  public abstract void zzc();
+  
+  public final void zzd(long paramLong)
+  {
+    zzb();
+    if (paramLong >= 0L)
+    {
+      zzd = zzb.zzav().currentTimeMillis();
+      if (!zzf().postDelayed(zzc, paramLong)) {
+        zzb.zzay().zzd().zzb("Failed to schedule delayed post. time", Long.valueOf(paramLong));
+      }
+    }
+  }
+  
+  public final boolean zze()
+  {
+    return zzd != 0L;
+  }
+}

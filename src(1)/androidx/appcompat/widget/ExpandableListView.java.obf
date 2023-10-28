@@ -1,0 +1,205 @@
+package androidx.appcompat.widget;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
+import android.view.View.OnHoverListener;
+import android.view.View.OnLongClickListener;
+import android.view.ViewConfiguration;
+import android.view.accessibility.AccessibilityManager;
+import c.h.q.f0;
+import c.h.q.g0;
+
+class q0
+  implements View.OnLongClickListener, View.OnHoverListener, View.OnAttachStateChangeListener
+{
+  private static q0 b;
+  private static q0 c;
+  private final View d;
+  private final CharSequence e;
+  private final int f;
+  private final Runnable g = new c(this);
+  private final Runnable h = new b(this);
+  private int i;
+  private int j;
+  private r0 k;
+  private boolean l;
+  private boolean m;
+  
+  private q0(View paramView, CharSequence paramCharSequence)
+  {
+    d = paramView;
+    e = paramCharSequence;
+    f = g0.c(ViewConfiguration.get(paramView.getContext()));
+    b();
+    paramView.setOnLongClickListener(this);
+    paramView.setOnHoverListener(this);
+  }
+  
+  private void a()
+  {
+    d.removeCallbacks(g);
+  }
+  
+  private void b()
+  {
+    m = true;
+  }
+  
+  private void f()
+  {
+    d.postDelayed(g, ViewConfiguration.getLongPressTimeout());
+  }
+  
+  private static void g(q0 paramQ0)
+  {
+    q0 localQ0 = b;
+    if (localQ0 != null) {
+      localQ0.a();
+    }
+    b = paramQ0;
+    if (paramQ0 != null) {
+      paramQ0.f();
+    }
+  }
+  
+  public static void h(View paramView, CharSequence paramCharSequence)
+  {
+    q0 localQ0 = b;
+    if ((localQ0 != null) && (d == paramView)) {
+      g(null);
+    }
+    if (TextUtils.isEmpty(paramCharSequence))
+    {
+      paramCharSequence = c;
+      if ((paramCharSequence != null) && (d == paramView)) {
+        paramCharSequence.c();
+      }
+      paramView.setOnLongClickListener(null);
+      paramView.setLongClickable(false);
+      paramView.setOnHoverListener(null);
+      return;
+    }
+    new q0(paramView, paramCharSequence);
+  }
+  
+  private boolean j(MotionEvent paramMotionEvent)
+  {
+    int n = (int)paramMotionEvent.getX();
+    int i1 = (int)paramMotionEvent.getY();
+    if ((!m) && (Math.abs(n - i) <= f) && (Math.abs(i1 - j) <= f)) {
+      return false;
+    }
+    i = n;
+    j = i1;
+    m = false;
+    return true;
+  }
+  
+  void c()
+  {
+    if (c == this)
+    {
+      c = null;
+      r0 localR0 = k;
+      if (localR0 != null)
+      {
+        localR0.c();
+        k = null;
+        b();
+        d.removeOnAttachStateChangeListener(this);
+      }
+      else
+      {
+        Log.e("TooltipCompatHandler", "sActiveHandler.mPopup == null");
+      }
+    }
+    if (b == this) {
+      g(null);
+    }
+    d.removeCallbacks(h);
+  }
+  
+  void i(boolean paramBoolean)
+  {
+    if (!f0.S(d)) {
+      return;
+    }
+    g(null);
+    Object localObject = c;
+    if (localObject != null) {
+      ((q0)localObject).c();
+    }
+    c = this;
+    l = paramBoolean;
+    localObject = new r0(d.getContext());
+    k = ((r0)localObject);
+    ((r0)localObject).e(d, i, j, l, e);
+    d.addOnAttachStateChangeListener(this);
+    long l1;
+    if (l)
+    {
+      l1 = 2500L;
+    }
+    else
+    {
+      int n;
+      if ((f0.M(d) & 0x1) == 1)
+      {
+        l1 = 3000L;
+        n = ViewConfiguration.getLongPressTimeout();
+      }
+      else
+      {
+        l1 = 15000L;
+        n = ViewConfiguration.getLongPressTimeout();
+      }
+      l1 -= n;
+    }
+    d.removeCallbacks(h);
+    d.postDelayed(h, l1);
+  }
+  
+  public boolean onHover(View paramView, MotionEvent paramMotionEvent)
+  {
+    if ((k != null) && (l)) {
+      return false;
+    }
+    paramView = (AccessibilityManager)d.getContext().getSystemService("accessibility");
+    if ((paramView.isEnabled()) && (paramView.isTouchExplorationEnabled())) {
+      return false;
+    }
+    int n = paramMotionEvent.getAction();
+    if (n != 7)
+    {
+      if (n != 10) {
+        return false;
+      }
+      b();
+      c();
+      return false;
+    }
+    if ((d.isEnabled()) && (k == null) && (j(paramMotionEvent))) {
+      g(this);
+    }
+    return false;
+  }
+  
+  public boolean onLongClick(View paramView)
+  {
+    i = (paramView.getWidth() / 2);
+    j = (paramView.getHeight() / 2);
+    i(true);
+    return true;
+  }
+  
+  public void onViewAttachedToWindow(View paramView) {}
+  
+  public void onViewDetachedFromWindow(View paramView)
+  {
+    c();
+  }
+}

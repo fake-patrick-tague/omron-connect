@@ -1,0 +1,289 @@
+package com.google.android.material.internal;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.graphics.drawable.StateListDrawable;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewStub;
+import android.widget.CheckedTextView;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout.LayoutParams;
+import androidx.appcompat.view.menu.n.a;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.appcompat.widget.LinearLayoutCompat.LayoutParams;
+import androidx.appcompat.widget.p0;
+import androidx.core.content.g.j;
+import c.h.q.f0;
+import c.h.q.p0.c;
+import d.c.a.a.d;
+import d.c.a.a.e;
+import d.c.a.a.h;
+
+public class NavigationMenuItemView
+  extends ForegroundLinearLayout
+  implements n.a
+{
+  private static final int[] w = { 16842912 };
+  private final CheckedTextView A;
+  private FrameLayout B;
+  private androidx.appcompat.view.menu.i C;
+  private ColorStateList D;
+  private boolean E;
+  private Drawable F;
+  private final c.h.q.f G;
+  private int x;
+  private boolean y;
+  boolean z;
+  
+  public NavigationMenuItemView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, 0);
+  }
+  
+  public NavigationMenuItemView(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(paramContext, paramAttributeSet, paramInt);
+    paramAttributeSet = new a();
+    G = paramAttributeSet;
+    setOrientation(0);
+    LayoutInflater.from(paramContext).inflate(h.d, this, true);
+    setIconSize(paramContext.getResources().getDimensionPixelSize(d.m));
+    paramContext = (CheckedTextView)findViewById(d.c.a.a.f.e);
+    A = paramContext;
+    paramContext.setDuplicateParentStateEnabled(true);
+    f0.p0(paramContext, paramAttributeSet);
+  }
+  
+  private void B()
+  {
+    Object localObject;
+    if (D())
+    {
+      A.setVisibility(8);
+      localObject = B;
+      if (localObject != null)
+      {
+        localObject = (LinearLayoutCompat.LayoutParams)((FrameLayout)localObject).getLayoutParams();
+        width = -1;
+        B.setLayoutParams((ViewGroup.LayoutParams)localObject);
+      }
+    }
+    else
+    {
+      A.setVisibility(0);
+      localObject = B;
+      if (localObject != null)
+      {
+        localObject = (LinearLayoutCompat.LayoutParams)((FrameLayout)localObject).getLayoutParams();
+        width = -2;
+        B.setLayoutParams((ViewGroup.LayoutParams)localObject);
+      }
+    }
+  }
+  
+  private StateListDrawable C()
+  {
+    TypedValue localTypedValue = new TypedValue();
+    if (getContext().getTheme().resolveAttribute(c.a.a.w, localTypedValue, true))
+    {
+      StateListDrawable localStateListDrawable = new StateListDrawable();
+      localStateListDrawable.addState(w, new ColorDrawable(data));
+      localStateListDrawable.addState(ViewGroup.EMPTY_STATE_SET, new ColorDrawable(0));
+      return localStateListDrawable;
+    }
+    return null;
+  }
+  
+  private boolean D()
+  {
+    return (C.getTitle() == null) && (C.getIcon() == null) && (C.getActionView() != null);
+  }
+  
+  private void setActionView(View paramView)
+  {
+    if (paramView != null)
+    {
+      if (B == null) {
+        B = ((FrameLayout)((ViewStub)findViewById(d.c.a.a.f.d)).inflate());
+      }
+      B.removeAllViews();
+      B.addView(paramView);
+    }
+  }
+  
+  public boolean d()
+  {
+    return false;
+  }
+  
+  public void e(androidx.appcompat.view.menu.i paramI, int paramInt)
+  {
+    C = paramI;
+    if (paramI.getItemId() > 0) {
+      setId(paramI.getItemId());
+    }
+    if (paramI.isVisible()) {
+      paramInt = 0;
+    } else {
+      paramInt = 8;
+    }
+    setVisibility(paramInt);
+    if (getBackground() == null) {
+      f0.t0(this, C());
+    }
+    setCheckable(paramI.isCheckable());
+    setChecked(paramI.isChecked());
+    setEnabled(paramI.isEnabled());
+    setTitle(paramI.getTitle());
+    setIcon(paramI.getIcon());
+    setActionView(paramI.getActionView());
+    setContentDescription(paramI.getContentDescription());
+    p0.a(this, paramI.getTooltipText());
+    B();
+  }
+  
+  public androidx.appcompat.view.menu.i getItemData()
+  {
+    return C;
+  }
+  
+  protected int[] onCreateDrawableState(int paramInt)
+  {
+    int[] arrayOfInt = super.onCreateDrawableState(paramInt + 1);
+    androidx.appcompat.view.menu.i localI = C;
+    if ((localI != null) && (localI.isCheckable()) && (C.isChecked())) {
+      ViewGroup.mergeDrawableStates(arrayOfInt, w);
+    }
+    return arrayOfInt;
+  }
+  
+  public void setCheckable(boolean paramBoolean)
+  {
+    refreshDrawableState();
+    if (z != paramBoolean)
+    {
+      z = paramBoolean;
+      G.l(A, 2048);
+    }
+  }
+  
+  public void setChecked(boolean paramBoolean)
+  {
+    refreshDrawableState();
+    A.setChecked(paramBoolean);
+  }
+  
+  public void setHorizontalPadding(int paramInt)
+  {
+    setPadding(paramInt, 0, paramInt, 0);
+  }
+  
+  public void setIcon(Drawable paramDrawable)
+  {
+    int i;
+    if (paramDrawable != null)
+    {
+      Object localObject = paramDrawable;
+      if (E)
+      {
+        localObject = paramDrawable.getConstantState();
+        if (localObject != null) {
+          paramDrawable = ((Drawable.ConstantState)localObject).newDrawable();
+        }
+        localObject = androidx.core.graphics.drawable.a.r(paramDrawable).mutate();
+        androidx.core.graphics.drawable.a.o((Drawable)localObject, D);
+      }
+      i = x;
+      ((Drawable)localObject).setBounds(0, 0, i, i);
+      paramDrawable = (Drawable)localObject;
+    }
+    else if (y)
+    {
+      if (F == null)
+      {
+        paramDrawable = j.e(getResources(), e.h, getContext().getTheme());
+        F = paramDrawable;
+        if (paramDrawable != null)
+        {
+          i = x;
+          paramDrawable.setBounds(0, 0, i, i);
+        }
+      }
+      paramDrawable = F;
+    }
+    androidx.core.widget.i.l(A, paramDrawable, null, null, null);
+  }
+  
+  public void setIconPadding(int paramInt)
+  {
+    A.setCompoundDrawablePadding(paramInt);
+  }
+  
+  public void setIconSize(int paramInt)
+  {
+    x = paramInt;
+  }
+  
+  void setIconTintList(ColorStateList paramColorStateList)
+  {
+    D = paramColorStateList;
+    boolean bool;
+    if (paramColorStateList != null) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    E = bool;
+    paramColorStateList = C;
+    if (paramColorStateList != null) {
+      setIcon(paramColorStateList.getIcon());
+    }
+  }
+  
+  public void setMaxLines(int paramInt)
+  {
+    A.setMaxLines(paramInt);
+  }
+  
+  public void setNeedsEmptyIcon(boolean paramBoolean)
+  {
+    y = paramBoolean;
+  }
+  
+  public void setTextAppearance(int paramInt)
+  {
+    androidx.core.widget.i.q(A, paramInt);
+  }
+  
+  public void setTextColor(ColorStateList paramColorStateList)
+  {
+    A.setTextColor(paramColorStateList);
+  }
+  
+  public void setTitle(CharSequence paramCharSequence)
+  {
+    A.setText(paramCharSequence);
+  }
+  
+  class a
+    extends c.h.q.f
+  {
+    a() {}
+    
+    public void g(View paramView, c paramC)
+    {
+      super.g(paramView, paramC);
+      paramC.W(z);
+    }
+  }
+}

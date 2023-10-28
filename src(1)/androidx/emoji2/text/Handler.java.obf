@@ -1,0 +1,35 @@
+package androidx.emoji2.text;
+
+import android.os.Build.VERSION;
+import android.os.Handler;
+import android.os.Looper;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+class d
+{
+  static ThreadPoolExecutor a(String paramString)
+  {
+    paramString = new b(paramString);
+    paramString = new ThreadPoolExecutor(0, 1, 15L, TimeUnit.SECONDS, new LinkedBlockingDeque(), paramString);
+    paramString.allowCoreThreadTimeOut(true);
+    return paramString;
+  }
+  
+  static Handler c()
+  {
+    if (Build.VERSION.SDK_INT >= 28) {
+      return a.a(Looper.getMainLooper());
+    }
+    return new Handler(Looper.getMainLooper());
+  }
+  
+  static class a
+  {
+    public static Handler a(Looper paramLooper)
+    {
+      return Handler.createAsync(paramLooper);
+    }
+  }
+}

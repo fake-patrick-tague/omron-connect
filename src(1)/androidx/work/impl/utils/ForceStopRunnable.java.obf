@@ -1,0 +1,400 @@
+package androidx.work.impl.utils;
+
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.ApplicationExitInfo;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build.VERSION;
+import android.text.TextUtils;
+import androidx.room.RoomDatabase;
+import androidx.work.WorkInfo.State;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.background.systemjob.b;
+import androidx.work.impl.n.n;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.q;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+public class ForceStopRunnable
+  implements Runnable
+{
+  private static final String b = androidx.work.j.f("ForceStopRunnable");
+  private static final long c = TimeUnit.DAYS.toMillis(3650L);
+  private final Context d;
+  private final androidx.work.impl.j e;
+  private int f;
+  
+  public ForceStopRunnable(Context paramContext, androidx.work.impl.j paramJ)
+  {
+    d = paramContext.getApplicationContext();
+    e = paramJ;
+    f = 0;
+  }
+  
+  static Intent c(Context paramContext)
+  {
+    Intent localIntent = new Intent();
+    localIntent.setComponent(new ComponentName(paramContext, BroadcastReceiver.class));
+    localIntent.setAction("ACTION_FORCE_STOP_RESCHEDULE");
+    return localIntent;
+  }
+  
+  private static PendingIntent d(Context paramContext, int paramInt)
+  {
+    return PendingIntent.getBroadcast(paramContext, -1, c(paramContext), paramInt);
+  }
+  
+  static void g(Context paramContext)
+  {
+    AlarmManager localAlarmManager = (AlarmManager)paramContext.getSystemService("alarm");
+    int i;
+    if (c.h.m.a.c()) {
+      i = 167772160;
+    } else {
+      i = 134217728;
+    }
+    paramContext = d(paramContext, i);
+    long l = System.currentTimeMillis() + c;
+    if (localAlarmManager != null)
+    {
+      if (Build.VERSION.SDK_INT >= 19)
+      {
+        localAlarmManager.setExact(0, l, paramContext);
+        return;
+      }
+      localAlarmManager.set(0, l, paramContext);
+    }
+  }
+  
+  public boolean a()
+  {
+    int i = Build.VERSION.SDK_INT;
+    boolean bool2 = false;
+    boolean bool1;
+    if (i >= 23) {
+      bool1 = b.i(d, e);
+    } else {
+      bool1 = false;
+    }
+    WorkDatabase localWorkDatabase = e.p();
+    q localQ = localWorkDatabase.B();
+    n localN = localWorkDatabase.A();
+    localWorkDatabase.c();
+    for (;;)
+    {
+      try
+      {
+        Object localObject2 = localQ.j();
+        if ((localObject2 != null) && (!((List)localObject2).isEmpty()))
+        {
+          i = 1;
+          if (i != 0)
+          {
+            localObject2 = ((List)localObject2).iterator();
+            if (((Iterator)localObject2).hasNext())
+            {
+              p localP = (p)((Iterator)localObject2).next();
+              localQ.b(WorkInfo.State.b, new String[] { c });
+              localQ.c(c, -1L);
+              continue;
+            }
+          }
+          localN.b();
+          localWorkDatabase.r();
+          localWorkDatabase.g();
+          if ((i != 0) || (bool1)) {
+            bool2 = true;
+          }
+          return bool2;
+        }
+      }
+      finally
+      {
+        localWorkDatabase.g();
+      }
+      i = 0;
+    }
+  }
+  
+  public void b()
+  {
+    boolean bool = a();
+    if (h())
+    {
+      androidx.work.j.c().a(b, "Rescheduling Workers.", new Throwable[0]);
+      e.t();
+      e.m().c(false);
+      return;
+    }
+    if (e())
+    {
+      androidx.work.j.c().a(b, "Application was force-stopped, rescheduling.", new Throwable[0]);
+      e.t();
+      return;
+    }
+    if (bool)
+    {
+      androidx.work.j.c().a(b, "Found unfinished work, scheduling it.", new Throwable[0]);
+      androidx.work.impl.f.b(e.j(), e.p(), e.o());
+    }
+  }
+  
+  public boolean e()
+  {
+    int i = 536870912;
+    for (;;)
+    {
+      try
+      {
+        if (c.h.m.a.c()) {
+          i = 570425344;
+        }
+        Object localObject = d(d, i);
+        if (Build.VERSION.SDK_INT >= 30)
+        {
+          if (localObject != null) {
+            ((PendingIntent)localObject).cancel();
+          }
+          localObject = ((ActivityManager)d.getSystemService("activity")).getHistoricalProcessExitReasons(null, 0, 0);
+          if ((localObject != null) && (!((List)localObject).isEmpty()))
+          {
+            i = 0;
+            if (i < ((List)localObject).size())
+            {
+              if (((ApplicationExitInfo)((List)localObject).get(i)).getReason() != 10) {
+                break label144;
+              }
+              return true;
+            }
+          }
+        }
+        else if (localObject == null)
+        {
+          g(d);
+          return true;
+        }
+        return false;
+      }
+      catch (IllegalArgumentException localIllegalArgumentException) {}catch (SecurityException localSecurityException) {}
+      androidx.work.j.c().h(b, "Ignoring exception", new Throwable[] { localSecurityException });
+      return true;
+      label144:
+      i += 1;
+    }
+  }
+  
+  public boolean f()
+  {
+    androidx.work.a localA = e.j();
+    if (TextUtils.isEmpty(localA.c()))
+    {
+      androidx.work.j.c().a(b, "The default process name was not specified.", new Throwable[0]);
+      return true;
+    }
+    boolean bool = f.b(d, localA);
+    androidx.work.j.c().a(b, String.format("Is default app process = %s", new Object[] { Boolean.valueOf(bool) }), new Throwable[0]);
+    return bool;
+  }
+  
+  boolean h()
+  {
+    return e.m().a();
+  }
+  
+  public void i(long paramLong)
+  {
+    try
+    {
+      Thread.sleep(paramLong);
+      return;
+    }
+    catch (InterruptedException localInterruptedException) {}
+  }
+  
+  /* Error */
+  public void run()
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: invokevirtual 338	androidx/work/impl/utils/ForceStopRunnable:f	()Z
+    //   4: istore_2
+    //   5: iload_2
+    //   6: ifne +11 -> 17
+    //   9: aload_0
+    //   10: getfield 59	androidx/work/impl/utils/ForceStopRunnable:e	Landroidx/work/impl/j;
+    //   13: invokevirtual 341	androidx/work/impl/j:s	()V
+    //   16: return
+    //   17: aload_0
+    //   18: getfield 57	androidx/work/impl/utils/ForceStopRunnable:d	Landroid/content/Context;
+    //   21: invokestatic 345	androidx/work/impl/i:e	(Landroid/content/Context;)V
+    //   24: invokestatic 213	androidx/work/j:c	()Landroidx/work/j;
+    //   27: getstatic 30	androidx/work/impl/utils/ForceStopRunnable:b	Ljava/lang/String;
+    //   30: ldc_w 347
+    //   33: iconst_0
+    //   34: anewarray 217	java/lang/Throwable
+    //   37: invokevirtual 220	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   40: aload_0
+    //   41: invokevirtual 348	androidx/work/impl/utils/ForceStopRunnable:b	()V
+    //   44: goto +136 -> 180
+    //   47: astore 5
+    //   49: goto +25 -> 74
+    //   52: astore 5
+    //   54: goto +20 -> 74
+    //   57: astore 5
+    //   59: goto +15 -> 74
+    //   62: astore 5
+    //   64: goto +10 -> 74
+    //   67: astore 5
+    //   69: goto +5 -> 74
+    //   72: astore 5
+    //   74: aload_0
+    //   75: getfield 61	androidx/work/impl/utils/ForceStopRunnable:f	I
+    //   78: iconst_1
+    //   79: iadd
+    //   80: istore_1
+    //   81: aload_0
+    //   82: iload_1
+    //   83: putfield 61	androidx/work/impl/utils/ForceStopRunnable:f	I
+    //   86: iload_1
+    //   87: iconst_3
+    //   88: if_icmplt +103 -> 191
+    //   91: invokestatic 213	androidx/work/j:c	()Landroidx/work/j;
+    //   94: astore 7
+    //   96: getstatic 30	androidx/work/impl/utils/ForceStopRunnable:b	Ljava/lang/String;
+    //   99: astore 6
+    //   101: aload 7
+    //   103: aload 6
+    //   105: ldc_w 350
+    //   108: iconst_1
+    //   109: anewarray 217	java/lang/Throwable
+    //   112: dup
+    //   113: iconst_0
+    //   114: aload 5
+    //   116: aastore
+    //   117: invokevirtual 352	androidx/work/j:b	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   120: new 354	java/lang/IllegalStateException
+    //   123: dup
+    //   124: ldc_w 350
+    //   127: aload 5
+    //   129: invokespecial 357	java/lang/IllegalStateException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   132: astore 5
+    //   134: aload_0
+    //   135: getfield 59	androidx/work/impl/utils/ForceStopRunnable:e	Landroidx/work/impl/j;
+    //   138: invokevirtual 241	androidx/work/impl/j:j	()Landroidx/work/a;
+    //   141: invokevirtual 360	androidx/work/a:d	()Landroidx/work/g;
+    //   144: astore 7
+    //   146: aload 7
+    //   148: ifnull +40 -> 188
+    //   151: invokestatic 213	androidx/work/j:c	()Landroidx/work/j;
+    //   154: aload 6
+    //   156: ldc_w 362
+    //   159: iconst_1
+    //   160: anewarray 217	java/lang/Throwable
+    //   163: dup
+    //   164: iconst_0
+    //   165: aload 5
+    //   167: aastore
+    //   168: invokevirtual 220	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   171: aload 7
+    //   173: aload 5
+    //   175: invokeinterface 367 2 0
+    //   180: aload_0
+    //   181: getfield 59	androidx/work/impl/utils/ForceStopRunnable:e	Landroidx/work/impl/j;
+    //   184: invokevirtual 341	androidx/work/impl/j:s	()V
+    //   187: return
+    //   188: aload 5
+    //   190: athrow
+    //   191: iload_1
+    //   192: i2l
+    //   193: lstore_3
+    //   194: invokestatic 213	androidx/work/j:c	()Landroidx/work/j;
+    //   197: getstatic 30	androidx/work/impl/utils/ForceStopRunnable:b	Ljava/lang/String;
+    //   200: ldc_w 369
+    //   203: iconst_1
+    //   204: anewarray 4	java/lang/Object
+    //   207: dup
+    //   208: iconst_0
+    //   209: lload_3
+    //   210: ldc2_w 370
+    //   213: lmul
+    //   214: invokestatic 376	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   217: aastore
+    //   218: invokestatic 314	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+    //   221: iconst_1
+    //   222: anewarray 217	java/lang/Throwable
+    //   225: dup
+    //   226: iconst_0
+    //   227: aload 5
+    //   229: aastore
+    //   230: invokevirtual 220	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   233: aload_0
+    //   234: aload_0
+    //   235: getfield 61	androidx/work/impl/utils/ForceStopRunnable:f	I
+    //   238: i2l
+    //   239: ldc2_w 370
+    //   242: lmul
+    //   243: invokevirtual 378	androidx/work/impl/utils/ForceStopRunnable:i	(J)V
+    //   246: goto -229 -> 17
+    //   249: astore 5
+    //   251: aload_0
+    //   252: getfield 59	androidx/work/impl/utils/ForceStopRunnable:e	Landroidx/work/impl/j;
+    //   255: invokevirtual 341	androidx/work/impl/j:s	()V
+    //   258: aload 5
+    //   260: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	261	0	this	ForceStopRunnable
+    //   80	112	1	i	int
+    //   4	2	2	bool	boolean
+    //   193	17	3	l	long
+    //   47	1	5	localSQLiteAccessPermException	android.database.sqlite.SQLiteAccessPermException
+    //   52	1	5	localSQLiteConstraintException	android.database.sqlite.SQLiteConstraintException
+    //   57	1	5	localSQLiteTableLockedException	android.database.sqlite.SQLiteTableLockedException
+    //   62	1	5	localSQLiteDatabaseLockedException	android.database.sqlite.SQLiteDatabaseLockedException
+    //   67	1	5	localSQLiteDatabaseCorruptException	android.database.sqlite.SQLiteDatabaseCorruptException
+    //   72	56	5	localSQLiteCantOpenDatabaseException	android.database.sqlite.SQLiteCantOpenDatabaseException
+    //   132	96	5	localIllegalStateException	IllegalStateException
+    //   249	10	5	localObject1	Object
+    //   99	56	6	str	String
+    //   94	78	7	localObject2	Object
+    // Exception table:
+    //   from	to	target	type
+    //   40	44	47	android/database/sqlite/SQLiteAccessPermException
+    //   40	44	52	android/database/sqlite/SQLiteConstraintException
+    //   40	44	57	android/database/sqlite/SQLiteTableLockedException
+    //   40	44	62	android/database/sqlite/SQLiteDatabaseLockedException
+    //   40	44	67	android/database/sqlite/SQLiteDatabaseCorruptException
+    //   40	44	72	android/database/sqlite/SQLiteCantOpenDatabaseException
+    //   0	5	249	finally
+    //   17	40	249	finally
+    //   40	44	249	finally
+    //   74	86	249	finally
+    //   91	146	249	finally
+    //   151	180	249	finally
+    //   188	191	249	finally
+    //   194	246	249	finally
+  }
+  
+  public static class BroadcastReceiver
+    extends BroadcastReceiver
+  {
+    private static final String a = androidx.work.j.f("ForceStopRunnable$Rcvr");
+    
+    public BroadcastReceiver() {}
+    
+    public void onReceive(Context paramContext, Intent paramIntent)
+    {
+      if ((paramIntent != null) && ("ACTION_FORCE_STOP_RESCHEDULE".equals(paramIntent.getAction())))
+      {
+        androidx.work.j.c().g(a, "Rescheduling alarm that keeps track of force-stops.", new Throwable[0]);
+        ForceStopRunnable.g(paramContext);
+      }
+    }
+  }
+}

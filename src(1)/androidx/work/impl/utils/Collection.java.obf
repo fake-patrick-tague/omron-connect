@@ -1,0 +1,52 @@
+package androidx.work.impl.utils;
+
+import android.content.Context;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import androidx.work.j;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+public class k
+{
+  private static final String a = j.f("WakeLocks");
+  private static final WeakHashMap<PowerManager.WakeLock, String> b = new WeakHashMap();
+  
+  public static void a()
+  {
+    HashMap localHashMap = new HashMap();
+    synchronized (b)
+    {
+      localHashMap.putAll((Map)???);
+      ??? = localHashMap.keySet().iterator();
+      while (((Iterator)???).hasNext())
+      {
+        Object localObject3 = (PowerManager.WakeLock)((Iterator)???).next();
+        if ((localObject3 != null) && (((PowerManager.WakeLock)localObject3).isHeld()))
+        {
+          localObject3 = String.format("WakeLock held for %s", new Object[] { localHashMap.get(localObject3) });
+          j.c().h(a, (String)localObject3, new Throwable[0]);
+        }
+      }
+      return;
+    }
+  }
+  
+  public static PowerManager.WakeLock b(Context arg0, String paramString)
+  {
+    ??? = (PowerManager)???.getApplicationContext().getSystemService("power");
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("WorkManager: ");
+    ((StringBuilder)localObject).append(paramString);
+    paramString = ((StringBuilder)localObject).toString();
+    localObject = ???.newWakeLock(1, paramString);
+    synchronized (b)
+    {
+      ???.put(localObject, paramString);
+      return localObject;
+    }
+  }
+}

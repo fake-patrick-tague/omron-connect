@@ -1,0 +1,41 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.pm.PackageInfo;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.common.wrappers.PackageManagerWrapper;
+import com.google.android.gms.common.wrappers.Wrappers;
+
+public final class zzfg
+{
+  final zzfy zza;
+  
+  zzfg(zzkz paramZzkz)
+  {
+    zza = paramZzkz.zzq();
+  }
+  
+  @VisibleForTesting
+  final boolean zza()
+  {
+    boolean bool = false;
+    try
+    {
+      PackageManagerWrapper localPackageManagerWrapper = Wrappers.packageManager(zza.zzau());
+      if (localPackageManagerWrapper == null)
+      {
+        zza.zzay().zzj().zza("Failed to get PackageManager for Install Referrer Play Store compatibility check");
+        return false;
+      }
+      int i = getPackageInfo"com.android.vending"128versionCode;
+      if (i >= 80837300) {
+        bool = true;
+      }
+      return bool;
+    }
+    catch (Exception localException)
+    {
+      zza.zzay().zzj().zzb("Failed to retrieve Play Store version for Install Referrer", localException);
+    }
+    return false;
+  }
+}

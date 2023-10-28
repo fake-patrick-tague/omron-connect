@@ -1,0 +1,81 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+
+@KeepForSdk
+@SafeParcelable.Class(creator="RootTelemetryConfigurationCreator")
+public class RootTelemetryConfiguration
+  extends AbstractSafeParcelable
+{
+  @KeepForSdk
+  public static final Parcelable.Creator<RootTelemetryConfiguration> CREATOR = new zzai();
+  @SafeParcelable.Field(getter="getVersion", id=1)
+  private final int zza;
+  @SafeParcelable.Field(getter="getMethodInvocationTelemetryEnabled", id=2)
+  private final boolean zzb;
+  @SafeParcelable.Field(getter="getMethodTimingTelemetryEnabled", id=3)
+  private final boolean zzc;
+  @SafeParcelable.Field(getter="getBatchPeriodMillis", id=4)
+  private final int zzd;
+  @SafeParcelable.Field(getter="getMaxMethodInvocationsInBatch", id=5)
+  private final int zze;
+  
+  @SafeParcelable.Constructor
+  public RootTelemetryConfiguration(@SafeParcelable.Param(id=1) int paramInt1, @SafeParcelable.Param(id=2) boolean paramBoolean1, @SafeParcelable.Param(id=3) boolean paramBoolean2, @SafeParcelable.Param(id=4) int paramInt2, @SafeParcelable.Param(id=5) int paramInt3)
+  {
+    zza = paramInt1;
+    zzb = paramBoolean1;
+    zzc = paramBoolean2;
+    zzd = paramInt2;
+    zze = paramInt3;
+  }
+  
+  @KeepForSdk
+  public int getBatchPeriodMillis()
+  {
+    return zzd;
+  }
+  
+  @KeepForSdk
+  public int getMaxMethodInvocationsInBatch()
+  {
+    return zze;
+  }
+  
+  @KeepForSdk
+  public boolean getMethodInvocationTelemetryEnabled()
+  {
+    return zzb;
+  }
+  
+  @KeepForSdk
+  public boolean getMethodTimingTelemetryEnabled()
+  {
+    return zzc;
+  }
+  
+  @KeepForSdk
+  public int getVersion()
+  {
+    return zza;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, getVersion());
+    SafeParcelWriter.writeBoolean(paramParcel, 2, getMethodInvocationTelemetryEnabled());
+    SafeParcelWriter.writeBoolean(paramParcel, 3, getMethodTimingTelemetryEnabled());
+    SafeParcelWriter.writeInt(paramParcel, 4, getBatchPeriodMillis());
+    SafeParcelWriter.writeInt(paramParcel, 5, getMaxMethodInvocationsInBatch());
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+}

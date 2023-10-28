@@ -1,0 +1,53 @@
+package com.google.firebase.messaging;
+
+import android.util.Log;
+import c.e.a;
+import com.google.android.gms.tasks.Task;
+import java.util.Map;
+import java.util.concurrent.Executor;
+
+class x0
+{
+  private final Executor a;
+  private final Map<String, Task<String>> b = new a();
+  
+  x0(Executor paramExecutor)
+  {
+    a = paramExecutor;
+  }
+  
+  Task<String> a(String paramString, a paramA)
+  {
+    try
+    {
+      Object localObject = (Task)b.get(paramString);
+      if (localObject != null)
+      {
+        if (Log.isLoggable("FirebaseMessaging", 3))
+        {
+          paramA = new StringBuilder();
+          paramA.append("Joining ongoing request for: ");
+          paramA.append(paramString);
+          Log.d("FirebaseMessaging", paramA.toString());
+        }
+        return localObject;
+      }
+      if (Log.isLoggable("FirebaseMessaging", 3))
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Making new request for: ");
+        ((StringBuilder)localObject).append(paramString);
+        Log.d("FirebaseMessaging", ((StringBuilder)localObject).toString());
+      }
+      paramA = paramA.start().continueWithTask(a, new y(this, paramString));
+      b.put(paramString, paramA);
+      return paramA;
+    }
+    finally {}
+  }
+  
+  static abstract interface a
+  {
+    public abstract Task<String> start();
+  }
+}

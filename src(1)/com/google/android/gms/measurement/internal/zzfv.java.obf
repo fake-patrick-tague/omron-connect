@@ -1,0 +1,182 @@
+package com.google.android.gms.measurement.internal;
+
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+
+public final class zzfv
+  extends zzgs
+{
+  private static final AtomicLong zza = new AtomicLong(Long.MIN_VALUE);
+  private zzfu zzb;
+  private zzfu zzc;
+  private final PriorityBlockingQueue zzd = new PriorityBlockingQueue();
+  private final BlockingQueue zze = new LinkedBlockingQueue();
+  private final Thread.UncaughtExceptionHandler zzf = new zzfs(this, "Thread death: Uncaught exception on worker thread");
+  private final Thread.UncaughtExceptionHandler zzg = new zzfs(this, "Thread death: Uncaught exception on network thread");
+  private final Object zzh = new Object();
+  private final Semaphore zzi = new Semaphore(2);
+  private volatile boolean zzj;
+  
+  zzfv(zzfy paramZzfy)
+  {
+    super(paramZzfy);
+  }
+  
+  private final void zzt(zzft paramZzft)
+  {
+    synchronized (zzh)
+    {
+      zzd.add(paramZzft);
+      paramZzft = zzb;
+      if (paramZzft == null)
+      {
+        paramZzft = new zzfu(this, "Measurement Worker", zzd);
+        zzb = paramZzft;
+        paramZzft.setUncaughtExceptionHandler(zzf);
+        zzb.start();
+      }
+      else
+      {
+        paramZzft.zza();
+      }
+      return;
+    }
+  }
+  
+  public final void zzax()
+  {
+    if (Thread.currentThread() == zzc) {
+      return;
+    }
+    throw new IllegalStateException("Call expected from network thread");
+  }
+  
+  final Object zzd(AtomicReference paramAtomicReference, long paramLong, String paramString, Runnable paramRunnable)
+  {
+    for (;;)
+    {
+      StringBuilder localStringBuilder;
+      try
+      {
+        zzs.zzaz().zzp(paramRunnable);
+      }
+      finally {}
+      try
+      {
+        paramAtomicReference.wait(paramLong);
+        paramAtomicReference = paramAtomicReference.get();
+        if (paramAtomicReference == null) {
+          zzs.zzay().zzk().zza("Timed out waiting for ".concat(paramString));
+        }
+        return paramAtomicReference;
+      }
+      catch (InterruptedException paramRunnable) {}
+    }
+    paramRunnable = zzs.zzay().zzk();
+    localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Interrupted waiting for ");
+    localStringBuilder.append(paramString);
+    paramRunnable.zza(localStringBuilder.toString());
+    return null;
+  }
+  
+  protected final boolean zzf()
+  {
+    return false;
+  }
+  
+  public final void zzg()
+  {
+    if (Thread.currentThread() == zzb) {
+      return;
+    }
+    throw new IllegalStateException("Call expected from worker thread");
+  }
+  
+  public final Future zzh(Callable paramCallable)
+    throws IllegalStateException
+  {
+    zzu();
+    Preconditions.checkNotNull(paramCallable);
+    paramCallable = new zzft(this, paramCallable, false, "Task exception on worker thread");
+    if (Thread.currentThread() == zzb)
+    {
+      if (!zzd.isEmpty()) {
+        zzs.zzay().zzk().zza("Callable skipped the worker queue.");
+      }
+      paramCallable.run();
+      return paramCallable;
+    }
+    zzt(paramCallable);
+    return paramCallable;
+  }
+  
+  public final Future zzi(Callable paramCallable)
+    throws IllegalStateException
+  {
+    zzu();
+    Preconditions.checkNotNull(paramCallable);
+    paramCallable = new zzft(this, paramCallable, true, "Task exception on worker thread");
+    if (Thread.currentThread() == zzb)
+    {
+      paramCallable.run();
+      return paramCallable;
+    }
+    zzt(paramCallable);
+    return paramCallable;
+  }
+  
+  public final void zzo(Runnable arg1)
+    throws IllegalStateException
+  {
+    zzu();
+    Preconditions.checkNotNull(???);
+    Object localObject1 = new zzft(this, ???, false, "Task exception on network thread");
+    synchronized (zzh)
+    {
+      zze.add(localObject1);
+      localObject1 = zzc;
+      if (localObject1 == null)
+      {
+        localObject1 = new zzfu(this, "Measurement Network", zze);
+        zzc = ((zzfu)localObject1);
+        ((Thread)localObject1).setUncaughtExceptionHandler(zzg);
+        zzc.start();
+      }
+      else
+      {
+        ((zzfu)localObject1).zza();
+      }
+      return;
+    }
+  }
+  
+  public final void zzp(Runnable paramRunnable)
+    throws IllegalStateException
+  {
+    zzu();
+    Preconditions.checkNotNull(paramRunnable);
+    zzt(new zzft(this, paramRunnable, false, "Task exception on worker thread"));
+  }
+  
+  public final void zzq(Runnable paramRunnable)
+    throws IllegalStateException
+  {
+    zzu();
+    Preconditions.checkNotNull(paramRunnable);
+    zzt(new zzft(this, paramRunnable, true, "Task exception on worker thread"));
+  }
+  
+  public final boolean zzs()
+  {
+    return Thread.currentThread() == zzb;
+  }
+}

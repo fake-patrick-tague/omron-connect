@@ -1,0 +1,868 @@
+package com.google.android.material.button;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.ClassLoaderCreator;
+import android.os.Parcelable.Creator;
+import android.text.Layout;
+import android.text.TextPaint;
+import android.text.method.TransformationMethod;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Button;
+import android.widget.Checkable;
+import android.widget.CompoundButton;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.customview.view.AbsSavedState;
+import c.h.q.f0;
+import com.google.android.material.internal.j;
+import d.c.a.a.b;
+import d.c.a.a.l;
+import d.c.a.a.u.c;
+import d.c.a.a.x.g;
+import d.c.a.a.x.h;
+import d.c.a.a.x.k.b;
+import d.c.a.a.x.n;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+public class MaterialButton
+  extends AppCompatButton
+  implements Checkable, n
+{
+  private static final int[] e = { 16842911 };
+  private static final int[] f = { 16842912 };
+  private static final int g = d.c.a.a.k.p;
+  private final a h;
+  private final LinkedHashSet<a> i = new LinkedHashSet();
+  private b j;
+  private PorterDuff.Mode k;
+  private ColorStateList l;
+  private Drawable m;
+  private int n;
+  private int o;
+  private int p;
+  private int q;
+  private boolean r;
+  private boolean s;
+  private int t;
+  
+  public MaterialButton(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, b.u);
+  }
+  
+  public MaterialButton(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(com.google.android.material.theme.a.a.c(paramContext, paramAttributeSet, paramInt, i1), paramAttributeSet, paramInt);
+    boolean bool = false;
+    r = false;
+    s = false;
+    Context localContext = getContext();
+    paramContext = com.google.android.material.internal.i.h(localContext, paramAttributeSet, l.W2, paramInt, i1, new int[0]);
+    q = paramContext.getDimensionPixelSize(l.j3, 0);
+    k = j.e(paramContext.getInt(l.m3, -1), PorterDuff.Mode.SRC_IN);
+    l = c.a(getContext(), paramContext, l.l3);
+    m = c.d(getContext(), paramContext, l.h3);
+    t = paramContext.getInteger(l.i3, 1);
+    n = paramContext.getDimensionPixelSize(l.k3, 0);
+    paramAttributeSet = new a(this, d.c.a.a.x.k.e(localContext, paramAttributeSet, paramInt, i1).m());
+    h = paramAttributeSet;
+    paramAttributeSet.q(paramContext);
+    paramContext.recycle();
+    setCompoundDrawablePadding(q);
+    if (m != null) {
+      bool = true;
+    }
+    j(bool);
+  }
+  
+  private boolean c()
+  {
+    int i1 = t;
+    return (i1 == 3) || (i1 == 4);
+  }
+  
+  private boolean d()
+  {
+    int i1 = t;
+    boolean bool = true;
+    if (i1 != 1)
+    {
+      if (i1 == 2) {
+        return true;
+      }
+      bool = false;
+    }
+    return bool;
+  }
+  
+  private boolean e()
+  {
+    int i1 = t;
+    return (i1 == 16) || (i1 == 32);
+  }
+  
+  private boolean f()
+  {
+    return f0.D(this) == 1;
+  }
+  
+  private boolean g()
+  {
+    a localA = h;
+    return (localA != null) && (!localA.o());
+  }
+  
+  private String getA11yClassName()
+  {
+    Object localObject;
+    if (b()) {
+      localObject = CompoundButton.class;
+    } else {
+      localObject = Button.class;
+    }
+    return ((Class)localObject).getName();
+  }
+  
+  private int getTextHeight()
+  {
+    TextPaint localTextPaint = getPaint();
+    Object localObject2 = getText().toString();
+    Object localObject1 = localObject2;
+    if (getTransformationMethod() != null) {
+      localObject1 = getTransformationMethod().getTransformation((CharSequence)localObject2, this).toString();
+    }
+    localObject2 = new Rect();
+    localTextPaint.getTextBounds((String)localObject1, 0, ((String)localObject1).length(), (Rect)localObject2);
+    return Math.min(((Rect)localObject2).height(), getLayout().getHeight());
+  }
+  
+  private int getTextWidth()
+  {
+    TextPaint localTextPaint = getPaint();
+    String str2 = getText().toString();
+    String str1 = str2;
+    if (getTransformationMethod() != null) {
+      str1 = getTransformationMethod().getTransformation(str2, this).toString();
+    }
+    return Math.min((int)localTextPaint.measureText(str1), getLayout().getEllipsizedWidth());
+  }
+  
+  private void i()
+  {
+    if (d())
+    {
+      androidx.core.widget.i.l(this, m, null, null, null);
+      return;
+    }
+    if (c())
+    {
+      androidx.core.widget.i.l(this, null, null, m, null);
+      return;
+    }
+    if (e()) {
+      androidx.core.widget.i.l(this, null, m, null, null);
+    }
+  }
+  
+  private void j(boolean paramBoolean)
+  {
+    Object localObject1 = m;
+    int i1;
+    if (localObject1 != null)
+    {
+      localObject1 = androidx.core.graphics.drawable.a.r((Drawable)localObject1).mutate();
+      m = ((Drawable)localObject1);
+      androidx.core.graphics.drawable.a.o((Drawable)localObject1, l);
+      localObject1 = k;
+      if (localObject1 != null) {
+        androidx.core.graphics.drawable.a.p(m, (PorterDuff.Mode)localObject1);
+      }
+      i1 = n;
+      if (i1 == 0) {
+        i1 = m.getIntrinsicWidth();
+      }
+      i2 = n;
+      if (i2 == 0) {
+        i2 = m.getIntrinsicHeight();
+      }
+      localObject1 = m;
+      int i3 = o;
+      int i4 = p;
+      ((Drawable)localObject1).setBounds(i3, i4, i1 + i3, i2 + i4);
+    }
+    if (paramBoolean)
+    {
+      i();
+      return;
+    }
+    Object localObject3 = androidx.core.widget.i.a(this);
+    int i2 = 0;
+    localObject1 = localObject3[0];
+    Object localObject2 = localObject3[1];
+    localObject3 = localObject3[2];
+    if (((!d()) || (localObject1 == m)) && ((!c()) || (localObject3 == m)))
+    {
+      i1 = i2;
+      if (e())
+      {
+        i1 = i2;
+        if (localObject2 == m) {}
+      }
+    }
+    else
+    {
+      i1 = 1;
+    }
+    if (i1 != 0) {
+      i();
+    }
+  }
+  
+  private void k(int paramInt1, int paramInt2)
+  {
+    if (m != null)
+    {
+      if (getLayout() == null) {
+        return;
+      }
+      int i1;
+      if ((!d()) && (!c()))
+      {
+        if (e())
+        {
+          o = 0;
+          if (t == 16)
+          {
+            p = 0;
+            j(false);
+            return;
+          }
+          i1 = n;
+          paramInt1 = i1;
+          if (i1 == 0) {
+            paramInt1 = m.getIntrinsicHeight();
+          }
+          paramInt1 = (paramInt2 - getTextHeight() - getPaddingTop() - paramInt1 - q - getPaddingBottom()) / 2;
+          if (p != paramInt1)
+          {
+            p = paramInt1;
+            j(false);
+          }
+        }
+      }
+      else
+      {
+        p = 0;
+        paramInt2 = t;
+        boolean bool1 = true;
+        if ((paramInt2 == 1) || (paramInt2 == 3)) {
+          break label250;
+        }
+        i1 = n;
+        paramInt2 = i1;
+        if (i1 == 0) {
+          paramInt2 = m.getIntrinsicWidth();
+        }
+        paramInt2 = (paramInt1 - getTextWidth() - f0.H(this) - paramInt2 - q - f0.I(this)) / 2;
+        boolean bool2 = f();
+        if (t != 4) {
+          bool1 = false;
+        }
+        paramInt1 = paramInt2;
+        if (bool2 != bool1) {
+          paramInt1 = -paramInt2;
+        }
+        if (o != paramInt1)
+        {
+          o = paramInt1;
+          j(false);
+        }
+      }
+      return;
+      label250:
+      o = 0;
+      j(false);
+    }
+  }
+  
+  public void a(a paramA)
+  {
+    i.add(paramA);
+  }
+  
+  public boolean b()
+  {
+    a localA = h;
+    return (localA != null) && (localA.p());
+  }
+  
+  public ColorStateList getBackgroundTintList()
+  {
+    return getSupportBackgroundTintList();
+  }
+  
+  public PorterDuff.Mode getBackgroundTintMode()
+  {
+    return getSupportBackgroundTintMode();
+  }
+  
+  public int getCornerRadius()
+  {
+    if (g()) {
+      return h.b();
+    }
+    return 0;
+  }
+  
+  public Drawable getIcon()
+  {
+    return m;
+  }
+  
+  public int getIconGravity()
+  {
+    return t;
+  }
+  
+  public int getIconPadding()
+  {
+    return q;
+  }
+  
+  public int getIconSize()
+  {
+    return n;
+  }
+  
+  public ColorStateList getIconTint()
+  {
+    return l;
+  }
+  
+  public PorterDuff.Mode getIconTintMode()
+  {
+    return k;
+  }
+  
+  public int getInsetBottom()
+  {
+    return h.c();
+  }
+  
+  public int getInsetTop()
+  {
+    return h.d();
+  }
+  
+  public ColorStateList getRippleColor()
+  {
+    if (g()) {
+      return h.h();
+    }
+    return null;
+  }
+  
+  public d.c.a.a.x.k getShapeAppearanceModel()
+  {
+    if (g()) {
+      return h.i();
+    }
+    throw new IllegalStateException("Attempted to get ShapeAppearanceModel from a MaterialButton which has an overwritten background.");
+  }
+  
+  public ColorStateList getStrokeColor()
+  {
+    if (g()) {
+      return h.j();
+    }
+    return null;
+  }
+  
+  public int getStrokeWidth()
+  {
+    if (g()) {
+      return h.k();
+    }
+    return 0;
+  }
+  
+  public ColorStateList getSupportBackgroundTintList()
+  {
+    if (g()) {
+      return h.l();
+    }
+    return super.getSupportBackgroundTintList();
+  }
+  
+  public PorterDuff.Mode getSupportBackgroundTintMode()
+  {
+    if (g()) {
+      return h.m();
+    }
+    return super.getSupportBackgroundTintMode();
+  }
+  
+  public void h(a paramA)
+  {
+    i.remove(paramA);
+  }
+  
+  public boolean isChecked()
+  {
+    return r;
+  }
+  
+  protected void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    if (g()) {
+      h.f(this, h.f());
+    }
+  }
+  
+  protected int[] onCreateDrawableState(int paramInt)
+  {
+    int[] arrayOfInt = super.onCreateDrawableState(paramInt + 2);
+    if (b()) {
+      Button.mergeDrawableStates(arrayOfInt, e);
+    }
+    if (isChecked()) {
+      Button.mergeDrawableStates(arrayOfInt, f);
+    }
+    return arrayOfInt;
+  }
+  
+  public void onInitializeAccessibilityEvent(AccessibilityEvent paramAccessibilityEvent)
+  {
+    super.onInitializeAccessibilityEvent(paramAccessibilityEvent);
+    paramAccessibilityEvent.setClassName(getA11yClassName());
+    paramAccessibilityEvent.setChecked(isChecked());
+  }
+  
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+  {
+    super.onInitializeAccessibilityNodeInfo(paramAccessibilityNodeInfo);
+    paramAccessibilityNodeInfo.setClassName(getA11yClassName());
+    paramAccessibilityNodeInfo.setCheckable(b());
+    paramAccessibilityNodeInfo.setChecked(isChecked());
+    paramAccessibilityNodeInfo.setClickable(isClickable());
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onLayout(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    if (Build.VERSION.SDK_INT == 21)
+    {
+      a localA = h;
+      if (localA != null) {
+        localA.H(paramInt4 - paramInt2, paramInt3 - paramInt1);
+      }
+    }
+  }
+  
+  public void onRestoreInstanceState(Parcelable paramParcelable)
+  {
+    if (!(paramParcelable instanceof SavedState))
+    {
+      super.onRestoreInstanceState(paramParcelable);
+      return;
+    }
+    paramParcelable = (SavedState)paramParcelable;
+    super.onRestoreInstanceState(paramParcelable.a());
+    setChecked(d);
+  }
+  
+  public Parcelable onSaveInstanceState()
+  {
+    SavedState localSavedState = new SavedState(super.onSaveInstanceState());
+    d = r;
+    return localSavedState;
+  }
+  
+  protected void onSizeChanged(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onSizeChanged(paramInt1, paramInt2, paramInt3, paramInt4);
+    k(paramInt1, paramInt2);
+  }
+  
+  protected void onTextChanged(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3)
+  {
+    super.onTextChanged(paramCharSequence, paramInt1, paramInt2, paramInt3);
+    k(getMeasuredWidth(), getMeasuredHeight());
+  }
+  
+  public boolean performClick()
+  {
+    toggle();
+    return super.performClick();
+  }
+  
+  public void setBackground(Drawable paramDrawable)
+  {
+    setBackgroundDrawable(paramDrawable);
+  }
+  
+  public void setBackgroundColor(int paramInt)
+  {
+    if (g())
+    {
+      h.r(paramInt);
+      return;
+    }
+    super.setBackgroundColor(paramInt);
+  }
+  
+  public void setBackgroundDrawable(Drawable paramDrawable)
+  {
+    if (g())
+    {
+      if (paramDrawable != getBackground())
+      {
+        Log.w("MaterialButton", "MaterialButton manages its own background to control elevation, shape, color and states. Consider using backgroundTint, shapeAppearance and other attributes where available. A custom background will ignore these attributes and you should consider handling interaction states such as pressed, focused and disabled");
+        h.s();
+        super.setBackgroundDrawable(paramDrawable);
+        return;
+      }
+      getBackground().setState(paramDrawable.getState());
+      return;
+    }
+    super.setBackgroundDrawable(paramDrawable);
+  }
+  
+  public void setBackgroundResource(int paramInt)
+  {
+    Drawable localDrawable;
+    if (paramInt != 0) {
+      localDrawable = c.a.k.a.a.b(getContext(), paramInt);
+    } else {
+      localDrawable = null;
+    }
+    setBackgroundDrawable(localDrawable);
+  }
+  
+  public void setBackgroundTintList(ColorStateList paramColorStateList)
+  {
+    setSupportBackgroundTintList(paramColorStateList);
+  }
+  
+  public void setBackgroundTintMode(PorterDuff.Mode paramMode)
+  {
+    setSupportBackgroundTintMode(paramMode);
+  }
+  
+  public void setCheckable(boolean paramBoolean)
+  {
+    if (g()) {
+      h.t(paramBoolean);
+    }
+  }
+  
+  public void setChecked(boolean paramBoolean)
+  {
+    if ((b()) && (isEnabled()) && (r != paramBoolean))
+    {
+      r = paramBoolean;
+      refreshDrawableState();
+      if (s) {
+        return;
+      }
+      s = true;
+      Iterator localIterator = i.iterator();
+      while (localIterator.hasNext()) {
+        ((a)localIterator.next()).a(this, r);
+      }
+      s = false;
+    }
+  }
+  
+  public void setCornerRadius(int paramInt)
+  {
+    if (g()) {
+      h.u(paramInt);
+    }
+  }
+  
+  public void setCornerRadiusResource(int paramInt)
+  {
+    if (g()) {
+      setCornerRadius(getResources().getDimensionPixelSize(paramInt));
+    }
+  }
+  
+  public void setElevation(float paramFloat)
+  {
+    super.setElevation(paramFloat);
+    if (g()) {
+      h.f().W(paramFloat);
+    }
+  }
+  
+  public void setIcon(Drawable paramDrawable)
+  {
+    if (m != paramDrawable)
+    {
+      m = paramDrawable;
+      j(true);
+      k(getMeasuredWidth(), getMeasuredHeight());
+    }
+  }
+  
+  public void setIconGravity(int paramInt)
+  {
+    if (t != paramInt)
+    {
+      t = paramInt;
+      k(getMeasuredWidth(), getMeasuredHeight());
+    }
+  }
+  
+  public void setIconPadding(int paramInt)
+  {
+    if (q != paramInt)
+    {
+      q = paramInt;
+      setCompoundDrawablePadding(paramInt);
+    }
+  }
+  
+  public void setIconResource(int paramInt)
+  {
+    Drawable localDrawable;
+    if (paramInt != 0) {
+      localDrawable = c.a.k.a.a.b(getContext(), paramInt);
+    } else {
+      localDrawable = null;
+    }
+    setIcon(localDrawable);
+  }
+  
+  public void setIconSize(int paramInt)
+  {
+    if (paramInt >= 0)
+    {
+      if (n != paramInt)
+      {
+        n = paramInt;
+        j(true);
+      }
+      return;
+    }
+    throw new IllegalArgumentException("iconSize cannot be less than 0");
+  }
+  
+  public void setIconTint(ColorStateList paramColorStateList)
+  {
+    if (l != paramColorStateList)
+    {
+      l = paramColorStateList;
+      j(false);
+    }
+  }
+  
+  public void setIconTintMode(PorterDuff.Mode paramMode)
+  {
+    if (k != paramMode)
+    {
+      k = paramMode;
+      j(false);
+    }
+  }
+  
+  public void setIconTintResource(int paramInt)
+  {
+    setIconTint(c.a.k.a.a.a(getContext(), paramInt));
+  }
+  
+  public void setInsetBottom(int paramInt)
+  {
+    h.v(paramInt);
+  }
+  
+  public void setInsetTop(int paramInt)
+  {
+    h.w(paramInt);
+  }
+  
+  void setInternalBackground(Drawable paramDrawable)
+  {
+    super.setBackgroundDrawable(paramDrawable);
+  }
+  
+  void setOnPressedChangeListenerInternal(b paramB)
+  {
+    j = paramB;
+  }
+  
+  public void setPressed(boolean paramBoolean)
+  {
+    b localB = j;
+    if (localB != null) {
+      localB.a(this, paramBoolean);
+    }
+    super.setPressed(paramBoolean);
+  }
+  
+  public void setRippleColor(ColorStateList paramColorStateList)
+  {
+    if (g()) {
+      h.x(paramColorStateList);
+    }
+  }
+  
+  public void setRippleColorResource(int paramInt)
+  {
+    if (g()) {
+      setRippleColor(c.a.k.a.a.a(getContext(), paramInt));
+    }
+  }
+  
+  public void setShapeAppearanceModel(d.c.a.a.x.k paramK)
+  {
+    if (g())
+    {
+      h.y(paramK);
+      return;
+    }
+    throw new IllegalStateException("Attempted to set ShapeAppearanceModel on a MaterialButton which has an overwritten background.");
+  }
+  
+  void setShouldDrawSurfaceColorStroke(boolean paramBoolean)
+  {
+    if (g()) {
+      h.z(paramBoolean);
+    }
+  }
+  
+  public void setStrokeColor(ColorStateList paramColorStateList)
+  {
+    if (g()) {
+      h.A(paramColorStateList);
+    }
+  }
+  
+  public void setStrokeColorResource(int paramInt)
+  {
+    if (g()) {
+      setStrokeColor(c.a.k.a.a.a(getContext(), paramInt));
+    }
+  }
+  
+  public void setStrokeWidth(int paramInt)
+  {
+    if (g()) {
+      h.B(paramInt);
+    }
+  }
+  
+  public void setStrokeWidthResource(int paramInt)
+  {
+    if (g()) {
+      setStrokeWidth(getResources().getDimensionPixelSize(paramInt));
+    }
+  }
+  
+  public void setSupportBackgroundTintList(ColorStateList paramColorStateList)
+  {
+    if (g())
+    {
+      h.C(paramColorStateList);
+      return;
+    }
+    super.setSupportBackgroundTintList(paramColorStateList);
+  }
+  
+  public void setSupportBackgroundTintMode(PorterDuff.Mode paramMode)
+  {
+    if (g())
+    {
+      h.D(paramMode);
+      return;
+    }
+    super.setSupportBackgroundTintMode(paramMode);
+  }
+  
+  public void toggle()
+  {
+    setChecked(r ^ true);
+  }
+  
+  static class SavedState
+    extends AbsSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    boolean d;
+    
+    public SavedState(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      super(paramClassLoader);
+      if (paramClassLoader == null) {
+        SavedState.class.getClassLoader();
+      }
+      b(paramParcel);
+    }
+    
+    public SavedState(Parcelable paramParcelable)
+    {
+      super();
+    }
+    
+    private void b(Parcel paramParcel)
+    {
+      int i = paramParcel.readInt();
+      boolean bool = true;
+      if (i != 1) {
+        bool = false;
+      }
+      d = bool;
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    static final class a
+      implements Parcelable.ClassLoaderCreator<MaterialButton.SavedState>
+    {
+      a() {}
+      
+      public MaterialButton.SavedState a(Parcel paramParcel)
+      {
+        return new MaterialButton.SavedState(paramParcel, null);
+      }
+      
+      public MaterialButton.SavedState b(Parcel paramParcel, ClassLoader paramClassLoader)
+      {
+        return new MaterialButton.SavedState(paramParcel, paramClassLoader);
+      }
+      
+      public MaterialButton.SavedState[] c(int paramInt)
+      {
+        return new MaterialButton.SavedState[paramInt];
+      }
+    }
+  }
+  
+  public static abstract interface a
+  {
+    public abstract void a(MaterialButton paramMaterialButton, boolean paramBoolean);
+  }
+  
+  static abstract interface b
+  {
+    public abstract void a(MaterialButton paramMaterialButton, boolean paramBoolean);
+  }
+}

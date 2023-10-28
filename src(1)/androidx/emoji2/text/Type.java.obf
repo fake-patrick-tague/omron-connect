@@ -1,0 +1,149 @@
+package androidx.emoji2.text;
+
+import androidx.emoji2.text.q.b;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+class l
+{
+  private static b a(c paramC)
+    throws IOException
+  {
+    paramC.b(4);
+    int k = paramC.readUnsignedShort();
+    if (k <= 100)
+    {
+      paramC.b(6);
+      int j = 0;
+      int i = 0;
+      while (i < k)
+      {
+        int m = paramC.a();
+        paramC.b(4);
+        l1 = paramC.c();
+        paramC.b(4);
+        if (1835365473 == m) {
+          break label89;
+        }
+        i += 1;
+      }
+      long l1 = -1L;
+      label89:
+      if (l1 != -1L)
+      {
+        paramC.b((int)(l1 - paramC.getPosition()));
+        paramC.b(12);
+        long l2 = paramC.c();
+        i = j;
+        while (i < l2)
+        {
+          j = paramC.a();
+          long l3 = paramC.c();
+          long l4 = paramC.c();
+          if ((1164798569 != j) && (1701669481 != j)) {
+            i += 1;
+          } else {
+            return new b(l3 + l1, l4);
+          }
+        }
+      }
+      throw new IOException("Cannot read metadata.");
+    }
+    throw new IOException("Cannot read metadata.");
+  }
+  
+  static b b(ByteBuffer paramByteBuffer)
+    throws IOException
+  {
+    paramByteBuffer = paramByteBuffer.duplicate();
+    paramByteBuffer.position((int)a(new a(paramByteBuffer)).a());
+    return b.h(paramByteBuffer);
+  }
+  
+  static long c(int paramInt)
+  {
+    return paramInt & 0xFFFFFFFF;
+  }
+  
+  static int d(short paramShort)
+  {
+    return paramShort & 0xFFFF;
+  }
+  
+  private static class a
+    implements l.c
+  {
+    private final ByteBuffer a;
+    
+    a(ByteBuffer paramByteBuffer)
+    {
+      a = paramByteBuffer;
+      paramByteBuffer.order(ByteOrder.BIG_ENDIAN);
+    }
+    
+    public int a()
+      throws IOException
+    {
+      return a.getInt();
+    }
+    
+    public void b(int paramInt)
+      throws IOException
+    {
+      ByteBuffer localByteBuffer = a;
+      localByteBuffer.position(localByteBuffer.position() + paramInt);
+    }
+    
+    public long c()
+      throws IOException
+    {
+      return l.c(a.getInt());
+    }
+    
+    public long getPosition()
+    {
+      return a.position();
+    }
+    
+    public int readUnsignedShort()
+      throws IOException
+    {
+      return l.d(a.getShort());
+    }
+  }
+  
+  private static class b
+  {
+    private final long a;
+    private final long b;
+    
+    b(long paramLong1, long paramLong2)
+    {
+      a = paramLong1;
+      b = paramLong2;
+    }
+    
+    long a()
+    {
+      return a;
+    }
+  }
+  
+  private static abstract interface c
+  {
+    public abstract int a()
+      throws IOException;
+    
+    public abstract void b(int paramInt)
+      throws IOException;
+    
+    public abstract long c()
+      throws IOException;
+    
+    public abstract long getPosition();
+    
+    public abstract int readUnsignedShort()
+      throws IOException;
+  }
+}

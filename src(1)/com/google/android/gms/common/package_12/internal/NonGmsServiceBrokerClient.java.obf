@@ -1,0 +1,263 @@
+package com.google.android.gms.common.api.internal;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Feature;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.internal.BaseGmsClient.ConnectionProgressReportCallbacks;
+import com.google.android.gms.common.internal.BaseGmsClient.SignOutCallbacks;
+import com.google.android.gms.common.internal.GmsClientSupervisor;
+import com.google.android.gms.common.internal.IAccountAccessor;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.internal.base.zaq;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Set;
+
+@KeepForSdk
+public final class NonGmsServiceBrokerClient
+  implements Api.Client, ServiceConnection
+{
+  private static final String zaa = NonGmsServiceBrokerClient.class.getSimpleName();
+  private final String zab;
+  private final String zac;
+  private final ComponentName zad;
+  private final Context zae;
+  private final ConnectionCallbacks zaf;
+  private final Handler zag;
+  private final OnConnectionFailedListener zah;
+  private IBinder zai;
+  private boolean zaj = false;
+  private String zak = null;
+  private String zal;
+  
+  @KeepForSdk
+  public NonGmsServiceBrokerClient(Context paramContext, Looper paramLooper, ComponentName paramComponentName, ConnectionCallbacks paramConnectionCallbacks, OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    this(paramContext, paramLooper, null, null, paramComponentName, paramConnectionCallbacks, paramOnConnectionFailedListener);
+  }
+  
+  private NonGmsServiceBrokerClient(Context paramContext, Looper paramLooper, String paramString1, String paramString2, ComponentName paramComponentName, ConnectionCallbacks paramConnectionCallbacks, OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    zae = paramContext;
+    zag = new zaq(paramLooper);
+    zaf = paramConnectionCallbacks;
+    zah = paramOnConnectionFailedListener;
+    if ((paramString1 != null) && (paramString2 != null))
+    {
+      if (paramComponentName != null) {
+        break label86;
+      }
+      paramComponentName = null;
+    }
+    else
+    {
+      if (paramComponentName == null) {
+        break label86;
+      }
+    }
+    zab = paramString1;
+    zac = paramString2;
+    zad = paramComponentName;
+    return;
+    label86:
+    throw new AssertionError("Must specify either package or component, but not both");
+  }
+  
+  @KeepForSdk
+  public NonGmsServiceBrokerClient(Context paramContext, Looper paramLooper, String paramString1, String paramString2, ConnectionCallbacks paramConnectionCallbacks, OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    this(paramContext, paramLooper, paramString1, paramString2, null, paramConnectionCallbacks, paramOnConnectionFailedListener);
+  }
+  
+  private final void zad()
+  {
+    if (Thread.currentThread() == zag.getLooper().getThread()) {
+      return;
+    }
+    throw new IllegalStateException("This method should only run on the NonGmsServiceBrokerClient's handler thread.");
+  }
+  
+  private final void zae(String paramString)
+  {
+    String.valueOf(zai).length();
+  }
+  
+  public final void connect(BaseGmsClient.ConnectionProgressReportCallbacks paramConnectionProgressReportCallbacks)
+  {
+    zad();
+    zae("Connect started.");
+    if (isConnected()) {}
+    try
+    {
+      disconnect("connect() called when already connected");
+      try
+      {
+        paramConnectionProgressReportCallbacks = new Intent();
+        ComponentName localComponentName = zad;
+        if (localComponentName != null) {
+          paramConnectionProgressReportCallbacks.setComponent(localComponentName);
+        } else {
+          paramConnectionProgressReportCallbacks.setPackage(zab).setAction(zac);
+        }
+        boolean bool = zae.bindService(paramConnectionProgressReportCallbacks, this, GmsClientSupervisor.getDefaultBindFlags());
+        zaj = bool;
+        if (!bool)
+        {
+          zai = null;
+          zah.onConnectionFailed(new ConnectionResult(16));
+        }
+        zae("Finished connect.");
+        return;
+      }
+      catch (SecurityException paramConnectionProgressReportCallbacks)
+      {
+        zaj = false;
+        zai = null;
+        throw paramConnectionProgressReportCallbacks;
+      }
+    }
+    catch (Exception paramConnectionProgressReportCallbacks)
+    {
+      for (;;) {}
+    }
+  }
+  
+  public final void disconnect()
+  {
+    zad();
+    zae("Disconnect called.");
+    try
+    {
+      zae.unbindService(this);
+      zaj = false;
+      zai = null;
+      return;
+    }
+    catch (IllegalArgumentException localIllegalArgumentException)
+    {
+      for (;;) {}
+    }
+  }
+  
+  public final void disconnect(String paramString)
+  {
+    zad();
+    zak = paramString;
+    disconnect();
+  }
+  
+  public final void dump(String paramString, FileDescriptor paramFileDescriptor, PrintWriter paramPrintWriter, String[] paramArrayOfString) {}
+  
+  public final Feature[] getAvailableFeatures()
+  {
+    return new Feature[0];
+  }
+  
+  @KeepForSdk
+  public IBinder getBinder()
+  {
+    zad();
+    return zai;
+  }
+  
+  public final String getEndpointPackageName()
+  {
+    String str = zab;
+    if (str != null) {
+      return str;
+    }
+    Preconditions.checkNotNull(zad);
+    return zad.getPackageName();
+  }
+  
+  public final String getLastDisconnectMessage()
+  {
+    return zak;
+  }
+  
+  public final int getMinApkVersion()
+  {
+    return 0;
+  }
+  
+  public final void getRemoteService(IAccountAccessor paramIAccountAccessor, Set<Scope> paramSet) {}
+  
+  public final Feature[] getRequiredFeatures()
+  {
+    return new Feature[0];
+  }
+  
+  public final Set<Scope> getScopesForConnectionlessNonSignIn()
+  {
+    return Collections.emptySet();
+  }
+  
+  public final IBinder getServiceBrokerBinder()
+  {
+    return null;
+  }
+  
+  public final Intent getSignInIntent()
+  {
+    return new Intent();
+  }
+  
+  public final boolean isConnected()
+  {
+    zad();
+    return zai != null;
+  }
+  
+  public final boolean isConnecting()
+  {
+    zad();
+    return zaj;
+  }
+  
+  public final void onServiceConnected(ComponentName paramComponentName, IBinder paramIBinder)
+  {
+    zag.post(new zacg(this, paramIBinder));
+  }
+  
+  public final void onServiceDisconnected(ComponentName paramComponentName)
+  {
+    zag.post(new zacf(this));
+  }
+  
+  public final void onUserSignOut(BaseGmsClient.SignOutCallbacks paramSignOutCallbacks) {}
+  
+  public final boolean providesSignIn()
+  {
+    return false;
+  }
+  
+  public final boolean requiresAccount()
+  {
+    return false;
+  }
+  
+  public final boolean requiresGooglePlayServices()
+  {
+    return false;
+  }
+  
+  public final boolean requiresSignIn()
+  {
+    return false;
+  }
+  
+  public final void zac(String paramString)
+  {
+    zal = paramString;
+  }
+}

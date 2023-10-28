@@ -1,0 +1,21 @@
+package com.google.android.gms.common.internal;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.common.api.Status;
+
+@KeepForSdk
+public class ApiExceptionUtil
+{
+  public ApiExceptionUtil() {}
+  
+  @KeepForSdk
+  public static ApiException fromStatus(Status paramStatus)
+  {
+    if (paramStatus.hasResolution()) {
+      return new ResolvableApiException(paramStatus);
+    }
+    return new ApiException(paramStatus);
+  }
+}

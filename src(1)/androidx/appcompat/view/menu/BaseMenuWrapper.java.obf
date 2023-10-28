@@ -1,0 +1,105 @@
+package androidx.appcompat.view.menu;
+
+import android.content.Context;
+import android.view.MenuItem;
+import android.view.SubMenu;
+import c.e.g;
+import c.h.j.a.b;
+
+abstract class c
+{
+  final Context a;
+  private g<b, MenuItem> b;
+  private g<c.h.j.a.c, SubMenu> c;
+  
+  c(Context paramContext)
+  {
+    a = paramContext;
+  }
+  
+  final MenuItem c(MenuItem paramMenuItem)
+  {
+    if ((paramMenuItem instanceof b))
+    {
+      b localB = (b)paramMenuItem;
+      if (b == null) {
+        b = new g();
+      }
+      MenuItem localMenuItem = (MenuItem)b.get(localB);
+      paramMenuItem = localMenuItem;
+      if (localMenuItem == null)
+      {
+        paramMenuItem = new j(a, localB);
+        b.put(localB, paramMenuItem);
+      }
+      return paramMenuItem;
+    }
+    return paramMenuItem;
+  }
+  
+  final SubMenu d(SubMenu paramSubMenu)
+  {
+    if ((paramSubMenu instanceof c.h.j.a.c))
+    {
+      c.h.j.a.c localC = (c.h.j.a.c)paramSubMenu;
+      if (c == null) {
+        c = new g();
+      }
+      SubMenu localSubMenu = (SubMenu)c.get(localC);
+      paramSubMenu = localSubMenu;
+      if (localSubMenu == null)
+      {
+        paramSubMenu = new s(a, localC);
+        c.put(localC, paramSubMenu);
+      }
+      return paramSubMenu;
+    }
+    return paramSubMenu;
+  }
+  
+  final void e()
+  {
+    g localG = b;
+    if (localG != null) {
+      localG.clear();
+    }
+    localG = c;
+    if (localG != null) {
+      localG.clear();
+    }
+  }
+  
+  final void f(int paramInt)
+  {
+    if (b == null) {
+      return;
+    }
+    int j;
+    for (int i = 0; i < b.size(); i = j + 1)
+    {
+      j = i;
+      if (((b)b.i(i)).getGroupId() == paramInt)
+      {
+        b.k(i);
+        j = i - 1;
+      }
+    }
+  }
+  
+  final void g(int paramInt)
+  {
+    if (b == null) {
+      return;
+    }
+    int i = 0;
+    while (i < b.size())
+    {
+      if (((b)b.i(i)).getItemId() == paramInt)
+      {
+        b.k(i);
+        return;
+      }
+      i += 1;
+    }
+  }
+}

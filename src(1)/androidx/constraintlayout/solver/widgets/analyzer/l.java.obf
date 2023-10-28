@@ -1,0 +1,188 @@
+package androidx.constraintlayout.solver.widgets.analyzer;
+
+import androidx.constraintlayout.solver.widgets.ConstraintWidget;
+import java.util.ArrayList;
+import java.util.List;
+
+class l
+{
+  public static int a;
+  public int b = 0;
+  public boolean c = false;
+  WidgetRun d = null;
+  WidgetRun e = null;
+  ArrayList<WidgetRun> f = new ArrayList();
+  int g = 0;
+  int h;
+  
+  public l(WidgetRun paramWidgetRun, int paramInt)
+  {
+    int i = a;
+    g = i;
+    a = i + 1;
+    d = paramWidgetRun;
+    e = paramWidgetRun;
+    h = paramInt;
+  }
+  
+  private long c(DependencyNode paramDependencyNode, long paramLong)
+  {
+    WidgetRun localWidgetRun = d;
+    if ((localWidgetRun instanceof j)) {
+      return paramLong;
+    }
+    int j = k.size();
+    int i = 0;
+    for (long l1 = paramLong; i < j; l1 = l2)
+    {
+      Object localObject = (d)k.get(i);
+      l2 = l1;
+      if ((localObject instanceof DependencyNode))
+      {
+        localObject = (DependencyNode)localObject;
+        if (d == localWidgetRun) {
+          l2 = l1;
+        } else {
+          l2 = Math.min(l1, c((DependencyNode)localObject, f + paramLong));
+        }
+      }
+      i += 1;
+    }
+    long l2 = l1;
+    if (paramDependencyNode == i)
+    {
+      l2 = localWidgetRun.j();
+      paramDependencyNode = h;
+      paramLong -= l2;
+      l2 = Math.min(Math.min(l1, c(paramDependencyNode, paramLong)), paramLong - h.f);
+    }
+    return l2;
+  }
+  
+  private long d(DependencyNode paramDependencyNode, long paramLong)
+  {
+    WidgetRun localWidgetRun = d;
+    if ((localWidgetRun instanceof j)) {
+      return paramLong;
+    }
+    int j = k.size();
+    int i = 0;
+    for (long l1 = paramLong; i < j; l1 = l2)
+    {
+      Object localObject = (d)k.get(i);
+      l2 = l1;
+      if ((localObject instanceof DependencyNode))
+      {
+        localObject = (DependencyNode)localObject;
+        if (d == localWidgetRun) {
+          l2 = l1;
+        } else {
+          l2 = Math.max(l1, d((DependencyNode)localObject, f + paramLong));
+        }
+      }
+      i += 1;
+    }
+    long l2 = l1;
+    if (paramDependencyNode == h)
+    {
+      l2 = localWidgetRun.j();
+      paramDependencyNode = i;
+      paramLong += l2;
+      l2 = Math.max(Math.max(l1, d(paramDependencyNode, paramLong)), paramLong - i.f);
+    }
+    return l2;
+  }
+  
+  public void a(WidgetRun paramWidgetRun)
+  {
+    f.add(paramWidgetRun);
+    e = paramWidgetRun;
+  }
+  
+  public long b(androidx.constraintlayout.solver.widgets.d paramD, int paramInt)
+  {
+    WidgetRun localWidgetRun = d;
+    boolean bool1 = localWidgetRun instanceof c;
+    long l3 = 0L;
+    if (bool1)
+    {
+      if (f != paramInt) {
+        return 0L;
+      }
+    }
+    else if (paramInt == 0)
+    {
+      if (!(localWidgetRun instanceof k)) {
+        return 0L;
+      }
+    }
+    else if (!(localWidgetRun instanceof m)) {
+      return 0L;
+    }
+    if (paramInt == 0) {
+      localObject = f;
+    } else {
+      localObject = g;
+    }
+    Object localObject = h;
+    if (paramInt == 0) {
+      paramD = f;
+    } else {
+      paramD = g;
+    }
+    paramD = i;
+    bool1 = h.l.contains(localObject);
+    boolean bool2 = d.i.l.contains(paramD);
+    long l5 = d.j();
+    long l1;
+    long l2;
+    if ((bool1) && (bool2))
+    {
+      l1 = d(d.h, 0L);
+      long l4 = c(d.i, 0L);
+      l2 = l1 - l5;
+      paramD = d;
+      int i = i.f;
+      l1 = l2;
+      if (l2 >= -i) {
+        l1 = l2 + i;
+      }
+      l2 = -l4;
+      i = h.f;
+      l4 = l2 - l5 - i;
+      l2 = l4;
+      if (l4 >= i) {
+        l2 = l4 - i;
+      }
+      float f1 = b.o(paramInt);
+      if (f1 > 0.0F) {
+        l3 = ((float)l2 / f1 + (float)l1 / (1.0F - f1));
+      }
+      float f2 = (float)l3;
+      l1 = (f2 * f1 + 0.5F);
+      l2 = (f2 * (1.0F - f1) + 0.5F);
+      paramD = d;
+      l1 = h.f + (l1 + l5 + l2);
+      paramInt = i.f;
+    }
+    else
+    {
+      if (bool1)
+      {
+        paramD = d.h;
+        return Math.max(d(paramD, f), d.h.f + l5);
+      }
+      if (bool2)
+      {
+        paramD = d.i;
+        l1 = c(paramD, f);
+        l2 = -d.i.f;
+        return Math.max(-l1, l2 + l5);
+      }
+      paramD = d;
+      l1 = h.f + paramD.j();
+      paramInt = d.i.f;
+    }
+    return l1 - paramInt;
+  }
+}

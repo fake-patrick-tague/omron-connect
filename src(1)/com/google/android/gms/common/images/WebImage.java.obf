@@ -1,0 +1,134 @@
+package com.google.android.gms.common.images;
+
+import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+import java.util.Locale;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+@SafeParcelable.Class(creator="WebImageCreator")
+public final class WebImage
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<WebImage> CREATOR = new zah();
+  @SafeParcelable.VersionField(id=1)
+  final int zaa;
+  @SafeParcelable.Field(getter="getUrl", id=2)
+  private final Uri zab;
+  @SafeParcelable.Field(getter="getWidth", id=3)
+  private final int zac;
+  @SafeParcelable.Field(getter="getHeight", id=4)
+  private final int zad;
+  
+  @SafeParcelable.Constructor
+  WebImage(@SafeParcelable.Param(id=1) int paramInt1, @SafeParcelable.Param(id=2) Uri paramUri, @SafeParcelable.Param(id=3) int paramInt2, @SafeParcelable.Param(id=4) int paramInt3)
+  {
+    zaa = paramInt1;
+    zab = paramUri;
+    zac = paramInt2;
+    zad = paramInt3;
+  }
+  
+  public WebImage(Uri paramUri)
+    throws IllegalArgumentException
+  {
+    this(paramUri, 0, 0);
+  }
+  
+  public WebImage(Uri paramUri, int paramInt1, int paramInt2)
+    throws IllegalArgumentException
+  {
+    this(1, paramUri, paramInt1, paramInt2);
+    if (paramUri != null)
+    {
+      if ((paramInt1 >= 0) && (paramInt2 >= 0)) {
+        return;
+      }
+      throw new IllegalArgumentException("width and height must not be negative");
+    }
+    throw new IllegalArgumentException("url cannot be null");
+  }
+  
+  @KeepForSdk
+  public WebImage(JSONObject paramJSONObject)
+    throws IllegalArgumentException
+  {}
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (paramObject != null)
+    {
+      if (!(paramObject instanceof WebImage)) {
+        return false;
+      }
+      paramObject = (WebImage)paramObject;
+      if ((Objects.equal(zab, zab)) && (zac == zac) && (zad == zad)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public int getHeight()
+  {
+    return zad;
+  }
+  
+  public Uri getUrl()
+  {
+    return zab;
+  }
+  
+  public int getWidth()
+  {
+    return zac;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zab, Integer.valueOf(zac), Integer.valueOf(zad) });
+  }
+  
+  @KeepForSdk
+  public JSONObject toJson()
+  {
+    JSONObject localJSONObject = new JSONObject();
+    try
+    {
+      localJSONObject.put("url", zab.toString());
+      localJSONObject.put("width", zac);
+      localJSONObject.put("height", zad);
+      return localJSONObject;
+    }
+    catch (JSONException localJSONException) {}
+    return localJSONObject;
+  }
+  
+  public String toString()
+  {
+    return String.format(Locale.US, "Image %dx%d %s", new Object[] { Integer.valueOf(zac), Integer.valueOf(zad), zab.toString() });
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zaa);
+    SafeParcelWriter.writeParcelable(paramParcel, 2, getUrl(), paramInt, false);
+    SafeParcelWriter.writeInt(paramParcel, 3, getWidth());
+    SafeParcelWriter.writeInt(paramParcel, 4, getHeight());
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

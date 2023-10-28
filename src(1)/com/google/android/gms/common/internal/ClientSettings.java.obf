@@ -1,0 +1,218 @@
+package com.google.android.gms.common.internal;
+
+import android.accounts.Account;
+import android.content.Context;
+import android.view.View;
+import c.e.b;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.GoogleApiClient.Builder;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.signin.SignInOptions;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+@KeepForSdk
+@VisibleForTesting
+public final class ClientSettings
+{
+  private final Account zaa;
+  private final Set<Scope> zab;
+  private final Set<Scope> zac;
+  private final Map<Api<?>, zab> zad;
+  private final int zae;
+  private final View zaf;
+  private final String zag;
+  private final String zah;
+  private final SignInOptions zai;
+  private Integer zaj;
+  
+  @KeepForSdk
+  public ClientSettings(Account paramAccount, Set<Scope> paramSet, Map<Api<?>, zab> paramMap, int paramInt, View paramView, String paramString1, String paramString2, SignInOptions paramSignInOptions)
+  {
+    this(paramAccount, paramSet, paramMap, paramInt, paramView, paramString1, paramString2, paramSignInOptions, false);
+  }
+  
+  public ClientSettings(Account paramAccount, Set<Scope> paramSet, Map<Api<?>, zab> paramMap, int paramInt, View paramView, String paramString1, String paramString2, SignInOptions paramSignInOptions, boolean paramBoolean)
+  {
+    zaa = paramAccount;
+    if (paramSet == null) {
+      paramAccount = Collections.emptySet();
+    } else {
+      paramAccount = Collections.unmodifiableSet(paramSet);
+    }
+    zab = paramAccount;
+    paramSet = paramMap;
+    if (paramMap == null) {
+      paramSet = Collections.emptyMap();
+    }
+    zad = paramSet;
+    zaf = paramView;
+    zae = paramInt;
+    zag = paramString1;
+    zah = paramString2;
+    paramMap = paramSignInOptions;
+    if (paramSignInOptions == null) {
+      paramMap = SignInOptions.zaa;
+    }
+    zai = paramMap;
+    paramAccount = new HashSet(paramAccount);
+    paramSet = paramSet.values().iterator();
+    while (paramSet.hasNext()) {
+      paramAccount.addAll(nextzaa);
+    }
+    zac = Collections.unmodifiableSet(paramAccount);
+  }
+  
+  @KeepForSdk
+  public static ClientSettings createDefault(Context paramContext)
+  {
+    return new GoogleApiClient.Builder(paramContext).zaa();
+  }
+  
+  @KeepForSdk
+  public Account getAccount()
+  {
+    return zaa;
+  }
+  
+  @Deprecated
+  @KeepForSdk
+  public String getAccountName()
+  {
+    Account localAccount = zaa;
+    if (localAccount != null) {
+      return name;
+    }
+    return null;
+  }
+  
+  @KeepForSdk
+  public Account getAccountOrDefault()
+  {
+    Account localAccount = zaa;
+    if (localAccount != null) {
+      return localAccount;
+    }
+    return new Account("<<default account>>", "com.google");
+  }
+  
+  @KeepForSdk
+  public Set<Scope> getAllRequestedScopes()
+  {
+    return zac;
+  }
+  
+  @KeepForSdk
+  public Set<Scope> getApplicableScopes(Api<?> paramApi)
+  {
+    paramApi = (zab)zad.get(paramApi);
+    if ((paramApi != null) && (!zaa.isEmpty()))
+    {
+      HashSet localHashSet = new HashSet(zab);
+      localHashSet.addAll(zaa);
+      return localHashSet;
+    }
+    return zab;
+  }
+  
+  @KeepForSdk
+  public int getGravityForPopups()
+  {
+    return zae;
+  }
+  
+  @KeepForSdk
+  public String getRealClientPackageName()
+  {
+    return zag;
+  }
+  
+  @KeepForSdk
+  public Set<Scope> getRequiredScopes()
+  {
+    return zab;
+  }
+  
+  @KeepForSdk
+  public View getViewForPopups()
+  {
+    return zaf;
+  }
+  
+  public final SignInOptions zaa()
+  {
+    return zai;
+  }
+  
+  public final Integer zab()
+  {
+    return zaj;
+  }
+  
+  public final String zac()
+  {
+    return zah;
+  }
+  
+  public final Map<Api<?>, zab> zad()
+  {
+    return zad;
+  }
+  
+  public final void zae(Integer paramInteger)
+  {
+    zaj = paramInteger;
+  }
+  
+  @KeepForSdk
+  public static final class Builder
+  {
+    private Account zaa;
+    private b<Scope> zab;
+    private String zac;
+    private String zad;
+    private SignInOptions zae = SignInOptions.zaa;
+    
+    public Builder() {}
+    
+    @KeepForSdk
+    public ClientSettings build()
+    {
+      return new ClientSettings(zaa, zab, null, 0, null, zac, zad, zae, false);
+    }
+    
+    @KeepForSdk
+    public Builder setRealClientPackageName(String paramString)
+    {
+      zac = paramString;
+      return this;
+    }
+    
+    public final Builder zaa(Collection<Scope> paramCollection)
+    {
+      if (zab == null) {
+        zab = new b();
+      }
+      zab.addAll(paramCollection);
+      return this;
+    }
+    
+    public final Builder zab(Account paramAccount)
+    {
+      zaa = paramAccount;
+      return this;
+    }
+    
+    public final Builder zac(String paramString)
+    {
+      zad = paramString;
+      return this;
+    }
+  }
+}

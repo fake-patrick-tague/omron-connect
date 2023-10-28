@@ -1,0 +1,32 @@
+package com.braze.ui.actions.brazeactions.steps;
+
+import android.content.Context;
+import com.braze.support.PermissionUtils;
+import com.braze.ui.inappmessage.BrazeInAppMessageManager;
+import com.braze.ui.inappmessage.BrazeInAppMessageManager.Companion;
+import com.braze.ui.inappmessage.InAppMessageManagerBase;
+import kotlin.x.d.i;
+
+public final class RequestPushPermissionStep
+  extends BaseBrazeActionStep
+{
+  public static final RequestPushPermissionStep INSTANCE = new RequestPushPermissionStep();
+  
+  private RequestPushPermissionStep()
+  {
+    super(null);
+  }
+  
+  public boolean isValid(StepData paramStepData)
+  {
+    i.e(paramStepData, "data");
+    return true;
+  }
+  
+  public void run(Context paramContext, StepData paramStepData)
+  {
+    i.e(paramContext, "context");
+    i.e(paramStepData, "data");
+    PermissionUtils.requestPushPermissionPrompt(BrazeInAppMessageManager.Companion.getInstance().getActivity());
+  }
+}

@@ -1,0 +1,95 @@
+package androidx.work.impl.n;
+
+import android.database.Cursor;
+import androidx.room.RoomDatabase;
+import androidx.room.b;
+import androidx.room.q.c;
+import c.t.a.d;
+import c.t.a.f;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class l
+  implements k
+{
+  private final RoomDatabase a;
+  private final b<j> b;
+  
+  public l(RoomDatabase paramRoomDatabase)
+  {
+    a = paramRoomDatabase;
+    b = new a(paramRoomDatabase);
+  }
+  
+  public void a(j paramJ)
+  {
+    a.b();
+    a.c();
+    try
+    {
+      b.h(paramJ);
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+    }
+  }
+  
+  public List<String> b(String paramString)
+  {
+    androidx.room.k localK = androidx.room.k.n("SELECT name FROM workname WHERE work_spec_id=?", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = c.b(a, localK, false, null);
+    try
+    {
+      ArrayList localArrayList = new ArrayList(paramString.getCount());
+      while (paramString.moveToNext()) {
+        localArrayList.add(paramString.getString(0));
+      }
+      return localArrayList;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  class a
+    extends b<j>
+  {
+    a(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "INSERT OR IGNORE INTO `WorkName` (`name`,`work_spec_id`) VALUES (?,?)";
+    }
+    
+    public void i(f paramF, j paramJ)
+    {
+      String str = a;
+      if (str == null) {
+        paramF.bindNull(1);
+      } else {
+        paramF.bindString(1, str);
+      }
+      paramJ = b;
+      if (paramJ == null)
+      {
+        paramF.bindNull(2);
+        return;
+      }
+      paramF.bindString(2, paramJ);
+    }
+  }
+}

@@ -1,0 +1,1936 @@
+package com.google.android.gms.dynamite;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
+import android.database.Cursor;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.util.Log;
+import com.google.android.gms.common.GoogleApiAvailabilityLight;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.DynamiteApi;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+
+@KeepForSdk
+public final class DynamiteModule
+{
+  @KeepForSdk
+  public static final int LOCAL = -1;
+  @KeepForSdk
+  public static final int NONE = 0;
+  @KeepForSdk
+  public static final int NO_SELECTION = 0;
+  @KeepForSdk
+  public static final VersionPolicy PREFER_HIGHEST_OR_LOCAL_VERSION = new zzi();
+  @KeepForSdk
+  public static final VersionPolicy PREFER_HIGHEST_OR_LOCAL_VERSION_NO_FORCE_STAGING = new zzj();
+  @KeepForSdk
+  public static final VersionPolicy PREFER_HIGHEST_OR_REMOTE_VERSION = new zzk();
+  @KeepForSdk
+  public static final VersionPolicy PREFER_LOCAL;
+  @KeepForSdk
+  public static final VersionPolicy PREFER_REMOTE;
+  @KeepForSdk
+  public static final VersionPolicy PREFER_REMOTE_VERSION_NO_FORCE_STAGING;
+  @KeepForSdk
+  public static final int REMOTE = 1;
+  public static final VersionPolicy zza = new zzl();
+  private static Boolean zzb;
+  private static String zzc;
+  private static boolean zzd = false;
+  private static int zze = -1;
+  private static Boolean zzf;
+  private static final ThreadLocal zzg = new ThreadLocal();
+  private static final ThreadLocal zzh = new zzd();
+  private static final DynamiteModule.VersionPolicy.IVersions zzi = new zze();
+  private static zzq zzk;
+  private static zzr zzl;
+  private final Context zzj;
+  
+  static
+  {
+    PREFER_REMOTE = new zzf();
+    PREFER_LOCAL = new zzg();
+    PREFER_REMOTE_VERSION_NO_FORCE_STAGING = new zzh();
+  }
+  
+  private DynamiteModule(Context paramContext)
+  {
+    Preconditions.checkNotNull(paramContext);
+    zzj = paramContext;
+  }
+  
+  @KeepForSdk
+  public static int getLocalVersion(Context paramContext, String paramString)
+  {
+    try
+    {
+      paramContext = paramContext.getApplicationContext().getClassLoader();
+      Object localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("com.google.android.gms.dynamite.descriptors.");
+      ((StringBuilder)localObject).append(paramString);
+      ((StringBuilder)localObject).append(".ModuleDescriptor");
+      localObject = paramContext.loadClass(((StringBuilder)localObject).toString());
+      paramContext = ((Class)localObject).getDeclaredField("MODULE_ID");
+      localObject = ((Class)localObject).getDeclaredField("MODULE_VERSION");
+      if (!Objects.equal(paramContext.get(null), paramString))
+      {
+        paramContext = String.valueOf(paramContext.get(null));
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Module descriptor id '");
+        ((StringBuilder)localObject).append(paramContext);
+        ((StringBuilder)localObject).append("' didn't match expected id '");
+        ((StringBuilder)localObject).append(paramString);
+        ((StringBuilder)localObject).append("'");
+        Log.e("DynamiteModule", ((StringBuilder)localObject).toString());
+        return 0;
+      }
+      int i = ((Field)localObject).getInt(null);
+      return i;
+    }
+    catch (Exception paramContext)
+    {
+      Log.e("DynamiteModule", "Failed to load module descriptor class: ".concat(String.valueOf(paramContext.getMessage())));
+      return 0;
+      paramContext = new StringBuilder();
+      paramContext.append("Local module descriptor class for ");
+      paramContext.append(paramString);
+      paramContext.append(" not found.");
+      Log.w("DynamiteModule", paramContext.toString());
+      return 0;
+    }
+    catch (ClassNotFoundException paramContext)
+    {
+      for (;;) {}
+    }
+  }
+  
+  @KeepForSdk
+  public static int getRemoteVersion(Context paramContext, String paramString)
+  {
+    return zza(paramContext, paramString, false);
+  }
+  
+  /* Error */
+  @KeepForSdk
+  public static DynamiteModule load(Context paramContext, VersionPolicy paramVersionPolicy, String paramString)
+    throws DynamiteModule.LoadingException
+  {
+    // Byte code:
+    //   0: getstatic 64	com/google/android/gms/dynamite/DynamiteModule:zzg	Ljava/lang/ThreadLocal;
+    //   3: astore 12
+    //   5: aload 12
+    //   7: invokevirtual 230	java/lang/ThreadLocal:get	()Ljava/lang/Object;
+    //   10: checkcast 232	com/google/android/gms/dynamite/zzn
+    //   13: astore 9
+    //   15: new 232	com/google/android/gms/dynamite/zzn
+    //   18: dup
+    //   19: aconst_null
+    //   20: invokespecial 235	com/google/android/gms/dynamite/zzn:<init>	(Lcom/google/android/gms/dynamite/zzm;)V
+    //   23: astore 10
+    //   25: aload 12
+    //   27: aload 10
+    //   29: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   32: getstatic 69	com/google/android/gms/dynamite/DynamiteModule:zzh	Ljava/lang/ThreadLocal;
+    //   35: astore 13
+    //   37: aload 13
+    //   39: invokevirtual 230	java/lang/ThreadLocal:get	()Ljava/lang/Object;
+    //   42: checkcast 241	java/lang/Long
+    //   45: invokevirtual 245	java/lang/Long:longValue	()J
+    //   48: lstore 5
+    //   50: aload 13
+    //   52: invokestatic 250	android/os/SystemClock:elapsedRealtime	()J
+    //   55: invokestatic 253	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   58: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   61: aload_1
+    //   62: aload_0
+    //   63: aload_2
+    //   64: getstatic 74	com/google/android/gms/dynamite/DynamiteModule:zzi	Lcom/google/android/gms/dynamite/DynamiteModule$VersionPolicy$IVersions;
+    //   67: invokeinterface 257 4 0
+    //   72: astore 11
+    //   74: aload 11
+    //   76: getfield 260	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:localVersion	I
+    //   79: istore_3
+    //   80: aload 11
+    //   82: getfield 263	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:remoteVersion	I
+    //   85: istore 4
+    //   87: new 138	java/lang/StringBuilder
+    //   90: dup
+    //   91: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   94: astore 8
+    //   96: aload 8
+    //   98: ldc_w 265
+    //   101: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   104: pop
+    //   105: aload 8
+    //   107: aload_2
+    //   108: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   111: pop
+    //   112: aload 8
+    //   114: ldc_w 267
+    //   117: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   120: pop
+    //   121: aload 8
+    //   123: iload_3
+    //   124: invokevirtual 270	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   127: pop
+    //   128: aload 8
+    //   130: ldc_w 272
+    //   133: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   136: pop
+    //   137: aload 8
+    //   139: aload_2
+    //   140: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   143: pop
+    //   144: aload 8
+    //   146: ldc_w 267
+    //   149: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   152: pop
+    //   153: aload 8
+    //   155: iload 4
+    //   157: invokevirtual 270	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   160: pop
+    //   161: ldc -64
+    //   163: aload 8
+    //   165: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   168: invokestatic 275	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;)I
+    //   171: pop
+    //   172: aload 11
+    //   174: getfield 278	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:selection	I
+    //   177: istore 4
+    //   179: iload 4
+    //   181: ifeq +967 -> 1148
+    //   184: iload 4
+    //   186: istore_3
+    //   187: iload 4
+    //   189: iconst_m1
+    //   190: if_icmpne +13 -> 203
+    //   193: aload 11
+    //   195: getfield 260	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:localVersion	I
+    //   198: ifeq +950 -> 1148
+    //   201: iconst_m1
+    //   202: istore_3
+    //   203: iload_3
+    //   204: iconst_1
+    //   205: if_icmpne +11 -> 216
+    //   208: aload 11
+    //   210: getfield 263	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:remoteVersion	I
+    //   213: ifeq +935 -> 1148
+    //   216: iload_3
+    //   217: iconst_m1
+    //   218: if_icmpne +59 -> 277
+    //   221: aload_0
+    //   222: aload_2
+    //   223: invokestatic 281	com/google/android/gms/dynamite/DynamiteModule:zzc	(Landroid/content/Context;Ljava/lang/String;)Lcom/google/android/gms/dynamite/DynamiteModule;
+    //   226: astore_0
+    //   227: lload 5
+    //   229: lconst_0
+    //   230: lcmp
+    //   231: ifne +11 -> 242
+    //   234: aload 13
+    //   236: invokevirtual 284	java/lang/ThreadLocal:remove	()V
+    //   239: goto +13 -> 252
+    //   242: aload 13
+    //   244: lload 5
+    //   246: invokestatic 253	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   249: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   252: aload 10
+    //   254: getfield 287	com/google/android/gms/dynamite/zzn:zza	Landroid/database/Cursor;
+    //   257: astore_1
+    //   258: aload_1
+    //   259: ifnull +9 -> 268
+    //   262: aload_1
+    //   263: invokeinterface 292 1 0
+    //   268: aload 12
+    //   270: aload 9
+    //   272: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   275: aload_0
+    //   276: areturn
+    //   277: iload_3
+    //   278: iconst_1
+    //   279: if_icmpne +834 -> 1113
+    //   282: aload 11
+    //   284: getfield 263	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:remoteVersion	I
+    //   287: istore_3
+    //   288: ldc 2
+    //   290: monitorenter
+    //   291: aload_0
+    //   292: invokestatic 295	com/google/android/gms/dynamite/DynamiteModule:zzf	(Landroid/content/Context;)Z
+    //   295: ifeq +601 -> 896
+    //   298: getstatic 297	com/google/android/gms/dynamite/DynamiteModule:zzb	Ljava/lang/Boolean;
+    //   301: astore 8
+    //   303: ldc 2
+    //   305: monitorexit
+    //   306: aload 8
+    //   308: ifnull +576 -> 884
+    //   311: aload 8
+    //   313: invokevirtual 303	java/lang/Boolean:booleanValue	()Z
+    //   316: ifeq +285 -> 601
+    //   319: new 138	java/lang/StringBuilder
+    //   322: dup
+    //   323: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   326: astore 8
+    //   328: aload 8
+    //   330: ldc_w 305
+    //   333: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   336: pop
+    //   337: aload 8
+    //   339: aload_2
+    //   340: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   343: pop
+    //   344: aload 8
+    //   346: ldc_w 307
+    //   349: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   352: pop
+    //   353: aload 8
+    //   355: iload_3
+    //   356: invokevirtual 270	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   359: pop
+    //   360: ldc -64
+    //   362: aload 8
+    //   364: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   367: invokestatic 275	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;)I
+    //   370: pop
+    //   371: ldc 2
+    //   373: monitorenter
+    //   374: getstatic 309	com/google/android/gms/dynamite/DynamiteModule:zzl	Lcom/google/android/gms/dynamite/zzr;
+    //   377: astore 8
+    //   379: ldc 2
+    //   381: monitorexit
+    //   382: aload 8
+    //   384: ifnull +197 -> 581
+    //   387: aload 12
+    //   389: invokevirtual 230	java/lang/ThreadLocal:get	()Ljava/lang/Object;
+    //   392: checkcast 232	com/google/android/gms/dynamite/zzn
+    //   395: astore 15
+    //   397: aload 15
+    //   399: ifnull +170 -> 569
+    //   402: aload 15
+    //   404: getfield 287	com/google/android/gms/dynamite/zzn:zza	Landroid/database/Cursor;
+    //   407: ifnull +162 -> 569
+    //   410: aload_0
+    //   411: invokevirtual 132	android/content/Context:getApplicationContext	()Landroid/content/Context;
+    //   414: astore 14
+    //   416: aload 15
+    //   418: getfield 287	com/google/android/gms/dynamite/zzn:zza	Landroid/database/Cursor;
+    //   421: astore 15
+    //   423: aconst_null
+    //   424: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   427: pop
+    //   428: ldc 2
+    //   430: monitorenter
+    //   431: getstatic 317	com/google/android/gms/dynamite/DynamiteModule:zze	I
+    //   434: iconst_2
+    //   435: if_icmplt +852 -> 1287
+    //   438: iconst_1
+    //   439: istore 7
+    //   441: goto +3 -> 444
+    //   444: ldc 2
+    //   446: monitorexit
+    //   447: iload 7
+    //   449: invokestatic 320	java/lang/Boolean:valueOf	(Z)Ljava/lang/Boolean;
+    //   452: invokevirtual 303	java/lang/Boolean:booleanValue	()Z
+    //   455: ifeq +34 -> 489
+    //   458: ldc -64
+    //   460: ldc_w 322
+    //   463: invokestatic 325	android/util/Log:v	(Ljava/lang/String;Ljava/lang/String;)I
+    //   466: pop
+    //   467: aload 8
+    //   469: aload 14
+    //   471: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   474: aload_2
+    //   475: iload_3
+    //   476: aload 15
+    //   478: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   481: invokevirtual 330	com/google/android/gms/dynamite/zzr:zzf	(Lcom/google/android/gms/dynamic/IObjectWrapper;Ljava/lang/String;ILcom/google/android/gms/dynamic/IObjectWrapper;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   484: astore 8
+    //   486: goto +31 -> 517
+    //   489: ldc -64
+    //   491: ldc_w 332
+    //   494: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   497: pop
+    //   498: aload 8
+    //   500: aload 14
+    //   502: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   505: aload_2
+    //   506: iload_3
+    //   507: aload 15
+    //   509: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   512: invokevirtual 334	com/google/android/gms/dynamite/zzr:zze	(Lcom/google/android/gms/dynamic/IObjectWrapper;Ljava/lang/String;ILcom/google/android/gms/dynamic/IObjectWrapper;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   515: astore 8
+    //   517: aload 8
+    //   519: invokestatic 338	com/google/android/gms/dynamic/ObjectWrapper:unwrap	(Lcom/google/android/gms/dynamic/IObjectWrapper;)Ljava/lang/Object;
+    //   522: checkcast 128	android/content/Context
+    //   525: astore 8
+    //   527: aload 8
+    //   529: ifnull +20 -> 549
+    //   532: new 2	com/google/android/gms/dynamite/DynamiteModule
+    //   535: dup
+    //   536: aload 8
+    //   538: invokespecial 340	com/google/android/gms/dynamite/DynamiteModule:<init>	(Landroid/content/Context;)V
+    //   541: astore 8
+    //   543: aload 8
+    //   545: astore_0
+    //   546: goto +264 -> 810
+    //   549: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   552: dup
+    //   553: ldc_w 342
+    //   556: aconst_null
+    //   557: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   560: athrow
+    //   561: astore 8
+    //   563: ldc 2
+    //   565: monitorexit
+    //   566: aload 8
+    //   568: athrow
+    //   569: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   572: dup
+    //   573: ldc_w 347
+    //   576: aconst_null
+    //   577: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   580: athrow
+    //   581: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   584: dup
+    //   585: ldc_w 349
+    //   588: aconst_null
+    //   589: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   592: athrow
+    //   593: astore 8
+    //   595: ldc 2
+    //   597: monitorexit
+    //   598: aload 8
+    //   600: athrow
+    //   601: new 138	java/lang/StringBuilder
+    //   604: dup
+    //   605: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   608: astore 8
+    //   610: aload 8
+    //   612: ldc_w 305
+    //   615: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   618: pop
+    //   619: aload 8
+    //   621: aload_2
+    //   622: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   625: pop
+    //   626: aload 8
+    //   628: ldc_w 307
+    //   631: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   634: pop
+    //   635: aload 8
+    //   637: iload_3
+    //   638: invokevirtual 270	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   641: pop
+    //   642: ldc -64
+    //   644: aload 8
+    //   646: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   649: invokestatic 275	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;)I
+    //   652: pop
+    //   653: aload_0
+    //   654: invokestatic 352	com/google/android/gms/dynamite/DynamiteModule:zzg	(Landroid/content/Context;)Lcom/google/android/gms/dynamite/zzq;
+    //   657: astore 8
+    //   659: aload 8
+    //   661: ifnull +211 -> 872
+    //   664: aload 8
+    //   666: invokevirtual 357	com/google/android/gms/dynamite/zzq:zze	()I
+    //   669: istore 4
+    //   671: iload 4
+    //   673: iconst_3
+    //   674: if_icmplt +54 -> 728
+    //   677: aload 12
+    //   679: invokevirtual 230	java/lang/ThreadLocal:get	()Ljava/lang/Object;
+    //   682: checkcast 232	com/google/android/gms/dynamite/zzn
+    //   685: astore 14
+    //   687: aload 14
+    //   689: ifnull +27 -> 716
+    //   692: aload 8
+    //   694: aload_0
+    //   695: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   698: aload_2
+    //   699: iload_3
+    //   700: aload 14
+    //   702: getfield 287	com/google/android/gms/dynamite/zzn:zza	Landroid/database/Cursor;
+    //   705: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   708: invokevirtual 359	com/google/android/gms/dynamite/zzq:zzi	(Lcom/google/android/gms/dynamic/IObjectWrapper;Ljava/lang/String;ILcom/google/android/gms/dynamic/IObjectWrapper;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   711: astore 8
+    //   713: goto +68 -> 781
+    //   716: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   719: dup
+    //   720: ldc_w 361
+    //   723: aconst_null
+    //   724: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   727: athrow
+    //   728: iload 4
+    //   730: iconst_2
+    //   731: if_icmpne +28 -> 759
+    //   734: ldc -64
+    //   736: ldc_w 363
+    //   739: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   742: pop
+    //   743: aload 8
+    //   745: aload_0
+    //   746: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   749: aload_2
+    //   750: iload_3
+    //   751: invokevirtual 366	com/google/android/gms/dynamite/zzq:zzj	(Lcom/google/android/gms/dynamic/IObjectWrapper;Ljava/lang/String;I)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   754: astore 8
+    //   756: goto +25 -> 781
+    //   759: ldc -64
+    //   761: ldc_w 368
+    //   764: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   767: pop
+    //   768: aload 8
+    //   770: aload_0
+    //   771: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   774: aload_2
+    //   775: iload_3
+    //   776: invokevirtual 370	com/google/android/gms/dynamite/zzq:zzh	(Lcom/google/android/gms/dynamic/IObjectWrapper;Ljava/lang/String;I)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   779: astore 8
+    //   781: aload 8
+    //   783: invokestatic 338	com/google/android/gms/dynamic/ObjectWrapper:unwrap	(Lcom/google/android/gms/dynamic/IObjectWrapper;)Ljava/lang/Object;
+    //   786: astore 8
+    //   788: aload 8
+    //   790: ifnull +70 -> 860
+    //   793: new 2	com/google/android/gms/dynamite/DynamiteModule
+    //   796: dup
+    //   797: aload 8
+    //   799: checkcast 128	android/content/Context
+    //   802: invokespecial 340	com/google/android/gms/dynamite/DynamiteModule:<init>	(Landroid/content/Context;)V
+    //   805: astore 8
+    //   807: aload 8
+    //   809: astore_0
+    //   810: lload 5
+    //   812: lconst_0
+    //   813: lcmp
+    //   814: ifne +11 -> 825
+    //   817: aload 13
+    //   819: invokevirtual 284	java/lang/ThreadLocal:remove	()V
+    //   822: goto +13 -> 835
+    //   825: aload 13
+    //   827: lload 5
+    //   829: invokestatic 253	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   832: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   835: aload 10
+    //   837: getfield 287	com/google/android/gms/dynamite/zzn:zza	Landroid/database/Cursor;
+    //   840: astore_1
+    //   841: aload_1
+    //   842: ifnull +9 -> 851
+    //   845: aload_1
+    //   846: invokeinterface 292 1 0
+    //   851: aload 12
+    //   853: aload 9
+    //   855: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   858: aload_0
+    //   859: areturn
+    //   860: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   863: dup
+    //   864: ldc_w 372
+    //   867: aconst_null
+    //   868: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   871: athrow
+    //   872: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   875: dup
+    //   876: ldc_w 374
+    //   879: aconst_null
+    //   880: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   883: athrow
+    //   884: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   887: dup
+    //   888: ldc_w 376
+    //   891: aconst_null
+    //   892: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   895: athrow
+    //   896: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   899: dup
+    //   900: ldc_w 378
+    //   903: aconst_null
+    //   904: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   907: athrow
+    //   908: astore 8
+    //   910: ldc 2
+    //   912: monitorexit
+    //   913: aload 8
+    //   915: athrow
+    //   916: astore 8
+    //   918: aload_0
+    //   919: aload 8
+    //   921: invokestatic 384	com/google/android/gms/common/util/CrashUtils:addDynamiteErrorToDropBox	(Landroid/content/Context;Ljava/lang/Throwable;)Z
+    //   924: pop
+    //   925: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   928: dup
+    //   929: ldc_w 372
+    //   932: aload 8
+    //   934: aconst_null
+    //   935: invokespecial 387	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;Lcom/google/android/gms/dynamite/zzp;)V
+    //   938: athrow
+    //   939: astore 8
+    //   941: aload 8
+    //   943: athrow
+    //   944: astore 8
+    //   946: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   949: dup
+    //   950: ldc_w 372
+    //   953: aload 8
+    //   955: aconst_null
+    //   956: invokespecial 387	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;Lcom/google/android/gms/dynamite/zzp;)V
+    //   959: athrow
+    //   960: astore 8
+    //   962: aload 8
+    //   964: invokevirtual 207	java/lang/Exception:getMessage	()Ljava/lang/String;
+    //   967: astore 12
+    //   969: new 138	java/lang/StringBuilder
+    //   972: dup
+    //   973: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   976: astore 13
+    //   978: aload 13
+    //   980: ldc_w 389
+    //   983: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   986: pop
+    //   987: aload 13
+    //   989: aload 12
+    //   991: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   994: pop
+    //   995: ldc -64
+    //   997: aload 13
+    //   999: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   1002: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   1005: pop
+    //   1006: aload 11
+    //   1008: getfield 260	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:localVersion	I
+    //   1011: istore_3
+    //   1012: iload_3
+    //   1013: ifeq +86 -> 1099
+    //   1016: aload_1
+    //   1017: aload_0
+    //   1018: aload_2
+    //   1019: new 391	com/google/android/gms/dynamite/zzo
+    //   1022: dup
+    //   1023: iload_3
+    //   1024: iconst_0
+    //   1025: invokespecial 394	com/google/android/gms/dynamite/zzo:<init>	(II)V
+    //   1028: invokeinterface 257 4 0
+    //   1033: getfield 278	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:selection	I
+    //   1036: iconst_m1
+    //   1037: if_icmpne +62 -> 1099
+    //   1040: aload_0
+    //   1041: aload_2
+    //   1042: invokestatic 281	com/google/android/gms/dynamite/DynamiteModule:zzc	(Landroid/content/Context;Ljava/lang/String;)Lcom/google/android/gms/dynamite/DynamiteModule;
+    //   1045: astore_0
+    //   1046: lload 5
+    //   1048: lconst_0
+    //   1049: lcmp
+    //   1050: ifne +12 -> 1062
+    //   1053: getstatic 69	com/google/android/gms/dynamite/DynamiteModule:zzh	Ljava/lang/ThreadLocal;
+    //   1056: invokevirtual 284	java/lang/ThreadLocal:remove	()V
+    //   1059: goto +14 -> 1073
+    //   1062: getstatic 69	com/google/android/gms/dynamite/DynamiteModule:zzh	Ljava/lang/ThreadLocal;
+    //   1065: lload 5
+    //   1067: invokestatic 253	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   1070: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   1073: aload 10
+    //   1075: getfield 287	com/google/android/gms/dynamite/zzn:zza	Landroid/database/Cursor;
+    //   1078: astore_1
+    //   1079: aload_1
+    //   1080: ifnull +9 -> 1089
+    //   1083: aload_1
+    //   1084: invokeinterface 292 1 0
+    //   1089: getstatic 64	com/google/android/gms/dynamite/DynamiteModule:zzg	Ljava/lang/ThreadLocal;
+    //   1092: aload 9
+    //   1094: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   1097: aload_0
+    //   1098: areturn
+    //   1099: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   1102: dup
+    //   1103: ldc_w 396
+    //   1106: aload 8
+    //   1108: aconst_null
+    //   1109: invokespecial 387	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;Lcom/google/android/gms/dynamite/zzp;)V
+    //   1112: athrow
+    //   1113: new 138	java/lang/StringBuilder
+    //   1116: dup
+    //   1117: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   1120: astore_0
+    //   1121: aload_0
+    //   1122: ldc_w 398
+    //   1125: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1128: pop
+    //   1129: aload_0
+    //   1130: iload_3
+    //   1131: invokevirtual 270	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   1134: pop
+    //   1135: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   1138: dup
+    //   1139: aload_0
+    //   1140: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   1143: aconst_null
+    //   1144: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   1147: athrow
+    //   1148: aload 11
+    //   1150: getfield 260	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:localVersion	I
+    //   1153: istore_3
+    //   1154: aload 11
+    //   1156: getfield 263	com/google/android/gms/dynamite/DynamiteModule$VersionPolicy$SelectionResult:remoteVersion	I
+    //   1159: istore 4
+    //   1161: new 138	java/lang/StringBuilder
+    //   1164: dup
+    //   1165: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   1168: astore_0
+    //   1169: aload_0
+    //   1170: ldc_w 400
+    //   1173: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1176: pop
+    //   1177: aload_0
+    //   1178: aload_2
+    //   1179: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1182: pop
+    //   1183: aload_0
+    //   1184: ldc_w 402
+    //   1187: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1190: pop
+    //   1191: aload_0
+    //   1192: iload_3
+    //   1193: invokevirtual 270	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   1196: pop
+    //   1197: aload_0
+    //   1198: ldc_w 404
+    //   1201: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1204: pop
+    //   1205: aload_0
+    //   1206: iload 4
+    //   1208: invokevirtual 270	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   1211: pop
+    //   1212: aload_0
+    //   1213: ldc_w 406
+    //   1216: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1219: pop
+    //   1220: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   1223: dup
+    //   1224: aload_0
+    //   1225: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   1228: aconst_null
+    //   1229: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   1232: athrow
+    //   1233: astore_0
+    //   1234: lload 5
+    //   1236: lconst_0
+    //   1237: lcmp
+    //   1238: ifne +12 -> 1250
+    //   1241: getstatic 69	com/google/android/gms/dynamite/DynamiteModule:zzh	Ljava/lang/ThreadLocal;
+    //   1244: invokevirtual 284	java/lang/ThreadLocal:remove	()V
+    //   1247: goto +14 -> 1261
+    //   1250: getstatic 69	com/google/android/gms/dynamite/DynamiteModule:zzh	Ljava/lang/ThreadLocal;
+    //   1253: lload 5
+    //   1255: invokestatic 253	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   1258: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   1261: aload 10
+    //   1263: getfield 287	com/google/android/gms/dynamite/zzn:zza	Landroid/database/Cursor;
+    //   1266: astore_1
+    //   1267: aload_1
+    //   1268: ifnull +9 -> 1277
+    //   1271: aload_1
+    //   1272: invokeinterface 292 1 0
+    //   1277: getstatic 64	com/google/android/gms/dynamite/DynamiteModule:zzg	Ljava/lang/ThreadLocal;
+    //   1280: aload 9
+    //   1282: invokevirtual 239	java/lang/ThreadLocal:set	(Ljava/lang/Object;)V
+    //   1285: aload_0
+    //   1286: athrow
+    //   1287: iconst_0
+    //   1288: istore 7
+    //   1290: goto -846 -> 444
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	1293	0	paramContext	Context
+    //   0	1293	1	paramVersionPolicy	VersionPolicy
+    //   0	1293	2	paramString	String
+    //   79	1114	3	i	int
+    //   85	1122	4	j	int
+    //   48	1206	5	l	long
+    //   439	850	7	bool	boolean
+    //   94	450	8	localObject1	Object
+    //   561	6	8	localObject2	Object
+    //   593	6	8	localObject3	Object
+    //   608	200	8	localObject4	Object
+    //   908	6	8	localObject5	Object
+    //   916	17	8	localThrowable	Throwable
+    //   939	3	8	localLoadingException1	LoadingException
+    //   944	10	8	localRemoteException	android.os.RemoteException
+    //   960	147	8	localLoadingException2	LoadingException
+    //   13	1268	9	localZzn1	zzn
+    //   23	1239	10	localZzn2	zzn
+    //   72	1083	11	localSelectionResult	DynamiteModule.VersionPolicy.SelectionResult
+    //   3	987	12	localObject6	Object
+    //   35	963	13	localObject7	Object
+    //   414	287	14	localObject8	Object
+    //   395	113	15	localObject9	Object
+    // Exception table:
+    //   from	to	target	type
+    //   431	438	561	finally
+    //   444	447	561	finally
+    //   563	566	561	finally
+    //   374	382	593	finally
+    //   595	598	593	finally
+    //   291	306	908	finally
+    //   896	908	908	finally
+    //   910	913	908	finally
+    //   288	291	916	finally
+    //   311	374	916	finally
+    //   387	397	916	finally
+    //   402	431	916	finally
+    //   447	486	916	finally
+    //   489	517	916	finally
+    //   517	527	916	finally
+    //   532	543	916	finally
+    //   549	561	916	finally
+    //   566	569	916	finally
+    //   569	581	916	finally
+    //   581	593	916	finally
+    //   598	601	916	finally
+    //   601	659	916	finally
+    //   664	671	916	finally
+    //   677	687	916	finally
+    //   692	713	916	finally
+    //   716	728	916	finally
+    //   734	756	916	finally
+    //   759	781	916	finally
+    //   781	788	916	finally
+    //   793	807	916	finally
+    //   860	872	916	finally
+    //   872	884	916	finally
+    //   884	896	916	finally
+    //   913	916	916	finally
+    //   288	291	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   311	374	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   387	397	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   402	431	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   447	486	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   489	517	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   517	527	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   532	543	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   549	561	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   566	569	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   569	581	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   581	593	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   598	601	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   601	659	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   664	671	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   677	687	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   692	713	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   716	728	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   734	756	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   759	781	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   781	788	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   793	807	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   860	872	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   872	884	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   884	896	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   913	916	939	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   288	291	944	android/os/RemoteException
+    //   311	374	944	android/os/RemoteException
+    //   387	397	944	android/os/RemoteException
+    //   402	431	944	android/os/RemoteException
+    //   447	486	944	android/os/RemoteException
+    //   489	517	944	android/os/RemoteException
+    //   517	527	944	android/os/RemoteException
+    //   532	543	944	android/os/RemoteException
+    //   549	561	944	android/os/RemoteException
+    //   566	569	944	android/os/RemoteException
+    //   569	581	944	android/os/RemoteException
+    //   581	593	944	android/os/RemoteException
+    //   598	601	944	android/os/RemoteException
+    //   601	659	944	android/os/RemoteException
+    //   664	671	944	android/os/RemoteException
+    //   677	687	944	android/os/RemoteException
+    //   692	713	944	android/os/RemoteException
+    //   716	728	944	android/os/RemoteException
+    //   734	756	944	android/os/RemoteException
+    //   759	781	944	android/os/RemoteException
+    //   781	788	944	android/os/RemoteException
+    //   793	807	944	android/os/RemoteException
+    //   860	872	944	android/os/RemoteException
+    //   872	884	944	android/os/RemoteException
+    //   884	896	944	android/os/RemoteException
+    //   913	916	944	android/os/RemoteException
+    //   282	288	960	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   918	939	960	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   941	944	960	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   946	960	960	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   50	179	1233	finally
+    //   193	201	1233	finally
+    //   208	216	1233	finally
+    //   221	227	1233	finally
+    //   282	288	1233	finally
+    //   918	939	1233	finally
+    //   941	944	1233	finally
+    //   946	960	1233	finally
+    //   962	1012	1233	finally
+    //   1016	1046	1233	finally
+    //   1099	1113	1233	finally
+    //   1113	1148	1233	finally
+    //   1148	1233	1233	finally
+  }
+  
+  /* Error */
+  public static int zza(Context paramContext, String paramString, boolean paramBoolean)
+  {
+    // Byte code:
+    //   0: ldc 2
+    //   2: monitorenter
+    //   3: getstatic 297	com/google/android/gms/dynamite/DynamiteModule:zzb	Ljava/lang/Boolean;
+    //   6: astore 9
+    //   8: aconst_null
+    //   9: astore 7
+    //   11: aconst_null
+    //   12: astore 8
+    //   14: aconst_null
+    //   15: astore 6
+    //   17: aload 9
+    //   19: astore 5
+    //   21: aload 9
+    //   23: ifnonnull +371 -> 394
+    //   26: aload_0
+    //   27: invokevirtual 132	android/content/Context:getApplicationContext	()Landroid/content/Context;
+    //   30: invokevirtual 136	android/content/Context:getClassLoader	()Ljava/lang/ClassLoader;
+    //   33: ldc 6
+    //   35: invokevirtual 414	java/lang/Class:getName	()Ljava/lang/String;
+    //   38: invokevirtual 157	java/lang/ClassLoader:loadClass	(Ljava/lang/String;)Ljava/lang/Class;
+    //   41: ldc_w 416
+    //   44: invokevirtual 165	java/lang/Class:getDeclaredField	(Ljava/lang/String;)Ljava/lang/reflect/Field;
+    //   47: astore 10
+    //   49: aload 10
+    //   51: invokevirtual 420	java/lang/reflect/Field:getDeclaringClass	()Ljava/lang/Class;
+    //   54: astore 9
+    //   56: aload 9
+    //   58: monitorenter
+    //   59: aload 10
+    //   61: aconst_null
+    //   62: invokevirtual 172	java/lang/reflect/Field:get	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   65: checkcast 153	java/lang/ClassLoader
+    //   68: astore 5
+    //   70: aload 5
+    //   72: invokestatic 423	java/lang/ClassLoader:getSystemClassLoader	()Ljava/lang/ClassLoader;
+    //   75: if_acmpne +11 -> 86
+    //   78: getstatic 426	java/lang/Boolean:FALSE	Ljava/lang/Boolean;
+    //   81: astore 5
+    //   83: goto +231 -> 314
+    //   86: aload 5
+    //   88: ifnull +16 -> 104
+    //   91: aload 5
+    //   93: invokestatic 429	com/google/android/gms/dynamite/DynamiteModule:zzd	(Ljava/lang/ClassLoader;)V
+    //   96: getstatic 432	java/lang/Boolean:TRUE	Ljava/lang/Boolean;
+    //   99: astore 5
+    //   101: goto +213 -> 314
+    //   104: aload_0
+    //   105: invokestatic 295	com/google/android/gms/dynamite/DynamiteModule:zzf	(Landroid/content/Context;)Z
+    //   108: ifne +11 -> 119
+    //   111: aload 9
+    //   113: monitorexit
+    //   114: ldc 2
+    //   116: monitorexit
+    //   117: iconst_0
+    //   118: ireturn
+    //   119: getstatic 434	com/google/android/gms/dynamite/DynamiteModule:zzd	Z
+    //   122: ifne +178 -> 300
+    //   125: getstatic 432	java/lang/Boolean:TRUE	Ljava/lang/Boolean;
+    //   128: astore 11
+    //   130: aload 11
+    //   132: aconst_null
+    //   133: invokevirtual 438	java/lang/Boolean:equals	(Ljava/lang/Object;)Z
+    //   136: istore 4
+    //   138: iload 4
+    //   140: ifeq +6 -> 146
+    //   143: goto +157 -> 300
+    //   146: aload_0
+    //   147: aload_1
+    //   148: iload_2
+    //   149: iconst_1
+    //   150: invokestatic 441	com/google/android/gms/dynamite/DynamiteModule:zzb	(Landroid/content/Context;Ljava/lang/String;ZZ)I
+    //   153: istore_3
+    //   154: getstatic 443	com/google/android/gms/dynamite/DynamiteModule:zzc	Ljava/lang/String;
+    //   157: astore 5
+    //   159: aload 5
+    //   161: ifnull +114 -> 275
+    //   164: aload 5
+    //   166: invokevirtual 446	java/lang/String:isEmpty	()Z
+    //   169: ifeq +6 -> 175
+    //   172: goto +103 -> 275
+    //   175: invokestatic 450	com/google/android/gms/dynamite/zzb:zza	()Ljava/lang/ClassLoader;
+    //   178: astore 5
+    //   180: aload 5
+    //   182: ifnull +6 -> 188
+    //   185: goto +64 -> 249
+    //   188: getstatic 455	android/os/Build$VERSION:SDK_INT	I
+    //   191: bipush 29
+    //   193: if_icmplt +31 -> 224
+    //   196: getstatic 443	com/google/android/gms/dynamite/DynamiteModule:zzc	Ljava/lang/String;
+    //   199: astore 5
+    //   201: aload 5
+    //   203: invokestatic 118	com/google/android/gms/common/internal/Preconditions:checkNotNull	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   206: pop
+    //   207: new 457	dalvik/system/DelegateLastClassLoader
+    //   210: dup
+    //   211: aload 5
+    //   213: invokestatic 423	java/lang/ClassLoader:getSystemClassLoader	()Ljava/lang/ClassLoader;
+    //   216: invokespecial 460	dalvik/system/DelegateLastClassLoader:<init>	(Ljava/lang/String;Ljava/lang/ClassLoader;)V
+    //   219: astore 5
+    //   221: goto +28 -> 249
+    //   224: getstatic 443	com/google/android/gms/dynamite/DynamiteModule:zzc	Ljava/lang/String;
+    //   227: astore 5
+    //   229: aload 5
+    //   231: invokestatic 118	com/google/android/gms/common/internal/Preconditions:checkNotNull	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   234: pop
+    //   235: new 462	com/google/android/gms/dynamite/zzc
+    //   238: dup
+    //   239: aload 5
+    //   241: invokestatic 423	java/lang/ClassLoader:getSystemClassLoader	()Ljava/lang/ClassLoader;
+    //   244: invokespecial 463	com/google/android/gms/dynamite/zzc:<init>	(Ljava/lang/String;Ljava/lang/ClassLoader;)V
+    //   247: astore 5
+    //   249: aload 5
+    //   251: invokestatic 429	com/google/android/gms/dynamite/DynamiteModule:zzd	(Ljava/lang/ClassLoader;)V
+    //   254: aload 10
+    //   256: aconst_null
+    //   257: aload 5
+    //   259: invokevirtual 466	java/lang/reflect/Field:set	(Ljava/lang/Object;Ljava/lang/Object;)V
+    //   262: aload 11
+    //   264: putstatic 297	com/google/android/gms/dynamite/DynamiteModule:zzb	Ljava/lang/Boolean;
+    //   267: aload 9
+    //   269: monitorexit
+    //   270: ldc 2
+    //   272: monitorexit
+    //   273: iload_3
+    //   274: ireturn
+    //   275: aload 9
+    //   277: monitorexit
+    //   278: ldc 2
+    //   280: monitorexit
+    //   281: iload_3
+    //   282: ireturn
+    //   283: aload 10
+    //   285: aconst_null
+    //   286: invokestatic 423	java/lang/ClassLoader:getSystemClassLoader	()Ljava/lang/ClassLoader;
+    //   289: invokevirtual 466	java/lang/reflect/Field:set	(Ljava/lang/Object;Ljava/lang/Object;)V
+    //   292: getstatic 426	java/lang/Boolean:FALSE	Ljava/lang/Boolean;
+    //   295: astore 5
+    //   297: goto +17 -> 314
+    //   300: aload 10
+    //   302: aconst_null
+    //   303: invokestatic 423	java/lang/ClassLoader:getSystemClassLoader	()Ljava/lang/ClassLoader;
+    //   306: invokevirtual 466	java/lang/reflect/Field:set	(Ljava/lang/Object;Ljava/lang/Object;)V
+    //   309: getstatic 426	java/lang/Boolean:FALSE	Ljava/lang/Boolean;
+    //   312: astore 5
+    //   314: aload 9
+    //   316: monitorexit
+    //   317: goto +72 -> 389
+    //   320: astore 5
+    //   322: aload 9
+    //   324: monitorexit
+    //   325: aload 5
+    //   327: athrow
+    //   328: astore 5
+    //   330: goto +10 -> 340
+    //   333: astore 5
+    //   335: goto +5 -> 340
+    //   338: astore 5
+    //   340: aload 5
+    //   342: invokevirtual 467	java/lang/Object:toString	()Ljava/lang/String;
+    //   345: astore 5
+    //   347: new 138	java/lang/StringBuilder
+    //   350: dup
+    //   351: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   354: astore 9
+    //   356: aload 9
+    //   358: ldc_w 469
+    //   361: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   364: pop
+    //   365: aload 9
+    //   367: aload 5
+    //   369: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   372: pop
+    //   373: ldc -64
+    //   375: aload 9
+    //   377: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   380: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   383: pop
+    //   384: getstatic 426	java/lang/Boolean:FALSE	Ljava/lang/Boolean;
+    //   387: astore 5
+    //   389: aload 5
+    //   391: putstatic 297	com/google/android/gms/dynamite/DynamiteModule:zzb	Ljava/lang/Boolean;
+    //   394: ldc 2
+    //   396: monitorexit
+    //   397: aload 5
+    //   399: invokevirtual 303	java/lang/Boolean:booleanValue	()Z
+    //   402: istore 4
+    //   404: iload 4
+    //   406: ifeq +57 -> 463
+    //   409: aload_0
+    //   410: aload_1
+    //   411: iload_2
+    //   412: iconst_0
+    //   413: invokestatic 441	com/google/android/gms/dynamite/DynamiteModule:zzb	(Landroid/content/Context;Ljava/lang/String;ZZ)I
+    //   416: istore_3
+    //   417: iload_3
+    //   418: ireturn
+    //   419: astore_1
+    //   420: aload_1
+    //   421: invokevirtual 207	java/lang/Exception:getMessage	()Ljava/lang/String;
+    //   424: astore_1
+    //   425: new 138	java/lang/StringBuilder
+    //   428: dup
+    //   429: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   432: astore 5
+    //   434: aload 5
+    //   436: ldc_w 471
+    //   439: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   442: pop
+    //   443: aload 5
+    //   445: aload_1
+    //   446: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   449: pop
+    //   450: ldc -64
+    //   452: aload 5
+    //   454: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   457: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   460: pop
+    //   461: iconst_0
+    //   462: ireturn
+    //   463: aload_0
+    //   464: invokestatic 352	com/google/android/gms/dynamite/DynamiteModule:zzg	(Landroid/content/Context;)Lcom/google/android/gms/dynamite/zzq;
+    //   467: astore 9
+    //   469: aload 9
+    //   471: ifnonnull +5 -> 476
+    //   474: iconst_0
+    //   475: ireturn
+    //   476: aload 8
+    //   478: astore 5
+    //   480: aload 9
+    //   482: invokevirtual 357	com/google/android/gms/dynamite/zzq:zze	()I
+    //   485: istore_3
+    //   486: iload_3
+    //   487: iconst_3
+    //   488: if_icmplt +178 -> 666
+    //   491: aload 8
+    //   493: astore 5
+    //   495: getstatic 64	com/google/android/gms/dynamite/DynamiteModule:zzg	Ljava/lang/ThreadLocal;
+    //   498: invokevirtual 230	java/lang/ThreadLocal:get	()Ljava/lang/Object;
+    //   501: checkcast 232	com/google/android/gms/dynamite/zzn
+    //   504: astore 10
+    //   506: aload 10
+    //   508: ifnull +32 -> 540
+    //   511: aload 8
+    //   513: astore 5
+    //   515: aload 10
+    //   517: getfield 287	com/google/android/gms/dynamite/zzn:zza	Landroid/database/Cursor;
+    //   520: astore 10
+    //   522: aload 10
+    //   524: ifnull +16 -> 540
+    //   527: aload 8
+    //   529: astore 5
+    //   531: aload 10
+    //   533: iconst_0
+    //   534: invokeinterface 474 2 0
+    //   539: ireturn
+    //   540: aload 8
+    //   542: astore 5
+    //   544: aload 9
+    //   546: aload_0
+    //   547: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   550: aload_1
+    //   551: iload_2
+    //   552: getstatic 69	com/google/android/gms/dynamite/DynamiteModule:zzh	Ljava/lang/ThreadLocal;
+    //   555: invokevirtual 230	java/lang/ThreadLocal:get	()Ljava/lang/Object;
+    //   558: checkcast 241	java/lang/Long
+    //   561: invokevirtual 245	java/lang/Long:longValue	()J
+    //   564: invokevirtual 477	com/google/android/gms/dynamite/zzq:zzk	(Lcom/google/android/gms/dynamic/IObjectWrapper;Ljava/lang/String;ZJ)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   567: invokestatic 338	com/google/android/gms/dynamic/ObjectWrapper:unwrap	(Lcom/google/android/gms/dynamic/IObjectWrapper;)Ljava/lang/Object;
+    //   570: checkcast 289	android/database/Cursor
+    //   573: astore_1
+    //   574: aload_1
+    //   575: ifnull +54 -> 629
+    //   578: aload_1
+    //   579: invokeinterface 480 1 0
+    //   584: ifne +6 -> 590
+    //   587: goto +42 -> 629
+    //   590: aload_1
+    //   591: iconst_0
+    //   592: invokeinterface 474 2 0
+    //   597: istore_3
+    //   598: iload_3
+    //   599: ifle +18 -> 617
+    //   602: aload_1
+    //   603: invokestatic 483	com/google/android/gms/dynamite/DynamiteModule:zze	(Landroid/database/Cursor;)Z
+    //   606: istore_2
+    //   607: iload_2
+    //   608: ifeq +9 -> 617
+    //   611: aload 6
+    //   613: astore_1
+    //   614: goto +3 -> 617
+    //   617: aload_1
+    //   618: ifnull +9 -> 627
+    //   621: aload_1
+    //   622: invokeinterface 292 1 0
+    //   627: iload_3
+    //   628: ireturn
+    //   629: ldc -64
+    //   631: ldc_w 485
+    //   634: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   637: pop
+    //   638: aload_1
+    //   639: ifnull +210 -> 849
+    //   642: aload_1
+    //   643: invokeinterface 292 1 0
+    //   648: iconst_0
+    //   649: ireturn
+    //   650: astore 6
+    //   652: aload_1
+    //   653: astore 5
+    //   655: aload 6
+    //   657: astore_1
+    //   658: goto +152 -> 810
+    //   661: astore 6
+    //   663: goto +76 -> 739
+    //   666: iload_3
+    //   667: iconst_2
+    //   668: if_icmpne +32 -> 700
+    //   671: aload 8
+    //   673: astore 5
+    //   675: ldc -64
+    //   677: ldc_w 487
+    //   680: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   683: pop
+    //   684: aload 8
+    //   686: astore 5
+    //   688: aload 9
+    //   690: aload_0
+    //   691: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   694: aload_1
+    //   695: iload_2
+    //   696: invokevirtual 490	com/google/android/gms/dynamite/zzq:zzg	(Lcom/google/android/gms/dynamic/IObjectWrapper;Ljava/lang/String;Z)I
+    //   699: ireturn
+    //   700: aload 8
+    //   702: astore 5
+    //   704: ldc -64
+    //   706: ldc_w 492
+    //   709: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   712: pop
+    //   713: aload 8
+    //   715: astore 5
+    //   717: aload 9
+    //   719: aload_0
+    //   720: invokestatic 315	com/google/android/gms/dynamic/ObjectWrapper:wrap	(Ljava/lang/Object;)Lcom/google/android/gms/dynamic/IObjectWrapper;
+    //   723: aload_1
+    //   724: iload_2
+    //   725: invokevirtual 494	com/google/android/gms/dynamite/zzq:zzf	(Lcom/google/android/gms/dynamic/IObjectWrapper;Ljava/lang/String;Z)I
+    //   728: istore_3
+    //   729: iload_3
+    //   730: ireturn
+    //   731: goto +79 -> 810
+    //   734: astore 6
+    //   736: aload 7
+    //   738: astore_1
+    //   739: aload_1
+    //   740: astore 5
+    //   742: aload 6
+    //   744: invokevirtual 495	android/os/RemoteException:getMessage	()Ljava/lang/String;
+    //   747: astore 6
+    //   749: aload_1
+    //   750: astore 5
+    //   752: new 138	java/lang/StringBuilder
+    //   755: dup
+    //   756: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   759: astore 7
+    //   761: aload_1
+    //   762: astore 5
+    //   764: aload 7
+    //   766: ldc_w 471
+    //   769: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   772: pop
+    //   773: aload_1
+    //   774: astore 5
+    //   776: aload 7
+    //   778: aload 6
+    //   780: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   783: pop
+    //   784: aload_1
+    //   785: astore 5
+    //   787: ldc -64
+    //   789: aload 7
+    //   791: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   794: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   797: pop
+    //   798: aload_1
+    //   799: ifnull +50 -> 849
+    //   802: aload_1
+    //   803: invokeinterface 292 1 0
+    //   808: iconst_0
+    //   809: ireturn
+    //   810: aload 5
+    //   812: ifnull +10 -> 822
+    //   815: aload 5
+    //   817: invokeinterface 292 1 0
+    //   822: aload_1
+    //   823: athrow
+    //   824: astore_1
+    //   825: ldc 2
+    //   827: monitorexit
+    //   828: aload_1
+    //   829: athrow
+    //   830: astore_1
+    //   831: aload_0
+    //   832: aload_1
+    //   833: invokestatic 384	com/google/android/gms/common/util/CrashUtils:addDynamiteErrorToDropBox	(Landroid/content/Context;Ljava/lang/Throwable;)Z
+    //   836: pop
+    //   837: aload_1
+    //   838: athrow
+    //   839: astore 5
+    //   841: goto -745 -> 96
+    //   844: astore 5
+    //   846: goto -563 -> 283
+    //   849: iconst_0
+    //   850: ireturn
+    //   851: astore_1
+    //   852: goto -121 -> 731
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	855	0	paramContext	Context
+    //   0	855	1	paramString	String
+    //   0	855	2	paramBoolean	boolean
+    //   153	577	3	i	int
+    //   136	269	4	bool	boolean
+    //   19	294	5	localObject1	Object
+    //   320	6	5	localObject2	Object
+    //   328	1	5	localNoSuchFieldException	NoSuchFieldException
+    //   333	1	5	localIllegalAccessException	IllegalAccessException
+    //   338	3	5	localClassNotFoundException	ClassNotFoundException
+    //   345	471	5	localObject3	Object
+    //   839	1	5	localLoadingException1	LoadingException
+    //   844	1	5	localLoadingException2	LoadingException
+    //   15	597	6	localObject4	Object
+    //   650	6	6	localObject5	Object
+    //   661	1	6	localRemoteException1	android.os.RemoteException
+    //   734	9	6	localRemoteException2	android.os.RemoteException
+    //   747	32	6	str	String
+    //   9	781	7	localStringBuilder	StringBuilder
+    //   12	702	8	localObject6	Object
+    //   6	712	9	localObject7	Object
+    //   47	485	10	localObject8	Object
+    //   128	135	11	localBoolean	Boolean
+    // Exception table:
+    //   from	to	target	type
+    //   59	83	320	finally
+    //   91	96	320	finally
+    //   96	101	320	finally
+    //   104	114	320	finally
+    //   119	138	320	finally
+    //   146	159	320	finally
+    //   164	172	320	finally
+    //   175	180	320	finally
+    //   188	221	320	finally
+    //   224	249	320	finally
+    //   249	267	320	finally
+    //   267	270	320	finally
+    //   275	278	320	finally
+    //   283	297	320	finally
+    //   300	314	320	finally
+    //   314	317	320	finally
+    //   322	325	320	finally
+    //   26	59	328	java/lang/NoSuchFieldException
+    //   325	328	328	java/lang/NoSuchFieldException
+    //   26	59	333	java/lang/IllegalAccessException
+    //   325	328	333	java/lang/IllegalAccessException
+    //   26	59	338	java/lang/ClassNotFoundException
+    //   325	328	338	java/lang/ClassNotFoundException
+    //   409	417	419	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   578	587	650	finally
+    //   590	598	650	finally
+    //   602	607	650	finally
+    //   629	638	650	finally
+    //   578	587	661	android/os/RemoteException
+    //   590	598	661	android/os/RemoteException
+    //   602	607	661	android/os/RemoteException
+    //   629	638	661	android/os/RemoteException
+    //   480	486	734	android/os/RemoteException
+    //   495	506	734	android/os/RemoteException
+    //   515	522	734	android/os/RemoteException
+    //   531	540	734	android/os/RemoteException
+    //   544	574	734	android/os/RemoteException
+    //   675	684	734	android/os/RemoteException
+    //   688	700	734	android/os/RemoteException
+    //   704	713	734	android/os/RemoteException
+    //   717	729	734	android/os/RemoteException
+    //   3	8	824	finally
+    //   26	59	824	finally
+    //   114	117	824	finally
+    //   270	273	824	finally
+    //   278	281	824	finally
+    //   325	328	824	finally
+    //   340	389	824	finally
+    //   389	394	824	finally
+    //   394	397	824	finally
+    //   825	828	824	finally
+    //   0	3	830	finally
+    //   397	404	830	finally
+    //   409	417	830	finally
+    //   420	461	830	finally
+    //   463	469	830	finally
+    //   621	627	830	finally
+    //   642	648	830	finally
+    //   802	808	830	finally
+    //   815	822	830	finally
+    //   822	824	830	finally
+    //   828	830	830	finally
+    //   91	96	839	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   146	159	844	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   164	172	844	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   175	180	844	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   188	221	844	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   224	249	844	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   249	267	844	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   480	486	851	finally
+    //   495	506	851	finally
+    //   515	522	851	finally
+    //   531	540	851	finally
+    //   544	574	851	finally
+    //   675	684	851	finally
+    //   688	700	851	finally
+    //   704	713	851	finally
+    //   717	729	851	finally
+    //   742	749	851	finally
+    //   752	761	851	finally
+    //   764	773	851	finally
+    //   776	784	851	finally
+    //   787	798	851	finally
+  }
+  
+  /* Error */
+  private static int zzb(Context paramContext, String paramString, boolean paramBoolean1, boolean paramBoolean2)
+    throws DynamiteModule.LoadingException
+  {
+    // Byte code:
+    //   0: aconst_null
+    //   1: astore 10
+    //   3: getstatic 69	com/google/android/gms/dynamite/DynamiteModule:zzh	Ljava/lang/ThreadLocal;
+    //   6: invokevirtual 230	java/lang/ThreadLocal:get	()Ljava/lang/Object;
+    //   9: checkcast 241	java/lang/Long
+    //   12: invokevirtual 245	java/lang/Long:longValue	()J
+    //   15: lstore 8
+    //   17: aload_0
+    //   18: invokevirtual 499	android/content/Context:getContentResolver	()Landroid/content/ContentResolver;
+    //   21: astore 11
+    //   23: ldc_w 501
+    //   26: astore_0
+    //   27: iconst_1
+    //   28: istore 7
+    //   30: iconst_1
+    //   31: iload_2
+    //   32: if_icmpeq +7 -> 39
+    //   35: ldc_w 503
+    //   38: astore_0
+    //   39: aload 11
+    //   41: new 505	android/net/Uri$Builder
+    //   44: dup
+    //   45: invokespecial 506	android/net/Uri$Builder:<init>	()V
+    //   48: ldc_w 508
+    //   51: invokevirtual 512	android/net/Uri$Builder:scheme	(Ljava/lang/String;)Landroid/net/Uri$Builder;
+    //   54: ldc_w 514
+    //   57: invokevirtual 517	android/net/Uri$Builder:authority	(Ljava/lang/String;)Landroid/net/Uri$Builder;
+    //   60: aload_0
+    //   61: invokevirtual 520	android/net/Uri$Builder:path	(Ljava/lang/String;)Landroid/net/Uri$Builder;
+    //   64: aload_1
+    //   65: invokevirtual 523	android/net/Uri$Builder:appendPath	(Ljava/lang/String;)Landroid/net/Uri$Builder;
+    //   68: ldc_w 525
+    //   71: lload 8
+    //   73: invokestatic 528	java/lang/String:valueOf	(J)Ljava/lang/String;
+    //   76: invokevirtual 532	android/net/Uri$Builder:appendQueryParameter	(Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri$Builder;
+    //   79: invokevirtual 536	android/net/Uri$Builder:build	()Landroid/net/Uri;
+    //   82: aconst_null
+    //   83: aconst_null
+    //   84: aconst_null
+    //   85: aconst_null
+    //   86: invokevirtual 542	android/content/ContentResolver:query	(Landroid/net/Uri;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/database/Cursor;
+    //   89: astore_1
+    //   90: aload_1
+    //   91: ifnull +202 -> 293
+    //   94: aload_1
+    //   95: astore 10
+    //   97: aload_1
+    //   98: astore_0
+    //   99: aload_1
+    //   100: invokeinterface 480 1 0
+    //   105: ifeq +188 -> 293
+    //   108: iconst_0
+    //   109: istore 6
+    //   111: iconst_0
+    //   112: istore_2
+    //   113: aload_1
+    //   114: astore 10
+    //   116: aload_1
+    //   117: astore_0
+    //   118: aload_1
+    //   119: iconst_0
+    //   120: invokeinterface 474 2 0
+    //   125: istore 4
+    //   127: aload_1
+    //   128: astore_0
+    //   129: iload 4
+    //   131: ifle +260 -> 391
+    //   134: aload_1
+    //   135: astore 10
+    //   137: aload_1
+    //   138: astore_0
+    //   139: ldc 2
+    //   141: monitorenter
+    //   142: aload_1
+    //   143: iconst_2
+    //   144: invokeinterface 546 2 0
+    //   149: putstatic 443	com/google/android/gms/dynamite/DynamiteModule:zzc	Ljava/lang/String;
+    //   152: aload_1
+    //   153: ldc_w 548
+    //   156: invokeinterface 552 2 0
+    //   161: istore 5
+    //   163: iload 5
+    //   165: iflt +14 -> 179
+    //   168: aload_1
+    //   169: iload 5
+    //   171: invokeinterface 474 2 0
+    //   176: putstatic 317	com/google/android/gms/dynamite/DynamiteModule:zze	I
+    //   179: aload_1
+    //   180: ldc_w 554
+    //   183: invokeinterface 552 2 0
+    //   188: istore 5
+    //   190: iload 5
+    //   192: iflt +24 -> 216
+    //   195: aload_1
+    //   196: iload 5
+    //   198: invokeinterface 474 2 0
+    //   203: ifeq +183 -> 386
+    //   206: iload 7
+    //   208: istore_2
+    //   209: goto +3 -> 212
+    //   212: iload_2
+    //   213: putstatic 434	com/google/android/gms/dynamite/DynamiteModule:zzd	Z
+    //   216: ldc 2
+    //   218: monitorexit
+    //   219: aload_1
+    //   220: astore 10
+    //   222: aload_1
+    //   223: astore_0
+    //   224: aload_1
+    //   225: invokestatic 483	com/google/android/gms/dynamite/DynamiteModule:zze	(Landroid/database/Cursor;)Z
+    //   228: istore 7
+    //   230: aload_1
+    //   231: astore_0
+    //   232: iload_2
+    //   233: istore 6
+    //   235: iload 7
+    //   237: ifeq +154 -> 391
+    //   240: aconst_null
+    //   241: astore_0
+    //   242: iload_2
+    //   243: istore 6
+    //   245: goto +146 -> 391
+    //   248: astore 11
+    //   250: ldc 2
+    //   252: monitorexit
+    //   253: aload_1
+    //   254: astore 10
+    //   256: aload_1
+    //   257: astore_0
+    //   258: aload 11
+    //   260: athrow
+    //   261: aload_0
+    //   262: astore 10
+    //   264: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   267: dup
+    //   268: ldc_w 556
+    //   271: aconst_null
+    //   272: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   275: athrow
+    //   276: astore_1
+    //   277: goto +61 -> 338
+    //   280: aload_0
+    //   281: ifnull +9 -> 290
+    //   284: aload_0
+    //   285: invokeinterface 292 1 0
+    //   290: iload 4
+    //   292: ireturn
+    //   293: aload_1
+    //   294: astore 10
+    //   296: aload_1
+    //   297: astore_0
+    //   298: ldc -64
+    //   300: ldc_w 485
+    //   303: invokestatic 218	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   306: pop
+    //   307: aload_1
+    //   308: astore 10
+    //   310: aload_1
+    //   311: astore_0
+    //   312: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   315: dup
+    //   316: ldc_w 558
+    //   319: aconst_null
+    //   320: invokespecial 345	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Lcom/google/android/gms/dynamite/zzp;)V
+    //   323: athrow
+    //   324: astore_0
+    //   325: aload 10
+    //   327: astore_1
+    //   328: aload_0
+    //   329: astore 10
+    //   331: goto +42 -> 373
+    //   334: astore_1
+    //   335: aconst_null
+    //   336: astore 10
+    //   338: aload 10
+    //   340: astore_0
+    //   341: aload_1
+    //   342: instanceof 9
+    //   345: ifeq +8 -> 353
+    //   348: aload 10
+    //   350: astore_0
+    //   351: aload_1
+    //   352: athrow
+    //   353: aload 10
+    //   355: astore_0
+    //   356: new 9	com/google/android/gms/dynamite/DynamiteModule$LoadingException
+    //   359: dup
+    //   360: ldc_w 560
+    //   363: aload_1
+    //   364: aconst_null
+    //   365: invokespecial 387	com/google/android/gms/dynamite/DynamiteModule$LoadingException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;Lcom/google/android/gms/dynamite/zzp;)V
+    //   368: athrow
+    //   369: astore 10
+    //   371: aload_0
+    //   372: astore_1
+    //   373: aload_1
+    //   374: ifnull +9 -> 383
+    //   377: aload_1
+    //   378: invokeinterface 292 1 0
+    //   383: aload 10
+    //   385: athrow
+    //   386: iconst_0
+    //   387: istore_2
+    //   388: goto -176 -> 212
+    //   391: iload_3
+    //   392: ifeq -112 -> 280
+    //   395: iload 6
+    //   397: ifne -136 -> 261
+    //   400: goto -120 -> 280
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	403	0	paramContext	Context
+    //   0	403	1	paramString	String
+    //   0	403	2	paramBoolean1	boolean
+    //   0	403	3	paramBoolean2	boolean
+    //   125	166	4	i	int
+    //   161	36	5	j	int
+    //   109	287	6	bool1	boolean
+    //   28	208	7	bool2	boolean
+    //   15	57	8	l	long
+    //   1	353	10	localObject1	Object
+    //   369	15	10	localObject2	Object
+    //   21	19	11	localContentResolver	android.content.ContentResolver
+    //   248	11	11	localObject3	Object
+    // Exception table:
+    //   from	to	target	type
+    //   142	163	248	finally
+    //   168	179	248	finally
+    //   179	190	248	finally
+    //   195	206	248	finally
+    //   212	216	248	finally
+    //   216	219	248	finally
+    //   250	253	248	finally
+    //   99	108	276	java/lang/Exception
+    //   118	127	276	java/lang/Exception
+    //   139	142	276	java/lang/Exception
+    //   224	230	276	java/lang/Exception
+    //   258	261	276	java/lang/Exception
+    //   264	276	276	java/lang/Exception
+    //   298	307	276	java/lang/Exception
+    //   312	324	276	java/lang/Exception
+    //   3	23	324	finally
+    //   39	90	324	finally
+    //   3	23	334	java/lang/Exception
+    //   39	90	334	java/lang/Exception
+    //   99	108	369	finally
+    //   118	127	369	finally
+    //   139	142	369	finally
+    //   224	230	369	finally
+    //   258	261	369	finally
+    //   264	276	369	finally
+    //   298	307	369	finally
+    //   312	324	369	finally
+    //   341	348	369	finally
+    //   351	353	369	finally
+    //   356	369	369	finally
+  }
+  
+  private static DynamiteModule zzc(Context paramContext, String paramString)
+  {
+    Log.i("DynamiteModule", "Selected local version of ".concat(String.valueOf(paramString)));
+    return new DynamiteModule(paramContext.getApplicationContext());
+  }
+  
+  private static void zzd(ClassLoader paramClassLoader)
+    throws DynamiteModule.LoadingException
+  {
+    try
+    {
+      paramClassLoader = (IBinder)paramClassLoader.loadClass("com.google.android.gms.dynamiteloader.DynamiteLoaderV2").getConstructor(new Class[0]).newInstance(new Object[0]);
+      if (paramClassLoader == null)
+      {
+        paramClassLoader = null;
+      }
+      else
+      {
+        IInterface localIInterface = paramClassLoader.queryLocalInterface("com.google.android.gms.dynamite.IDynamiteLoaderV2");
+        if ((localIInterface instanceof zzr)) {
+          paramClassLoader = (zzr)localIInterface;
+        } else {
+          paramClassLoader = new zzr(paramClassLoader);
+        }
+      }
+      zzl = paramClassLoader;
+      return;
+    }
+    catch (NoSuchMethodException paramClassLoader) {}catch (InvocationTargetException paramClassLoader) {}catch (InstantiationException paramClassLoader) {}catch (IllegalAccessException paramClassLoader) {}catch (ClassNotFoundException paramClassLoader) {}
+    throw new LoadingException("Failed to instantiate dynamite loader", paramClassLoader, null);
+  }
+  
+  private static boolean zze(Cursor paramCursor)
+  {
+    zzn localZzn = (zzn)zzg.get();
+    if ((localZzn != null) && (zza == null))
+    {
+      zza = paramCursor;
+      return true;
+    }
+    return false;
+  }
+  
+  private static boolean zzf(Context paramContext)
+  {
+    Object localObject = Boolean.TRUE;
+    if (((Boolean)localObject).equals(null)) {
+      return true;
+    }
+    if (((Boolean)localObject).equals(zzf)) {
+      return true;
+    }
+    localObject = zzf;
+    boolean bool1 = false;
+    boolean bool2 = false;
+    if (localObject == null)
+    {
+      localObject = paramContext.getPackageManager().resolveContentProvider("com.google.android.gms.chimera", 0);
+      bool1 = bool2;
+      if (GoogleApiAvailabilityLight.getInstance().isGooglePlayServicesAvailable(paramContext, 10000000) == 0)
+      {
+        bool1 = bool2;
+        if (localObject != null)
+        {
+          bool1 = bool2;
+          if ("com.google.android.gms".equals(packageName)) {
+            bool1 = true;
+          }
+        }
+      }
+      paramContext = Boolean.valueOf(bool1);
+      zzf = paramContext;
+      bool2 = paramContext.booleanValue();
+      bool1 = bool2;
+      if (bool2)
+      {
+        bool1 = bool2;
+        if (localObject != null)
+        {
+          paramContext = applicationInfo;
+          bool1 = bool2;
+          if (paramContext != null)
+          {
+            bool1 = bool2;
+            if ((flags & 0x81) == 0)
+            {
+              Log.i("DynamiteModule", "Non-system-image GmsCore APK, forcing V1");
+              zzd = true;
+              bool1 = bool2;
+            }
+          }
+        }
+      }
+    }
+    if (!bool1) {
+      Log.e("DynamiteModule", "Invalid GmsCore APK, remote loading disabled.");
+    }
+    return bool1;
+  }
+  
+  /* Error */
+  private static zzq zzg(Context paramContext)
+  {
+    // Byte code:
+    //   0: ldc 2
+    //   2: monitorenter
+    //   3: getstatic 639	com/google/android/gms/dynamite/DynamiteModule:zzk	Lcom/google/android/gms/dynamite/zzq;
+    //   6: astore_1
+    //   7: aload_1
+    //   8: ifnull +8 -> 16
+    //   11: ldc 2
+    //   13: monitorexit
+    //   14: aload_1
+    //   15: areturn
+    //   16: aload_0
+    //   17: ldc_w 618
+    //   20: iconst_3
+    //   21: invokevirtual 643	android/content/Context:createPackageContext	(Ljava/lang/String;I)Landroid/content/Context;
+    //   24: invokevirtual 136	android/content/Context:getClassLoader	()Ljava/lang/ClassLoader;
+    //   27: ldc_w 645
+    //   30: invokevirtual 157	java/lang/ClassLoader:loadClass	(Ljava/lang/String;)Ljava/lang/Class;
+    //   33: invokevirtual 647	java/lang/Class:newInstance	()Ljava/lang/Object;
+    //   36: checkcast 582	android/os/IBinder
+    //   39: astore_0
+    //   40: aload_0
+    //   41: ifnonnull +8 -> 49
+    //   44: aconst_null
+    //   45: astore_0
+    //   46: goto +37 -> 83
+    //   49: aload_0
+    //   50: ldc_w 649
+    //   53: invokeinterface 588 2 0
+    //   58: astore_1
+    //   59: aload_1
+    //   60: instanceof 354
+    //   63: ifeq +11 -> 74
+    //   66: aload_1
+    //   67: checkcast 354	com/google/android/gms/dynamite/zzq
+    //   70: astore_0
+    //   71: goto +12 -> 83
+    //   74: new 354	com/google/android/gms/dynamite/zzq
+    //   77: dup
+    //   78: aload_0
+    //   79: invokespecial 650	com/google/android/gms/dynamite/zzq:<init>	(Landroid/os/IBinder;)V
+    //   82: astore_0
+    //   83: aload_0
+    //   84: ifnull +50 -> 134
+    //   87: aload_0
+    //   88: putstatic 639	com/google/android/gms/dynamite/DynamiteModule:zzk	Lcom/google/android/gms/dynamite/zzq;
+    //   91: ldc 2
+    //   93: monitorexit
+    //   94: aload_0
+    //   95: areturn
+    //   96: astore_0
+    //   97: aload_0
+    //   98: invokevirtual 207	java/lang/Exception:getMessage	()Ljava/lang/String;
+    //   101: astore_0
+    //   102: new 138	java/lang/StringBuilder
+    //   105: dup
+    //   106: invokespecial 139	java/lang/StringBuilder:<init>	()V
+    //   109: astore_1
+    //   110: aload_1
+    //   111: ldc_w 652
+    //   114: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   117: pop
+    //   118: aload_1
+    //   119: aload_0
+    //   120: invokevirtual 145	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   123: pop
+    //   124: ldc -64
+    //   126: aload_1
+    //   127: invokevirtual 151	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   130: invokestatic 198	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;)I
+    //   133: pop
+    //   134: ldc 2
+    //   136: monitorexit
+    //   137: aconst_null
+    //   138: areturn
+    //   139: astore_0
+    //   140: ldc 2
+    //   142: monitorexit
+    //   143: aload_0
+    //   144: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	145	0	paramContext	Context
+    //   6	121	1	localObject	Object
+    // Exception table:
+    //   from	to	target	type
+    //   16	40	96	java/lang/Exception
+    //   49	71	96	java/lang/Exception
+    //   74	83	96	java/lang/Exception
+    //   87	91	96	java/lang/Exception
+    //   3	7	139	finally
+    //   11	14	139	finally
+    //   16	40	139	finally
+    //   49	71	139	finally
+    //   74	83	139	finally
+    //   87	91	139	finally
+    //   91	94	139	finally
+    //   97	134	139	finally
+    //   134	137	139	finally
+    //   140	143	139	finally
+  }
+  
+  @KeepForSdk
+  public Context getModuleContext()
+  {
+    return zzj;
+  }
+  
+  @KeepForSdk
+  public IBinder instantiate(String paramString)
+    throws DynamiteModule.LoadingException
+  {
+    try
+    {
+      IBinder localIBinder = (IBinder)zzj.getClassLoader().loadClass(paramString).newInstance();
+      return localIBinder;
+    }
+    catch (IllegalAccessException localIllegalAccessException) {}catch (InstantiationException localInstantiationException) {}catch (ClassNotFoundException localClassNotFoundException) {}
+    throw new LoadingException("Failed to instantiate module class: ".concat(String.valueOf(paramString)), localClassNotFoundException, null);
+  }
+  
+  @DynamiteApi
+  public static class DynamiteLoaderClassLoader
+  {
+    public static ClassLoader sClassLoader;
+    
+    public DynamiteLoaderClassLoader() {}
+  }
+  
+  @KeepForSdk
+  public static class LoadingException
+    extends Exception
+  {}
+  
+  public static abstract interface VersionPolicy
+  {
+    @KeepForSdk
+    public abstract SelectionResult selectModule(Context paramContext, String paramString, IVersions paramIVersions)
+      throws DynamiteModule.LoadingException;
+    
+    @KeepForSdk
+    public static abstract interface IVersions
+    {
+      public abstract int zza(Context paramContext, String paramString);
+      
+      public abstract int zzb(Context paramContext, String paramString, boolean paramBoolean)
+        throws DynamiteModule.LoadingException;
+    }
+    
+    @KeepForSdk
+    public static class SelectionResult
+    {
+      @KeepForSdk
+      public int localVersion = 0;
+      @KeepForSdk
+      public int remoteVersion = 0;
+      @KeepForSdk
+      public int selection = 0;
+      
+      public SelectionResult() {}
+    }
+  }
+}

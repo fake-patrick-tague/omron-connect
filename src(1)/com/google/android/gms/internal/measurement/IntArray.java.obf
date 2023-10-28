@@ -1,0 +1,67 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeMap;
+
+public final class zzz
+{
+  final TreeMap zza = new TreeMap();
+  final TreeMap zzb = new TreeMap();
+  
+  public zzz() {}
+  
+  private static final int zzc(zzg paramZzg, zzao paramZzao, zzap paramZzap)
+  {
+    paramZzg = paramZzao.zza(paramZzg, Collections.singletonList(paramZzap));
+    if ((paramZzg instanceof zzah)) {
+      return zzh.zzb(paramZzg.zzh().doubleValue());
+    }
+    return -1;
+  }
+  
+  public final void zza(String paramString1, int paramInt, zzao paramZzao, String paramString2)
+  {
+    if ("create".equals(paramString2))
+    {
+      paramString1 = zzb;
+    }
+    else
+    {
+      if (!"edit".equals(paramString2)) {
+        break label73;
+      }
+      paramString1 = zza;
+    }
+    int i = paramInt;
+    if (paramString1.containsKey(Integer.valueOf(paramInt))) {
+      i = ((Integer)paramString1.lastKey()).intValue() + 1;
+    }
+    paramString1.put(Integer.valueOf(i), paramZzao);
+    return;
+    label73:
+    throw new IllegalStateException("Unknown callback type: ".concat(String.valueOf(paramString2)));
+  }
+  
+  public final void zzb(zzg paramZzg, zzab paramZzab)
+  {
+    zzl localZzl = new zzl(paramZzab);
+    Object localObject = zza.keySet().iterator();
+    while (((Iterator)localObject).hasNext())
+    {
+      Integer localInteger = (Integer)((Iterator)localObject).next();
+      zzaa localZzaa = paramZzab.zzb().zzb();
+      int i = zzc(paramZzg, (zzao)zza.get(localInteger), localZzl);
+      if ((i == 2) || (i == -1)) {
+        paramZzab.zzf(localZzaa);
+      }
+    }
+    paramZzab = zzb.keySet().iterator();
+    while (paramZzab.hasNext())
+    {
+      localObject = (Integer)paramZzab.next();
+      zzc(paramZzg, (zzao)zzb.get(localObject), localZzl);
+    }
+  }
+}

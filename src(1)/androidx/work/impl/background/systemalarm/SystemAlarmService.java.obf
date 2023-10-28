@@ -1,0 +1,63 @@
+package androidx.work.impl.background.systemalarm;
+
+import android.app.Service;
+import android.content.Intent;
+import androidx.lifecycle.p;
+import androidx.work.impl.utils.k;
+import androidx.work.j;
+
+public class SystemAlarmService
+  extends p
+  implements e.c
+{
+  private static final String c = j.f("SystemAlarmService");
+  private e d;
+  private boolean e;
+  
+  public SystemAlarmService() {}
+  
+  private void e()
+  {
+    e localE = new e(this);
+    d = localE;
+    localE.m(this);
+  }
+  
+  public void a()
+  {
+    e = true;
+    j.c().a(c, "All commands completed in dispatcher", new Throwable[0]);
+    k.a();
+    stopSelf();
+  }
+  
+  public void onCreate()
+  {
+    super.onCreate();
+    e();
+    e = false;
+  }
+  
+  public void onDestroy()
+  {
+    super.onDestroy();
+    e = true;
+    d.j();
+  }
+  
+  public int onStartCommand(Intent paramIntent, int paramInt1, int paramInt2)
+  {
+    super.onStartCommand(paramIntent, paramInt1, paramInt2);
+    if (e)
+    {
+      j.c().d(c, "Re-initializing SystemAlarmDispatcher after a request to shut-down.", new Throwable[0]);
+      d.j();
+      e();
+      e = false;
+    }
+    if (paramIntent != null) {
+      d.a(paramIntent, paramInt2);
+    }
+    return 3;
+  }
+}

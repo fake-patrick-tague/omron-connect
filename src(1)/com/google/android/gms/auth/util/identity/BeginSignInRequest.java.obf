@@ -1,0 +1,392 @@
+package com.google.android.gms.auth.api.identity;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import androidx.annotation.RecentlyNullable;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+@SafeParcelable.Class(creator="BeginSignInRequestCreator")
+public final class BeginSignInRequest
+  extends AbstractSafeParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<BeginSignInRequest> CREATOR = new zba();
+  @SafeParcelable.Field(getter="getPasswordRequestOptions", id=1)
+  private final PasswordRequestOptions zba;
+  @SafeParcelable.Field(getter="getGoogleIdTokenRequestOptions", id=2)
+  private final GoogleIdTokenRequestOptions zbb;
+  @SafeParcelable.Field(getter="getSessionId", id=3)
+  private final String zbc;
+  @SafeParcelable.Field(getter="isAutoSelectEnabled", id=4)
+  private final boolean zbd;
+  
+  @SafeParcelable.Constructor
+  BeginSignInRequest(@SafeParcelable.Param(id=1) PasswordRequestOptions paramPasswordRequestOptions, @SafeParcelable.Param(id=2) GoogleIdTokenRequestOptions paramGoogleIdTokenRequestOptions, @SafeParcelable.Param(id=3) String paramString, @SafeParcelable.Param(id=4) boolean paramBoolean)
+  {
+    zba = ((PasswordRequestOptions)Preconditions.checkNotNull(paramPasswordRequestOptions));
+    zbb = ((GoogleIdTokenRequestOptions)Preconditions.checkNotNull(paramGoogleIdTokenRequestOptions));
+    zbc = paramString;
+    zbd = paramBoolean;
+  }
+  
+  @RecentlyNonNull
+  public static Builder builder()
+  {
+    return new Builder();
+  }
+  
+  @RecentlyNonNull
+  public static Builder zba(@RecentlyNonNull BeginSignInRequest paramBeginSignInRequest)
+  {
+    Preconditions.checkNotNull(paramBeginSignInRequest);
+    Builder localBuilder = builder();
+    localBuilder.setGoogleIdTokenRequestOptions(paramBeginSignInRequest.getGoogleIdTokenRequestOptions());
+    localBuilder.setPasswordRequestOptions(paramBeginSignInRequest.getPasswordRequestOptions());
+    localBuilder.setAutoSelectEnabled(zbd);
+    paramBeginSignInRequest = zbc;
+    if (paramBeginSignInRequest != null) {
+      localBuilder.zba(paramBeginSignInRequest);
+    }
+    return localBuilder;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (!(paramObject instanceof BeginSignInRequest)) {
+      return false;
+    }
+    paramObject = (BeginSignInRequest)paramObject;
+    return (Objects.equal(zba, zba)) && (Objects.equal(zbb, zbb)) && (Objects.equal(zbc, zbc)) && (zbd == zbd);
+  }
+  
+  @RecentlyNonNull
+  public GoogleIdTokenRequestOptions getGoogleIdTokenRequestOptions()
+  {
+    return zbb;
+  }
+  
+  @RecentlyNonNull
+  public PasswordRequestOptions getPasswordRequestOptions()
+  {
+    return zba;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zba, zbb, zbc, Boolean.valueOf(zbd) });
+  }
+  
+  public boolean isAutoSelectEnabled()
+  {
+    return zbd;
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeParcelable(paramParcel, 1, getPasswordRequestOptions(), paramInt, false);
+    SafeParcelWriter.writeParcelable(paramParcel, 2, getGoogleIdTokenRequestOptions(), paramInt, false);
+    SafeParcelWriter.writeString(paramParcel, 3, zbc, false);
+    SafeParcelWriter.writeBoolean(paramParcel, 4, isAutoSelectEnabled());
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  public static final class Builder
+  {
+    private BeginSignInRequest.PasswordRequestOptions zba;
+    private BeginSignInRequest.GoogleIdTokenRequestOptions zbb;
+    private String zbc;
+    private boolean zbd;
+    
+    public Builder()
+    {
+      Object localObject = BeginSignInRequest.PasswordRequestOptions.builder();
+      ((BeginSignInRequest.PasswordRequestOptions.Builder)localObject).setSupported(false);
+      zba = ((BeginSignInRequest.PasswordRequestOptions.Builder)localObject).build();
+      localObject = BeginSignInRequest.GoogleIdTokenRequestOptions.builder();
+      ((BeginSignInRequest.GoogleIdTokenRequestOptions.Builder)localObject).setSupported(false);
+      zbb = ((BeginSignInRequest.GoogleIdTokenRequestOptions.Builder)localObject).build();
+    }
+    
+    @RecentlyNonNull
+    public BeginSignInRequest build()
+    {
+      return new BeginSignInRequest(zba, zbb, zbc, zbd);
+    }
+    
+    @RecentlyNonNull
+    public Builder setAutoSelectEnabled(boolean paramBoolean)
+    {
+      zbd = paramBoolean;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setGoogleIdTokenRequestOptions(@RecentlyNonNull BeginSignInRequest.GoogleIdTokenRequestOptions paramGoogleIdTokenRequestOptions)
+    {
+      zbb = ((BeginSignInRequest.GoogleIdTokenRequestOptions)Preconditions.checkNotNull(paramGoogleIdTokenRequestOptions));
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setPasswordRequestOptions(@RecentlyNonNull BeginSignInRequest.PasswordRequestOptions paramPasswordRequestOptions)
+    {
+      zba = ((BeginSignInRequest.PasswordRequestOptions)Preconditions.checkNotNull(paramPasswordRequestOptions));
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public final Builder zba(@RecentlyNonNull String paramString)
+    {
+      zbc = paramString;
+      return this;
+    }
+  }
+  
+  @SafeParcelable.Class(creator="GoogleIdTokenRequestOptionsCreator")
+  public static final class GoogleIdTokenRequestOptions
+    extends AbstractSafeParcelable
+  {
+    @RecentlyNonNull
+    public static final Parcelable.Creator<GoogleIdTokenRequestOptions> CREATOR = new zbe();
+    @SafeParcelable.Field(getter="isSupported", id=1)
+    private final boolean zba;
+    @SafeParcelable.Field(getter="getServerClientId", id=2)
+    private final String zbb;
+    @SafeParcelable.Field(getter="getNonce", id=3)
+    private final String zbc;
+    @SafeParcelable.Field(getter="filterByAuthorizedAccounts", id=4)
+    private final boolean zbd;
+    @SafeParcelable.Field(getter="getLinkedServiceId", id=5)
+    private final String zbe;
+    @SafeParcelable.Field(getter="getIdTokenDepositionScopes", id=6)
+    private final List<String> zbf;
+    
+    @SafeParcelable.Constructor
+    GoogleIdTokenRequestOptions(@SafeParcelable.Param(id=1) boolean paramBoolean1, @SafeParcelable.Param(id=2) String paramString1, @SafeParcelable.Param(id=3) String paramString2, @SafeParcelable.Param(id=4) boolean paramBoolean2, @SafeParcelable.Param(id=5) String paramString3, @SafeParcelable.Param(id=6) List<String> paramList)
+    {
+      zba = paramBoolean1;
+      if (paramBoolean1) {
+        Preconditions.checkNotNull(paramString1, "serverClientId must be provided if Google ID tokens are requested");
+      }
+      zbb = paramString1;
+      zbc = paramString2;
+      zbd = paramBoolean2;
+      paramString1 = BeginSignInRequest.CREATOR;
+      paramString2 = null;
+      paramString1 = paramString2;
+      if (paramList != null) {
+        if (paramList.isEmpty())
+        {
+          paramString1 = paramString2;
+        }
+        else
+        {
+          paramString1 = new ArrayList(paramList);
+          Collections.sort(paramString1);
+        }
+      }
+      zbf = paramString1;
+      zbe = paramString3;
+    }
+    
+    @RecentlyNonNull
+    public static Builder builder()
+    {
+      return new Builder();
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (!(paramObject instanceof GoogleIdTokenRequestOptions)) {
+        return false;
+      }
+      paramObject = (GoogleIdTokenRequestOptions)paramObject;
+      return (zba == zba) && (Objects.equal(zbb, zbb)) && (Objects.equal(zbc, zbc)) && (zbd == zbd) && (Objects.equal(zbe, zbe)) && (Objects.equal(zbf, zbf));
+    }
+    
+    public boolean filterByAuthorizedAccounts()
+    {
+      return zbd;
+    }
+    
+    @RecentlyNullable
+    public List<String> getIdTokenDepositionScopes()
+    {
+      return zbf;
+    }
+    
+    @RecentlyNullable
+    public String getLinkedServiceId()
+    {
+      return zbe;
+    }
+    
+    @RecentlyNullable
+    public String getNonce()
+    {
+      return zbc;
+    }
+    
+    @RecentlyNullable
+    public String getServerClientId()
+    {
+      return zbb;
+    }
+    
+    public int hashCode()
+    {
+      return Objects.hashCode(new Object[] { Boolean.valueOf(zba), zbb, zbc, Boolean.valueOf(zbd), zbe, zbf });
+    }
+    
+    public boolean isSupported()
+    {
+      return zba;
+    }
+    
+    public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+    {
+      paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+      SafeParcelWriter.writeBoolean(paramParcel, 1, isSupported());
+      SafeParcelWriter.writeString(paramParcel, 2, getServerClientId(), false);
+      SafeParcelWriter.writeString(paramParcel, 3, getNonce(), false);
+      SafeParcelWriter.writeBoolean(paramParcel, 4, filterByAuthorizedAccounts());
+      SafeParcelWriter.writeString(paramParcel, 5, getLinkedServiceId(), false);
+      SafeParcelWriter.writeStringList(paramParcel, 6, getIdTokenDepositionScopes(), false);
+      SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+    }
+    
+    public static final class Builder
+    {
+      private boolean zba = false;
+      private String zbb = null;
+      private String zbc = null;
+      private boolean zbd = true;
+      private String zbe = null;
+      private List<String> zbf = null;
+      
+      public Builder() {}
+      
+      @RecentlyNonNull
+      public Builder associateLinkedAccounts(@RecentlyNonNull String paramString, List<String> paramList)
+      {
+        zbe = ((String)Preconditions.checkNotNull(paramString, "linkedServiceId must be provided if you want to associate linked accounts."));
+        zbf = paramList;
+        return this;
+      }
+      
+      @RecentlyNonNull
+      public BeginSignInRequest.GoogleIdTokenRequestOptions build()
+      {
+        return new BeginSignInRequest.GoogleIdTokenRequestOptions(zba, zbb, zbc, zbd, zbe, zbf);
+      }
+      
+      @RecentlyNonNull
+      public Builder setFilterByAuthorizedAccounts(boolean paramBoolean)
+      {
+        zbd = paramBoolean;
+        return this;
+      }
+      
+      @RecentlyNonNull
+      public Builder setNonce(String paramString)
+      {
+        zbc = paramString;
+        return this;
+      }
+      
+      @RecentlyNonNull
+      public Builder setServerClientId(@RecentlyNonNull String paramString)
+      {
+        zbb = Preconditions.checkNotEmpty(paramString);
+        return this;
+      }
+      
+      @RecentlyNonNull
+      public Builder setSupported(boolean paramBoolean)
+      {
+        zba = paramBoolean;
+        return this;
+      }
+    }
+  }
+  
+  @SafeParcelable.Class(creator="PasswordRequestOptionsCreator")
+  public static final class PasswordRequestOptions
+    extends AbstractSafeParcelable
+  {
+    @RecentlyNonNull
+    public static final Parcelable.Creator<PasswordRequestOptions> CREATOR = new zbf();
+    @SafeParcelable.Field(getter="isSupported", id=1)
+    private final boolean zba;
+    
+    @SafeParcelable.Constructor
+    PasswordRequestOptions(@SafeParcelable.Param(id=1) boolean paramBoolean)
+    {
+      zba = paramBoolean;
+    }
+    
+    @RecentlyNonNull
+    public static Builder builder()
+    {
+      return new Builder();
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (!(paramObject instanceof PasswordRequestOptions)) {
+        return false;
+      }
+      paramObject = (PasswordRequestOptions)paramObject;
+      return zba == zba;
+    }
+    
+    public int hashCode()
+    {
+      return Objects.hashCode(new Object[] { Boolean.valueOf(zba) });
+    }
+    
+    public boolean isSupported()
+    {
+      return zba;
+    }
+    
+    public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+    {
+      paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+      SafeParcelWriter.writeBoolean(paramParcel, 1, isSupported());
+      SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+    }
+    
+    public static final class Builder
+    {
+      private boolean zba = false;
+      
+      public Builder() {}
+      
+      @RecentlyNonNull
+      public BeginSignInRequest.PasswordRequestOptions build()
+      {
+        return new BeginSignInRequest.PasswordRequestOptions(zba);
+      }
+      
+      @RecentlyNonNull
+      public Builder setSupported(boolean paramBoolean)
+      {
+        zba = paramBoolean;
+        return this;
+      }
+    }
+  }
+}

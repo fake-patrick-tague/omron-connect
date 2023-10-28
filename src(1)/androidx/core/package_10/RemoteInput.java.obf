@@ -1,0 +1,151 @@
+package androidx.core.app;
+
+import android.app.RemoteInput;
+import android.app.RemoteInput.Builder;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+public final class t
+{
+  private final String a;
+  private final CharSequence b;
+  private final CharSequence[] c;
+  private final boolean d;
+  private final int e;
+  private final Bundle f;
+  private final Set<String> g;
+  
+  static RemoteInput a(t paramT)
+  {
+    return a.b(paramT);
+  }
+  
+  static RemoteInput[] b(t[] paramArrayOfT)
+  {
+    if (paramArrayOfT == null) {
+      return null;
+    }
+    RemoteInput[] arrayOfRemoteInput = new RemoteInput[paramArrayOfT.length];
+    int i = 0;
+    while (i < paramArrayOfT.length)
+    {
+      arrayOfRemoteInput[i] = a(paramArrayOfT[i]);
+      i += 1;
+    }
+    return arrayOfRemoteInput;
+  }
+  
+  public boolean c()
+  {
+    return d;
+  }
+  
+  public Set<String> d()
+  {
+    return g;
+  }
+  
+  public CharSequence[] e()
+  {
+    return c;
+  }
+  
+  public int f()
+  {
+    return e;
+  }
+  
+  public Bundle g()
+  {
+    return f;
+  }
+  
+  public CharSequence h()
+  {
+    return b;
+  }
+  
+  public String i()
+  {
+    return a;
+  }
+  
+  public boolean j()
+  {
+    return (!c()) && ((e() == null) || (e().length == 0)) && (d() != null) && (!d().isEmpty());
+  }
+  
+  static class a
+  {
+    static void a(Object paramObject, Intent paramIntent, Bundle paramBundle)
+    {
+      RemoteInput.addResultsToIntent((RemoteInput[])paramObject, paramIntent, paramBundle);
+    }
+    
+    public static RemoteInput b(t paramT)
+    {
+      RemoteInput.Builder localBuilder = new RemoteInput.Builder(paramT.i()).setLabel(paramT.h()).setChoices(paramT.e()).setAllowFreeFormInput(paramT.c()).addExtras(paramT.g());
+      if (Build.VERSION.SDK_INT >= 26)
+      {
+        Object localObject = paramT.d();
+        if (localObject != null)
+        {
+          localObject = ((Set)localObject).iterator();
+          while (((Iterator)localObject).hasNext()) {
+            t.b.d(localBuilder, (String)((Iterator)localObject).next(), true);
+          }
+        }
+      }
+      if (Build.VERSION.SDK_INT >= 29) {
+        t.c.b(localBuilder, paramT.f());
+      }
+      return localBuilder.build();
+    }
+    
+    static Bundle c(Intent paramIntent)
+    {
+      return RemoteInput.getResultsFromIntent(paramIntent);
+    }
+  }
+  
+  static class b
+  {
+    static void a(t paramT, Intent paramIntent, Map<String, Uri> paramMap)
+    {
+      RemoteInput.addDataResultToIntent(t.a(paramT), paramIntent, paramMap);
+    }
+    
+    static Set<String> b(Object paramObject)
+    {
+      return ((RemoteInput)paramObject).getAllowedDataTypes();
+    }
+    
+    static Map<String, Uri> c(Intent paramIntent, String paramString)
+    {
+      return RemoteInput.getDataResultsFromIntent(paramIntent, paramString);
+    }
+    
+    static RemoteInput.Builder d(RemoteInput.Builder paramBuilder, String paramString, boolean paramBoolean)
+    {
+      return paramBuilder.setAllowDataType(paramString, paramBoolean);
+    }
+  }
+  
+  static class c
+  {
+    static int a(Object paramObject)
+    {
+      return ((RemoteInput)paramObject).getEditChoicesBeforeSending();
+    }
+    
+    static RemoteInput.Builder b(RemoteInput.Builder paramBuilder, int paramInt)
+    {
+      return paramBuilder.setEditChoicesBeforeSending(paramInt);
+    }
+  }
+}

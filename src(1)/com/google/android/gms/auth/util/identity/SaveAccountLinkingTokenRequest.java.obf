@@ -1,0 +1,198 @@
+package com.google.android.gms.auth.api.identity;
+
+import android.app.PendingIntent;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import android.text.TextUtils;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import java.util.ArrayList;
+import java.util.List;
+
+@SafeParcelable.Class(creator="SaveAccountLinkingTokenRequestCreator")
+public class SaveAccountLinkingTokenRequest
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<SaveAccountLinkingTokenRequest> CREATOR = new zbg();
+  @RecentlyNonNull
+  public static final String EXTRA_TOKEN = "extra_token";
+  @RecentlyNonNull
+  public static final String TOKEN_TYPE_AUTH_CODE = "auth_code";
+  @SafeParcelable.Field(getter="getConsentPendingIntent", id=1)
+  private final PendingIntent zba;
+  @SafeParcelable.Field(getter="getTokenType", id=2)
+  private final String zbb;
+  @SafeParcelable.Field(getter="getServiceId", id=3)
+  private final String zbc;
+  @SafeParcelable.Field(getter="getScopes", id=4)
+  private final List<String> zbd;
+  @SafeParcelable.Field(getter="getSessionId", id=5)
+  private final String zbe;
+  
+  @SafeParcelable.Constructor
+  SaveAccountLinkingTokenRequest(@SafeParcelable.Param(id=1) PendingIntent paramPendingIntent, @SafeParcelable.Param(id=2) String paramString1, @SafeParcelable.Param(id=3) String paramString2, @SafeParcelable.Param(id=4) List<String> paramList, @SafeParcelable.Param(id=5) String paramString3)
+  {
+    zba = paramPendingIntent;
+    zbb = paramString1;
+    zbc = paramString2;
+    zbd = paramList;
+    zbe = paramString3;
+  }
+  
+  @RecentlyNonNull
+  public static Builder builder()
+  {
+    return new Builder();
+  }
+  
+  @RecentlyNonNull
+  public static Builder zba(@RecentlyNonNull SaveAccountLinkingTokenRequest paramSaveAccountLinkingTokenRequest)
+  {
+    Preconditions.checkNotNull(paramSaveAccountLinkingTokenRequest);
+    Builder localBuilder = builder();
+    localBuilder.setScopes(paramSaveAccountLinkingTokenRequest.getScopes());
+    localBuilder.setServiceId(paramSaveAccountLinkingTokenRequest.getServiceId());
+    localBuilder.setConsentPendingIntent(paramSaveAccountLinkingTokenRequest.getConsentPendingIntent());
+    localBuilder.setTokenType(paramSaveAccountLinkingTokenRequest.getTokenType());
+    paramSaveAccountLinkingTokenRequest = zbe;
+    if (!TextUtils.isEmpty(paramSaveAccountLinkingTokenRequest)) {
+      localBuilder.zba(paramSaveAccountLinkingTokenRequest);
+    }
+    return localBuilder;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (!(paramObject instanceof SaveAccountLinkingTokenRequest)) {
+      return false;
+    }
+    paramObject = (SaveAccountLinkingTokenRequest)paramObject;
+    if (zbd.size() == zbd.size())
+    {
+      if (!zbd.containsAll(zbd)) {
+        return false;
+      }
+      if ((Objects.equal(zba, zba)) && (Objects.equal(zbb, zbb)) && (Objects.equal(zbc, zbc)) && (Objects.equal(zbe, zbe))) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  @RecentlyNonNull
+  public PendingIntent getConsentPendingIntent()
+  {
+    return zba;
+  }
+  
+  @RecentlyNonNull
+  public List<String> getScopes()
+  {
+    return zbd;
+  }
+  
+  @RecentlyNonNull
+  public String getServiceId()
+  {
+    return zbc;
+  }
+  
+  @RecentlyNonNull
+  public String getTokenType()
+  {
+    return zbb;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zba, zbb, zbc, zbd, zbe });
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeParcelable(paramParcel, 1, getConsentPendingIntent(), paramInt, false);
+    SafeParcelWriter.writeString(paramParcel, 2, getTokenType(), false);
+    SafeParcelWriter.writeString(paramParcel, 3, getServiceId(), false);
+    SafeParcelWriter.writeStringList(paramParcel, 4, getScopes(), false);
+    SafeParcelWriter.writeString(paramParcel, 5, zbe, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  public static final class Builder
+  {
+    private PendingIntent zba;
+    private String zbb;
+    private String zbc;
+    private List<String> zbd = new ArrayList();
+    private String zbe;
+    
+    public Builder() {}
+    
+    @RecentlyNonNull
+    public SaveAccountLinkingTokenRequest build()
+    {
+      PendingIntent localPendingIntent = zba;
+      boolean bool2 = false;
+      if (localPendingIntent != null) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      Preconditions.checkArgument(bool1, "Consent PendingIntent cannot be null");
+      Preconditions.checkArgument("auth_code".equals(zbb), "Invalid tokenType");
+      Preconditions.checkArgument(TextUtils.isEmpty(zbc) ^ true, "serviceId cannot be null or empty");
+      boolean bool1 = bool2;
+      if (zbd != null) {
+        bool1 = true;
+      }
+      Preconditions.checkArgument(bool1, "scopes cannot be null");
+      return new SaveAccountLinkingTokenRequest(zba, zbb, zbc, zbd, zbe);
+    }
+    
+    @RecentlyNonNull
+    public Builder setConsentPendingIntent(@RecentlyNonNull PendingIntent paramPendingIntent)
+    {
+      zba = paramPendingIntent;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setScopes(@RecentlyNonNull List<String> paramList)
+    {
+      zbd = paramList;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setServiceId(@RecentlyNonNull String paramString)
+    {
+      zbc = paramString;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setTokenType(@RecentlyNonNull String paramString)
+    {
+      zbb = paramString;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public final Builder zba(@RecentlyNonNull String paramString)
+    {
+      zbe = paramString;
+      return this;
+    }
+  }
+}

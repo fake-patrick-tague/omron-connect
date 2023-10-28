@@ -1,0 +1,37 @@
+package d.c.a.a.m;
+
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.util.Property;
+import java.util.WeakHashMap;
+
+public class e
+  extends Property<Drawable, Integer>
+{
+  public static final Property<Drawable, Integer> a = new e();
+  private final WeakHashMap<Drawable, Integer> b = new WeakHashMap();
+  
+  private e()
+  {
+    super(Integer.class, "drawableAlphaCompat");
+  }
+  
+  public Integer a(Drawable paramDrawable)
+  {
+    if (Build.VERSION.SDK_INT >= 19) {
+      return Integer.valueOf(paramDrawable.getAlpha());
+    }
+    if (b.containsKey(paramDrawable)) {
+      return (Integer)b.get(paramDrawable);
+    }
+    return Integer.valueOf(255);
+  }
+  
+  public void b(Drawable paramDrawable, Integer paramInteger)
+  {
+    if (Build.VERSION.SDK_INT < 19) {
+      b.put(paramDrawable, paramInteger);
+    }
+    paramDrawable.setAlpha(paramInteger.intValue());
+  }
+}

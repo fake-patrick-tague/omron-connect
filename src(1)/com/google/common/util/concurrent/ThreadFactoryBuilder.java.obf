@@ -1,0 +1,87 @@
+package com.google.common.util.concurrent;
+
+import java.util.Locale;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicLong;
+
+public final class g
+{
+  private String a = null;
+  private Boolean b = null;
+  private Integer c = null;
+  private Thread.UncaughtExceptionHandler d = null;
+  private ThreadFactory e = null;
+  
+  public g() {}
+  
+  private static ThreadFactory c(g paramG)
+  {
+    final String str = a;
+    final Boolean localBoolean = b;
+    final Integer localInteger = c;
+    final Thread.UncaughtExceptionHandler localUncaughtExceptionHandler = d;
+    paramG = e;
+    if (paramG == null) {
+      paramG = Executors.defaultThreadFactory();
+    }
+    final AtomicLong localAtomicLong;
+    if (str != null) {
+      localAtomicLong = new AtomicLong(0L);
+    } else {
+      localAtomicLong = null;
+    }
+    return new a(paramG, str, localAtomicLong, localBoolean, localInteger, localUncaughtExceptionHandler);
+  }
+  
+  private static String d(String paramString, Object... paramVarArgs)
+  {
+    return String.format(Locale.ROOT, paramString, paramVarArgs);
+  }
+  
+  public ThreadFactory b()
+  {
+    return c(this);
+  }
+  
+  public g e(boolean paramBoolean)
+  {
+    b = Boolean.valueOf(paramBoolean);
+    return this;
+  }
+  
+  public g f(String paramString)
+  {
+    d(paramString, new Object[] { Integer.valueOf(0) });
+    a = paramString;
+    return this;
+  }
+  
+  static final class a
+    implements ThreadFactory
+  {
+    a(ThreadFactory paramThreadFactory, String paramString, AtomicLong paramAtomicLong, Boolean paramBoolean, Integer paramInteger, Thread.UncaughtExceptionHandler paramUncaughtExceptionHandler) {}
+    
+    public Thread newThread(Runnable paramRunnable)
+    {
+      paramRunnable = b.newThread(paramRunnable);
+      Object localObject = str;
+      if (localObject != null) {
+        paramRunnable.setName(g.a((String)localObject, new Object[] { Long.valueOf(localAtomicLong.getAndIncrement()) }));
+      }
+      localObject = localBoolean;
+      if (localObject != null) {
+        paramRunnable.setDaemon(((Boolean)localObject).booleanValue());
+      }
+      localObject = localInteger;
+      if (localObject != null) {
+        paramRunnable.setPriority(((Integer)localObject).intValue());
+      }
+      localObject = localUncaughtExceptionHandler;
+      if (localObject != null) {
+        paramRunnable.setUncaughtExceptionHandler((Thread.UncaughtExceptionHandler)localObject);
+      }
+      return paramRunnable;
+    }
+  }
+}

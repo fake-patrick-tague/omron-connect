@@ -1,0 +1,183 @@
+package com.braze.ui.inappmessage.views;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import c.h.q.n0;
+import com.braze.enums.inappmessage.TextAlign;
+import com.braze.models.inappmessage.IInAppMessageWithImage;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.ui.inappmessage.utils.InAppMessageViewUtils;
+import com.braze.ui.support.ViewUtils;
+import java.io.File;
+import java.util.Objects;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public abstract class InAppMessageBaseView
+  extends RelativeLayout
+  implements IInAppMessageView
+{
+  public static final Companion Companion = new Companion(null);
+  private boolean hasAppliedWindowInsets;
+  
+  public InAppMessageBaseView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+  }
+  
+  public void applyWindowInsets(n0 paramN0)
+  {
+    i.e(paramN0, "insets");
+    setHasAppliedWindowInsets(true);
+  }
+  
+  public boolean getHasAppliedWindowInsets()
+  {
+    return hasAppliedWindowInsets;
+  }
+  
+  public abstract Object getMessageBackgroundObject();
+  
+  public View getMessageClickableView()
+  {
+    return this;
+  }
+  
+  public abstract TextView getMessageIconView();
+  
+  public abstract ImageView getMessageImageView();
+  
+  public abstract TextView getMessageTextView();
+  
+  public void resetMessageMargins(boolean paramBoolean)
+  {
+    Object localObject = getMessageImageView();
+    if (localObject != null) {
+      if (!paramBoolean) {
+        ViewUtils.removeViewFromParent((View)localObject);
+      } else {
+        ViewUtils.removeViewFromParent(getMessageIconView());
+      }
+    }
+    localObject = getMessageIconView();
+    int i = 1;
+    if (localObject != null)
+    {
+      localObject = ((TextView)localObject).getText();
+      if (localObject != null)
+      {
+        localObject = localObject.toString();
+        if ((localObject != null) && (g.o((CharSequence)localObject) == true)) {
+          break label69;
+        }
+      }
+    }
+    i = 0;
+    label69:
+    if (i != 0) {
+      ViewUtils.removeViewFromParent(getMessageIconView());
+    }
+  }
+  
+  public void setHasAppliedWindowInsets(boolean paramBoolean)
+  {
+    hasAppliedWindowInsets = paramBoolean;
+  }
+  
+  public void setMessage(String paramString)
+  {
+    i.e(paramString, "text");
+    TextView localTextView = getMessageTextView();
+    if (localTextView == null) {
+      return;
+    }
+    localTextView.setText(paramString);
+  }
+  
+  public void setMessageBackgroundColor(int paramInt)
+  {
+    Object localObject = getMessageBackgroundObject();
+    Objects.requireNonNull(localObject, "null cannot be cast to non-null type android.view.View");
+    InAppMessageViewUtils.setViewBackgroundColor((View)localObject, paramInt);
+  }
+  
+  public void setMessageIcon(String paramString, int paramInt1, int paramInt2)
+  {
+    i.e(paramString, "icon");
+    TextView localTextView = getMessageIconView();
+    if (localTextView != null)
+    {
+      Context localContext = getContext();
+      i.d(localContext, "context");
+      InAppMessageViewUtils.setIcon(localContext, paramString, paramInt1, paramInt2, localTextView);
+    }
+  }
+  
+  public void setMessageImageView(Bitmap paramBitmap)
+  {
+    i.e(paramBitmap, "bitmap");
+    ImageView localImageView = getMessageImageView();
+    if (localImageView != null) {
+      InAppMessageViewUtils.setImage(paramBitmap, localImageView);
+    }
+  }
+  
+  public void setMessageTextAlign(TextAlign paramTextAlign)
+  {
+    i.e(paramTextAlign, "textAlign");
+    TextView localTextView = getMessageTextView();
+    if (localTextView != null) {
+      InAppMessageViewUtils.setTextAlignment(localTextView, paramTextAlign);
+    }
+  }
+  
+  public void setMessageTextColor(int paramInt)
+  {
+    TextView localTextView = getMessageTextView();
+    if (localTextView != null) {
+      InAppMessageViewUtils.setTextViewColor(localTextView, paramInt);
+    }
+  }
+  
+  public static final class Companion
+  {
+    private Companion() {}
+    
+    public final String getAppropriateImageUrl(IInAppMessageWithImage paramIInAppMessageWithImage)
+    {
+      i.e(paramIInAppMessageWithImage, "inAppMessage");
+      String str = paramIInAppMessageWithImage.getLocalImageUrl();
+      int i;
+      if ((str != null) && (!g.o(str))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i == 0)
+      {
+        if (new File(str).exists()) {
+          return str;
+        }
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.D, null, new j(str)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Local bitmap file does not exist. Using remote url instead. Local path: ");
+            localStringBuilder.append($localImagePath);
+            return localStringBuilder.toString();
+          }
+        }, 2, null);
+      }
+      return paramIInAppMessageWithImage.getRemoteImageUrl();
+    }
+  }
+}

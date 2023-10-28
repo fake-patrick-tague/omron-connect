@@ -1,0 +1,1027 @@
+package androidx.fragment.app;
+
+import android.app.Activity;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.os.Bundle;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import androidx.fragment.app.strictmode.FragmentStrictMode;
+import androidx.lifecycle.j0;
+import androidx.lifecycle.s;
+import c.h.q.f0;
+import c.m.b;
+import java.util.Iterator;
+import java.util.List;
+
+class y
+{
+  private final t a;
+  private final z b;
+  private final Fragment c;
+  private boolean d = false;
+  private int e = -1;
+  
+  y(t paramT, z paramZ, Fragment paramFragment)
+  {
+    a = paramT;
+    b = paramZ;
+    c = paramFragment;
+  }
+  
+  y(t paramT, z paramZ, Fragment paramFragment, FragmentState paramFragmentState)
+  {
+    a = paramT;
+    b = paramZ;
+    c = paramFragment;
+    mSavedViewState = null;
+    mSavedViewRegistryState = null;
+    mBackStackNesting = 0;
+    mInLayout = false;
+    mAdded = false;
+    paramT = mTarget;
+    if (paramT != null) {
+      paramT = mWho;
+    } else {
+      paramT = null;
+    }
+    mTargetWho = paramT;
+    mTarget = null;
+    paramT = n;
+    if (paramT != null)
+    {
+      mSavedFragmentState = paramT;
+      return;
+    }
+    mSavedFragmentState = new Bundle();
+  }
+  
+  y(t paramT, z paramZ, ClassLoader paramClassLoader, q paramQ, FragmentState paramFragmentState)
+  {
+    a = paramT;
+    b = paramZ;
+    paramT = paramFragmentState.a(paramQ, paramClassLoader);
+    c = paramT;
+    if (FragmentManager.E0(2))
+    {
+      paramZ = new StringBuilder();
+      paramZ.append("Instantiated fragment ");
+      paramZ.append(paramT);
+      Log.v("FragmentManager", paramZ.toString());
+    }
+  }
+  
+  private boolean l(View paramView)
+  {
+    if (paramView == c.mView) {
+      return true;
+    }
+    for (paramView = paramView.getParent(); paramView != null; paramView = paramView.getParent()) {
+      if (paramView == c.mView) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  private Bundle q()
+  {
+    Object localObject2 = new Bundle();
+    c.performSaveInstanceState((Bundle)localObject2);
+    a.j(c, (Bundle)localObject2, false);
+    Object localObject1 = localObject2;
+    if (((Bundle)localObject2).isEmpty()) {
+      localObject1 = null;
+    }
+    if (c.mView != null) {
+      t();
+    }
+    localObject2 = localObject1;
+    if (c.mSavedViewState != null)
+    {
+      localObject2 = localObject1;
+      if (localObject1 == null) {
+        localObject2 = new Bundle();
+      }
+      ((Bundle)localObject2).putSparseParcelableArray("android:view_state", c.mSavedViewState);
+    }
+    localObject1 = localObject2;
+    if (c.mSavedViewRegistryState != null)
+    {
+      localObject1 = localObject2;
+      if (localObject2 == null) {
+        localObject1 = new Bundle();
+      }
+      ((Bundle)localObject1).putBundle("android:view_registry_state", c.mSavedViewRegistryState);
+    }
+    localObject2 = localObject1;
+    if (!c.mUserVisibleHint)
+    {
+      localObject2 = localObject1;
+      if (localObject1 == null) {
+        localObject2 = new Bundle();
+      }
+      ((Bundle)localObject2).putBoolean("android:user_visible_hint", c.mUserVisibleHint);
+    }
+    return localObject2;
+  }
+  
+  void a()
+  {
+    if (FragmentManager.E0(3))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("moveto ACTIVITY_CREATED: ");
+      ((StringBuilder)localObject).append(c);
+      Log.d("FragmentManager", ((StringBuilder)localObject).toString());
+    }
+    Object localObject = c;
+    ((Fragment)localObject).performActivityCreated(mSavedFragmentState);
+    localObject = a;
+    Fragment localFragment = c;
+    ((t)localObject).a(localFragment, mSavedFragmentState, false);
+  }
+  
+  void b()
+  {
+    int i = b.j(c);
+    Fragment localFragment = c;
+    mContainer.addView(mView, i);
+  }
+  
+  void c()
+  {
+    if (FragmentManager.E0(3))
+    {
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("moveto ATTACHED: ");
+      ((StringBuilder)localObject1).append(c);
+      Log.d("FragmentManager", ((StringBuilder)localObject1).toString());
+    }
+    Object localObject2 = c;
+    Fragment localFragment = mTarget;
+    Object localObject1 = null;
+    if (localFragment != null)
+    {
+      localObject1 = b.n(mWho);
+      if (localObject1 != null)
+      {
+        localObject2 = c;
+        mTargetWho = mTarget.mWho;
+        mTarget = null;
+      }
+      else
+      {
+        localObject1 = new StringBuilder();
+        ((StringBuilder)localObject1).append("Fragment ");
+        ((StringBuilder)localObject1).append(c);
+        ((StringBuilder)localObject1).append(" declared target fragment ");
+        ((StringBuilder)localObject1).append(c.mTarget);
+        ((StringBuilder)localObject1).append(" that does not belong to this FragmentManager!");
+        throw new IllegalStateException(((StringBuilder)localObject1).toString());
+      }
+    }
+    else
+    {
+      localObject2 = mTargetWho;
+      if (localObject2 != null)
+      {
+        localObject1 = b.n((String)localObject2);
+        if (localObject1 == null)
+        {
+          localObject1 = new StringBuilder();
+          ((StringBuilder)localObject1).append("Fragment ");
+          ((StringBuilder)localObject1).append(c);
+          ((StringBuilder)localObject1).append(" declared target fragment ");
+          ((StringBuilder)localObject1).append(c.mTargetWho);
+          ((StringBuilder)localObject1).append(" that does not belong to this FragmentManager!");
+          throw new IllegalStateException(((StringBuilder)localObject1).toString());
+        }
+      }
+    }
+    if (localObject1 != null) {
+      ((y)localObject1).m();
+    }
+    localObject1 = c;
+    mHost = mFragmentManager.r0();
+    localObject1 = c;
+    mParentFragment = mFragmentManager.u0();
+    a.g(c, false);
+    c.performAttach();
+    a.b(c, false);
+  }
+  
+  int d()
+  {
+    Object localObject = c;
+    if (mFragmentManager == null) {
+      return mState;
+    }
+    int j = e;
+    int k = b.a[mMaxState.ordinal()];
+    int i = j;
+    if (k != 1) {
+      if (k != 2)
+      {
+        if (k != 3)
+        {
+          if (k != 4) {
+            i = Math.min(j, -1);
+          } else {
+            i = Math.min(j, 0);
+          }
+        }
+        else {
+          i = Math.min(j, 1);
+        }
+      }
+      else {
+        i = Math.min(j, 5);
+      }
+    }
+    localObject = c;
+    j = i;
+    if (mFromLayout) {
+      if (mInLayout)
+      {
+        i = Math.max(e, 2);
+        localObject = c.mView;
+        j = i;
+        if (localObject != null)
+        {
+          j = i;
+          if (((View)localObject).getParent() == null) {
+            j = Math.min(i, 2);
+          }
+        }
+      }
+      else if (e < 4)
+      {
+        j = Math.min(i, mState);
+      }
+      else
+      {
+        j = Math.min(i, 1);
+      }
+    }
+    k = j;
+    if (!c.mAdded) {
+      k = Math.min(j, 1);
+    }
+    localObject = null;
+    Fragment localFragment = c;
+    ViewGroup localViewGroup = mContainer;
+    if (localViewGroup != null) {
+      localObject = SpecialEffectsController.n(localViewGroup, localFragment.getParentFragmentManager()).l(this);
+    }
+    if (localObject == SpecialEffectsController.Operation.LifecycleImpact.c)
+    {
+      i = Math.min(k, 6);
+    }
+    else if (localObject == SpecialEffectsController.Operation.LifecycleImpact.d)
+    {
+      i = Math.max(k, 3);
+    }
+    else
+    {
+      localObject = c;
+      i = k;
+      if (mRemoving) {
+        if (((Fragment)localObject).isInBackStack()) {
+          i = Math.min(k, 1);
+        } else {
+          i = Math.min(k, -1);
+        }
+      }
+    }
+    localObject = c;
+    j = i;
+    if (mDeferStart)
+    {
+      j = i;
+      if (mState < 5) {
+        j = Math.min(i, 4);
+      }
+    }
+    if (FragmentManager.E0(2))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("computeExpectedState() of ");
+      ((StringBuilder)localObject).append(j);
+      ((StringBuilder)localObject).append(" for ");
+      ((StringBuilder)localObject).append(c);
+      Log.v("FragmentManager", ((StringBuilder)localObject).toString());
+    }
+    return j;
+  }
+  
+  void e()
+  {
+    if (FragmentManager.E0(3))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("moveto CREATED: ");
+      ((StringBuilder)localObject).append(c);
+      Log.d("FragmentManager", ((StringBuilder)localObject).toString());
+    }
+    Object localObject = c;
+    if (!mIsCreated)
+    {
+      a.h((Fragment)localObject, mSavedFragmentState, false);
+      localObject = c;
+      ((Fragment)localObject).performCreate(mSavedFragmentState);
+      localObject = a;
+      Fragment localFragment = c;
+      ((t)localObject).c(localFragment, mSavedFragmentState, false);
+      return;
+    }
+    ((Fragment)localObject).restoreChildFragmentState(mSavedFragmentState);
+    c.mState = 1;
+  }
+  
+  void f()
+  {
+    if (c.mFromLayout) {
+      return;
+    }
+    if (FragmentManager.E0(3))
+    {
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("moveto CREATE_VIEW: ");
+      ((StringBuilder)localObject1).append(c);
+      Log.d("FragmentManager", ((StringBuilder)localObject1).toString());
+    }
+    Object localObject1 = c;
+    LayoutInflater localLayoutInflater = ((Fragment)localObject1).performGetLayoutInflater(mSavedFragmentState);
+    localObject1 = null;
+    Fragment localFragment = c;
+    Object localObject2 = mContainer;
+    int i;
+    if (localObject2 != null)
+    {
+      localObject1 = localObject2;
+    }
+    else
+    {
+      i = mContainerId;
+      if (i != 0) {
+        if (i != -1)
+        {
+          localObject2 = (ViewGroup)mFragmentManager.m0().c(c.mContainerId);
+          if (localObject2 == null)
+          {
+            localObject1 = c;
+            if (mRestored)
+            {
+              localObject1 = localObject2;
+              break label330;
+            }
+          }
+        }
+      }
+    }
+    try
+    {
+      localObject1 = ((Fragment)localObject1).getResources().getResourceName(c.mContainerId);
+    }
+    catch (Resources.NotFoundException localNotFoundException)
+    {
+      float f;
+      for (;;) {}
+    }
+    localObject1 = "unknown";
+    localObject2 = new StringBuilder();
+    ((StringBuilder)localObject2).append("No view found for id 0x");
+    ((StringBuilder)localObject2).append(Integer.toHexString(c.mContainerId));
+    ((StringBuilder)localObject2).append(" (");
+    ((StringBuilder)localObject2).append((String)localObject1);
+    ((StringBuilder)localObject2).append(") for fragment ");
+    ((StringBuilder)localObject2).append(c);
+    throw new IllegalArgumentException(((StringBuilder)localObject2).toString());
+    localObject1 = localObject2;
+    if (!(localObject2 instanceof FragmentContainerView))
+    {
+      FragmentStrictMode.p(c, (ViewGroup)localObject2);
+      localObject1 = localObject2;
+      break label330;
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("Cannot create fragment ");
+      ((StringBuilder)localObject1).append(c);
+      ((StringBuilder)localObject1).append(" for a container view with no id");
+      throw new IllegalArgumentException(((StringBuilder)localObject1).toString());
+    }
+    label330:
+    localObject2 = c;
+    mContainer = ((ViewGroup)localObject1);
+    ((Fragment)localObject2).performCreateView(localLayoutInflater, (ViewGroup)localObject1, mSavedFragmentState);
+    localObject2 = c.mView;
+    if (localObject2 != null)
+    {
+      ((View)localObject2).setSaveFromParentEnabled(false);
+      localObject2 = c;
+      mView.setTag(b.a, localObject2);
+      if (localObject1 != null) {
+        b();
+      }
+      localObject1 = c;
+      if (mHidden) {
+        mView.setVisibility(8);
+      }
+      if (f0.S(c.mView))
+      {
+        f0.m0(c.mView);
+      }
+      else
+      {
+        localObject1 = c.mView;
+        ((View)localObject1).addOnAttachStateChangeListener(new a((View)localObject1));
+      }
+      c.performViewCreated();
+      localObject1 = a;
+      localObject2 = c;
+      ((t)localObject1).m((Fragment)localObject2, mView, mSavedFragmentState, false);
+      i = c.mView.getVisibility();
+      f = c.mView.getAlpha();
+      c.setPostOnViewCreatedAlpha(f);
+      localObject1 = c;
+      if ((mContainer != null) && (i == 0))
+      {
+        localObject1 = mView.findFocus();
+        if (localObject1 != null)
+        {
+          c.setFocusedView((View)localObject1);
+          if (FragmentManager.E0(2))
+          {
+            localObject2 = new StringBuilder();
+            ((StringBuilder)localObject2).append("requestFocus: Saved focused view ");
+            ((StringBuilder)localObject2).append(localObject1);
+            ((StringBuilder)localObject2).append(" for Fragment ");
+            ((StringBuilder)localObject2).append(c);
+            Log.v("FragmentManager", ((StringBuilder)localObject2).toString());
+          }
+        }
+        c.mView.setAlpha(0.0F);
+      }
+    }
+    c.mState = 2;
+  }
+  
+  void g()
+  {
+    if (FragmentManager.E0(3))
+    {
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("movefrom CREATED: ");
+      ((StringBuilder)localObject1).append(c);
+      Log.d("FragmentManager", ((StringBuilder)localObject1).toString());
+    }
+    Object localObject1 = c;
+    boolean bool2 = mRemoving;
+    boolean bool1 = true;
+    int i;
+    if ((bool2) && (!((Fragment)localObject1).isInBackStack())) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (i != 0)
+    {
+      localObject1 = c;
+      if (!mBeingSaved) {
+        b.B(mWho, null);
+      }
+    }
+    int j;
+    if ((i == 0) && (!b.p().m(c))) {
+      j = 0;
+    } else {
+      j = 1;
+    }
+    if (j != 0)
+    {
+      localObject1 = c.mHost;
+      if ((localObject1 instanceof j0)) {
+        bool1 = b.p().j();
+      } else if ((((r)localObject1).f() instanceof Activity)) {
+        bool1 = true ^ ((Activity)((r)localObject1).f()).isChangingConfigurations();
+      }
+      if (((i != 0) && (!c.mBeingSaved)) || (bool1)) {
+        b.p().b(c);
+      }
+      c.performDestroy();
+      a.d(c, false);
+      localObject1 = b.k().iterator();
+      while (((Iterator)localObject1).hasNext())
+      {
+        localObject2 = (y)((Iterator)localObject1).next();
+        if (localObject2 != null)
+        {
+          localObject2 = ((y)localObject2).k();
+          if (c.mWho.equals(mTargetWho))
+          {
+            mTarget = c;
+            mTargetWho = null;
+          }
+        }
+      }
+      localObject1 = c;
+      Object localObject2 = mTargetWho;
+      if (localObject2 != null) {
+        mTarget = b.f((String)localObject2);
+      }
+      b.s(this);
+      return;
+    }
+    localObject1 = c.mTargetWho;
+    if (localObject1 != null)
+    {
+      localObject1 = b.f((String)localObject1);
+      if ((localObject1 != null) && (mRetainInstance)) {
+        c.mTarget = ((Fragment)localObject1);
+      }
+    }
+    c.mState = 0;
+  }
+  
+  void h()
+  {
+    if (FragmentManager.E0(3))
+    {
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("movefrom CREATE_VIEW: ");
+      ((StringBuilder)localObject1).append(c);
+      Log.d("FragmentManager", ((StringBuilder)localObject1).toString());
+    }
+    Object localObject2 = c;
+    Object localObject1 = mContainer;
+    if (localObject1 != null)
+    {
+      localObject2 = mView;
+      if (localObject2 != null) {
+        ((ViewGroup)localObject1).removeView((View)localObject2);
+      }
+    }
+    c.performDestroyView();
+    a.n(c, false);
+    localObject1 = c;
+    mContainer = null;
+    mView = null;
+    mViewLifecycleOwner = null;
+    mViewLifecycleOwnerLiveData.setValue(null);
+    c.mInLayout = false;
+  }
+  
+  void i()
+  {
+    if (FragmentManager.E0(3))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("movefrom ATTACHED: ");
+      ((StringBuilder)localObject).append(c);
+      Log.d("FragmentManager", ((StringBuilder)localObject).toString());
+    }
+    c.performDetach();
+    Object localObject = a;
+    Fragment localFragment = c;
+    int j = 0;
+    ((t)localObject).e(localFragment, false);
+    localObject = c;
+    mState = -1;
+    mHost = null;
+    mParentFragment = null;
+    mFragmentManager = null;
+    int i = j;
+    if (mRemoving)
+    {
+      i = j;
+      if (!((Fragment)localObject).isInBackStack()) {
+        i = 1;
+      }
+    }
+    if ((i != 0) || (b.p().m(c)))
+    {
+      if (FragmentManager.E0(3))
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("initState called for fragment: ");
+        ((StringBuilder)localObject).append(c);
+        Log.d("FragmentManager", ((StringBuilder)localObject).toString());
+      }
+      c.initState();
+    }
+  }
+  
+  void j()
+  {
+    Object localObject = c;
+    if ((mFromLayout) && (mInLayout) && (!mPerformedCreateView))
+    {
+      if (FragmentManager.E0(3))
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("moveto CREATE_VIEW: ");
+        ((StringBuilder)localObject).append(c);
+        Log.d("FragmentManager", ((StringBuilder)localObject).toString());
+      }
+      localObject = c;
+      ((Fragment)localObject).performCreateView(((Fragment)localObject).performGetLayoutInflater(mSavedFragmentState), null, c.mSavedFragmentState);
+      localObject = c.mView;
+      if (localObject != null)
+      {
+        ((View)localObject).setSaveFromParentEnabled(false);
+        localObject = c;
+        mView.setTag(b.a, localObject);
+        localObject = c;
+        if (mHidden) {
+          mView.setVisibility(8);
+        }
+        c.performViewCreated();
+        localObject = a;
+        Fragment localFragment = c;
+        ((t)localObject).m(localFragment, mView, mSavedFragmentState, false);
+        c.mState = 2;
+      }
+    }
+  }
+  
+  Fragment k()
+  {
+    return c;
+  }
+  
+  void m()
+  {
+    Object localObject1;
+    if (d)
+    {
+      if (FragmentManager.E0(2))
+      {
+        localObject1 = new StringBuilder();
+        ((StringBuilder)localObject1).append("Ignoring re-entrant call to moveToExpectedState() for ");
+        ((StringBuilder)localObject1).append(k());
+        Log.v("FragmentManager", ((StringBuilder)localObject1).toString());
+      }
+      return;
+    }
+    for (;;)
+    {
+      int k;
+      try
+      {
+        d = true;
+        i = 0;
+        int j = d();
+        localObject1 = c;
+        k = mState;
+        if (j != k) {
+          if (j <= k) {
+            break label785;
+          }
+        }
+        Object localObject3;
+        switch (k + 1)
+        {
+        case 7: 
+          p();
+          break;
+        case 6: 
+          mState = 6;
+          break;
+        case 5: 
+          v();
+          break;
+        case 4: 
+          if (mView != null)
+          {
+            localObject3 = mContainer;
+            if (localObject3 != null) {
+              SpecialEffectsController.n((ViewGroup)localObject3, ((Fragment)localObject1).getParentFragmentManager()).b(SpecialEffectsController.Operation.State.b(c.mView.getVisibility()), this);
+            }
+          }
+          c.mState = 4;
+          break;
+        case 3: 
+          a();
+          break;
+        case 2: 
+          j();
+          f();
+          break;
+        case 1: 
+          e();
+          break;
+        case 0: 
+          c();
+          break;
+          n();
+          break;
+          mState = 5;
+          break;
+          w();
+          break;
+          if (FragmentManager.E0(3))
+          {
+            localObject1 = new StringBuilder();
+            ((StringBuilder)localObject1).append("movefrom ACTIVITY_CREATED: ");
+            ((StringBuilder)localObject1).append(c);
+            Log.d("FragmentManager", ((StringBuilder)localObject1).toString());
+          }
+          localObject1 = c;
+          if (mBeingSaved) {
+            s();
+          } else if ((mView != null) && (mSavedViewState == null)) {
+            t();
+          }
+          localObject1 = c;
+          if (mView != null)
+          {
+            localObject3 = mContainer;
+            if (localObject3 != null) {
+              SpecialEffectsController.n((ViewGroup)localObject3, ((Fragment)localObject1).getParentFragmentManager()).d(this);
+            }
+          }
+          c.mState = 3;
+          break;
+          mInLayout = false;
+          mState = 2;
+          break;
+          h();
+          c.mState = 1;
+          break;
+          if ((mBeingSaved) && (b.q(mWho) == null)) {
+            s();
+          }
+          g();
+          break;
+          i();
+          break;
+          if ((i == 0) && (k == -1) && (mRemoving) && (!((Fragment)localObject1).isInBackStack()) && (!c.mBeingSaved))
+          {
+            if (FragmentManager.E0(3))
+            {
+              localObject1 = new StringBuilder();
+              ((StringBuilder)localObject1).append("Cleaning up state of never attached fragment: ");
+              ((StringBuilder)localObject1).append(c);
+              Log.d("FragmentManager", ((StringBuilder)localObject1).toString());
+            }
+            b.p().b(c);
+            b.s(this);
+            if (FragmentManager.E0(3))
+            {
+              localObject1 = new StringBuilder();
+              ((StringBuilder)localObject1).append("initState called for fragment: ");
+              ((StringBuilder)localObject1).append(c);
+              Log.d("FragmentManager", ((StringBuilder)localObject1).toString());
+            }
+            c.initState();
+          }
+          localObject1 = c;
+          if (mHiddenChanged)
+          {
+            if (mView != null)
+            {
+              localObject3 = mContainer;
+              if (localObject3 != null)
+              {
+                localObject1 = SpecialEffectsController.n((ViewGroup)localObject3, ((Fragment)localObject1).getParentFragmentManager());
+                if (c.mHidden) {
+                  ((SpecialEffectsController)localObject1).c(this);
+                } else {
+                  ((SpecialEffectsController)localObject1).e(this);
+                }
+              }
+            }
+            localObject1 = c;
+            localObject3 = mFragmentManager;
+            if (localObject3 != null) {
+              ((FragmentManager)localObject3).C0((Fragment)localObject1);
+            }
+            localObject1 = c;
+            mHiddenChanged = false;
+            ((Fragment)localObject1).onHiddenChanged(mHidden);
+            c.mChildFragmentManager.F();
+          }
+          return;
+        }
+      }
+      finally
+      {
+        d = false;
+      }
+      break label836;
+      label785:
+      switch (k - 1)
+      {
+      }
+      label836:
+      int i = 1;
+    }
+  }
+  
+  void n()
+  {
+    if (FragmentManager.E0(3))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("movefrom RESUMED: ");
+      localStringBuilder.append(c);
+      Log.d("FragmentManager", localStringBuilder.toString());
+    }
+    c.performPause();
+    a.f(c, false);
+  }
+  
+  void o(ClassLoader paramClassLoader)
+  {
+    Object localObject = c.mSavedFragmentState;
+    if (localObject == null) {
+      return;
+    }
+    ((Bundle)localObject).setClassLoader(paramClassLoader);
+    paramClassLoader = c;
+    mSavedViewState = mSavedFragmentState.getSparseParcelableArray("android:view_state");
+    paramClassLoader = c;
+    mSavedViewRegistryState = mSavedFragmentState.getBundle("android:view_registry_state");
+    paramClassLoader = c;
+    mTargetWho = mSavedFragmentState.getString("android:target_state");
+    paramClassLoader = c;
+    if (mTargetWho != null) {
+      mTargetRequestCode = mSavedFragmentState.getInt("android:target_req_state", 0);
+    }
+    paramClassLoader = c;
+    localObject = mSavedUserVisibleHint;
+    if (localObject != null)
+    {
+      mUserVisibleHint = ((Boolean)localObject).booleanValue();
+      c.mSavedUserVisibleHint = null;
+    }
+    else
+    {
+      mUserVisibleHint = mSavedFragmentState.getBoolean("android:user_visible_hint", true);
+    }
+    paramClassLoader = c;
+    if (!mUserVisibleHint) {
+      mDeferStart = true;
+    }
+  }
+  
+  void p()
+  {
+    if (FragmentManager.E0(3))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("moveto RESUMED: ");
+      ((StringBuilder)localObject).append(c);
+      Log.d("FragmentManager", ((StringBuilder)localObject).toString());
+    }
+    Object localObject = c.getFocusedView();
+    if ((localObject != null) && (l((View)localObject)))
+    {
+      boolean bool = ((View)localObject).requestFocus();
+      if (FragmentManager.E0(2))
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("requestFocus: Restoring focused view ");
+        localStringBuilder.append(localObject);
+        localStringBuilder.append(" ");
+        if (bool) {
+          localObject = "succeeded";
+        } else {
+          localObject = "failed";
+        }
+        localStringBuilder.append((String)localObject);
+        localStringBuilder.append(" on Fragment ");
+        localStringBuilder.append(c);
+        localStringBuilder.append(" resulting in focused view ");
+        localStringBuilder.append(c.mView.findFocus());
+        Log.v("FragmentManager", localStringBuilder.toString());
+      }
+    }
+    c.setFocusedView(null);
+    c.performResume();
+    a.i(c, false);
+    localObject = c;
+    mSavedFragmentState = null;
+    mSavedViewState = null;
+    mSavedViewRegistryState = null;
+  }
+  
+  Fragment.SavedState r()
+  {
+    int i = c.mState;
+    Object localObject2 = null;
+    Object localObject1 = localObject2;
+    if (i > -1)
+    {
+      Bundle localBundle = q();
+      localObject1 = localObject2;
+      if (localBundle != null) {
+        localObject1 = new Fragment.SavedState(localBundle);
+      }
+    }
+    return localObject1;
+  }
+  
+  void s()
+  {
+    FragmentState localFragmentState = new FragmentState(c);
+    Object localObject = c;
+    if ((mState > -1) && (n == null))
+    {
+      localObject = q();
+      n = ((Bundle)localObject);
+      if (c.mTargetWho != null)
+      {
+        if (localObject == null) {
+          n = new Bundle();
+        }
+        n.putString("android:target_state", c.mTargetWho);
+        int i = c.mTargetRequestCode;
+        if (i != 0) {
+          n.putInt("android:target_req_state", i);
+        }
+      }
+    }
+    else
+    {
+      n = mSavedFragmentState;
+    }
+    b.B(c.mWho, localFragmentState);
+  }
+  
+  void t()
+  {
+    if (c.mView == null) {
+      return;
+    }
+    if (FragmentManager.E0(2))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Saving view state for fragment ");
+      ((StringBuilder)localObject).append(c);
+      ((StringBuilder)localObject).append(" with view ");
+      ((StringBuilder)localObject).append(c.mView);
+      Log.v("FragmentManager", ((StringBuilder)localObject).toString());
+    }
+    Object localObject = new SparseArray();
+    c.mView.saveHierarchyState((SparseArray)localObject);
+    if (((SparseArray)localObject).size() > 0) {
+      c.mSavedViewState = ((SparseArray)localObject);
+    }
+    localObject = new Bundle();
+    c.mViewLifecycleOwner.e((Bundle)localObject);
+    if (!((Bundle)localObject).isEmpty()) {
+      c.mSavedViewRegistryState = ((Bundle)localObject);
+    }
+  }
+  
+  void u(int paramInt)
+  {
+    e = paramInt;
+  }
+  
+  void v()
+  {
+    if (FragmentManager.E0(3))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("moveto STARTED: ");
+      localStringBuilder.append(c);
+      Log.d("FragmentManager", localStringBuilder.toString());
+    }
+    c.performStart();
+    a.k(c, false);
+  }
+  
+  void w()
+  {
+    if (FragmentManager.E0(3))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("movefrom STARTED: ");
+      localStringBuilder.append(c);
+      Log.d("FragmentManager", localStringBuilder.toString());
+    }
+    c.performStop();
+    a.l(c, false);
+  }
+  
+  class a
+    implements View.OnAttachStateChangeListener
+  {
+    a(View paramView) {}
+    
+    public void onViewAttachedToWindow(View paramView)
+    {
+      b.removeOnAttachStateChangeListener(this);
+      f0.m0(b);
+    }
+    
+    public void onViewDetachedFromWindow(View paramView) {}
+  }
+}

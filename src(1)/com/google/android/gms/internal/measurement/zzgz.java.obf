@@ -1,0 +1,112 @@
+package com.google.android.gms.internal.measurement;
+
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
+
+public final class zzgz
+{
+  public static final Uri zza = Uri.parse("content://com.google.android.gsf.gservices");
+  public static final Uri zzb = Uri.parse("content://com.google.android.gsf.gservices/prefix");
+  public static final Pattern zzc = Pattern.compile("^(1|true|t|on|yes|y)$", 2);
+  public static final Pattern zzd = Pattern.compile("^(0|false|f|off|no|n)$", 2);
+  static HashMap zze;
+  static final HashMap zzf = new HashMap();
+  static final HashMap zzg = new HashMap();
+  static final HashMap zzh = new HashMap();
+  static final HashMap zzi = new HashMap();
+  static final String[] zzj = new String[0];
+  private static final AtomicBoolean zzk = new AtomicBoolean();
+  private static Object zzl;
+  private static boolean zzm;
+  
+  public zzgz() {}
+  
+  public static String zza(ContentResolver paramContentResolver, String paramString1, String paramString2)
+  {
+    try
+    {
+      Object localObject1 = zze;
+      paramString2 = null;
+      String str = null;
+      if (localObject1 == null)
+      {
+        zzk.set(false);
+        zze = new HashMap();
+        zzl = new Object();
+        zzm = false;
+        paramContentResolver.registerContentObserver(zza, true, new zzgy(null));
+      }
+      else if (zzk.getAndSet(false))
+      {
+        zze.clear();
+        zzf.clear();
+        zzg.clear();
+        zzh.clear();
+        zzi.clear();
+        zzl = new Object();
+        zzm = false;
+      }
+      Object localObject2 = zzl;
+      if (zze.containsKey(paramString1))
+      {
+        paramContentResolver = (String)zze.get(paramString1);
+        if (paramContentResolver != null) {
+          break label297;
+        }
+        paramContentResolver = str;
+      }
+      for (;;)
+      {
+        return paramContentResolver;
+        int i = zzj.length;
+        localObject1 = paramContentResolver.query(zza, null, null, new String[] { paramString1 }, null);
+        if (localObject1 == null) {
+          return null;
+        }
+        try
+        {
+          if (!((Cursor)localObject1).moveToFirst())
+          {
+            zzc(localObject2, paramString1, null);
+            return null;
+          }
+          str = ((Cursor)localObject1).getString(1);
+          paramContentResolver = str;
+          if (str != null)
+          {
+            paramContentResolver = str;
+            if (str.equals(null)) {
+              paramContentResolver = null;
+            }
+          }
+          zzc(localObject2, paramString1, paramContentResolver);
+          if (paramContentResolver == null) {
+            paramContentResolver = paramString2;
+          }
+          return paramContentResolver;
+        }
+        finally
+        {
+          ((Cursor)localObject1).close();
+        }
+      }
+    }
+    finally {}
+  }
+  
+  private static void zzc(Object paramObject, String paramString1, String paramString2)
+  {
+    try
+    {
+      if (paramObject == zzl) {
+        zze.put(paramString1, paramString2);
+      }
+      return;
+    }
+    finally {}
+  }
+}

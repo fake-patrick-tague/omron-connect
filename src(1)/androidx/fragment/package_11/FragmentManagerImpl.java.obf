@@ -1,0 +1,196 @@
+package androidx.fragment.app;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.LayoutInflater.Factory2;
+import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
+import android.view.ViewGroup;
+import androidx.fragment.app.strictmode.FragmentStrictMode;
+import c.m.c;
+
+class s
+  implements LayoutInflater.Factory2
+{
+  final FragmentManager b;
+  
+  s(FragmentManager paramFragmentManager)
+  {
+    b = paramFragmentManager;
+  }
+  
+  public View onCreateView(View paramView, String paramString, Context paramContext, final AttributeSet paramAttributeSet)
+  {
+    if (FragmentContainerView.class.getName().equals(paramString)) {
+      return new FragmentContainerView(paramContext, paramAttributeSet, b);
+    }
+    boolean bool = "fragment".equals(paramString);
+    paramString = null;
+    if (!bool) {
+      return null;
+    }
+    Object localObject1 = paramAttributeSet.getAttributeValue(null, "class");
+    TypedArray localTypedArray = paramContext.obtainStyledAttributes(paramAttributeSet, c.a);
+    Object localObject2 = localObject1;
+    if (localObject1 == null) {
+      localObject2 = localTypedArray.getString(c.b);
+    }
+    int k = localTypedArray.getResourceId(c.c, -1);
+    String str = localTypedArray.getString(c.d);
+    localTypedArray.recycle();
+    if (localObject2 != null)
+    {
+      if (!q.b(paramContext.getClassLoader(), (String)localObject2)) {
+        return null;
+      }
+      int i;
+      if (paramView != null) {
+        i = paramView.getId();
+      } else {
+        i = 0;
+      }
+      if ((i == -1) && (k == -1) && (str == null))
+      {
+        paramView = new StringBuilder();
+        paramView.append(paramAttributeSet.getPositionDescription());
+        paramView.append(": Must specify unique android:id, android:tag, or have a parent with an id for ");
+        paramView.append((String)localObject2);
+        throw new IllegalArgumentException(paramView.toString());
+      }
+      if (k != -1) {
+        paramString = b.d0(k);
+      }
+      localObject1 = paramString;
+      if (paramString == null)
+      {
+        localObject1 = paramString;
+        if (str != null) {
+          localObject1 = b.e0(str);
+        }
+      }
+      paramString = (String)localObject1;
+      if (localObject1 == null)
+      {
+        paramString = (String)localObject1;
+        if (i != -1) {
+          paramString = b.d0(i);
+        }
+      }
+      if (paramString == null)
+      {
+        paramString = b.p0().a(paramContext.getClassLoader(), (String)localObject2);
+        mFromLayout = true;
+        int j;
+        if (k != 0) {
+          j = k;
+        } else {
+          j = i;
+        }
+        mFragmentId = j;
+        mContainerId = i;
+        mTag = str;
+        mInLayout = true;
+        paramContext = b;
+        mFragmentManager = paramContext;
+        mHost = paramContext.r0();
+        paramString.onInflate(b.r0().f(), paramAttributeSet, mSavedFragmentState);
+        localObject1 = b.e(paramString);
+        paramContext = paramString;
+        paramAttributeSet = (AttributeSet)localObject1;
+        if (FragmentManager.E0(2))
+        {
+          paramContext = new StringBuilder();
+          paramContext.append("Fragment ");
+          paramContext.append(paramString);
+          paramContext.append(" has been inflated via the <fragment> tag: id=0x");
+          paramContext.append(Integer.toHexString(k));
+          Log.v("FragmentManager", paramContext.toString());
+          paramContext = paramString;
+          paramAttributeSet = (AttributeSet)localObject1;
+        }
+      }
+      else
+      {
+        if (mInLayout) {
+          break label720;
+        }
+        mInLayout = true;
+        paramContext = b;
+        mFragmentManager = paramContext;
+        mHost = paramContext.r0();
+        paramString.onInflate(b.r0().f(), paramAttributeSet, mSavedFragmentState);
+        localObject1 = b.s(paramString);
+        paramContext = paramString;
+        paramAttributeSet = (AttributeSet)localObject1;
+        if (FragmentManager.E0(2))
+        {
+          paramContext = new StringBuilder();
+          paramContext.append("Retained Fragment ");
+          paramContext.append(paramString);
+          paramContext.append(" has been re-attached via the <fragment> tag: id=0x");
+          paramContext.append(Integer.toHexString(k));
+          Log.v("FragmentManager", paramContext.toString());
+          paramAttributeSet = (AttributeSet)localObject1;
+          paramContext = paramString;
+        }
+      }
+      paramView = (ViewGroup)paramView;
+      FragmentStrictMode.i(paramContext, paramView);
+      mContainer = paramView;
+      paramAttributeSet.m();
+      paramAttributeSet.j();
+      paramView = mView;
+      if (paramView != null)
+      {
+        if (k != 0) {
+          paramView.setId(k);
+        }
+        if (mView.getTag() == null) {
+          mView.setTag(str);
+        }
+        mView.addOnAttachStateChangeListener(new a(paramAttributeSet));
+        return mView;
+      }
+      paramView = new StringBuilder();
+      paramView.append("Fragment ");
+      paramView.append((String)localObject2);
+      paramView.append(" did not create a view.");
+      throw new IllegalStateException(paramView.toString());
+      label720:
+      paramView = new StringBuilder();
+      paramView.append(paramAttributeSet.getPositionDescription());
+      paramView.append(": Duplicate id 0x");
+      paramView.append(Integer.toHexString(k));
+      paramView.append(", tag ");
+      paramView.append(str);
+      paramView.append(", or parent id 0x");
+      paramView.append(Integer.toHexString(i));
+      paramView.append(" with another fragment for ");
+      paramView.append((String)localObject2);
+      throw new IllegalArgumentException(paramView.toString());
+    }
+    return null;
+  }
+  
+  public View onCreateView(String paramString, Context paramContext, AttributeSet paramAttributeSet)
+  {
+    return onCreateView(null, paramString, paramContext, paramAttributeSet);
+  }
+  
+  class a
+    implements View.OnAttachStateChangeListener
+  {
+    a(y paramY) {}
+    
+    public void onViewAttachedToWindow(View paramView)
+    {
+      paramView = paramAttributeSet.k();
+      paramAttributeSet.m();
+      SpecialEffectsController.n((ViewGroup)mView.getParent(), b).j();
+    }
+    
+    public void onViewDetachedFromWindow(View paramView) {}
+  }
+}

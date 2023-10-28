@@ -1,0 +1,50 @@
+package com.alivecor.kardia_ai;
+
+public enum StatusCode
+{
+  public int code;
+  
+  static
+  {
+    StatusCode localStatusCode1 = new StatusCode("OK", 0, 0);
+    LEFT = localStatusCode1;
+    StatusCode localStatusCode2 = new StatusCode("READ_ERROR", 1, 1);
+    READ_ERROR = localStatusCode2;
+    StatusCode localStatusCode3 = new StatusCode("TOO_SHORT", 2, 2);
+    TOO_SHORT = localStatusCode3;
+    StatusCode localStatusCode4 = new StatusCode("TOO_LONG", 3, 3);
+    TOO_LONG = localStatusCode4;
+    StatusCode localStatusCode5 = new StatusCode("INTERNAL_ERROR", 4, 4);
+    INTERNAL_ERROR = localStatusCode5;
+    $VALUES = new StatusCode[] { localStatusCode1, localStatusCode2, localStatusCode3, localStatusCode4, localStatusCode5 };
+  }
+  
+  private StatusCode(int paramInt)
+  {
+    code = paramInt;
+  }
+  
+  public static StatusCode fromInt(int paramInt)
+  {
+    if (paramInt != 0)
+    {
+      if (paramInt != 1)
+      {
+        if (paramInt != 2)
+        {
+          if (paramInt != 3)
+          {
+            if (paramInt != 4) {
+              return null;
+            }
+            return INTERNAL_ERROR;
+          }
+          return TOO_LONG;
+        }
+        return TOO_SHORT;
+      }
+      return READ_ERROR;
+    }
+    return LEFT;
+  }
+}

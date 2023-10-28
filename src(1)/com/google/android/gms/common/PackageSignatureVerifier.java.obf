@@ -1,0 +1,84 @@
+package com.google.android.gms.common;
+
+import android.content.Context;
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.errorprone.annotations.RestrictedInheritance;
+
+@RestrictedInheritance(allowedOnPath=".*javatests.*/com/google/android/gms/common/.*", explanation="Sub classing of GMS Core's APIs are restricted to testing fakes.", link="go/gmscore-restrictedinheritance")
+@KeepForSdk
+@ShowFirstParty
+public class PackageSignatureVerifier
+{
+  private static zzad zza;
+  private volatile zzac zzb;
+  
+  public PackageSignatureVerifier() {}
+  
+  private static zzad zza()
+  {
+    try
+    {
+      if (zza == null) {
+        zza = new zzad();
+      }
+      zzad localZzad = zza;
+      return localZzad;
+    }
+    finally {}
+  }
+  
+  @KeepForSdk
+  @ShowFirstParty
+  public PackageVerificationResult queryPackageSignatureVerified(Context paramContext, String paramString)
+  {
+    boolean bool = GooglePlayServicesUtilLight.honorsDebugCertificates(paramContext);
+    zza();
+    if (zzn.zzf())
+    {
+      if (true != bool) {
+        paramContext = "-0";
+      } else {
+        paramContext = "-1";
+      }
+      paramContext = String.valueOf(paramString).concat(paramContext);
+      if ((zzb != null) && (zzac.zzb(zzb).equals(paramContext))) {
+        return zzac.zza(zzb);
+      }
+      zza();
+      zzx localZzx = zzn.zzc(paramString, bool, false, false);
+      if (zza)
+      {
+        zzb = new zzac(paramContext, PackageVerificationResult.zzd(paramString, zzd));
+        return zzac.zza(zzb);
+      }
+      Preconditions.checkNotNull(zzb);
+      return PackageVerificationResult.zza(paramString, zzb, zzc);
+    }
+    throw new zzae();
+  }
+  
+  @KeepForSdk
+  @ShowFirstParty
+  public PackageVerificationResult queryPackageSignatureVerifiedWithRetry(Context paramContext, String paramString)
+  {
+    try
+    {
+      PackageVerificationResult localPackageVerificationResult = queryPackageSignatureVerified(paramContext, paramString);
+      localPackageVerificationResult.zzb();
+      return localPackageVerificationResult;
+    }
+    catch (SecurityException localSecurityException)
+    {
+      paramContext = queryPackageSignatureVerified(paramContext, paramString);
+      if (paramContext.zzc())
+      {
+        Log.e("PkgSignatureVerifier", "Got flaky result during package signature verification", localSecurityException);
+        return paramContext;
+      }
+    }
+    return paramContext;
+  }
+}

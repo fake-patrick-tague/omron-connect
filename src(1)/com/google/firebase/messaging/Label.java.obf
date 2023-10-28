@@ -1,0 +1,184 @@
+package com.google.firebase.messaging;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.content.pm.ServiceInfo;
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+@KeepForSdk
+public class z0
+{
+  private static z0 a;
+  private String b = null;
+  private Boolean c = null;
+  private Boolean d = null;
+  private final Queue<Intent> e = new ArrayDeque();
+  
+  private z0() {}
+  
+  private int a(Context paramContext, Intent paramIntent)
+  {
+    String str = f(paramContext, paramIntent);
+    if (str != null)
+    {
+      if (Log.isLoggable("FirebaseMessaging", 3))
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Restricting intent to a specific service: ");
+        localStringBuilder.append(str);
+        Log.d("FirebaseMessaging", localStringBuilder.toString());
+      }
+      paramIntent.setClassName(paramContext.getPackageName(), str);
+    }
+    try
+    {
+      if (e(paramContext))
+      {
+        paramContext = h1.g(paramContext, paramIntent);
+      }
+      else
+      {
+        paramContext = paramContext.startService(paramIntent);
+        Log.d("FirebaseMessaging", "Missing wake lock permission, service start may be delayed");
+      }
+      if (paramContext == null)
+      {
+        Log.e("FirebaseMessaging", "Error while delivering the message: ServiceIntent not found.");
+        return 404;
+      }
+      return -1;
+    }
+    catch (IllegalStateException paramContext)
+    {
+      paramIntent = new StringBuilder();
+      paramIntent.append("Failed to start service while in background: ");
+      paramIntent.append(paramContext);
+      Log.e("FirebaseMessaging", paramIntent.toString());
+      return 402;
+    }
+    catch (SecurityException paramContext)
+    {
+      Log.e("FirebaseMessaging", "Error while delivering the message to the serviceIntent", paramContext);
+    }
+    return 401;
+  }
+  
+  static z0 b()
+  {
+    try
+    {
+      if (a == null) {
+        a = new z0();
+      }
+      z0 localZ0 = a;
+      return localZ0;
+    }
+    finally {}
+  }
+  
+  private String f(Context paramContext, Intent paramIntent)
+  {
+    try
+    {
+      Object localObject = b;
+      if (localObject != null) {
+        return localObject;
+      }
+      paramIntent = paramContext.getPackageManager().resolveService(paramIntent, 0);
+      if (paramIntent != null)
+      {
+        paramIntent = serviceInfo;
+        if (paramIntent != null)
+        {
+          if (paramContext.getPackageName().equals(packageName))
+          {
+            localObject = name;
+            if (localObject != null)
+            {
+              if (((String)localObject).startsWith("."))
+              {
+                localObject = new StringBuilder();
+                ((StringBuilder)localObject).append(paramContext.getPackageName());
+                ((StringBuilder)localObject).append(name);
+                b = ((StringBuilder)localObject).toString();
+              }
+              else
+              {
+                b = name;
+              }
+              paramContext = b;
+              return paramContext;
+            }
+          }
+          paramContext = new StringBuilder();
+          paramContext.append("Error resolving target intent service, skipping classname enforcement. Resolved service was: ");
+          paramContext.append(packageName);
+          paramContext.append("/");
+          paramContext.append(name);
+          Log.e("FirebaseMessaging", paramContext.toString());
+          return null;
+        }
+      }
+      Log.e("FirebaseMessaging", "Failed to resolve target intent service, skipping classname enforcement");
+      return null;
+    }
+    finally {}
+  }
+  
+  Intent c()
+  {
+    return (Intent)e.poll();
+  }
+  
+  boolean d(Context paramContext)
+  {
+    if (d == null)
+    {
+      boolean bool;
+      if (paramContext.checkCallingOrSelfPermission("android.permission.ACCESS_NETWORK_STATE") == 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      d = Boolean.valueOf(bool);
+    }
+    if ((!c.booleanValue()) && (Log.isLoggable("FirebaseMessaging", 3))) {
+      Log.d("FirebaseMessaging", "Missing Permission: android.permission.ACCESS_NETWORK_STATE this should normally be included by the manifest merger, but may needed to be manually added to your manifest");
+    }
+    return d.booleanValue();
+  }
+  
+  boolean e(Context paramContext)
+  {
+    if (c == null)
+    {
+      boolean bool;
+      if (paramContext.checkCallingOrSelfPermission("android.permission.WAKE_LOCK") == 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      c = Boolean.valueOf(bool);
+    }
+    if ((!c.booleanValue()) && (Log.isLoggable("FirebaseMessaging", 3))) {
+      Log.d("FirebaseMessaging", "Missing Permission: android.permission.WAKE_LOCK this should normally be included by the manifest merger, but may needed to be manually added to your manifest");
+    }
+    return c.booleanValue();
+  }
+  
+  public int g(Context paramContext, Intent paramIntent)
+  {
+    if (Log.isLoggable("FirebaseMessaging", 3)) {
+      Log.d("FirebaseMessaging", "Starting service");
+    }
+    e.offer(paramIntent);
+    paramIntent = new Intent("com.google.firebase.MESSAGING_EVENT");
+    paramIntent.setPackage(paramContext.getPackageName());
+    return a(paramContext, paramIntent);
+  }
+}

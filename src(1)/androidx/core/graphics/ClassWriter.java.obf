@@ -1,0 +1,197 @@
+package androidx.core.graphics;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Typeface;
+import android.os.Build.VERSION;
+import android.os.CancellationSignal;
+import android.os.Handler;
+import androidx.core.content.g.g.e;
+import androidx.core.content.g.j.f;
+
+public class e
+{
+  private static final k a;
+  private static final c.e.e<String, Typeface> b = new c.e.e(16);
+  
+  static
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 29) {
+      a = new j();
+    } else if (i >= 28) {
+      a = new i();
+    } else if (i >= 26) {
+      a = new h();
+    } else if ((i >= 24) && (g.n())) {
+      a = new g();
+    } else if (i >= 21) {
+      a = new f();
+    } else {
+      a = new k();
+    }
+  }
+  
+  public static Typeface a(Context paramContext, Typeface paramTypeface, int paramInt)
+  {
+    if (paramContext != null)
+    {
+      if (Build.VERSION.SDK_INT < 21)
+      {
+        paramContext = g(paramContext, paramTypeface, paramInt);
+        if (paramContext != null) {
+          return paramContext;
+        }
+      }
+      return Typeface.create(paramTypeface, paramInt);
+    }
+    throw new IllegalArgumentException("Context cannot be null");
+  }
+  
+  public static Typeface b(Context paramContext, CancellationSignal paramCancellationSignal, c.h.n.g.b[] paramArrayOfB, int paramInt)
+  {
+    return a.c(paramContext, paramCancellationSignal, paramArrayOfB, paramInt);
+  }
+  
+  public static Typeface c(Context paramContext, androidx.core.content.g.g.b paramB, Resources paramResources, int paramInt1, String paramString, int paramInt2, int paramInt3, j.f paramF, Handler paramHandler, boolean paramBoolean)
+  {
+    if ((paramB instanceof g.e))
+    {
+      paramB = (g.e)paramB;
+      Typeface localTypeface = h(paramB.c());
+      if (localTypeface != null)
+      {
+        if (paramF != null) {
+          paramF.b(localTypeface, paramHandler);
+        }
+        return localTypeface;
+      }
+      boolean bool;
+      if (paramBoolean ? paramB.a() == 0 : paramF == null) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      int i;
+      if (paramBoolean) {
+        i = paramB.d();
+      } else {
+        i = -1;
+      }
+      paramHandler = j.f.c(paramHandler);
+      paramF = new a(paramF);
+      paramContext = c.h.n.g.c(paramContext, paramB.b(), paramInt3, bool, i, paramHandler, paramF);
+    }
+    else
+    {
+      paramB = a.b(paramContext, (androidx.core.content.g.g.c)paramB, paramResources, paramInt3);
+      paramContext = paramB;
+      if (paramF != null) {
+        if (paramB != null)
+        {
+          paramF.b(paramB, paramHandler);
+          paramContext = paramB;
+        }
+        else
+        {
+          paramF.a(-3, paramHandler);
+          paramContext = paramB;
+        }
+      }
+    }
+    if (paramContext != null) {
+      b.put(e(paramResources, paramInt1, paramString, paramInt2, paramInt3), paramContext);
+    }
+    return paramContext;
+  }
+  
+  public static Typeface d(Context paramContext, Resources paramResources, int paramInt1, String paramString, int paramInt2, int paramInt3)
+  {
+    paramContext = a.e(paramContext, paramResources, paramInt1, paramString, paramInt3);
+    if (paramContext != null)
+    {
+      paramResources = e(paramResources, paramInt1, paramString, paramInt2, paramInt3);
+      b.put(paramResources, paramContext);
+    }
+    return paramContext;
+  }
+  
+  private static String e(Resources paramResources, int paramInt1, String paramString, int paramInt2, int paramInt3)
+  {
+    paramResources = new StringBuilder(paramResources.getResourcePackageName(paramInt1));
+    paramResources.append('-');
+    paramResources.append(paramString);
+    paramResources.append('-');
+    paramResources.append(paramInt2);
+    paramResources.append('-');
+    paramResources.append(paramInt1);
+    paramResources.append('-');
+    paramResources.append(paramInt3);
+    return paramResources.toString();
+  }
+  
+  public static Typeface f(Resources paramResources, int paramInt1, String paramString, int paramInt2, int paramInt3)
+  {
+    return (Typeface)b.get(e(paramResources, paramInt1, paramString, paramInt2, paramInt3));
+  }
+  
+  private static Typeface g(Context paramContext, Typeface paramTypeface, int paramInt)
+  {
+    k localK = a;
+    paramTypeface = localK.j(paramTypeface);
+    if (paramTypeface == null) {
+      return null;
+    }
+    return localK.b(paramContext, paramTypeface, paramContext.getResources(), paramInt);
+  }
+  
+  private static Typeface h(String paramString)
+  {
+    Object localObject2 = null;
+    Object localObject1 = localObject2;
+    if (paramString != null)
+    {
+      if (paramString.isEmpty()) {
+        return null;
+      }
+      paramString = Typeface.create(paramString, 0);
+      Typeface localTypeface = Typeface.create(Typeface.DEFAULT, 0);
+      localObject1 = localObject2;
+      if (paramString != null)
+      {
+        localObject1 = localObject2;
+        if (!paramString.equals(localTypeface)) {
+          localObject1 = paramString;
+        }
+      }
+    }
+    return localObject1;
+  }
+  
+  public static class a
+    extends c.h.n.g.c
+  {
+    private j.f a;
+    
+    public a(j.f paramF)
+    {
+      a = paramF;
+    }
+    
+    public void a(int paramInt)
+    {
+      j.f localF = a;
+      if (localF != null) {
+        localF.h(paramInt);
+      }
+    }
+    
+    public void b(Typeface paramTypeface)
+    {
+      j.f localF = a;
+      if (localF != null) {
+        localF.i(paramTypeface);
+      }
+    }
+  }
+}

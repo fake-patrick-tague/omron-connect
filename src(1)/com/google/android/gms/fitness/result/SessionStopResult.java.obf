@@ -1,0 +1,85 @@
+package com.google.android.gms.fitness.result;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.Session;
+import java.util.Collections;
+import java.util.List;
+
+@SafeParcelable.Class(creator="SessionStopResultCreator")
+@SafeParcelable.Reserved({4, 1000})
+public class SessionStopResult
+  extends AbstractSafeParcelable
+  implements Result
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<SessionStopResult> CREATOR = new zzi();
+  @SafeParcelable.Field(getter="getSessions", id=3)
+  private final List<Session> zzqr;
+  @SafeParcelable.Field(getter="getStatus", id=2)
+  private final Status zzsv;
+  
+  @ShowFirstParty
+  @SafeParcelable.Constructor
+  public SessionStopResult(@RecentlyNonNull @SafeParcelable.Param(id=2) Status paramStatus, @RecentlyNonNull @SafeParcelable.Param(id=3) List<Session> paramList)
+  {
+    zzsv = paramStatus;
+    zzqr = Collections.unmodifiableList(paramList);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof SessionStopResult)) {
+      return false;
+    }
+    paramObject = (SessionStopResult)paramObject;
+    return (zzsv.equals(zzsv)) && (Objects.equal(zzqr, zzqr));
+  }
+  
+  @RecentlyNonNull
+  public List<Session> getSessions()
+  {
+    return zzqr;
+  }
+  
+  @RecentlyNonNull
+  public Status getStatus()
+  {
+    return zzsv;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzsv, zzqr });
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("status", zzsv).add("sessions", zzqr).toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeParcelable(paramParcel, 2, getStatus(), paramInt, false);
+    SafeParcelWriter.writeTypedList(paramParcel, 3, getSessions(), false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

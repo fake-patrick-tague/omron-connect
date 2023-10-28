@@ -1,0 +1,125 @@
+package com.google.android.gms.common.internal;
+
+import android.content.Context;
+import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.Looper;
+import com.google.android.gms.common.stats.ConnectionTracker;
+import com.google.android.gms.internal.common.zzi;
+import java.util.HashMap;
+import java.util.concurrent.Executor;
+
+final class zzr
+  extends GmsClientSupervisor
+{
+  private final HashMap zzb = new HashMap();
+  private final Context zzc;
+  private volatile Handler zzd;
+  private final zzq zze;
+  private final ConnectionTracker zzf;
+  private final long zzg;
+  private final long zzh;
+  
+  zzr(Context paramContext, Looper paramLooper)
+  {
+    zzq localZzq = new zzq(this, null);
+    zze = localZzq;
+    zzc = paramContext.getApplicationContext();
+    zzd = new zzi(paramLooper, localZzq);
+    zzf = ConnectionTracker.getInstance();
+    zzg = 5000L;
+    zzh = 300000L;
+  }
+  
+  protected final void zza(zzn paramZzn, ServiceConnection paramServiceConnection, String paramString)
+  {
+    Preconditions.checkNotNull(paramServiceConnection, "ServiceConnection must not be null");
+    synchronized (zzb)
+    {
+      zzo localZzo = (zzo)zzb.get(paramZzn);
+      if (localZzo != null)
+      {
+        if (localZzo.zzh(paramServiceConnection))
+        {
+          localZzo.zzf(paramServiceConnection, paramString);
+          if (localZzo.zzi())
+          {
+            paramZzn = zzd.obtainMessage(0, paramZzn);
+            zzd.sendMessageDelayed(paramZzn, zzg);
+          }
+          return;
+        }
+        paramZzn = paramZzn.toString();
+        paramServiceConnection = new StringBuilder();
+        paramServiceConnection.append("Trying to unbind a GmsServiceConnection  that was not bound before.  config=");
+        paramServiceConnection.append(paramZzn);
+        throw new IllegalStateException(paramServiceConnection.toString());
+      }
+      paramZzn = paramZzn.toString();
+      paramServiceConnection = new StringBuilder();
+      paramServiceConnection.append("Nonexistent connection status for service config: ");
+      paramServiceConnection.append(paramZzn);
+      throw new IllegalStateException(paramServiceConnection.toString());
+    }
+  }
+  
+  protected final boolean zzc(zzn paramZzn, ServiceConnection paramServiceConnection, String paramString, Executor paramExecutor)
+  {
+    Preconditions.checkNotNull(paramServiceConnection, "ServiceConnection must not be null");
+    synchronized (zzb)
+    {
+      zzo localZzo = (zzo)zzb.get(paramZzn);
+      if (localZzo == null)
+      {
+        localZzo = new zzo(this, paramZzn);
+        localZzo.zzd(paramServiceConnection, paramServiceConnection, paramString);
+        localZzo.zze(paramString, paramExecutor);
+        zzb.put(paramZzn, localZzo);
+        paramZzn = localZzo;
+      }
+      else
+      {
+        zzd.removeMessages(0, paramZzn);
+        if (localZzo.zzh(paramServiceConnection)) {
+          break label174;
+        }
+        localZzo.zzd(paramServiceConnection, paramServiceConnection, paramString);
+        int i = localZzo.zza();
+        if (i != 1)
+        {
+          if (i != 2)
+          {
+            paramZzn = localZzo;
+          }
+          else
+          {
+            localZzo.zze(paramString, paramExecutor);
+            paramZzn = localZzo;
+          }
+        }
+        else
+        {
+          paramServiceConnection.onServiceConnected(localZzo.zzb(), localZzo.zzc());
+          paramZzn = localZzo;
+        }
+      }
+      boolean bool = paramZzn.zzj();
+      return bool;
+      label174:
+      paramZzn = paramZzn.toString();
+      paramServiceConnection = new StringBuilder();
+      paramServiceConnection.append("Trying to bind a GmsServiceConnection that was already connected before.  config=");
+      paramServiceConnection.append(paramZzn);
+      throw new IllegalStateException(paramServiceConnection.toString());
+    }
+  }
+  
+  final void zzi(Looper paramLooper)
+  {
+    synchronized (zzb)
+    {
+      zzd = new zzi(paramLooper, zze);
+      return;
+    }
+  }
+}

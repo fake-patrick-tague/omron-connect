@@ -1,0 +1,272 @@
+package androidx.core.content;
+
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Process;
+import android.text.TextUtils;
+import android.util.Log;
+import android.util.TypedValue;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.g.j;
+import c.h.p.c;
+import java.io.File;
+
+public class a
+{
+  private static final Object a = new Object();
+  private static final Object b = new Object();
+  private static TypedValue c;
+  
+  public static int a(Context paramContext, String paramString)
+  {
+    c.d(paramString, "permission must be non-null");
+    if ((!c.h.m.a.d()) && (TextUtils.equals("android.permission.POST_NOTIFICATIONS", paramString)))
+    {
+      if (NotificationManagerCompat.from(paramContext).areNotificationsEnabled()) {
+        return 0;
+      }
+      return -1;
+    }
+    return paramContext.checkPermission(paramString, Process.myPid(), Process.myUid());
+  }
+  
+  public static Context b(Context paramContext)
+  {
+    if (Build.VERSION.SDK_INT >= 24) {
+      return e.a(paramContext);
+    }
+    return null;
+  }
+  
+  private static File c(File paramFile)
+  {
+    synchronized (b)
+    {
+      if (!paramFile.exists())
+      {
+        if (paramFile.mkdirs()) {
+          return paramFile;
+        }
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Unable to create files subdir ");
+        localStringBuilder.append(paramFile.getPath());
+        Log.w("ContextCompat", localStringBuilder.toString());
+      }
+      return paramFile;
+    }
+  }
+  
+  public static int d(Context paramContext, int paramInt)
+  {
+    if (Build.VERSION.SDK_INT >= 23) {
+      return d.a(paramContext, paramInt);
+    }
+    return paramContext.getResources().getColor(paramInt);
+  }
+  
+  public static ColorStateList e(Context paramContext, int paramInt)
+  {
+    return j.d(paramContext.getResources(), paramInt, paramContext.getTheme());
+  }
+  
+  public static Drawable f(Context paramContext, int paramInt)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 21) {
+      return c.b(paramContext, paramInt);
+    }
+    if (i >= 16) {
+      return paramContext.getResources().getDrawable(paramInt);
+    }
+    synchronized (a)
+    {
+      if (c == null) {
+        c = new TypedValue();
+      }
+      paramContext.getResources().getValue(paramInt, c, true);
+      paramInt = cresourceId;
+      return paramContext.getResources().getDrawable(paramInt);
+    }
+  }
+  
+  public static File[] g(Context paramContext)
+  {
+    if (Build.VERSION.SDK_INT >= 19) {
+      return b.a(paramContext);
+    }
+    return new File[] { paramContext.getExternalCacheDir() };
+  }
+  
+  public static File[] h(Context paramContext, String paramString)
+  {
+    if (Build.VERSION.SDK_INT >= 19) {
+      return b.b(paramContext, paramString);
+    }
+    return new File[] { paramContext.getExternalFilesDir(paramString) };
+  }
+  
+  public static File i(Context paramContext)
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      return c.c(paramContext);
+    }
+    return c(new File(getApplicationInfodataDir, "no_backup"));
+  }
+  
+  static String j(Context paramContext)
+  {
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append(paramContext.getPackageName());
+    ((StringBuilder)localObject).append(".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION");
+    localObject = ((StringBuilder)localObject).toString();
+    if (e.b(paramContext, (String)localObject) == 0) {
+      return localObject;
+    }
+    paramContext = new StringBuilder();
+    paramContext.append("Permission ");
+    paramContext.append((String)localObject);
+    paramContext.append(" is required by your application to receive broadcasts, please add it to your manifest");
+    throw new RuntimeException(paramContext.toString());
+  }
+  
+  public static boolean k(Context paramContext, Intent[] paramArrayOfIntent, Bundle paramBundle)
+  {
+    if (Build.VERSION.SDK_INT >= 16) {
+      a.a(paramContext, paramArrayOfIntent, paramBundle);
+    } else {
+      paramContext.startActivities(paramArrayOfIntent);
+    }
+    return true;
+  }
+  
+  public static void l(Context paramContext, Intent paramIntent, Bundle paramBundle)
+  {
+    if (Build.VERSION.SDK_INT >= 16)
+    {
+      a.b(paramContext, paramIntent, paramBundle);
+      return;
+    }
+    paramContext.startActivity(paramIntent);
+  }
+  
+  public static void m(Context paramContext, Intent paramIntent)
+  {
+    if (Build.VERSION.SDK_INT >= 26)
+    {
+      f.b(paramContext, paramIntent);
+      return;
+    }
+    paramContext.startService(paramIntent);
+  }
+  
+  static class a
+  {
+    static void a(Context paramContext, Intent[] paramArrayOfIntent, Bundle paramBundle)
+    {
+      paramContext.startActivities(paramArrayOfIntent, paramBundle);
+    }
+    
+    static void b(Context paramContext, Intent paramIntent, Bundle paramBundle)
+    {
+      paramContext.startActivity(paramIntent, paramBundle);
+    }
+  }
+  
+  static class b
+  {
+    static File[] a(Context paramContext)
+    {
+      return paramContext.getExternalCacheDirs();
+    }
+    
+    static File[] b(Context paramContext, String paramString)
+    {
+      return paramContext.getExternalFilesDirs(paramString);
+    }
+    
+    static File[] c(Context paramContext)
+    {
+      return paramContext.getObbDirs();
+    }
+  }
+  
+  static class c
+  {
+    static File a(Context paramContext)
+    {
+      return paramContext.getCodeCacheDir();
+    }
+    
+    static Drawable b(Context paramContext, int paramInt)
+    {
+      return paramContext.getDrawable(paramInt);
+    }
+    
+    static File c(Context paramContext)
+    {
+      return paramContext.getNoBackupFilesDir();
+    }
+  }
+  
+  static class d
+  {
+    static int a(Context paramContext, int paramInt)
+    {
+      return paramContext.getColor(paramInt);
+    }
+    
+    static <T> T b(Context paramContext, Class<T> paramClass)
+    {
+      return paramContext.getSystemService(paramClass);
+    }
+    
+    static String c(Context paramContext, Class<?> paramClass)
+    {
+      return paramContext.getSystemServiceName(paramClass);
+    }
+  }
+  
+  static class e
+  {
+    static Context a(Context paramContext)
+    {
+      return paramContext.createDeviceProtectedStorageContext();
+    }
+    
+    static File b(Context paramContext)
+    {
+      return paramContext.getDataDir();
+    }
+    
+    static boolean c(Context paramContext)
+    {
+      return paramContext.isDeviceProtectedStorage();
+    }
+  }
+  
+  static class f
+  {
+    static Intent a(Context paramContext, BroadcastReceiver paramBroadcastReceiver, IntentFilter paramIntentFilter, String paramString, Handler paramHandler, int paramInt)
+    {
+      if (((paramInt & 0x4) != 0) && (paramString == null)) {
+        return paramContext.registerReceiver(paramBroadcastReceiver, paramIntentFilter, a.j(paramContext), paramHandler);
+      }
+      return paramContext.registerReceiver(paramBroadcastReceiver, paramIntentFilter, paramString, paramHandler, paramInt & 0x1);
+    }
+    
+    static ComponentName b(Context paramContext, Intent paramIntent)
+    {
+      return paramContext.startForegroundService(paramIntent);
+    }
+  }
+}

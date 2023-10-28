@@ -1,0 +1,54 @@
+package com.google.android.gms.tasks;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+
+@KeepForSdk
+public class NativeOnCompleteListener
+  implements OnCompleteListener<Object>
+{
+  private final long zza;
+  
+  @KeepForSdk
+  public NativeOnCompleteListener(long paramLong)
+  {
+    zza = paramLong;
+  }
+  
+  @KeepForSdk
+  public static void createAndAddCallback(Task<Object> paramTask, long paramLong)
+  {
+    paramTask.addOnCompleteListener(new NativeOnCompleteListener(paramLong));
+  }
+  
+  @KeepForSdk
+  public native void nativeOnComplete(long paramLong, Object paramObject, boolean paramBoolean1, boolean paramBoolean2, String paramString);
+  
+  @KeepForSdk
+  public void onComplete(Task<Object> paramTask)
+  {
+    Object localObject1;
+    Object localObject2;
+    if (paramTask.isSuccessful())
+    {
+      localObject1 = paramTask.getResult();
+      localObject2 = null;
+    }
+    else
+    {
+      if (!paramTask.isCanceled())
+      {
+        localObject1 = paramTask.getException();
+        if (localObject1 != null)
+        {
+          localObject2 = ((Exception)localObject1).getMessage();
+          localObject1 = null;
+          break label47;
+        }
+      }
+      localObject1 = null;
+      localObject2 = localObject1;
+    }
+    label47:
+    nativeOnComplete(zza, localObject1, paramTask.isSuccessful(), paramTask.isCanceled(), (String)localObject2);
+  }
+}

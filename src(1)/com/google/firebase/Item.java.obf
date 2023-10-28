@@ -1,0 +1,357 @@
+package com.google.firebase;
+
+import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
+import c.h.m.n;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.internal.BackgroundDetector;
+import com.google.android.gms.common.api.internal.BackgroundDetector.BackgroundStateChangeListener;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.Base64Utils;
+import com.google.android.gms.common.util.PlatformVersion;
+import com.google.android.gms.common.util.ProcessUtils;
+import com.google.firebase.components.ComponentDiscoveryService;
+import com.google.firebase.components.m;
+import com.google.firebase.components.o;
+import com.google.firebase.components.p;
+import com.google.firebase.components.s;
+import com.google.firebase.components.s.b;
+import com.google.firebase.components.z;
+import com.google.firebase.concurrent.ExecutorsRegistrar;
+import com.google.firebase.concurrent.UiExecutor;
+import com.google.firebase.heartbeatinfo.f;
+import com.google.firebase.provider.FirebaseInitProvider;
+import com.google.firebase.u.c;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+public class i
+{
+  private static final Object a = new Object();
+  static final Map<String, i> b = new c.e.a();
+  private final Context c;
+  private final String d;
+  private final k e;
+  private final s f;
+  private final AtomicBoolean g = new AtomicBoolean(false);
+  private final AtomicBoolean h = new AtomicBoolean();
+  private final z<com.google.firebase.s.a> i;
+  private final com.google.firebase.r.b<f> j;
+  private final List<a> k = new CopyOnWriteArrayList();
+  private final List<?> l = new CopyOnWriteArrayList();
+  
+  protected i(Context paramContext, String paramString, k paramK)
+  {
+    c = ((Context)Preconditions.checkNotNull(paramContext));
+    d = Preconditions.checkNotEmpty(paramString);
+    e = ((k)Preconditions.checkNotNull(paramK));
+    paramString = FirebaseInitProvider.b();
+    c.b("Firebase");
+    c.b("ComponentDiscovery");
+    List localList = p.b(paramContext, ComponentDiscoveryService.class).a();
+    c.a();
+    c.b("Runtime");
+    paramK = s.h(UiExecutor.b).c(localList).b(new FirebaseCommonRegistrar()).b(new ExecutorsRegistrar()).a(m.q(paramContext, Context.class, new Class[0])).a(m.q(this, i.class, new Class[0])).a(m.q(paramK, k.class, new Class[0])).f(new com.google.firebase.u.b());
+    if ((n.a(paramContext)) && (FirebaseInitProvider.c())) {
+      paramK.a(m.q(paramString, l.class, new Class[0]));
+    }
+    paramString = paramK.d();
+    f = paramString;
+    c.a();
+    i = new z(new b(this, paramContext));
+    j = paramString.c(f.class);
+    e(new a(this));
+    c.a();
+  }
+  
+  private void f()
+  {
+    Preconditions.checkState(h.get() ^ true, "FirebaseApp was deleted");
+  }
+  
+  public static i i()
+  {
+    synchronized (a)
+    {
+      Object localObject2 = (i)b.get("[DEFAULT]");
+      if (localObject2 != null) {
+        return localObject2;
+      }
+      localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append("Default FirebaseApp is not initialized in this process ");
+      ((StringBuilder)localObject2).append(ProcessUtils.getMyProcessName());
+      ((StringBuilder)localObject2).append(". Make sure to call FirebaseApp.initializeApp(Context) first.");
+      throw new IllegalStateException(((StringBuilder)localObject2).toString());
+    }
+  }
+  
+  private void m()
+  {
+    if ((n.a(c) ^ true))
+    {
+      localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Device in Direct Boot Mode: postponing initialization of Firebase APIs for app ");
+      localStringBuilder.append(j());
+      Log.i("FirebaseApp", localStringBuilder.toString());
+      c.a(c);
+      return;
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Device unlocked: initializing all Firebase APIs for app ");
+    localStringBuilder.append(j());
+    Log.i("FirebaseApp", localStringBuilder.toString());
+    f.k(r());
+    ((f)j.get()).j();
+  }
+  
+  public static i n(Context paramContext)
+  {
+    synchronized (a)
+    {
+      if (b.containsKey("[DEFAULT]"))
+      {
+        paramContext = i();
+        return paramContext;
+      }
+      k localK = k.a(paramContext);
+      if (localK == null)
+      {
+        Log.w("FirebaseApp", "Default FirebaseApp failed to initialize because no default options were found. This usually means that com.google.gms:google-services was not applied to your gradle project.");
+        return null;
+      }
+      paramContext = o(paramContext, localK);
+      return paramContext;
+    }
+  }
+  
+  public static i o(Context paramContext, k paramK)
+  {
+    return p(paramContext, paramK, "[DEFAULT]");
+  }
+  
+  public static i p(Context paramContext, k paramK, String paramString)
+  {
+    b.a(paramContext);
+    paramString = w(paramString);
+    if (paramContext.getApplicationContext() != null) {
+      paramContext = paramContext.getApplicationContext();
+    }
+    for (;;)
+    {
+      synchronized (a)
+      {
+        Map localMap = b;
+        if (!localMap.containsKey(paramString))
+        {
+          bool = true;
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("FirebaseApp name ");
+          localStringBuilder.append(paramString);
+          localStringBuilder.append(" already exists!");
+          Preconditions.checkState(bool, localStringBuilder.toString());
+          Preconditions.checkNotNull(paramContext, "Application context cannot be null.");
+          paramContext = new i(paramContext, paramString, paramK);
+          localMap.put(paramString, paramContext);
+          paramContext.m();
+          return paramContext;
+        }
+      }
+      boolean bool = false;
+    }
+  }
+  
+  private static String w(String paramString)
+  {
+    return paramString.trim();
+  }
+  
+  private void x(boolean paramBoolean)
+  {
+    Log.d("FirebaseApp", "Notifying background state change listeners.");
+    Iterator localIterator = k.iterator();
+    while (localIterator.hasNext()) {
+      ((a)localIterator.next()).onBackgroundStateChanged(paramBoolean);
+    }
+  }
+  
+  @KeepForSdk
+  public void e(a paramA)
+  {
+    f();
+    if ((g.get()) && (BackgroundDetector.getInstance().isInBackground())) {
+      paramA.onBackgroundStateChanged(true);
+    }
+    k.add(paramA);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (!(paramObject instanceof i)) {
+      return false;
+    }
+    return d.equals(((i)paramObject).j());
+  }
+  
+  @KeepForSdk
+  public <T> T g(Class<T> paramClass)
+  {
+    f();
+    return f.a(paramClass);
+  }
+  
+  public Context h()
+  {
+    f();
+    return c;
+  }
+  
+  public int hashCode()
+  {
+    return d.hashCode();
+  }
+  
+  public String j()
+  {
+    f();
+    return d;
+  }
+  
+  public k k()
+  {
+    f();
+    return e;
+  }
+  
+  @KeepForSdk
+  public String l()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(Base64Utils.encodeUrlSafeNoPadding(j().getBytes(Charset.defaultCharset())));
+    localStringBuilder.append("+");
+    localStringBuilder.append(Base64Utils.encodeUrlSafeNoPadding(k().c().getBytes(Charset.defaultCharset())));
+    return localStringBuilder.toString();
+  }
+  
+  @KeepForSdk
+  public boolean q()
+  {
+    f();
+    return ((com.google.firebase.s.a)i.get()).b();
+  }
+  
+  @KeepForSdk
+  public boolean r()
+  {
+    return "[DEFAULT]".equals(j());
+  }
+  
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("name", d).add("options", e).toString();
+  }
+  
+  @KeepForSdk
+  public static abstract interface a
+  {
+    @KeepForSdk
+    public abstract void onBackgroundStateChanged(boolean paramBoolean);
+  }
+  
+  private static class b
+    implements BackgroundDetector.BackgroundStateChangeListener
+  {
+    private static AtomicReference<b> a = new AtomicReference();
+    
+    private b() {}
+    
+    private static void b(Context paramContext)
+    {
+      if (PlatformVersion.isAtLeastIceCreamSandwich())
+      {
+        if (!(paramContext.getApplicationContext() instanceof Application)) {
+          return;
+        }
+        paramContext = (Application)paramContext.getApplicationContext();
+        if (a.get() == null)
+        {
+          b localB = new b();
+          if (a.compareAndSet(null, localB))
+          {
+            BackgroundDetector.initialize(paramContext);
+            BackgroundDetector.getInstance().addListener(localB);
+          }
+        }
+      }
+    }
+    
+    public void onBackgroundStateChanged(boolean paramBoolean)
+    {
+      synchronized ()
+      {
+        Iterator localIterator = new ArrayList(i.b.values()).iterator();
+        while (localIterator.hasNext())
+        {
+          i localI = (i)localIterator.next();
+          if (i.c(localI).get()) {
+            i.d(localI, paramBoolean);
+          }
+        }
+        return;
+      }
+    }
+  }
+  
+  private static class c
+    extends BroadcastReceiver
+  {
+    private static AtomicReference<c> a = new AtomicReference();
+    private final Context b;
+    
+    public c(Context paramContext)
+    {
+      b = paramContext;
+    }
+    
+    private static void b(Context paramContext)
+    {
+      if (a.get() == null)
+      {
+        c localC = new c(paramContext);
+        if (a.compareAndSet(null, localC)) {
+          paramContext.registerReceiver(localC, new IntentFilter("android.intent.action.USER_UNLOCKED"));
+        }
+      }
+    }
+    
+    public void c()
+    {
+      b.unregisterReceiver(this);
+    }
+    
+    public void onReceive(Context arg1, Intent paramIntent)
+    {
+      synchronized ()
+      {
+        paramIntent = i.b.values().iterator();
+        while (paramIntent.hasNext()) {
+          i.b((i)paramIntent.next());
+        }
+        c();
+        return;
+      }
+    }
+  }
+}

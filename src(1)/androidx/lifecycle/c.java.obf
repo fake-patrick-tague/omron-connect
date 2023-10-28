@@ -1,0 +1,200 @@
+package androidx.lifecycle;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+@Deprecated
+final class c
+{
+  static c a = new c();
+  private final Map<Class<?>, a> b = new HashMap();
+  private final Map<Class<?>, Boolean> c = new HashMap();
+  
+  c() {}
+  
+  private a a(Class<?> paramClass, Method[] paramArrayOfMethod)
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge Z and I\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  private Method[] b(Class<?> paramClass)
+  {
+    try
+    {
+      paramClass = paramClass.getDeclaredMethods();
+      return paramClass;
+    }
+    catch (NoClassDefFoundError paramClass)
+    {
+      throw new IllegalArgumentException("The observer class has some methods that use newer APIs which are not available in the current OS version. Lifecycles cannot access even other methods so you should make sure that your observer classes only access framework classes that are available in your min API level OR use lifecycle:compiler annotation processor.", paramClass);
+    }
+  }
+  
+  private void e(Map<b, Lifecycle.Event> paramMap, b paramB, Lifecycle.Event paramEvent, Class<?> paramClass)
+  {
+    Lifecycle.Event localEvent = (Lifecycle.Event)paramMap.get(paramB);
+    if ((localEvent != null) && (paramEvent != localEvent))
+    {
+      paramMap = b;
+      paramB = new StringBuilder();
+      paramB.append("Method ");
+      paramB.append(paramMap.getName());
+      paramB.append(" in ");
+      paramB.append(paramClass.getName());
+      paramB.append(" already declared with different @OnLifecycleEvent value: previous value ");
+      paramB.append(localEvent);
+      paramB.append(", new value ");
+      paramB.append(paramEvent);
+      throw new IllegalArgumentException(paramB.toString());
+    }
+    if (localEvent == null) {
+      paramMap.put(paramB, paramEvent);
+    }
+  }
+  
+  a c(Class<?> paramClass)
+  {
+    a localA = (a)b.get(paramClass);
+    if (localA != null) {
+      return localA;
+    }
+    return a(paramClass, null);
+  }
+  
+  boolean d(Class<?> paramClass)
+  {
+    Object localObject = (Boolean)c.get(paramClass);
+    if (localObject != null) {
+      return ((Boolean)localObject).booleanValue();
+    }
+    localObject = b(paramClass);
+    int j = localObject.length;
+    int i = 0;
+    while (i < j)
+    {
+      if ((u)localObject[i].getAnnotation(u.class) != null)
+      {
+        a(paramClass, (Method[])localObject);
+        return true;
+      }
+      i += 1;
+    }
+    c.put(paramClass, Boolean.FALSE);
+    return false;
+  }
+  
+  @Deprecated
+  static class a
+  {
+    final Map<Lifecycle.Event, List<c.b>> a;
+    final Map<c.b, Lifecycle.Event> b;
+    
+    a(Map<c.b, Lifecycle.Event> paramMap)
+    {
+      b = paramMap;
+      a = new HashMap();
+      Iterator localIterator = paramMap.entrySet().iterator();
+      while (localIterator.hasNext())
+      {
+        Map.Entry localEntry = (Map.Entry)localIterator.next();
+        Lifecycle.Event localEvent = (Lifecycle.Event)localEntry.getValue();
+        List localList = (List)a.get(localEvent);
+        paramMap = localList;
+        if (localList == null)
+        {
+          paramMap = new ArrayList();
+          a.put(localEvent, paramMap);
+        }
+        paramMap.add((c.b)localEntry.getKey());
+      }
+    }
+    
+    private static void b(List<c.b> paramList, m paramM, Lifecycle.Event paramEvent, Object paramObject)
+    {
+      if (paramList != null)
+      {
+        int i = paramList.size() - 1;
+        while (i >= 0)
+        {
+          ((c.b)paramList.get(i)).a(paramM, paramEvent, paramObject);
+          i -= 1;
+        }
+      }
+    }
+    
+    void a(m paramM, Lifecycle.Event paramEvent, Object paramObject)
+    {
+      b((List)a.get(paramEvent), paramM, paramEvent, paramObject);
+      b((List)a.get(Lifecycle.Event.ON_ANY), paramM, paramEvent, paramObject);
+    }
+  }
+  
+  @Deprecated
+  static final class b
+  {
+    final int a;
+    final Method b;
+    
+    b(int paramInt, Method paramMethod)
+    {
+      a = paramInt;
+      b = paramMethod;
+      paramMethod.setAccessible(true);
+    }
+    
+    void a(m paramM, Lifecycle.Event paramEvent, Object paramObject)
+    {
+      try
+      {
+        int i = a;
+        if (i != 0)
+        {
+          if (i != 1)
+          {
+            if (i != 2) {
+              return;
+            }
+            b.invoke(paramObject, new Object[] { paramM, paramEvent });
+            return;
+          }
+          b.invoke(paramObject, new Object[] { paramM });
+          return;
+        }
+        b.invoke(paramObject, new Object[0]);
+        return;
+      }
+      catch (IllegalAccessException paramM)
+      {
+        throw new RuntimeException(paramM);
+      }
+      catch (InvocationTargetException paramM)
+      {
+        throw new RuntimeException("Failed to call observer method", paramM.getCause());
+      }
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (this == paramObject) {
+        return true;
+      }
+      if (!(paramObject instanceof b)) {
+        return false;
+      }
+      paramObject = (b)paramObject;
+      return (a == a) && (b.getName().equals(b.getName()));
+    }
+    
+    public int hashCode()
+    {
+      return a * 31 + b.getName().hashCode();
+    }
+  }
+}

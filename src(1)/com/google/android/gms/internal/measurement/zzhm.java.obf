@@ -1,0 +1,85 @@
+package com.google.android.gms.internal.measurement;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.ContentObserver;
+import android.util.Log;
+import androidx.core.content.e;
+
+final class zzhm
+  implements zzhj
+{
+  private static zzhm zza;
+  private final Context zzb;
+  private final ContentObserver zzc;
+  
+  private zzhm()
+  {
+    zzb = null;
+    zzc = null;
+  }
+  
+  private zzhm(Context paramContext)
+  {
+    zzb = paramContext;
+    zzhl localZzhl = new zzhl(this, null);
+    zzc = localZzhl;
+    paramContext.getContentResolver().registerContentObserver(zzgz.zza, true, localZzhl);
+  }
+  
+  static zzhm zza(Context paramContext)
+  {
+    try
+    {
+      if (zza == null)
+      {
+        if (e.b(paramContext, "com.google.android.providers.gsf.permission.READ_GSERVICES") == 0) {
+          paramContext = new zzhm(paramContext);
+        } else {
+          paramContext = new zzhm();
+        }
+        zza = paramContext;
+      }
+      paramContext = zza;
+      return paramContext;
+    }
+    finally {}
+  }
+  
+  static void zze()
+  {
+    try
+    {
+      zzhm localZzhm = zza;
+      if (localZzhm != null)
+      {
+        Context localContext = zzb;
+        if ((localContext != null) && (zzc != null)) {
+          localContext.getContentResolver().unregisterContentObserver(zzazzc);
+        }
+      }
+      zza = null;
+      return;
+    }
+    finally {}
+  }
+  
+  public final String zzc(String paramString)
+  {
+    Object localObject = zzb;
+    if (localObject != null)
+    {
+      if (zzha.zza((Context)localObject)) {
+        return null;
+      }
+      try
+      {
+        localObject = (String)zzhh.zza(new zzhk(this, paramString));
+        return localObject;
+      }
+      catch (NullPointerException localNullPointerException) {}catch (SecurityException localSecurityException) {}catch (IllegalStateException localIllegalStateException) {}
+      Log.e("GservicesLoader", "Unable to read GServices for: ".concat(String.valueOf(paramString)), localIllegalStateException);
+    }
+    return null;
+  }
+}

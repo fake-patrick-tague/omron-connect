@@ -1,0 +1,254 @@
+package com.google.android.gms.internal.fitness;
+
+final class zzke
+  extends zzjz
+{
+  zzke() {}
+  
+  private static int zza(byte[] paramArrayOfByte, int paramInt1, long paramLong, int paramInt2)
+  {
+    if (paramInt2 != 0)
+    {
+      if (paramInt2 != 1)
+      {
+        if (paramInt2 == 2) {
+          return zzka.zze(paramInt1, zzjy.zza(paramArrayOfByte, paramLong), zzjy.zza(paramArrayOfByte, paramLong + 1L));
+        }
+        throw new AssertionError();
+      }
+      return zzka.zzr(paramInt1, zzjy.zza(paramArrayOfByte, paramLong));
+    }
+    return zzka.zzao(paramInt1);
+  }
+  
+  final int zza(CharSequence paramCharSequence, byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+  {
+    long l2 = paramInt1;
+    long l4 = paramInt2 + l2;
+    int k = paramCharSequence.length();
+    if ((k <= paramInt2) && (paramArrayOfByte.length - paramInt2 >= paramInt1))
+    {
+      paramInt2 = 0;
+      int j;
+      long l1;
+      for (;;)
+      {
+        j = 128;
+        l1 = 1L;
+        if (paramInt2 >= k) {
+          break;
+        }
+        paramInt1 = paramCharSequence.charAt(paramInt2);
+        if (paramInt1 >= 128) {
+          break;
+        }
+        zzjy.zza(paramArrayOfByte, l2, (byte)paramInt1);
+        paramInt2 += 1;
+        l2 = 1L + l2;
+      }
+      paramInt1 = paramInt2;
+      long l3 = l2;
+      if (paramInt2 == k) {
+        return (int)l2;
+      }
+      while (paramInt1 < k)
+      {
+        int i = paramCharSequence.charAt(paramInt1);
+        if ((i < j) && (l3 < l4))
+        {
+          zzjy.zza(paramArrayOfByte, l3, (byte)i);
+          l2 = l1;
+          l3 += l1;
+          paramInt2 = paramInt1;
+          l1 = l2;
+          paramInt1 = j;
+          l2 = l3;
+        }
+        else if ((i < 2048) && (l3 <= l4 - 2L))
+        {
+          l2 = l3 + l1;
+          zzjy.zza(paramArrayOfByte, l3, (byte)(i >>> 6 | 0x3C0));
+          zzjy.zza(paramArrayOfByte, l2, (byte)(i & 0x3F | 0x80));
+          j = 128;
+          l2 += l1;
+          paramInt2 = paramInt1;
+          paramInt1 = j;
+        }
+        else if (((i < 55296) || (57343 < i)) && (l3 <= l4 - 3L))
+        {
+          l2 = l3 + l1;
+          zzjy.zza(paramArrayOfByte, l3, (byte)(i >>> 12 | 0x1E0));
+          l1 = l2 + l1;
+          zzjy.zza(paramArrayOfByte, l2, (byte)(i >>> 6 & 0x3F | 0x80));
+          zzjy.zza(paramArrayOfByte, l1, (byte)(i & 0x3F | 0x80));
+          l2 = l1 + 1L;
+          l1 = 1L;
+          j = 128;
+          paramInt2 = paramInt1;
+          paramInt1 = j;
+        }
+        else
+        {
+          if (l3 > l4 - 4L) {
+            break label561;
+          }
+          paramInt2 = paramInt1 + 1;
+          if (paramInt2 == k) {
+            break label548;
+          }
+          char c2 = paramCharSequence.charAt(paramInt2);
+          if (!Character.isSurrogatePair(i, c2)) {
+            break label545;
+          }
+          j = Character.toCodePoint(i, c2);
+          l1 = l3 + 1L;
+          zzjy.zza(paramArrayOfByte, l3, (byte)(j >>> 18 | 0xF0));
+          l2 = l1 + 1L;
+          paramInt1 = 128;
+          zzjy.zza(paramArrayOfByte, l1, (byte)(j >>> 12 & 0x3F | 0x80));
+          l3 = l2 + 1L;
+          zzjy.zza(paramArrayOfByte, l2, (byte)(j >>> 6 & 0x3F | 0x80));
+          l1 = 1L;
+          l2 = l3 + 1L;
+          zzjy.zza(paramArrayOfByte, l3, (byte)(j & 0x3F | 0x80));
+        }
+        paramInt2 += 1;
+        j = paramInt1;
+        paramInt1 = paramInt2;
+        l3 = l2;
+        continue;
+        label545:
+        paramInt1 = paramInt2;
+        label548:
+        throw new zzkb(paramInt1 - 1, k);
+        label561:
+        if ((55296 <= i) && (i <= 57343))
+        {
+          paramInt2 = paramInt1 + 1;
+          if ((paramInt2 == k) || (!Character.isSurrogatePair(i, paramCharSequence.charAt(paramInt2)))) {
+            throw new zzkb(paramInt1, k);
+          }
+        }
+        paramCharSequence = new StringBuilder(46);
+        paramCharSequence.append("Failed writing ");
+        paramCharSequence.append(i);
+        paramCharSequence.append(" at index ");
+        paramCharSequence.append(l3);
+        throw new ArrayIndexOutOfBoundsException(paramCharSequence.toString());
+      }
+      return (int)l3;
+    }
+    char c1 = paramCharSequence.charAt(k - 1);
+    paramCharSequence = new StringBuilder(37);
+    paramCharSequence.append("Failed writing ");
+    paramCharSequence.append(c1);
+    paramCharSequence.append(" at index ");
+    paramCharSequence.append(paramInt1 + paramInt2);
+    throw new ArrayIndexOutOfBoundsException(paramCharSequence.toString());
+  }
+  
+  final int zzb(int paramInt1, byte[] paramArrayOfByte, int paramInt2, int paramInt3)
+  {
+    if ((paramInt2 | paramInt3 | paramArrayOfByte.length - paramInt3) >= 0)
+    {
+      long l2 = paramInt2;
+      paramInt2 = (int)(paramInt3 - l2);
+      if (paramInt2 < 16)
+      {
+        paramInt1 = 0;
+      }
+      else
+      {
+        paramInt1 = 0;
+        for (l1 = l2; paramInt1 < paramInt2; l1 += 1L)
+        {
+          if (zzjy.zza(paramArrayOfByte, l1) < 0) {
+            break label74;
+          }
+          paramInt1 += 1;
+        }
+        paramInt1 = paramInt2;
+      }
+      label74:
+      paramInt2 -= paramInt1;
+      long l1 = l2 + paramInt1;
+      paramInt1 = paramInt2;
+      label181:
+      label271:
+      do
+      {
+        long l3;
+        do
+        {
+          for (;;)
+          {
+            paramInt2 = 0;
+            for (;;)
+            {
+              l2 = l1;
+              if (paramInt1 <= 0) {
+                break;
+              }
+              l2 = l1 + 1L;
+              paramInt2 = zzjy.zza(paramArrayOfByte, l1);
+              if (paramInt2 < 0) {
+                break;
+              }
+              paramInt1 -= 1;
+              l1 = l2;
+            }
+            if (paramInt1 == 0) {
+              return 0;
+            }
+            paramInt1 -= 1;
+            if (paramInt2 >= -32) {
+              break label181;
+            }
+            if (paramInt1 == 0) {
+              return paramInt2;
+            }
+            paramInt1 -= 1;
+            if (paramInt2 < -62) {
+              break;
+            }
+            if (zzjy.zza(paramArrayOfByte, l2) > -65) {
+              return -1;
+            }
+            l1 = l2 + 1L;
+          }
+          return -1;
+          if (paramInt2 >= -16) {
+            break label271;
+          }
+          if (paramInt1 < 2) {
+            return zza(paramArrayOfByte, paramInt2, l2, paramInt1);
+          }
+          paramInt1 -= 2;
+          l3 = l2 + 1L;
+          paramInt3 = zzjy.zza(paramArrayOfByte, l2);
+          if ((paramInt3 > -65) || ((paramInt2 == -32) && (paramInt3 < -96)) || ((paramInt2 == -19) && (paramInt3 >= -96))) {
+            break;
+          }
+          l1 = l3 + 1L;
+        } while (zzjy.zza(paramArrayOfByte, l3) <= -65);
+        return -1;
+        if (paramInt1 < 3) {
+          return zza(paramArrayOfByte, paramInt2, l2, paramInt1);
+        }
+        paramInt1 -= 3;
+        l1 = l2 + 1L;
+        paramInt3 = zzjy.zza(paramArrayOfByte, l2);
+        if ((paramInt3 > -65) || ((paramInt2 << 28) + (paramInt3 + 112) >> 30 != 0)) {
+          break;
+        }
+        l2 = l1 + 1L;
+        if (zzjy.zza(paramArrayOfByte, l1) > -65) {
+          break;
+        }
+        l1 = l2 + 1L;
+      } while (zzjy.zza(paramArrayOfByte, l2) <= -65);
+      return -1;
+    }
+    throw new ArrayIndexOutOfBoundsException(String.format("Array length=%d, index=%d, limit=%d", new Object[] { Integer.valueOf(paramArrayOfByte.length), Integer.valueOf(paramInt2), Integer.valueOf(paramInt3) }));
+  }
+}

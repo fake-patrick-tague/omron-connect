@@ -1,0 +1,507 @@
+package com.google.android.material.floatingactionbutton;
+
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.Rect;
+import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.util.Property;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.Button;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.Behavior;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.b;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.e;
+import c.h.q.f0;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.internal.b;
+import d.c.a.a.k;
+import d.c.a.a.l;
+import d.c.a.a.m.h;
+import java.util.Iterator;
+import java.util.List;
+
+public class ExtendedFloatingActionButton
+  extends MaterialButton
+  implements CoordinatorLayout.b
+{
+  private static final int u = k.v;
+  static final Property<View, Float> v = new b(Float.class, "width");
+  static final Property<View, Float> w = new c(Float.class, "height");
+  static final Property<View, Float> x = new d(Float.class, "paddingStart");
+  static final Property<View, Float> y = new e(Float.class, "paddingEnd");
+  private final d A;
+  private final d B;
+  private final d C;
+  private final d D;
+  private final int E;
+  private int F;
+  private int G;
+  private final CoordinatorLayout.Behavior<ExtendedFloatingActionButton> H;
+  private boolean I;
+  private boolean J;
+  private boolean K;
+  protected ColorStateList L;
+  private int z;
+  
+  private boolean q()
+  {
+    int i = getVisibility();
+    boolean bool2 = false;
+    boolean bool1 = false;
+    if (i != 0)
+    {
+      if (z == 2) {
+        bool1 = true;
+      }
+      return bool1;
+    }
+    bool1 = bool2;
+    if (z != 1) {
+      bool1 = true;
+    }
+    return bool1;
+  }
+  
+  private void r(final d paramD, f paramF)
+  {
+    if (paramD.d()) {
+      return;
+    }
+    if (!t())
+    {
+      paramD.b();
+      paramD.i(paramF);
+      return;
+    }
+    measure(0, 0);
+    AnimatorSet localAnimatorSet = paramD.g();
+    localAnimatorSet.addListener(new a(paramD, paramF));
+    paramD = paramD.h().iterator();
+    while (paramD.hasNext()) {
+      localAnimatorSet.addListener((Animator.AnimatorListener)paramD.next());
+    }
+    localAnimatorSet.start();
+  }
+  
+  private void s()
+  {
+    L = getTextColors();
+  }
+  
+  private boolean t()
+  {
+    return ((f0.T(this)) || ((!q()) && (K))) && (!isInEditMode());
+  }
+  
+  public CoordinatorLayout.Behavior<ExtendedFloatingActionButton> getBehavior()
+  {
+    return H;
+  }
+  
+  int getCollapsedPadding()
+  {
+    return (getCollapsedSize() - getIconSize()) / 2;
+  }
+  
+  int getCollapsedSize()
+  {
+    int j = E;
+    int i = j;
+    if (j < 0) {
+      i = Math.min(f0.I(this), f0.H(this)) * 2 + getIconSize();
+    }
+    return i;
+  }
+  
+  public h getExtendMotionSpec()
+  {
+    return B.c();
+  }
+  
+  public h getHideMotionSpec()
+  {
+    return D.c();
+  }
+  
+  public h getShowMotionSpec()
+  {
+    return C.c();
+  }
+  
+  public h getShrinkMotionSpec()
+  {
+    return A.c();
+  }
+  
+  protected void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    if ((I) && (TextUtils.isEmpty(getText())) && (getIcon() != null))
+    {
+      I = false;
+      A.b();
+    }
+  }
+  
+  public void setAnimateShowBeforeLayout(boolean paramBoolean)
+  {
+    K = paramBoolean;
+  }
+  
+  public void setExtendMotionSpec(h paramH)
+  {
+    B.f(paramH);
+  }
+  
+  public void setExtendMotionSpecResource(int paramInt)
+  {
+    setExtendMotionSpec(h.c(getContext(), paramInt));
+  }
+  
+  public void setExtended(boolean paramBoolean)
+  {
+    if (I == paramBoolean) {
+      return;
+    }
+    d localD;
+    if (paramBoolean) {
+      localD = B;
+    } else {
+      localD = A;
+    }
+    if (localD.d()) {
+      return;
+    }
+    localD.b();
+  }
+  
+  public void setHideMotionSpec(h paramH)
+  {
+    D.f(paramH);
+  }
+  
+  public void setHideMotionSpecResource(int paramInt)
+  {
+    setHideMotionSpec(h.c(getContext(), paramInt));
+  }
+  
+  public void setPadding(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.setPadding(paramInt1, paramInt2, paramInt3, paramInt4);
+    if ((I) && (!J))
+    {
+      F = f0.I(this);
+      G = f0.H(this);
+    }
+  }
+  
+  public void setPaddingRelative(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.setPaddingRelative(paramInt1, paramInt2, paramInt3, paramInt4);
+    if ((I) && (!J))
+    {
+      F = paramInt1;
+      G = paramInt3;
+    }
+  }
+  
+  public void setShowMotionSpec(h paramH)
+  {
+    C.f(paramH);
+  }
+  
+  public void setShowMotionSpecResource(int paramInt)
+  {
+    setShowMotionSpec(h.c(getContext(), paramInt));
+  }
+  
+  public void setShrinkMotionSpec(h paramH)
+  {
+    A.f(paramH);
+  }
+  
+  public void setShrinkMotionSpecResource(int paramInt)
+  {
+    setShrinkMotionSpec(h.c(getContext(), paramInt));
+  }
+  
+  public void setTextColor(int paramInt)
+  {
+    super.setTextColor(paramInt);
+    s();
+  }
+  
+  public void setTextColor(ColorStateList paramColorStateList)
+  {
+    super.setTextColor(paramColorStateList);
+    s();
+  }
+  
+  protected static class ExtendedFloatingActionButtonBehavior<T extends ExtendedFloatingActionButton>
+    extends CoordinatorLayout.Behavior<T>
+  {
+    private Rect a;
+    private ExtendedFloatingActionButton.f b;
+    private ExtendedFloatingActionButton.f c;
+    private boolean d;
+    private boolean e;
+    
+    public ExtendedFloatingActionButtonBehavior()
+    {
+      d = false;
+      e = true;
+    }
+    
+    public ExtendedFloatingActionButtonBehavior(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      super(paramAttributeSet);
+      paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, l.a2);
+      d = paramContext.getBoolean(l.b2, false);
+      e = paramContext.getBoolean(l.c2, true);
+      paramContext.recycle();
+    }
+    
+    private static boolean G(View paramView)
+    {
+      paramView = paramView.getLayoutParams();
+      if ((paramView instanceof CoordinatorLayout.e)) {
+        return ((CoordinatorLayout.e)paramView).f() instanceof BottomSheetBehavior;
+      }
+      return false;
+    }
+    
+    private boolean J(View paramView, ExtendedFloatingActionButton paramExtendedFloatingActionButton)
+    {
+      paramExtendedFloatingActionButton = (CoordinatorLayout.e)paramExtendedFloatingActionButton.getLayoutParams();
+      if ((!d) && (!e)) {
+        return false;
+      }
+      return paramExtendedFloatingActionButton.e() == paramView.getId();
+    }
+    
+    private boolean L(CoordinatorLayout paramCoordinatorLayout, AppBarLayout paramAppBarLayout, ExtendedFloatingActionButton paramExtendedFloatingActionButton)
+    {
+      if (!J(paramAppBarLayout, paramExtendedFloatingActionButton)) {
+        return false;
+      }
+      if (a == null) {
+        a = new Rect();
+      }
+      Rect localRect = a;
+      b.a(paramCoordinatorLayout, paramAppBarLayout, localRect);
+      if (bottom <= paramAppBarLayout.getMinimumHeightForVisibleOverlappingContent()) {
+        K(paramExtendedFloatingActionButton);
+      } else {
+        E(paramExtendedFloatingActionButton);
+      }
+      return true;
+    }
+    
+    private boolean M(View paramView, ExtendedFloatingActionButton paramExtendedFloatingActionButton)
+    {
+      if (!J(paramView, paramExtendedFloatingActionButton)) {
+        return false;
+      }
+      CoordinatorLayout.e localE = (CoordinatorLayout.e)paramExtendedFloatingActionButton.getLayoutParams();
+      if (paramView.getTop() < paramExtendedFloatingActionButton.getHeight() / 2 + topMargin) {
+        K(paramExtendedFloatingActionButton);
+      } else {
+        E(paramExtendedFloatingActionButton);
+      }
+      return true;
+    }
+    
+    protected void E(ExtendedFloatingActionButton paramExtendedFloatingActionButton)
+    {
+      boolean bool = e;
+      ExtendedFloatingActionButton.f localF;
+      if (bool) {
+        localF = c;
+      } else {
+        localF = b;
+      }
+      d localD;
+      if (bool) {
+        localD = ExtendedFloatingActionButton.o(paramExtendedFloatingActionButton);
+      } else {
+        localD = ExtendedFloatingActionButton.p(paramExtendedFloatingActionButton);
+      }
+      ExtendedFloatingActionButton.n(paramExtendedFloatingActionButton, localD, localF);
+    }
+    
+    public boolean F(CoordinatorLayout paramCoordinatorLayout, ExtendedFloatingActionButton paramExtendedFloatingActionButton, Rect paramRect)
+    {
+      return super.b(paramCoordinatorLayout, paramExtendedFloatingActionButton, paramRect);
+    }
+    
+    public boolean H(CoordinatorLayout paramCoordinatorLayout, ExtendedFloatingActionButton paramExtendedFloatingActionButton, View paramView)
+    {
+      if ((paramView instanceof AppBarLayout)) {
+        L(paramCoordinatorLayout, (AppBarLayout)paramView, paramExtendedFloatingActionButton);
+      } else if (G(paramView)) {
+        M(paramView, paramExtendedFloatingActionButton);
+      }
+      return false;
+    }
+    
+    public boolean I(CoordinatorLayout paramCoordinatorLayout, ExtendedFloatingActionButton paramExtendedFloatingActionButton, int paramInt)
+    {
+      List localList = paramCoordinatorLayout.r(paramExtendedFloatingActionButton);
+      int j = localList.size();
+      int i = 0;
+      while (i < j)
+      {
+        View localView = (View)localList.get(i);
+        if ((localView instanceof AppBarLayout) ? !L(paramCoordinatorLayout, (AppBarLayout)localView, paramExtendedFloatingActionButton) : (G(localView)) && (M(localView, paramExtendedFloatingActionButton))) {
+          break;
+        }
+        i += 1;
+      }
+      paramCoordinatorLayout.I(paramExtendedFloatingActionButton, paramInt);
+      return true;
+    }
+    
+    protected void K(ExtendedFloatingActionButton paramExtendedFloatingActionButton)
+    {
+      boolean bool = e;
+      ExtendedFloatingActionButton.f localF;
+      if (bool) {
+        localF = c;
+      } else {
+        localF = b;
+      }
+      d localD;
+      if (bool) {
+        localD = ExtendedFloatingActionButton.l(paramExtendedFloatingActionButton);
+      } else {
+        localD = ExtendedFloatingActionButton.m(paramExtendedFloatingActionButton);
+      }
+      ExtendedFloatingActionButton.n(paramExtendedFloatingActionButton, localD, localF);
+    }
+    
+    public void g(CoordinatorLayout.e paramE)
+    {
+      if (h == 0) {
+        h = 80;
+      }
+    }
+  }
+  
+  class a
+    extends AnimatorListenerAdapter
+  {
+    private boolean a;
+    
+    a(d paramD, ExtendedFloatingActionButton.f paramF) {}
+    
+    public void onAnimationCancel(Animator paramAnimator)
+    {
+      a = true;
+      paramD.a();
+    }
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      paramD.e();
+      if (!a) {
+        paramD.i(c);
+      }
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      paramD.onAnimationStart(paramAnimator);
+      a = false;
+    }
+  }
+  
+  static final class b
+    extends Property<View, Float>
+  {
+    b(Class paramClass, String paramString)
+    {
+      super(paramString);
+    }
+    
+    public Float a(View paramView)
+    {
+      return Float.valueOf(getLayoutParamswidth);
+    }
+    
+    public void b(View paramView, Float paramFloat)
+    {
+      getLayoutParamswidth = paramFloat.intValue();
+      paramView.requestLayout();
+    }
+  }
+  
+  static final class c
+    extends Property<View, Float>
+  {
+    c(Class paramClass, String paramString)
+    {
+      super(paramString);
+    }
+    
+    public Float a(View paramView)
+    {
+      return Float.valueOf(getLayoutParamsheight);
+    }
+    
+    public void b(View paramView, Float paramFloat)
+    {
+      getLayoutParamsheight = paramFloat.intValue();
+      paramView.requestLayout();
+    }
+  }
+  
+  static final class d
+    extends Property<View, Float>
+  {
+    d(Class paramClass, String paramString)
+    {
+      super(paramString);
+    }
+    
+    public Float a(View paramView)
+    {
+      return Float.valueOf(f0.I(paramView));
+    }
+    
+    public void b(View paramView, Float paramFloat)
+    {
+      f0.D0(paramView, paramFloat.intValue(), paramView.getPaddingTop(), f0.H(paramView), paramView.getPaddingBottom());
+    }
+  }
+  
+  static final class e
+    extends Property<View, Float>
+  {
+    e(Class paramClass, String paramString)
+    {
+      super(paramString);
+    }
+    
+    public Float a(View paramView)
+    {
+      return Float.valueOf(f0.H(paramView));
+    }
+    
+    public void b(View paramView, Float paramFloat)
+    {
+      f0.D0(paramView, f0.I(paramView), paramView.getPaddingTop(), paramFloat.intValue(), paramView.getPaddingBottom());
+    }
+  }
+  
+  public static abstract class f {}
+}

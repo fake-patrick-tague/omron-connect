@@ -1,0 +1,187 @@
+package androidx.work.impl.l.a;
+
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.text.TextUtils;
+import androidx.work.WorkInfo.State;
+import androidx.work.impl.e;
+import androidx.work.impl.m.c;
+import androidx.work.impl.n.p;
+import androidx.work.impl.utils.f;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+public class b
+  implements e, c, androidx.work.impl.b
+{
+  private static final String b = androidx.work.j.f("GreedyScheduler");
+  private final Context c;
+  private final androidx.work.impl.j d;
+  private final androidx.work.impl.m.d e;
+  private final Set<p> f = new HashSet();
+  private a g;
+  private boolean h;
+  private final Object i;
+  Boolean j;
+  
+  public b(Context paramContext, androidx.work.a paramA, androidx.work.impl.utils.p.a paramA1, androidx.work.impl.j paramJ)
+  {
+    c = paramContext;
+    d = paramJ;
+    e = new androidx.work.impl.m.d(paramContext, paramA1, this);
+    g = new a(this, paramA.k());
+    i = new Object();
+  }
+  
+  private void g()
+  {
+    androidx.work.a localA = d.j();
+    j = Boolean.valueOf(f.b(c, localA));
+  }
+  
+  private void h()
+  {
+    if (!h)
+    {
+      d.n().c(this);
+      h = true;
+    }
+  }
+  
+  private void i(String paramString)
+  {
+    synchronized (i)
+    {
+      Iterator localIterator = f.iterator();
+      while (localIterator.hasNext())
+      {
+        p localP = (p)localIterator.next();
+        if (c.equals(paramString))
+        {
+          androidx.work.j.c().a(b, String.format("Stopping tracking for %s", new Object[] { paramString }), new Throwable[0]);
+          f.remove(localP);
+          e.d(f);
+        }
+      }
+      return;
+    }
+  }
+  
+  public void a(p... arg1)
+  {
+    if (j == null) {
+      g();
+    }
+    if (!j.booleanValue())
+    {
+      androidx.work.j.c().d(b, "Ignoring schedule request in a secondary process", new Throwable[0]);
+      return;
+    }
+    h();
+    HashSet localHashSet1 = new HashSet();
+    HashSet localHashSet2 = new HashSet();
+    int m = ???.length;
+    int k = 0;
+    while (k < m)
+    {
+      p localP = ???[k];
+      long l1 = localP.a();
+      long l2 = System.currentTimeMillis();
+      if (d == WorkInfo.State.b) {
+        if (l2 < l1)
+        {
+          a localA = g;
+          if (localA != null) {
+            localA.a(localP);
+          }
+        }
+        else if (localP.b())
+        {
+          int n = Build.VERSION.SDK_INT;
+          if ((n >= 23) && (l.h()))
+          {
+            androidx.work.j.c().a(b, String.format("Ignoring WorkSpec %s, Requires device idle.", new Object[] { localP }), new Throwable[0]);
+          }
+          else if ((n >= 24) && (l.e()))
+          {
+            androidx.work.j.c().a(b, String.format("Ignoring WorkSpec %s, Requires ContentUri triggers.", new Object[] { localP }), new Throwable[0]);
+          }
+          else
+          {
+            localHashSet1.add(localP);
+            localHashSet2.add(c);
+          }
+        }
+        else
+        {
+          androidx.work.j.c().a(b, String.format("Starting work for %s", new Object[] { c }), new Throwable[0]);
+          d.v(c);
+        }
+      }
+      k += 1;
+    }
+    synchronized (i)
+    {
+      if (!localHashSet1.isEmpty())
+      {
+        androidx.work.j.c().a(b, String.format("Starting tracking for [%s]", new Object[] { TextUtils.join(",", localHashSet2) }), new Throwable[0]);
+        f.addAll(localHashSet1);
+        e.d(f);
+      }
+      return;
+    }
+  }
+  
+  public void b(List<String> paramList)
+  {
+    paramList = paramList.iterator();
+    while (paramList.hasNext())
+    {
+      String str = (String)paramList.next();
+      androidx.work.j.c().a(b, String.format("Constraints not met: Cancelling work ID %s", new Object[] { str }), new Throwable[0]);
+      d.y(str);
+    }
+  }
+  
+  public boolean c()
+  {
+    return false;
+  }
+  
+  public void d(String paramString, boolean paramBoolean)
+  {
+    i(paramString);
+  }
+  
+  public void e(String paramString)
+  {
+    if (j == null) {
+      g();
+    }
+    if (!j.booleanValue())
+    {
+      androidx.work.j.c().d(b, "Ignoring schedule request in non-main process", new Throwable[0]);
+      return;
+    }
+    h();
+    androidx.work.j.c().a(b, String.format("Cancelling work ID %s", new Object[] { paramString }), new Throwable[0]);
+    a localA = g;
+    if (localA != null) {
+      localA.b(paramString);
+    }
+    d.y(paramString);
+  }
+  
+  public void f(List<String> paramList)
+  {
+    paramList = paramList.iterator();
+    while (paramList.hasNext())
+    {
+      String str = (String)paramList.next();
+      androidx.work.j.c().a(b, String.format("Constraints met: Scheduling work ID %s", new Object[] { str }), new Throwable[0]);
+      d.v(str);
+    }
+  }
+}

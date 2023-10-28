@@ -1,0 +1,248 @@
+package com.google.android.material.appbar;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.widget.OverScroller;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import c.h.q.f0;
+
+abstract class HeaderBehavior<V extends View>
+  extends ViewOffsetBehavior<V>
+{
+  private Runnable d;
+  OverScroller e;
+  private boolean f;
+  private int g = -1;
+  private int h;
+  private int i = -1;
+  private VelocityTracker j;
+  
+  public HeaderBehavior() {}
+  
+  public HeaderBehavior(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+  }
+  
+  private void I()
+  {
+    if (j == null) {
+      j = VelocityTracker.obtain();
+    }
+  }
+  
+  public boolean D(CoordinatorLayout paramCoordinatorLayout, V paramV, MotionEvent paramMotionEvent)
+  {
+    int k = paramMotionEvent.getActionMasked();
+    boolean bool = true;
+    if (k != 1)
+    {
+      if (k != 2)
+      {
+        if (k == 3) {
+          break label205;
+        }
+        if (k == 6)
+        {
+          if (paramMotionEvent.getActionIndex() == 0) {
+            k = 1;
+          } else {
+            k = 0;
+          }
+          g = paramMotionEvent.getPointerId(k);
+          h = ((int)(paramMotionEvent.getY(k) + 0.5F));
+        }
+      }
+      else
+      {
+        k = paramMotionEvent.findPointerIndex(g);
+        if (k == -1) {
+          return false;
+        }
+        k = (int)paramMotionEvent.getY(k);
+        m = h;
+        h = k;
+        O(paramCoordinatorLayout, paramV, m - k, K(paramV), 0);
+      }
+      m = 0;
+      break label244;
+    }
+    else
+    {
+      VelocityTracker localVelocityTracker = j;
+      if (localVelocityTracker != null)
+      {
+        localVelocityTracker.addMovement(paramMotionEvent);
+        j.computeCurrentVelocity(1000);
+        float f1 = j.getYVelocity(g);
+        J(paramCoordinatorLayout, paramV, -L(paramV), 0, f1);
+        k = 1;
+        break label208;
+      }
+    }
+    label205:
+    k = 0;
+    label208:
+    f = false;
+    g = -1;
+    paramCoordinatorLayout = j;
+    int m = k;
+    if (paramCoordinatorLayout != null)
+    {
+      paramCoordinatorLayout.recycle();
+      j = null;
+      m = k;
+    }
+    label244:
+    paramCoordinatorLayout = j;
+    if (paramCoordinatorLayout != null) {
+      paramCoordinatorLayout.addMovement(paramMotionEvent);
+    }
+    if (!f)
+    {
+      if (m != 0) {
+        return true;
+      }
+      bool = false;
+    }
+    return bool;
+  }
+  
+  abstract boolean H(V paramV);
+  
+  final boolean J(CoordinatorLayout paramCoordinatorLayout, V paramV, int paramInt1, int paramInt2, float paramFloat)
+  {
+    Runnable localRunnable = d;
+    if (localRunnable != null)
+    {
+      paramV.removeCallbacks(localRunnable);
+      d = null;
+    }
+    if (e == null) {
+      e = new OverScroller(paramV.getContext());
+    }
+    e.fling(0, E(), 0, Math.round(paramFloat), 0, 0, paramInt1, paramInt2);
+    if (e.computeScrollOffset())
+    {
+      paramCoordinatorLayout = new a(paramCoordinatorLayout, paramV);
+      d = paramCoordinatorLayout;
+      f0.h0(paramV, paramCoordinatorLayout);
+      return true;
+    }
+    N(paramCoordinatorLayout, paramV);
+    return false;
+  }
+  
+  abstract int K(V paramV);
+  
+  abstract int L(V paramV);
+  
+  abstract int M();
+  
+  abstract void N(CoordinatorLayout paramCoordinatorLayout, V paramV);
+  
+  final int O(CoordinatorLayout paramCoordinatorLayout, V paramV, int paramInt1, int paramInt2, int paramInt3)
+  {
+    return Q(paramCoordinatorLayout, paramV, M() - paramInt1, paramInt2, paramInt3);
+  }
+  
+  int P(CoordinatorLayout paramCoordinatorLayout, V paramV, int paramInt)
+  {
+    return Q(paramCoordinatorLayout, paramV, paramInt, Integer.MIN_VALUE, Integer.MAX_VALUE);
+  }
+  
+  abstract int Q(CoordinatorLayout paramCoordinatorLayout, V paramV, int paramInt1, int paramInt2, int paramInt3);
+  
+  public boolean k(CoordinatorLayout paramCoordinatorLayout, V paramV, MotionEvent paramMotionEvent)
+  {
+    if (i < 0) {
+      i = ViewConfiguration.get(paramCoordinatorLayout.getContext()).getScaledTouchSlop();
+    }
+    int k;
+    if ((paramMotionEvent.getActionMasked() == 2) && (f))
+    {
+      k = g;
+      if (k == -1) {
+        return false;
+      }
+      k = paramMotionEvent.findPointerIndex(k);
+      if (k == -1) {
+        return false;
+      }
+      k = (int)paramMotionEvent.getY(k);
+      if (Math.abs(k - h) > i)
+      {
+        h = k;
+        return true;
+      }
+    }
+    if (paramMotionEvent.getActionMasked() == 0)
+    {
+      g = -1;
+      k = (int)paramMotionEvent.getX();
+      int m = (int)paramMotionEvent.getY();
+      boolean bool;
+      if ((H(paramV)) && (paramCoordinatorLayout.B(paramV, k, m))) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      f = bool;
+      if (bool)
+      {
+        h = m;
+        g = paramMotionEvent.getPointerId(0);
+        I();
+        paramCoordinatorLayout = e;
+        if ((paramCoordinatorLayout != null) && (!paramCoordinatorLayout.isFinished()))
+        {
+          e.abortAnimation();
+          return true;
+        }
+      }
+    }
+    paramCoordinatorLayout = j;
+    if (paramCoordinatorLayout != null) {
+      paramCoordinatorLayout.addMovement(paramMotionEvent);
+    }
+    return false;
+  }
+  
+  private class a
+    implements Runnable
+  {
+    private final CoordinatorLayout b;
+    private final V c;
+    
+    a(V paramV)
+    {
+      b = paramV;
+      Object localObject;
+      c = localObject;
+    }
+    
+    public void run()
+    {
+      if (c != null)
+      {
+        Object localObject = e;
+        if (localObject != null)
+        {
+          if (((OverScroller)localObject).computeScrollOffset())
+          {
+            localObject = HeaderBehavior.this;
+            ((HeaderBehavior)localObject).P(b, c, e.getCurrY());
+            f0.h0(c, this);
+            return;
+          }
+          N(b, c);
+        }
+      }
+    }
+  }
+}

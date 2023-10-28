@@ -1,0 +1,253 @@
+package com.android.volley;
+
+import android.os.Handler;
+import android.os.Looper;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class RequestQueue
+{
+  private static final int DEFAULT_NETWORK_THREAD_POOL_SIZE = 4;
+  private final Cache mCache;
+  private CacheDispatcher mCacheDispatcher;
+  private final PriorityBlockingQueue<Request<?>> mCacheQueue = new PriorityBlockingQueue();
+  private final Set<Request<?>> mCurrentRequests = new HashSet();
+  private final ResponseDelivery mDelivery;
+  private final NetworkDispatcher[] mDispatchers;
+  private final List<RequestEventListener> mEventListeners = new ArrayList();
+  private final List<RequestFinishedListener> mFinishedListeners = new ArrayList();
+  private final Network mNetwork;
+  private final PriorityBlockingQueue<Request<?>> mNetworkQueue = new PriorityBlockingQueue();
+  private final AtomicInteger mSequenceGenerator = new AtomicInteger();
+  
+  public RequestQueue(Cache paramCache, Network paramNetwork)
+  {
+    this(paramCache, paramNetwork, 4);
+  }
+  
+  public RequestQueue(Cache paramCache, Network paramNetwork, int paramInt)
+  {
+    this(paramCache, paramNetwork, paramInt, new ExecutorDelivery(new Handler(Looper.getMainLooper())));
+  }
+  
+  public RequestQueue(Cache paramCache, Network paramNetwork, int paramInt, ResponseDelivery paramResponseDelivery)
+  {
+    mCache = paramCache;
+    mNetwork = paramNetwork;
+    mDispatchers = new NetworkDispatcher[paramInt];
+    mDelivery = paramResponseDelivery;
+  }
+  
+  public <T> Request<T> add(Request<T> paramRequest)
+  {
+    paramRequest.setRequestQueue(this);
+    synchronized (mCurrentRequests)
+    {
+      mCurrentRequests.add(paramRequest);
+      paramRequest.setSequence(getSequenceNumber());
+      paramRequest.addMarker("add-to-queue");
+      sendRequestEvent(paramRequest, 0);
+      beginRequest(paramRequest);
+      return paramRequest;
+    }
+  }
+  
+  public void addRequestEventListener(RequestEventListener paramRequestEventListener)
+  {
+    synchronized (mEventListeners)
+    {
+      mEventListeners.add(paramRequestEventListener);
+      return;
+    }
+  }
+  
+  @Deprecated
+  public <T> void addRequestFinishedListener(RequestFinishedListener<T> paramRequestFinishedListener)
+  {
+    synchronized (mFinishedListeners)
+    {
+      mFinishedListeners.add(paramRequestFinishedListener);
+      return;
+    }
+  }
+  
+  <T> void beginRequest(Request<T> paramRequest)
+  {
+    if (!paramRequest.shouldCache())
+    {
+      sendRequestOverNetwork(paramRequest);
+      return;
+    }
+    mCacheQueue.add(paramRequest);
+  }
+  
+  public void cancelAll(RequestFilter paramRequestFilter)
+  {
+    synchronized (mCurrentRequests)
+    {
+      Iterator localIterator = mCurrentRequests.iterator();
+      while (localIterator.hasNext())
+      {
+        Request localRequest = (Request)localIterator.next();
+        if (paramRequestFilter.apply(localRequest)) {
+          localRequest.cancel();
+        }
+      }
+      return;
+    }
+  }
+  
+  public void cancelAll(final Object paramObject)
+  {
+    if (paramObject != null)
+    {
+      cancelAll(new RequestFilter()
+      {
+        public boolean apply(Request<?> paramAnonymousRequest)
+        {
+          return paramAnonymousRequest.getTag() == paramObject;
+        }
+      });
+      return;
+    }
+    throw new IllegalArgumentException("Cannot cancelAll with a null tag");
+  }
+  
+  <T> void finish(Request<T> paramRequest)
+  {
+    synchronized (mCurrentRequests)
+    {
+      mCurrentRequests.remove(paramRequest);
+      synchronized (mFinishedListeners)
+      {
+        Iterator localIterator = mFinishedListeners.iterator();
+        while (localIterator.hasNext()) {
+          ((RequestFinishedListener)localIterator.next()).onRequestFinished(paramRequest);
+        }
+        sendRequestEvent(paramRequest, 5);
+        return;
+      }
+    }
+  }
+  
+  public Cache getCache()
+  {
+    return mCache;
+  }
+  
+  public ResponseDelivery getResponseDelivery()
+  {
+    return mDelivery;
+  }
+  
+  public int getSequenceNumber()
+  {
+    return mSequenceGenerator.incrementAndGet();
+  }
+  
+  public void removeRequestEventListener(RequestEventListener paramRequestEventListener)
+  {
+    synchronized (mEventListeners)
+    {
+      mEventListeners.remove(paramRequestEventListener);
+      return;
+    }
+  }
+  
+  @Deprecated
+  public <T> void removeRequestFinishedListener(RequestFinishedListener<T> paramRequestFinishedListener)
+  {
+    synchronized (mFinishedListeners)
+    {
+      mFinishedListeners.remove(paramRequestFinishedListener);
+      return;
+    }
+  }
+  
+  void sendRequestEvent(Request<?> paramRequest, int paramInt)
+  {
+    synchronized (mEventListeners)
+    {
+      Iterator localIterator = mEventListeners.iterator();
+      while (localIterator.hasNext()) {
+        ((RequestEventListener)localIterator.next()).onRequestEvent(paramRequest, paramInt);
+      }
+      return;
+    }
+  }
+  
+  <T> void sendRequestOverNetwork(Request<T> paramRequest)
+  {
+    mNetworkQueue.add(paramRequest);
+  }
+  
+  public void start()
+  {
+    stop();
+    Object localObject = new CacheDispatcher(mCacheQueue, mNetworkQueue, mCache, mDelivery);
+    mCacheDispatcher = ((CacheDispatcher)localObject);
+    ((Thread)localObject).start();
+    int i = 0;
+    while (i < mDispatchers.length)
+    {
+      localObject = new NetworkDispatcher(mNetworkQueue, mNetwork, mCache, mDelivery);
+      mDispatchers[i] = localObject;
+      ((Thread)localObject).start();
+      i += 1;
+    }
+  }
+  
+  public void stop()
+  {
+    Object localObject1 = mCacheDispatcher;
+    if (localObject1 != null) {
+      ((CacheDispatcher)localObject1).quit();
+    }
+    localObject1 = mDispatchers;
+    int j = localObject1.length;
+    int i = 0;
+    while (i < j)
+    {
+      Object localObject2 = localObject1[i];
+      if (localObject2 != null) {
+        localObject2.quit();
+      }
+      i += 1;
+    }
+  }
+  
+  @Retention(RetentionPolicy.SOURCE)
+  public static @interface RequestEvent
+  {
+    public static final int REQUEST_CACHE_LOOKUP_FINISHED = 2;
+    public static final int REQUEST_CACHE_LOOKUP_STARTED = 1;
+    public static final int REQUEST_FINISHED = 5;
+    public static final int REQUEST_NETWORK_DISPATCH_FINISHED = 4;
+    public static final int REQUEST_NETWORK_DISPATCH_STARTED = 3;
+    public static final int REQUEST_QUEUED = 0;
+  }
+  
+  public static abstract interface RequestEventListener
+  {
+    public abstract void onRequestEvent(Request<?> paramRequest, int paramInt);
+  }
+  
+  public static abstract interface RequestFilter
+  {
+    public abstract boolean apply(Request<?> paramRequest);
+  }
+  
+  @Deprecated
+  public static abstract interface RequestFinishedListener<T>
+  {
+    public abstract void onRequestFinished(Request<T> paramRequest);
+  }
+}

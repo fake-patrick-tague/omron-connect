@@ -1,0 +1,272 @@
+package androidx.appcompat.app;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.LocaleManager;
+import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ServiceInfo;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.os.LocaleList;
+import android.util.Log;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.window.OnBackInvokedDispatcher;
+import androidx.appcompat.widget.Toolbar;
+import c.a.n.b.a;
+import java.lang.ref.WeakReference;
+import java.util.Iterator;
+
+public abstract class i
+{
+  static n.a b = new n.a(new n.b());
+  private static int c = -100;
+  private static c.h.m.h d = null;
+  private static c.h.m.h e = null;
+  private static Boolean f = null;
+  private static boolean g = false;
+  private static final c.e.b<WeakReference<i>> h = new c.e.b();
+  private static final Object i = new Object();
+  private static final Object j = new Object();
+  
+  i() {}
+  
+  static void E(i paramI)
+  {
+    synchronized (i)
+    {
+      F(paramI);
+      return;
+    }
+  }
+  
+  private static void F(i paramI)
+  {
+    synchronized (i)
+    {
+      Iterator localIterator = h.iterator();
+      while (localIterator.hasNext())
+      {
+        i localI = (i)((WeakReference)localIterator.next()).get();
+        if ((localI == paramI) || (localI == null)) {
+          localIterator.remove();
+        }
+      }
+      return;
+    }
+  }
+  
+  static void P(Context paramContext)
+  {
+    if (!u(paramContext)) {
+      return;
+    }
+    if (c.h.m.a.d())
+    {
+      if (!g) {
+        b.execute(new a(paramContext));
+      }
+    }
+    else {
+      synchronized (j)
+      {
+        c.h.m.h localH = d;
+        if (localH == null)
+        {
+          if (e == null) {
+            e = c.h.m.h.c(n.b(paramContext));
+          }
+          if (e.f()) {
+            return;
+          }
+          d = e;
+        }
+        else if (!localH.equals(e))
+        {
+          localH = d;
+          e = localH;
+          n.a(paramContext, localH.h());
+        }
+        return;
+      }
+    }
+  }
+  
+  static void c(i paramI)
+  {
+    synchronized (i)
+    {
+      F(paramI);
+      h.add(new WeakReference(paramI));
+      return;
+    }
+  }
+  
+  public static i g(Activity paramActivity, h paramH)
+  {
+    return new j(paramActivity, paramH);
+  }
+  
+  public static i h(Dialog paramDialog, h paramH)
+  {
+    return new j(paramDialog, paramH);
+  }
+  
+  public static c.h.m.h j()
+  {
+    Object localObject;
+    if (c.h.m.a.d())
+    {
+      localObject = o();
+      if (localObject != null) {
+        return c.h.m.h.i(b.a(localObject));
+      }
+    }
+    else
+    {
+      localObject = d;
+      if (localObject != null) {
+        return localObject;
+      }
+    }
+    return c.h.m.h.e();
+  }
+  
+  public static int l()
+  {
+    return c;
+  }
+  
+  static Object o()
+  {
+    Iterator localIterator = h.iterator();
+    while (localIterator.hasNext())
+    {
+      Object localObject = (i)((WeakReference)localIterator.next()).get();
+      if (localObject != null)
+      {
+        localObject = ((i)localObject).k();
+        if (localObject != null) {
+          return ((Context)localObject).getSystemService("locale");
+        }
+      }
+    }
+    return null;
+  }
+  
+  static c.h.m.h q()
+  {
+    return d;
+  }
+  
+  static boolean u(Context paramContext)
+  {
+    if (f == null) {}
+    try
+    {
+      paramContext = ametaData;
+      if (paramContext == null) {
+        break label47;
+      }
+      f = Boolean.valueOf(paramContext.getBoolean("autoStoreLocales"));
+    }
+    catch (PackageManager.NameNotFoundException paramContext)
+    {
+      for (;;) {}
+    }
+    Log.d("AppCompatDelegate", "Checking for metadata for AppLocalesMetadataHolderService : Service not found");
+    f = Boolean.FALSE;
+    label47:
+    return f.booleanValue();
+  }
+  
+  public abstract void A();
+  
+  public abstract void B(Bundle paramBundle);
+  
+  public abstract void C();
+  
+  public abstract void D();
+  
+  public abstract boolean G(int paramInt);
+  
+  public abstract void H(int paramInt);
+  
+  public abstract void I(View paramView);
+  
+  public abstract void J(View paramView, ViewGroup.LayoutParams paramLayoutParams);
+  
+  public void K(OnBackInvokedDispatcher paramOnBackInvokedDispatcher) {}
+  
+  public abstract void L(Toolbar paramToolbar);
+  
+  public void M(int paramInt) {}
+  
+  public abstract void N(CharSequence paramCharSequence);
+  
+  public abstract c.a.n.b O(b.a paramA);
+  
+  public abstract void d(View paramView, ViewGroup.LayoutParams paramLayoutParams);
+  
+  @Deprecated
+  public void e(Context paramContext) {}
+  
+  public Context f(Context paramContext)
+  {
+    e(paramContext);
+    return paramContext;
+  }
+  
+  public abstract <T extends View> T i(int paramInt);
+  
+  public Context k()
+  {
+    return null;
+  }
+  
+  public abstract e m();
+  
+  public int n()
+  {
+    return -100;
+  }
+  
+  public abstract MenuInflater p();
+  
+  public abstract ActionBar r();
+  
+  public abstract void s();
+  
+  public abstract void t();
+  
+  public abstract void w(Configuration paramConfiguration);
+  
+  public abstract void x(Bundle paramBundle);
+  
+  public abstract void y();
+  
+  public abstract void z(Bundle paramBundle);
+  
+  static class a
+  {
+    static LocaleList a(String paramString)
+    {
+      return LocaleList.forLanguageTags(paramString);
+    }
+  }
+  
+  static class b
+  {
+    static LocaleList a(Object paramObject)
+    {
+      return ((LocaleManager)paramObject).getApplicationLocales();
+    }
+    
+    static void b(Object paramObject, LocaleList paramLocaleList)
+    {
+      ((LocaleManager)paramObject).setApplicationLocales(paramLocaleList);
+    }
+  }
+}

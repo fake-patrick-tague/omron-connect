@@ -1,0 +1,686 @@
+package com.google.android.gms.internal.fitness;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+final class zzgn
+  implements zzkm
+{
+  private final zzgk zzuh;
+  
+  private zzgn(zzgk paramZzgk)
+  {
+    paramZzgk = (zzgk)zzhc.zza(paramZzgk, "output");
+    zzuh = paramZzgk;
+    zzun = this;
+  }
+  
+  public static zzgn zza(zzgk paramZzgk)
+  {
+    zzgn localZzgn = zzun;
+    if (localZzgn != null) {
+      return localZzgn;
+    }
+    return new zzgn(paramZzgk);
+  }
+  
+  public final void zza(int paramInt, double paramDouble)
+    throws IOException
+  {
+    zzuh.zza(paramInt, paramDouble);
+  }
+  
+  public final void zza(int paramInt, float paramFloat)
+    throws IOException
+  {
+    zzuh.zza(paramInt, paramFloat);
+  }
+  
+  public final void zza(int paramInt, long paramLong)
+    throws IOException
+  {
+    zzuh.zza(paramInt, paramLong);
+  }
+  
+  public final void zza(int paramInt, zzfx paramZzfx)
+    throws IOException
+  {
+    zzuh.zza(paramInt, paramZzfx);
+  }
+  
+  public final <K, V> void zza(int paramInt, zzib<K, V> paramZzib, Map<K, V> paramMap)
+    throws IOException
+  {
+    paramMap = paramMap.entrySet().iterator();
+    while (paramMap.hasNext())
+    {
+      Object localObject1 = (Map.Entry)paramMap.next();
+      zzuh.writeTag(paramInt, 2);
+      zzgk localZzgk = zzuh;
+      Object localObject2 = ((Map.Entry)localObject1).getKey();
+      Object localObject3 = ((Map.Entry)localObject1).getValue();
+      localZzgk.zzo(zzgt.zza(zzzt, 1, localObject2) + zzgt.zza(zzzu, 2, localObject3));
+      localZzgk = zzuh;
+      localObject2 = ((Map.Entry)localObject1).getKey();
+      localObject1 = ((Map.Entry)localObject1).getValue();
+      zzgt.zza(localZzgk, zzzt, 1, localObject2);
+      zzgt.zza(localZzgk, zzzu, 2, localObject1);
+    }
+  }
+  
+  public final void zza(int paramInt, Object paramObject)
+    throws IOException
+  {
+    if ((paramObject instanceof zzfx))
+    {
+      zzuh.zzb(paramInt, (zzfx)paramObject);
+      return;
+    }
+    zzuh.zza(paramInt, (zzik)paramObject);
+  }
+  
+  public final void zza(int paramInt, Object paramObject, zzja paramZzja)
+    throws IOException
+  {
+    zzuh.zza(paramInt, (zzik)paramObject, paramZzja);
+  }
+  
+  public final void zza(int paramInt, String paramString)
+    throws IOException
+  {
+    zzuh.zza(paramInt, paramString);
+  }
+  
+  public final void zza(int paramInt, List<String> paramList)
+    throws IOException
+  {
+    boolean bool = paramList instanceof zzhr;
+    int i = 0;
+    int j = 0;
+    if (bool)
+    {
+      zzhr localZzhr = (zzhr)paramList;
+      i = j;
+      while (i < paramList.size())
+      {
+        Object localObject = localZzhr.zzaf(i);
+        if ((localObject instanceof String)) {
+          zzuh.zza(paramInt, (String)localObject);
+        } else {
+          zzuh.zza(paramInt, (zzfx)localObject);
+        }
+        i += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zza(paramInt, (String)paramList.get(i));
+      i += 1;
+    }
+  }
+  
+  public final void zza(int paramInt, List<?> paramList, zzja paramZzja)
+    throws IOException
+  {
+    int i = 0;
+    while (i < paramList.size())
+    {
+      zza(paramInt, paramList.get(i), paramZzja);
+      i += 1;
+    }
+  }
+  
+  public final void zza(int paramInt, List<Integer> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzs(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzn(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zze(paramInt, ((Integer)paramList.get(i)).intValue());
+      i += 1;
+    }
+  }
+  
+  public final void zza(int paramInt, boolean paramBoolean)
+    throws IOException
+  {
+    zzuh.zza(paramInt, paramBoolean);
+  }
+  
+  public final void zzaa(int paramInt)
+    throws IOException
+  {
+    zzuh.writeTag(paramInt, 3);
+  }
+  
+  public final void zzab(int paramInt)
+    throws IOException
+  {
+    zzuh.writeTag(paramInt, 4);
+  }
+  
+  public final void zzb(int paramInt, long paramLong)
+    throws IOException
+  {
+    zzuh.zzb(paramInt, paramLong);
+  }
+  
+  public final void zzb(int paramInt, Object paramObject, zzja paramZzja)
+    throws IOException
+  {
+    zzgk localZzgk = zzuh;
+    paramObject = (zzik)paramObject;
+    localZzgk.writeTag(paramInt, 3);
+    paramZzja.zza(paramObject, zzun);
+    localZzgk.writeTag(paramInt, 4);
+  }
+  
+  public final void zzb(int paramInt, List<zzfx> paramList)
+    throws IOException
+  {
+    int i = 0;
+    while (i < paramList.size())
+    {
+      zzuh.zza(paramInt, (zzfx)paramList.get(i));
+      i += 1;
+    }
+  }
+  
+  public final void zzb(int paramInt, List<?> paramList, zzja paramZzja)
+    throws IOException
+  {
+    int i = 0;
+    while (i < paramList.size())
+    {
+      zzb(paramInt, paramList.get(i), paramZzja);
+      i += 1;
+    }
+  }
+  
+  public final void zzb(int paramInt, List<Integer> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzv(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzq(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zzh(paramInt, ((Integer)paramList.get(i)).intValue());
+      i += 1;
+    }
+  }
+  
+  public final int zzbe()
+  {
+    return zzkl.zzaea;
+  }
+  
+  public final void zzc(int paramInt, long paramLong)
+    throws IOException
+  {
+    zzuh.zzc(paramInt, paramLong);
+  }
+  
+  public final void zzc(int paramInt, List<Long> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzd(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zza(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zza(paramInt, ((Long)paramList.get(i)).longValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzd(int paramInt, List<Long> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zze(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zza(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zza(paramInt, ((Long)paramList.get(i)).longValue());
+      i += 1;
+    }
+  }
+  
+  public final void zze(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzuh.zze(paramInt1, paramInt2);
+  }
+  
+  public final void zze(int paramInt, List<Long> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzg(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzc(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zzc(paramInt, ((Long)paramList.get(i)).longValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzf(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzuh.zzf(paramInt1, paramInt2);
+  }
+  
+  public final void zzf(int paramInt, List<Float> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzc(((Float)paramList.get(paramInt)).floatValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzb(((Float)paramList.get(paramInt)).floatValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zza(paramInt, ((Float)paramList.get(i)).floatValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzg(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzuh.zzg(paramInt1, paramInt2);
+  }
+  
+  public final void zzg(int paramInt, List<Double> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzc(((Double)paramList.get(paramInt)).doubleValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzb(((Double)paramList.get(paramInt)).doubleValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zza(paramInt, ((Double)paramList.get(i)).doubleValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzh(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzuh.zzh(paramInt1, paramInt2);
+  }
+  
+  public final void zzh(int paramInt, List<Integer> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzx(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzn(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zze(paramInt, ((Integer)paramList.get(i)).intValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzi(int paramInt, long paramLong)
+    throws IOException
+  {
+    zzuh.zza(paramInt, paramLong);
+  }
+  
+  public final void zzi(int paramInt, List<Boolean> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzb(((Boolean)paramList.get(paramInt)).booleanValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zza(((Boolean)paramList.get(paramInt)).booleanValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zza(paramInt, ((Boolean)paramList.get(i)).booleanValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzj(int paramInt, long paramLong)
+    throws IOException
+  {
+    zzuh.zzc(paramInt, paramLong);
+  }
+  
+  public final void zzj(int paramInt, List<Integer> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzt(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzo(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zzf(paramInt, ((Integer)paramList.get(i)).intValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzk(int paramInt, List<Integer> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzw(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzq(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zzh(paramInt, ((Integer)paramList.get(i)).intValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzl(int paramInt, List<Long> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzh(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzc(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zzc(paramInt, ((Long)paramList.get(i)).longValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzm(int paramInt, List<Integer> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzu(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzp(((Integer)paramList.get(paramInt)).intValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zzg(paramInt, ((Integer)paramList.get(i)).intValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzn(int paramInt, List<Long> paramList, boolean paramBoolean)
+    throws IOException
+  {
+    int i = 0;
+    int j = 0;
+    if (paramBoolean)
+    {
+      zzuh.writeTag(paramInt, 2);
+      paramInt = 0;
+      i = paramInt;
+      while (paramInt < paramList.size())
+      {
+        i += zzgk.zzf(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      zzuh.zzo(i);
+      paramInt = j;
+      while (paramInt < paramList.size())
+      {
+        zzuh.zzb(((Long)paramList.get(paramInt)).longValue());
+        paramInt += 1;
+      }
+      return;
+    }
+    while (i < paramList.size())
+    {
+      zzuh.zzb(paramInt, ((Long)paramList.get(i)).longValue());
+      i += 1;
+    }
+  }
+  
+  public final void zzo(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzuh.zzh(paramInt1, paramInt2);
+  }
+  
+  public final void zzp(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzuh.zze(paramInt1, paramInt2);
+  }
+}

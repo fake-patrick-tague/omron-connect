@@ -1,0 +1,117 @@
+package com.google.android.gms.measurement.internal;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import androidx.core.content.a;
+import com.google.android.gms.common.util.Clock;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+public final class zzaq
+  extends zzgs
+{
+  private long zza;
+  private String zzb;
+  private AccountManager zzc;
+  private Boolean zzd;
+  private long zze;
+  
+  zzaq(zzfy paramZzfy)
+  {
+    super(paramZzfy);
+  }
+  
+  final long zza()
+  {
+    zzg();
+    return zze;
+  }
+  
+  public final long zzb()
+  {
+    zzu();
+    return zza;
+  }
+  
+  public final String zzc()
+  {
+    zzu();
+    return zzb;
+  }
+  
+  final void zzd()
+  {
+    zzg();
+    zzd = null;
+    zze = 0L;
+  }
+  
+  final boolean zze()
+  {
+    zzg();
+    long l = zzs.zzav().currentTimeMillis();
+    if (l - zze > 86400000L) {
+      zzd = null;
+    }
+    Object localObject = zzd;
+    if (localObject == null)
+    {
+      if (a.a(zzs.zzau(), "android.permission.GET_ACCOUNTS") != 0)
+      {
+        zzs.zzay().zzm().zza("Permission error checking for dasher/unicorn accounts");
+        zze = l;
+        zzd = Boolean.FALSE;
+        return false;
+      }
+      if (zzc == null) {
+        zzc = AccountManager.get(zzs.zzau());
+      }
+      try
+      {
+        localObject = (Account[])zzc.getAccountsByTypeAndFeatures("com.google", new String[] { "service_HOSTED" }, null, null).getResult();
+        if ((localObject != null) && (localObject.length > 0))
+        {
+          zzd = Boolean.TRUE;
+          zze = l;
+          return true;
+        }
+        localObject = (Account[])zzc.getAccountsByTypeAndFeatures("com.google", new String[] { "service_uca" }, null, null).getResult();
+        if ((localObject == null) || (localObject.length <= 0)) {
+          break label238;
+        }
+        zzd = Boolean.TRUE;
+        zze = l;
+        return true;
+      }
+      catch (OperationCanceledException localOperationCanceledException) {}catch (IOException localIOException) {}catch (AuthenticatorException localAuthenticatorException) {}
+      zzs.zzay().zzh().zzb("Exception checking account types", localAuthenticatorException);
+      label238:
+      zze = l;
+      zzd = Boolean.FALSE;
+      return false;
+    }
+    return localAuthenticatorException.booleanValue();
+  }
+  
+  protected final boolean zzf()
+  {
+    Object localObject1 = Calendar.getInstance();
+    zza = TimeUnit.MINUTES.convert(((Calendar)localObject1).get(15) + ((Calendar)localObject1).get(16), TimeUnit.MILLISECONDS);
+    Object localObject2 = Locale.getDefault();
+    localObject1 = ((Locale)localObject2).getLanguage();
+    Object localObject3 = Locale.ENGLISH;
+    localObject1 = ((String)localObject1).toLowerCase((Locale)localObject3);
+    localObject2 = ((Locale)localObject2).getCountry().toLowerCase((Locale)localObject3);
+    localObject3 = new StringBuilder();
+    ((StringBuilder)localObject3).append((String)localObject1);
+    ((StringBuilder)localObject3).append("-");
+    ((StringBuilder)localObject3).append((String)localObject2);
+    zzb = ((StringBuilder)localObject3).toString();
+    return false;
+  }
+}

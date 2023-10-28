@@ -1,0 +1,282 @@
+package androidx.fragment.app.strictmode;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.ViewGroup;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.r;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import kotlin.collections.a0;
+import kotlin.collections.g0;
+
+public final class FragmentStrictMode
+{
+  public static final FragmentStrictMode a = new FragmentStrictMode();
+  private static b b = b.b;
+  
+  private FragmentStrictMode() {}
+  
+  private final b a(Fragment paramFragment)
+  {
+    while (paramFragment != null)
+    {
+      if (paramFragment.isAdded())
+      {
+        FragmentManager localFragmentManager = paramFragment.getParentFragmentManager();
+        kotlin.x.d.i.d(localFragmentManager, "declaringFragment.parentFragmentManager");
+        if (localFragmentManager.x0() != null)
+        {
+          paramFragment = localFragmentManager.x0();
+          kotlin.x.d.i.b(paramFragment);
+          return paramFragment;
+        }
+      }
+      paramFragment = paramFragment.getParentFragment();
+    }
+    return b;
+  }
+  
+  private final void b(b paramB, m paramM)
+  {
+    Fragment localFragment = paramM.a();
+    String str = localFragment.getClass().getName();
+    if (paramB.a().contains(Flag.b))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Policy violation in ");
+      localStringBuilder.append(str);
+      Log.d("FragmentStrictMode", localStringBuilder.toString(), paramM);
+    }
+    if (paramB.b() != null) {
+      q(localFragment, new a(paramB, paramM));
+    }
+    if (paramB.a().contains(Flag.c)) {
+      q(localFragment, new b(str, paramM));
+    }
+  }
+  
+  private static final void c(b paramB, m paramM)
+  {
+    kotlin.x.d.i.e(paramB, "$policy");
+    kotlin.x.d.i.e(paramM, "$violation");
+    paramB.b().a(paramM);
+  }
+  
+  private static final void d(String paramString, m paramM)
+  {
+    kotlin.x.d.i.e(paramM, "$violation");
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Policy violation with PENALTY_DEATH in ");
+    localStringBuilder.append(paramString);
+    Log.e("FragmentStrictMode", localStringBuilder.toString(), paramM);
+    throw paramM;
+  }
+  
+  private final void g(m paramM)
+  {
+    if (FragmentManager.E0(3))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("StrictMode violation in ");
+      localStringBuilder.append(paramM.a().getClass().getName());
+      Log.d("FragmentManager", localStringBuilder.toString(), paramM);
+    }
+  }
+  
+  public static final void h(Fragment paramFragment, String paramString)
+  {
+    kotlin.x.d.i.e(paramFragment, "fragment");
+    kotlin.x.d.i.e(paramString, "previousFragmentId");
+    paramString = new c(paramFragment, paramString);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(paramString);
+    b localB = localFragmentStrictMode.a(paramFragment);
+    if ((localB.a().contains(Flag.d)) && (localFragmentStrictMode.r(localB, paramFragment.getClass(), paramString.getClass()))) {
+      localFragmentStrictMode.b(localB, paramString);
+    }
+  }
+  
+  public static final void i(Fragment paramFragment, ViewGroup paramViewGroup)
+  {
+    kotlin.x.d.i.e(paramFragment, "fragment");
+    paramViewGroup = new d(paramFragment, paramViewGroup);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(paramViewGroup);
+    b localB = localFragmentStrictMode.a(paramFragment);
+    if ((localB.a().contains(Flag.e)) && (localFragmentStrictMode.r(localB, paramFragment.getClass(), paramViewGroup.getClass()))) {
+      localFragmentStrictMode.b(localB, paramViewGroup);
+    }
+  }
+  
+  public static final void j(Fragment paramFragment)
+  {
+    kotlin.x.d.i.e(paramFragment, "fragment");
+    e localE = new e(paramFragment);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(localE);
+    b localB = localFragmentStrictMode.a(paramFragment);
+    if ((localB.a().contains(Flag.f)) && (localFragmentStrictMode.r(localB, paramFragment.getClass(), localE.getClass()))) {
+      localFragmentStrictMode.b(localB, localE);
+    }
+  }
+  
+  public static final void k(Fragment paramFragment)
+  {
+    kotlin.x.d.i.e(paramFragment, "fragment");
+    f localF = new f(paramFragment);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(localF);
+    b localB = localFragmentStrictMode.a(paramFragment);
+    if ((localB.a().contains(Flag.h)) && (localFragmentStrictMode.r(localB, paramFragment.getClass(), localF.getClass()))) {
+      localFragmentStrictMode.b(localB, localF);
+    }
+  }
+  
+  public static final void l(Fragment paramFragment)
+  {
+    kotlin.x.d.i.e(paramFragment, "fragment");
+    g localG = new g(paramFragment);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(localG);
+    b localB = localFragmentStrictMode.a(paramFragment);
+    if ((localB.a().contains(Flag.h)) && (localFragmentStrictMode.r(localB, paramFragment.getClass(), localG.getClass()))) {
+      localFragmentStrictMode.b(localB, localG);
+    }
+  }
+  
+  public static final void m(Fragment paramFragment)
+  {
+    kotlin.x.d.i.e(paramFragment, "fragment");
+    i localI = new i(paramFragment);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(localI);
+    b localB = localFragmentStrictMode.a(paramFragment);
+    if ((localB.a().contains(Flag.f)) && (localFragmentStrictMode.r(localB, paramFragment.getClass(), localI.getClass()))) {
+      localFragmentStrictMode.b(localB, localI);
+    }
+  }
+  
+  public static final void n(Fragment paramFragment1, Fragment paramFragment2, int paramInt)
+  {
+    kotlin.x.d.i.e(paramFragment1, "violatingFragment");
+    kotlin.x.d.i.e(paramFragment2, "targetFragment");
+    paramFragment2 = new j(paramFragment1, paramFragment2, paramInt);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(paramFragment2);
+    b localB = localFragmentStrictMode.a(paramFragment1);
+    if ((localB.a().contains(Flag.h)) && (localFragmentStrictMode.r(localB, paramFragment1.getClass(), paramFragment2.getClass()))) {
+      localFragmentStrictMode.b(localB, paramFragment2);
+    }
+  }
+  
+  public static final void o(Fragment paramFragment, boolean paramBoolean)
+  {
+    kotlin.x.d.i.e(paramFragment, "fragment");
+    k localK = new k(paramFragment, paramBoolean);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(localK);
+    b localB = localFragmentStrictMode.a(paramFragment);
+    if ((localB.a().contains(Flag.g)) && (localFragmentStrictMode.r(localB, paramFragment.getClass(), localK.getClass()))) {
+      localFragmentStrictMode.b(localB, localK);
+    }
+  }
+  
+  public static final void p(Fragment paramFragment, ViewGroup paramViewGroup)
+  {
+    kotlin.x.d.i.e(paramFragment, "fragment");
+    kotlin.x.d.i.e(paramViewGroup, "container");
+    paramViewGroup = new n(paramFragment, paramViewGroup);
+    FragmentStrictMode localFragmentStrictMode = a;
+    localFragmentStrictMode.g(paramViewGroup);
+    b localB = localFragmentStrictMode.a(paramFragment);
+    if ((localB.a().contains(Flag.i)) && (localFragmentStrictMode.r(localB, paramFragment.getClass(), paramViewGroup.getClass()))) {
+      localFragmentStrictMode.b(localB, paramViewGroup);
+    }
+  }
+  
+  private final void q(Fragment paramFragment, Runnable paramRunnable)
+  {
+    if (paramFragment.isAdded())
+    {
+      paramFragment = paramFragment.getParentFragmentManager().r0().g();
+      kotlin.x.d.i.d(paramFragment, "fragment.parentFragmentManager.host.handler");
+      if (kotlin.x.d.i.a(paramFragment.getLooper(), Looper.myLooper()))
+      {
+        paramRunnable.run();
+        return;
+      }
+      paramFragment.post(paramRunnable);
+      return;
+    }
+    paramRunnable.run();
+  }
+  
+  private final boolean r(b paramB, Class<? extends Fragment> paramClass, Class<? extends m> paramClass1)
+  {
+    paramClass = paramClass.getName();
+    paramB = (Set)paramB.c().get(paramClass);
+    if (paramB == null) {
+      return true;
+    }
+    if ((!kotlin.x.d.i.a(paramClass1.getSuperclass(), m.class)) && (kotlin.collections.i.o(paramB, paramClass1.getSuperclass()))) {
+      return false;
+    }
+    return paramB.contains(paramClass1) ^ true;
+  }
+  
+  public static enum Flag {}
+  
+  public static abstract interface a
+  {
+    public abstract void a(m paramM);
+  }
+  
+  public static final class b
+  {
+    public static final a a = new a(null);
+    public static final b b = new b(g0.b(), null, a0.d());
+    private final Set<FragmentStrictMode.Flag> c;
+    private final FragmentStrictMode.a d;
+    private final Map<String, Set<Class<? extends m>>> e;
+    
+    public b(Set<? extends FragmentStrictMode.Flag> paramSet, FragmentStrictMode.a paramA, Map<String, ? extends Set<Class<? extends m>>> paramMap)
+    {
+      c = paramSet;
+      d = paramA;
+      paramSet = new LinkedHashMap();
+      paramA = paramMap.entrySet().iterator();
+      while (paramA.hasNext())
+      {
+        paramMap = (Map.Entry)paramA.next();
+        paramSet.put((String)paramMap.getKey(), (Set)paramMap.getValue());
+      }
+      e = paramSet;
+    }
+    
+    public final Set<FragmentStrictMode.Flag> a()
+    {
+      return c;
+    }
+    
+    public final FragmentStrictMode.a b()
+    {
+      return d;
+    }
+    
+    public final Map<String, Set<Class<? extends m>>> c()
+    {
+      return e;
+    }
+    
+    public static final class a
+    {
+      private a() {}
+    }
+  }
+}

@@ -1,0 +1,61 @@
+package androidx.recyclerview.widget;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+public final class c<T>
+{
+  private final Executor a;
+  private final Executor b;
+  private final h.f<T> c;
+  
+  c(Executor paramExecutor1, Executor paramExecutor2, h.f<T> paramF)
+  {
+    a = paramExecutor1;
+    b = paramExecutor2;
+    c = paramF;
+  }
+  
+  public Executor a()
+  {
+    return b;
+  }
+  
+  public h.f<T> b()
+  {
+    return c;
+  }
+  
+  public Executor c()
+  {
+    return a;
+  }
+  
+  public static final class a<T>
+  {
+    private static final Object a = new Object();
+    private static Executor b;
+    private Executor c;
+    private Executor d;
+    private final h.f<T> e;
+    
+    public a(h.f<T> paramF)
+    {
+      e = paramF;
+    }
+    
+    public c<T> a()
+    {
+      if (d == null) {
+        synchronized (a)
+        {
+          if (b == null) {
+            b = Executors.newFixedThreadPool(2);
+          }
+          d = b;
+        }
+      }
+      return new c(c, d, e);
+    }
+  }
+}

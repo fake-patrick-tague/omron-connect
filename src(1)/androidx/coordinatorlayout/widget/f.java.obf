@@ -1,0 +1,165 @@
+package androidx.coordinatorlayout.widget;
+
+import c.e.g;
+import c.h.p.e;
+import c.h.p.f;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+public final class a<T>
+{
+  private final e<ArrayList<T>> a = new f(10);
+  private final g<T, ArrayList<T>> b = new g();
+  private final ArrayList<T> c = new ArrayList();
+  private final HashSet<T> d = new HashSet();
+  
+  public a() {}
+  
+  private void e(T paramT, ArrayList<T> paramArrayList, HashSet<T> paramHashSet)
+  {
+    if (paramArrayList.contains(paramT)) {
+      return;
+    }
+    if (!paramHashSet.contains(paramT))
+    {
+      paramHashSet.add(paramT);
+      ArrayList localArrayList = (ArrayList)b.get(paramT);
+      if (localArrayList != null)
+      {
+        int i = 0;
+        int j = localArrayList.size();
+        while (i < j)
+        {
+          e(localArrayList.get(i), paramArrayList, paramHashSet);
+          i += 1;
+        }
+      }
+      paramHashSet.remove(paramT);
+      paramArrayList.add(paramT);
+      return;
+    }
+    throw new RuntimeException("This graph contains cyclic dependencies");
+  }
+  
+  private ArrayList<T> f()
+  {
+    ArrayList localArrayList2 = (ArrayList)a.b();
+    ArrayList localArrayList1 = localArrayList2;
+    if (localArrayList2 == null) {
+      localArrayList1 = new ArrayList();
+    }
+    return localArrayList1;
+  }
+  
+  private void k(ArrayList<T> paramArrayList)
+  {
+    paramArrayList.clear();
+    a.a(paramArrayList);
+  }
+  
+  public void a(T paramT1, T paramT2)
+  {
+    if ((b.containsKey(paramT1)) && (b.containsKey(paramT2)))
+    {
+      ArrayList localArrayList2 = (ArrayList)b.get(paramT1);
+      ArrayList localArrayList1 = localArrayList2;
+      if (localArrayList2 == null)
+      {
+        localArrayList1 = f();
+        b.put(paramT1, localArrayList1);
+      }
+      localArrayList1.add(paramT2);
+      return;
+    }
+    throw new IllegalArgumentException("All nodes must be present in the graph before being added as an edge");
+  }
+  
+  public void b(T paramT)
+  {
+    if (!b.containsKey(paramT)) {
+      b.put(paramT, null);
+    }
+  }
+  
+  public void c()
+  {
+    int j = b.size();
+    int i = 0;
+    while (i < j)
+    {
+      ArrayList localArrayList = (ArrayList)b.m(i);
+      if (localArrayList != null) {
+        k(localArrayList);
+      }
+      i += 1;
+    }
+    b.clear();
+  }
+  
+  public boolean d(T paramT)
+  {
+    return b.containsKey(paramT);
+  }
+  
+  public List g(T paramT)
+  {
+    return (List)b.get(paramT);
+  }
+  
+  public List<T> h(T paramT)
+  {
+    int j = b.size();
+    Object localObject1 = null;
+    int i = 0;
+    while (i < j)
+    {
+      ArrayList localArrayList = (ArrayList)b.m(i);
+      Object localObject2 = localObject1;
+      if (localArrayList != null)
+      {
+        localObject2 = localObject1;
+        if (localArrayList.contains(paramT))
+        {
+          localObject2 = localObject1;
+          if (localObject1 == null) {
+            localObject2 = new ArrayList();
+          }
+          ((ArrayList)localObject2).add(b.i(i));
+        }
+      }
+      i += 1;
+      localObject1 = localObject2;
+    }
+    return localObject1;
+  }
+  
+  public ArrayList<T> i()
+  {
+    c.clear();
+    d.clear();
+    int j = b.size();
+    int i = 0;
+    while (i < j)
+    {
+      e(b.i(i), c, d);
+      i += 1;
+    }
+    return c;
+  }
+  
+  public boolean j(T paramT)
+  {
+    int j = b.size();
+    int i = 0;
+    while (i < j)
+    {
+      ArrayList localArrayList = (ArrayList)b.m(i);
+      if ((localArrayList != null) && (localArrayList.contains(paramT))) {
+        return true;
+      }
+      i += 1;
+    }
+    return false;
+  }
+}

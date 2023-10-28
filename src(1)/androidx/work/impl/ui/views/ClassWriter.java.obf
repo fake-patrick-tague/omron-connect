@@ -1,0 +1,91 @@
+package androidx.work.impl.m.f;
+
+import android.content.Context;
+import androidx.work.j;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Executor;
+
+public abstract class d<T>
+{
+  private static final String a = j.f("ConstraintTracker");
+  protected final androidx.work.impl.utils.p.a b;
+  protected final Context c;
+  private final Object d = new Object();
+  private final Set<androidx.work.impl.m.a<T>> e = new LinkedHashSet();
+  T f;
+  
+  d(Context paramContext, androidx.work.impl.utils.p.a paramA)
+  {
+    c = paramContext.getApplicationContext();
+    b = paramA;
+  }
+  
+  public void a(androidx.work.impl.m.a<T> paramA)
+  {
+    synchronized (d)
+    {
+      if (e.add(paramA))
+      {
+        if (e.size() == 1)
+        {
+          f = b();
+          j.c().a(a, String.format("%s: initial state = %s", new Object[] { getClass().getSimpleName(), f }), new Throwable[0]);
+          e();
+        }
+        paramA.a(f);
+      }
+      return;
+    }
+  }
+  
+  public abstract T b();
+  
+  public void c(androidx.work.impl.m.a<T> paramA)
+  {
+    synchronized (d)
+    {
+      if ((e.remove(paramA)) && (e.isEmpty())) {
+        f();
+      }
+      return;
+    }
+  }
+  
+  public void d(final T paramT)
+  {
+    synchronized (d)
+    {
+      Object localObject2 = f;
+      if ((localObject2 != paramT) && ((localObject2 == null) || (!localObject2.equals(paramT))))
+      {
+        f = paramT;
+        paramT = new ArrayList(e);
+        b.a().execute(new a(paramT));
+        return;
+      }
+      return;
+    }
+  }
+  
+  public abstract void e();
+  
+  public abstract void f();
+  
+  class a
+    implements Runnable
+  {
+    a(List paramList) {}
+    
+    public void run()
+    {
+      Iterator localIterator = paramT.iterator();
+      while (localIterator.hasNext()) {
+        ((androidx.work.impl.m.a)localIterator.next()).a(f);
+      }
+    }
+  }
+}

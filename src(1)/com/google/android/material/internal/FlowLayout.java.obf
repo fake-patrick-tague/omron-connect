@@ -1,0 +1,249 @@
+package com.google.android.material.internal;
+
+import android.content.Context;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import c.h.q.f0;
+import c.h.q.n;
+import d.c.a.a.f;
+import d.c.a.a.l;
+
+public class FlowLayout
+  extends ViewGroup
+{
+  private int b;
+  private int c;
+  private boolean d = false;
+  private int e;
+  
+  public FlowLayout(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, 0);
+  }
+  
+  public FlowLayout(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(paramContext, paramAttributeSet, paramInt);
+    d(paramContext, paramAttributeSet);
+  }
+  
+  private static int a(int paramInt1, int paramInt2, int paramInt3)
+  {
+    if (paramInt2 != Integer.MIN_VALUE)
+    {
+      if (paramInt2 != 1073741824) {
+        return paramInt3;
+      }
+      return paramInt1;
+    }
+    return Math.min(paramInt3, paramInt1);
+  }
+  
+  private void d(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    paramContext = paramContext.getTheme().obtainStyledAttributes(paramAttributeSet, l.v2, 0, 0);
+    b = paramContext.getDimensionPixelSize(l.x2, 0);
+    c = paramContext.getDimensionPixelSize(l.w2, 0);
+    paramContext.recycle();
+  }
+  
+  public int b(View paramView)
+  {
+    paramView = paramView.getTag(f.J);
+    if (!(paramView instanceof Integer)) {
+      return -1;
+    }
+    return ((Integer)paramView).intValue();
+  }
+  
+  public boolean c()
+  {
+    return d;
+  }
+  
+  protected int getItemSpacing()
+  {
+    return c;
+  }
+  
+  protected int getLineSpacing()
+  {
+    return b;
+  }
+  
+  protected int getRowCount()
+  {
+    return e;
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    if (getChildCount() == 0)
+    {
+      e = 0;
+      return;
+    }
+    e = 1;
+    int i;
+    if (f0.D(this) == 1) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (i != 0) {
+      paramInt2 = getPaddingRight();
+    } else {
+      paramInt2 = getPaddingLeft();
+    }
+    if (i != 0) {
+      paramInt4 = getPaddingLeft();
+    } else {
+      paramInt4 = getPaddingRight();
+    }
+    int k = getPaddingTop();
+    int i2 = paramInt3 - paramInt1 - paramInt4;
+    int j = 0;
+    paramInt3 = paramInt2;
+    paramInt1 = k;
+    while (j < getChildCount())
+    {
+      View localView = getChildAt(j);
+      if (localView.getVisibility() == 8)
+      {
+        localView.setTag(f.J, Integer.valueOf(-1));
+      }
+      else
+      {
+        Object localObject = localView.getLayoutParams();
+        int n;
+        int m;
+        if ((localObject instanceof ViewGroup.MarginLayoutParams))
+        {
+          localObject = (ViewGroup.MarginLayoutParams)localObject;
+          n = n.b((ViewGroup.MarginLayoutParams)localObject);
+          m = n.a((ViewGroup.MarginLayoutParams)localObject);
+        }
+        else
+        {
+          m = 0;
+          n = m;
+        }
+        int i3 = localView.getMeasuredWidth();
+        int i1 = paramInt3;
+        paramInt4 = paramInt1;
+        if (!d)
+        {
+          i1 = paramInt3;
+          paramInt4 = paramInt1;
+          if (paramInt3 + n + i3 > i2)
+          {
+            paramInt4 = b + k;
+            e += 1;
+            i1 = paramInt2;
+          }
+        }
+        localView.setTag(f.J, Integer.valueOf(e - 1));
+        paramInt1 = i1 + n;
+        paramInt3 = localView.getMeasuredWidth() + paramInt1;
+        k = localView.getMeasuredHeight() + paramInt4;
+        if (i != 0) {
+          localView.layout(i2 - paramInt3, paramInt4, i2 - i1 - n, k);
+        } else {
+          localView.layout(paramInt1, paramInt4, paramInt3, k);
+        }
+        paramInt3 = i1 + (n + m + localView.getMeasuredWidth() + c);
+        paramInt1 = paramInt4;
+      }
+      j += 1;
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    int i4 = View.MeasureSpec.getSize(paramInt1);
+    int i6 = View.MeasureSpec.getMode(paramInt1);
+    int i7 = View.MeasureSpec.getSize(paramInt2);
+    int i8 = View.MeasureSpec.getMode(paramInt2);
+    int m;
+    if ((i6 != Integer.MIN_VALUE) && (i6 != 1073741824)) {
+      m = Integer.MAX_VALUE;
+    } else {
+      m = i4;
+    }
+    int k = getPaddingLeft();
+    int i1 = getPaddingTop();
+    int i9 = getPaddingRight();
+    int j = i1;
+    int n = 0;
+    int i = 0;
+    while (n < getChildCount())
+    {
+      View localView = getChildAt(n);
+      if (localView.getVisibility() != 8)
+      {
+        measureChild(localView, paramInt1, paramInt2);
+        Object localObject = localView.getLayoutParams();
+        int i2;
+        if ((localObject instanceof ViewGroup.MarginLayoutParams))
+        {
+          localObject = (ViewGroup.MarginLayoutParams)localObject;
+          i3 = leftMargin + 0;
+          i2 = rightMargin + 0;
+        }
+        else
+        {
+          i3 = 0;
+          i2 = i3;
+        }
+        if ((k + i3 + localView.getMeasuredWidth() > m - i9) && (!c()))
+        {
+          j = getPaddingLeft();
+          k = b + i1;
+          i1 = j;
+          j = k;
+        }
+        else
+        {
+          i1 = k;
+        }
+        int i5 = i1 + i3 + localView.getMeasuredWidth();
+        int i10 = localView.getMeasuredHeight();
+        k = i;
+        if (i5 > i) {
+          k = i5;
+        }
+        int i3 = i1 + (i3 + i2 + localView.getMeasuredWidth() + c);
+        i = k;
+        if (n == getChildCount() - 1) {
+          i = k + i2;
+        }
+        i1 = j + i10;
+        k = i3;
+      }
+      n += 1;
+    }
+    paramInt1 = getPaddingRight();
+    paramInt2 = getPaddingBottom();
+    setMeasuredDimension(a(i4, i6, i + paramInt1), a(i7, i8, i1 + paramInt2));
+  }
+  
+  protected void setItemSpacing(int paramInt)
+  {
+    c = paramInt;
+  }
+  
+  protected void setLineSpacing(int paramInt)
+  {
+    b = paramInt;
+  }
+  
+  public void setSingleLine(boolean paramBoolean)
+  {
+    d = paramBoolean;
+  }
+}

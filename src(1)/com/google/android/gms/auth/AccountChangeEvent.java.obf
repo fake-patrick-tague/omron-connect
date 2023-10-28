@@ -1,0 +1,148 @@
+package com.google.android.gms.auth;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+
+@SafeParcelable.Class(creator="AccountChangeEventCreator")
+public class AccountChangeEvent
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<AccountChangeEvent> CREATOR = new zza();
+  @SafeParcelable.VersionField(id=1)
+  private final int zze;
+  @SafeParcelable.Field(id=2)
+  private final long zzf;
+  @SafeParcelable.Field(id=3)
+  private final String zzg;
+  @SafeParcelable.Field(id=4)
+  private final int zzh;
+  @SafeParcelable.Field(id=5)
+  private final int zzi;
+  @SafeParcelable.Field(id=6)
+  private final String zzj;
+  
+  @SafeParcelable.Constructor
+  AccountChangeEvent(@SafeParcelable.Param(id=1) int paramInt1, @SafeParcelable.Param(id=2) long paramLong, @SafeParcelable.Param(id=3) String paramString1, @SafeParcelable.Param(id=4) int paramInt2, @SafeParcelable.Param(id=5) int paramInt3, @SafeParcelable.Param(id=6) String paramString2)
+  {
+    zze = paramInt1;
+    zzf = paramLong;
+    zzg = ((String)Preconditions.checkNotNull(paramString1));
+    zzh = paramInt2;
+    zzi = paramInt3;
+    zzj = paramString2;
+  }
+  
+  public AccountChangeEvent(long paramLong, String paramString1, int paramInt1, int paramInt2, String paramString2)
+  {
+    zze = 1;
+    zzf = paramLong;
+    zzg = ((String)Preconditions.checkNotNull(paramString1));
+    zzh = paramInt1;
+    zzi = paramInt2;
+    zzj = paramString2;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if ((paramObject instanceof AccountChangeEvent))
+    {
+      paramObject = (AccountChangeEvent)paramObject;
+      if ((zze == zze) && (zzf == zzf) && (Objects.equal(zzg, zzg)) && (zzh == zzh) && (zzi == zzi) && (Objects.equal(zzj, zzj))) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public String getAccountName()
+  {
+    return zzg;
+  }
+  
+  public String getChangeData()
+  {
+    return zzj;
+  }
+  
+  public int getChangeType()
+  {
+    return zzh;
+  }
+  
+  public int getEventIndex()
+  {
+    return zzi;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { Integer.valueOf(zze), Long.valueOf(zzf), zzg, Integer.valueOf(zzh), Integer.valueOf(zzi), zzj });
+  }
+  
+  public String toString()
+  {
+    int i = zzh;
+    String str1;
+    if (i != 1)
+    {
+      if (i != 2)
+      {
+        if (i != 3)
+        {
+          if (i != 4) {
+            str1 = "UNKNOWN";
+          } else {
+            str1 = "RENAMED_TO";
+          }
+        }
+        else {
+          str1 = "RENAMED_FROM";
+        }
+      }
+      else {
+        str1 = "REMOVED";
+      }
+    }
+    else {
+      str1 = "ADDED";
+    }
+    String str2 = zzg;
+    String str3 = zzj;
+    i = zzi;
+    StringBuilder localStringBuilder = new StringBuilder(String.valueOf(str2).length() + 91 + str1.length() + String.valueOf(str3).length());
+    localStringBuilder.append("AccountChangeEvent {accountName = ");
+    localStringBuilder.append(str2);
+    localStringBuilder.append(", changeType = ");
+    localStringBuilder.append(str1);
+    localStringBuilder.append(", changeData = ");
+    localStringBuilder.append(str3);
+    localStringBuilder.append(", eventIndex = ");
+    localStringBuilder.append(i);
+    localStringBuilder.append("}");
+    return localStringBuilder.toString();
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zze);
+    SafeParcelWriter.writeLong(paramParcel, 2, zzf);
+    SafeParcelWriter.writeString(paramParcel, 3, zzg, false);
+    SafeParcelWriter.writeInt(paramParcel, 4, zzh);
+    SafeParcelWriter.writeInt(paramParcel, 5, zzi);
+    SafeParcelWriter.writeString(paramParcel, 6, zzj, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+}

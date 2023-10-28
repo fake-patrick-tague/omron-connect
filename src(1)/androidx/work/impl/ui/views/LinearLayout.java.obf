@@ -1,0 +1,64 @@
+package androidx.work.impl.m.f;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import androidx.work.impl.utils.p.a;
+import androidx.work.j;
+
+public class f
+  extends c<Boolean>
+{
+  private static final String i = j.f("StorageNotLowTracker");
+  
+  public f(Context paramContext, a paramA)
+  {
+    super(paramContext, paramA);
+  }
+  
+  public IntentFilter g()
+  {
+    IntentFilter localIntentFilter = new IntentFilter();
+    localIntentFilter.addAction("android.intent.action.DEVICE_STORAGE_OK");
+    localIntentFilter.addAction("android.intent.action.DEVICE_STORAGE_LOW");
+    return localIntentFilter;
+  }
+  
+  public void h(Context paramContext, Intent paramIntent)
+  {
+    if (paramIntent.getAction() == null) {
+      return;
+    }
+    j.c().a(i, String.format("Received %s", new Object[] { paramIntent.getAction() }), new Throwable[0]);
+    paramContext = paramIntent.getAction();
+    paramContext.hashCode();
+    if (!paramContext.equals("android.intent.action.DEVICE_STORAGE_LOW"))
+    {
+      if (!paramContext.equals("android.intent.action.DEVICE_STORAGE_OK")) {
+        return;
+      }
+      d(Boolean.TRUE);
+      return;
+    }
+    d(Boolean.FALSE);
+  }
+  
+  public Boolean i()
+  {
+    Object localObject = c.registerReceiver(null, g());
+    if ((localObject != null) && (((Intent)localObject).getAction() != null))
+    {
+      localObject = ((Intent)localObject).getAction();
+      ((String)localObject).hashCode();
+      if (!((String)localObject).equals("android.intent.action.DEVICE_STORAGE_LOW"))
+      {
+        if (!((String)localObject).equals("android.intent.action.DEVICE_STORAGE_OK")) {
+          return null;
+        }
+        return Boolean.TRUE;
+      }
+      return Boolean.FALSE;
+    }
+    return Boolean.TRUE;
+  }
+}

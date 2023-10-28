@@ -1,0 +1,1081 @@
+package com.google.android.material.appbar;
+
+import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import c.h.p.c;
+import c.h.q.f0;
+import c.h.q.n0;
+import c.h.q.z;
+import d.c.a.a.f;
+import d.c.a.a.k;
+import d.c.a.a.l;
+
+public class CollapsingToolbarLayout
+  extends FrameLayout
+{
+  private static final int b = k.i;
+  private boolean c = true;
+  private int d;
+  private ViewGroup e;
+  private View f;
+  private View g;
+  private int h;
+  private int i;
+  private int j;
+  private int k;
+  private final Rect l = new Rect();
+  final com.google.android.material.internal.a m;
+  private boolean n;
+  private boolean o;
+  private Drawable p;
+  Drawable q;
+  private int r;
+  private boolean s;
+  private ValueAnimator t;
+  private long u;
+  private int v = -1;
+  private AppBarLayout.d w;
+  int x;
+  n0 y;
+  
+  public CollapsingToolbarLayout(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, d.c.a.a.b.i);
+  }
+  
+  public CollapsingToolbarLayout(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(com.google.android.material.theme.a.a.c(paramContext, paramAttributeSet, paramInt, i1), paramAttributeSet, paramInt);
+    Context localContext = getContext();
+    paramContext = new com.google.android.material.internal.a(this);
+    m = paramContext;
+    paramContext.j0(d.c.a.a.m.a.e);
+    paramAttributeSet = com.google.android.material.internal.i.h(localContext, paramAttributeSet, l.u1, paramInt, i1, new int[0]);
+    paramContext.Z(paramAttributeSet.getInt(l.y1, 8388691));
+    paramContext.R(paramAttributeSet.getInt(l.v1, 8388627));
+    paramInt = paramAttributeSet.getDimensionPixelSize(l.z1, 0);
+    k = paramInt;
+    j = paramInt;
+    i = paramInt;
+    h = paramInt;
+    paramInt = l.C1;
+    if (paramAttributeSet.hasValue(paramInt)) {
+      h = paramAttributeSet.getDimensionPixelSize(paramInt, 0);
+    }
+    paramInt = l.B1;
+    if (paramAttributeSet.hasValue(paramInt)) {
+      j = paramAttributeSet.getDimensionPixelSize(paramInt, 0);
+    }
+    paramInt = l.D1;
+    if (paramAttributeSet.hasValue(paramInt)) {
+      i = paramAttributeSet.getDimensionPixelSize(paramInt, 0);
+    }
+    paramInt = l.A1;
+    if (paramAttributeSet.hasValue(paramInt)) {
+      k = paramAttributeSet.getDimensionPixelSize(paramInt, 0);
+    }
+    n = paramAttributeSet.getBoolean(l.K1, true);
+    setTitle(paramAttributeSet.getText(l.J1));
+    paramContext.W(k.b);
+    paramContext.O(c.a.i.b);
+    paramInt = l.E1;
+    if (paramAttributeSet.hasValue(paramInt)) {
+      paramContext.W(paramAttributeSet.getResourceId(paramInt, 0));
+    }
+    paramInt = l.w1;
+    if (paramAttributeSet.hasValue(paramInt)) {
+      paramContext.O(paramAttributeSet.getResourceId(paramInt, 0));
+    }
+    v = paramAttributeSet.getDimensionPixelSize(l.H1, -1);
+    paramInt = l.F1;
+    if (paramAttributeSet.hasValue(paramInt)) {
+      paramContext.f0(paramAttributeSet.getInt(paramInt, 1));
+    }
+    u = paramAttributeSet.getInt(l.G1, 600);
+    setContentScrim(paramAttributeSet.getDrawable(l.x1));
+    setStatusBarScrim(paramAttributeSet.getDrawable(l.I1));
+    d = paramAttributeSet.getResourceId(l.L1, -1);
+    paramAttributeSet.recycle();
+    setWillNotDraw(false);
+    f0.C0(this, new a());
+  }
+  
+  private void a(int paramInt)
+  {
+    b();
+    Object localObject = t;
+    if (localObject == null)
+    {
+      localObject = new ValueAnimator();
+      t = ((ValueAnimator)localObject);
+      ((ValueAnimator)localObject).setDuration(u);
+      ValueAnimator localValueAnimator = t;
+      if (paramInt > r) {
+        localObject = d.c.a.a.m.a.c;
+      } else {
+        localObject = d.c.a.a.m.a.d;
+      }
+      localValueAnimator.setInterpolator((TimeInterpolator)localObject);
+      t.addUpdateListener(new b());
+    }
+    else if (((ValueAnimator)localObject).isRunning())
+    {
+      t.cancel();
+    }
+    t.setIntValues(new int[] { r, paramInt });
+    t.start();
+  }
+  
+  private void b()
+  {
+    if (!c) {
+      return;
+    }
+    Object localObject2 = null;
+    e = null;
+    f = null;
+    int i1 = d;
+    Object localObject1;
+    if (i1 != -1)
+    {
+      localObject1 = (ViewGroup)findViewById(i1);
+      e = ((ViewGroup)localObject1);
+      if (localObject1 != null) {
+        f = c((View)localObject1);
+      }
+    }
+    if (e == null)
+    {
+      int i2 = getChildCount();
+      i1 = 0;
+      for (;;)
+      {
+        localObject1 = localObject2;
+        if (i1 >= i2) {
+          break;
+        }
+        localObject1 = getChildAt(i1);
+        if (j((View)localObject1))
+        {
+          localObject1 = (ViewGroup)localObject1;
+          break;
+        }
+        i1 += 1;
+      }
+      e = ((ViewGroup)localObject1);
+    }
+    p();
+    c = false;
+  }
+  
+  private View c(View paramView)
+  {
+    ViewParent localViewParent = paramView.getParent();
+    View localView = paramView;
+    for (paramView = localViewParent; (paramView != this) && (paramView != null); paramView = paramView.getParent()) {
+      if ((paramView instanceof View)) {
+        localView = (View)paramView;
+      }
+    }
+    return localView;
+  }
+  
+  private static int f(View paramView)
+  {
+    Object localObject = paramView.getLayoutParams();
+    if ((localObject instanceof ViewGroup.MarginLayoutParams))
+    {
+      localObject = (ViewGroup.MarginLayoutParams)localObject;
+      return paramView.getMeasuredHeight() + topMargin + bottomMargin;
+    }
+    return paramView.getMeasuredHeight();
+  }
+  
+  private static CharSequence h(View paramView)
+  {
+    if ((paramView instanceof androidx.appcompat.widget.Toolbar)) {
+      return ((androidx.appcompat.widget.Toolbar)paramView).getTitle();
+    }
+    if ((Build.VERSION.SDK_INT >= 21) && ((paramView instanceof android.widget.Toolbar))) {
+      return ((android.widget.Toolbar)paramView).getTitle();
+    }
+    return null;
+  }
+  
+  static a i(View paramView)
+  {
+    int i1 = f.V;
+    a localA2 = (a)paramView.getTag(i1);
+    a localA1 = localA2;
+    if (localA2 == null)
+    {
+      localA1 = new a(paramView);
+      paramView.setTag(i1, localA1);
+    }
+    return localA1;
+  }
+  
+  private static boolean j(View paramView)
+  {
+    return ((paramView instanceof androidx.appcompat.widget.Toolbar)) || ((Build.VERSION.SDK_INT >= 21) && ((paramView instanceof android.widget.Toolbar)));
+  }
+  
+  private boolean k(View paramView)
+  {
+    View localView = f;
+    if ((localView != null) && (localView != this))
+    {
+      if (paramView == localView) {
+        return true;
+      }
+    }
+    else if (paramView == e) {
+      return true;
+    }
+    return false;
+  }
+  
+  private void n(boolean paramBoolean)
+  {
+    Object localObject = f;
+    if (localObject == null) {
+      localObject = e;
+    }
+    int i6 = g((View)localObject);
+    com.google.android.material.internal.b.a(this, g, l);
+    localObject = e;
+    boolean bool = localObject instanceof androidx.appcompat.widget.Toolbar;
+    int i2 = 0;
+    int i1;
+    int i4;
+    int i3;
+    if (bool)
+    {
+      localObject = (androidx.appcompat.widget.Toolbar)localObject;
+      i2 = ((androidx.appcompat.widget.Toolbar)localObject).getTitleMarginStart();
+      i1 = ((androidx.appcompat.widget.Toolbar)localObject).getTitleMarginEnd();
+      i4 = ((androidx.appcompat.widget.Toolbar)localObject).getTitleMarginTop();
+      i3 = ((androidx.appcompat.widget.Toolbar)localObject).getTitleMarginBottom();
+    }
+    else if ((Build.VERSION.SDK_INT >= 24) && ((localObject instanceof android.widget.Toolbar)))
+    {
+      localObject = (android.widget.Toolbar)localObject;
+      i2 = ((android.widget.Toolbar)localObject).getTitleMarginStart();
+      i1 = ((android.widget.Toolbar)localObject).getTitleMarginEnd();
+      i4 = ((android.widget.Toolbar)localObject).getTitleMarginTop();
+      i3 = ((android.widget.Toolbar)localObject).getTitleMarginBottom();
+    }
+    else
+    {
+      i3 = 0;
+      i1 = i3;
+      i4 = i1;
+    }
+    localObject = m;
+    Rect localRect = l;
+    int i7 = left;
+    int i5;
+    if (paramBoolean) {
+      i5 = i1;
+    } else {
+      i5 = i2;
+    }
+    int i8 = top;
+    int i9 = right;
+    if (paramBoolean) {
+      i1 = i2;
+    }
+    ((com.google.android.material.internal.a)localObject).M(i7 + i5, i8 + i6 + i4, i9 - i1, bottom + i6 - i3);
+  }
+  
+  private void o()
+  {
+    setContentDescription(getTitle());
+  }
+  
+  private void p()
+  {
+    if (!n)
+    {
+      Object localObject = g;
+      if (localObject != null)
+      {
+        localObject = ((View)localObject).getParent();
+        if ((localObject instanceof ViewGroup)) {
+          ((ViewGroup)localObject).removeView(g);
+        }
+      }
+    }
+    if ((n) && (e != null))
+    {
+      if (g == null) {
+        g = new View(getContext());
+      }
+      if (g.getParent() == null) {
+        e.addView(g, -1, -1);
+      }
+    }
+  }
+  
+  protected boolean checkLayoutParams(ViewGroup.LayoutParams paramLayoutParams)
+  {
+    return paramLayoutParams instanceof LayoutParams;
+  }
+  
+  protected LayoutParams d()
+  {
+    return new LayoutParams(-1, -1);
+  }
+  
+  public void draw(Canvas paramCanvas)
+  {
+    super.draw(paramCanvas);
+    b();
+    Object localObject;
+    if (e == null)
+    {
+      localObject = p;
+      if ((localObject != null) && (r > 0))
+      {
+        ((Drawable)localObject).mutate().setAlpha(r);
+        p.draw(paramCanvas);
+      }
+    }
+    if ((n) && (o)) {
+      m.j(paramCanvas);
+    }
+    if ((q != null) && (r > 0))
+    {
+      localObject = y;
+      int i1;
+      if (localObject != null) {
+        i1 = ((n0)localObject).l();
+      } else {
+        i1 = 0;
+      }
+      if (i1 > 0)
+      {
+        q.setBounds(0, -x, getWidth(), i1 - x);
+        q.mutate().setAlpha(r);
+        q.draw(paramCanvas);
+      }
+    }
+  }
+  
+  protected boolean drawChild(Canvas paramCanvas, View paramView, long paramLong)
+  {
+    Drawable localDrawable = p;
+    boolean bool = true;
+    int i1;
+    if ((localDrawable != null) && (r > 0) && (k(paramView)))
+    {
+      p.mutate().setAlpha(r);
+      p.draw(paramCanvas);
+      i1 = 1;
+    }
+    else
+    {
+      i1 = 0;
+    }
+    if (!super.drawChild(paramCanvas, paramView, paramLong))
+    {
+      if (i1 != 0) {
+        return true;
+      }
+      bool = false;
+    }
+    return bool;
+  }
+  
+  protected void drawableStateChanged()
+  {
+    super.drawableStateChanged();
+    int[] arrayOfInt = getDrawableState();
+    Object localObject = q;
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (localObject != null)
+    {
+      bool1 = bool2;
+      if (((Drawable)localObject).isStateful()) {
+        bool1 = false | ((Drawable)localObject).setState(arrayOfInt);
+      }
+    }
+    localObject = p;
+    bool2 = bool1;
+    if (localObject != null)
+    {
+      bool2 = bool1;
+      if (((Drawable)localObject).isStateful()) {
+        bool2 = bool1 | ((Drawable)localObject).setState(arrayOfInt);
+      }
+    }
+    localObject = m;
+    bool1 = bool2;
+    if (localObject != null) {
+      bool1 = bool2 | ((com.google.android.material.internal.a)localObject).h0(arrayOfInt);
+    }
+    if (bool1) {
+      invalidate();
+    }
+  }
+  
+  protected FrameLayout.LayoutParams e(ViewGroup.LayoutParams paramLayoutParams)
+  {
+    return new LayoutParams(paramLayoutParams);
+  }
+  
+  final int g(View paramView)
+  {
+    a localA = i(paramView);
+    LayoutParams localLayoutParams = (LayoutParams)paramView.getLayoutParams();
+    return getHeight() - localA.b() - paramView.getHeight() - bottomMargin;
+  }
+  
+  public FrameLayout.LayoutParams generateLayoutParams(AttributeSet paramAttributeSet)
+  {
+    return new LayoutParams(getContext(), paramAttributeSet);
+  }
+  
+  public int getCollapsedTitleGravity()
+  {
+    return m.o();
+  }
+  
+  public Typeface getCollapsedTitleTypeface()
+  {
+    return m.s();
+  }
+  
+  public Drawable getContentScrim()
+  {
+    return p;
+  }
+  
+  public int getExpandedTitleGravity()
+  {
+    return m.w();
+  }
+  
+  public int getExpandedTitleMarginBottom()
+  {
+    return k;
+  }
+  
+  public int getExpandedTitleMarginEnd()
+  {
+    return j;
+  }
+  
+  public int getExpandedTitleMarginStart()
+  {
+    return h;
+  }
+  
+  public int getExpandedTitleMarginTop()
+  {
+    return i;
+  }
+  
+  public Typeface getExpandedTitleTypeface()
+  {
+    return m.y();
+  }
+  
+  public int getMaxLines()
+  {
+    return m.A();
+  }
+  
+  int getScrimAlpha()
+  {
+    return r;
+  }
+  
+  public long getScrimAnimationDuration()
+  {
+    return u;
+  }
+  
+  public int getScrimVisibleHeightTrigger()
+  {
+    int i1 = v;
+    if (i1 >= 0) {
+      return i1;
+    }
+    n0 localN0 = y;
+    if (localN0 != null) {
+      i1 = localN0.l();
+    } else {
+      i1 = 0;
+    }
+    int i2 = f0.E(this);
+    if (i2 > 0) {
+      return Math.min(i2 * 2 + i1, getHeight());
+    }
+    return getHeight() / 3;
+  }
+  
+  public Drawable getStatusBarScrim()
+  {
+    return q;
+  }
+  
+  public CharSequence getTitle()
+  {
+    if (n) {
+      return m.B();
+    }
+    return null;
+  }
+  
+  n0 l(n0 paramN0)
+  {
+    n0 localN0;
+    if (f0.A(this)) {
+      localN0 = paramN0;
+    } else {
+      localN0 = null;
+    }
+    if (!c.a(y, localN0))
+    {
+      y = localN0;
+      requestLayout();
+    }
+    return paramN0.c();
+  }
+  
+  public void m(boolean paramBoolean1, boolean paramBoolean2)
+  {
+    if (s != paramBoolean1)
+    {
+      int i1 = 255;
+      if (paramBoolean2)
+      {
+        if (!paramBoolean1) {
+          i1 = 0;
+        }
+        a(i1);
+      }
+      else
+      {
+        if (!paramBoolean1) {
+          i1 = 0;
+        }
+        setScrimAlpha(i1);
+      }
+      s = paramBoolean1;
+    }
+  }
+  
+  protected void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    ViewParent localViewParent = getParent();
+    if ((localViewParent instanceof AppBarLayout))
+    {
+      f0.y0(this, f0.A((View)localViewParent));
+      if (w == null) {
+        w = new c();
+      }
+      ((AppBarLayout)localViewParent).b(w);
+      f0.m0(this);
+    }
+  }
+  
+  protected void onDetachedFromWindow()
+  {
+    ViewParent localViewParent = getParent();
+    AppBarLayout.d localD = w;
+    if ((localD != null) && ((localViewParent instanceof AppBarLayout))) {
+      ((AppBarLayout)localViewParent).p(localD);
+    }
+    super.onDetachedFromWindow();
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onLayout(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    Object localObject = y;
+    int i3 = 0;
+    int i4;
+    if (localObject != null)
+    {
+      i2 = ((n0)localObject).l();
+      i4 = getChildCount();
+      i1 = 0;
+      while (i1 < i4)
+      {
+        localObject = getChildAt(i1);
+        if ((!f0.A((View)localObject)) && (((View)localObject).getTop() < i2)) {
+          f0.a0((View)localObject, i2);
+        }
+        i1 += 1;
+      }
+    }
+    int i2 = getChildCount();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      i(getChildAt(i1)).d();
+      i1 += 1;
+    }
+    if (n)
+    {
+      localObject = g;
+      if (localObject != null)
+      {
+        paramBoolean = f0.S((View)localObject);
+        boolean bool = true;
+        if ((paramBoolean) && (g.getVisibility() == 0)) {
+          paramBoolean = true;
+        } else {
+          paramBoolean = false;
+        }
+        o = paramBoolean;
+        if (paramBoolean)
+        {
+          if (f0.D(this) == 1) {
+            paramBoolean = bool;
+          } else {
+            paramBoolean = false;
+          }
+          n(paramBoolean);
+          localObject = m;
+          if (paramBoolean) {
+            i1 = j;
+          } else {
+            i1 = h;
+          }
+          i4 = l.top;
+          int i5 = i;
+          if (paramBoolean) {
+            i2 = h;
+          } else {
+            i2 = j;
+          }
+          ((com.google.android.material.internal.a)localObject).U(i1, i4 + i5, paramInt3 - paramInt1 - i2, paramInt4 - paramInt2 - k);
+          m.K();
+        }
+      }
+    }
+    if ((e != null) && (n) && (TextUtils.isEmpty(m.B()))) {
+      setTitle(h(e));
+    }
+    q();
+    paramInt2 = getChildCount();
+    paramInt1 = i3;
+    while (paramInt1 < paramInt2)
+    {
+      i(getChildAt(paramInt1)).a();
+      paramInt1 += 1;
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    b();
+    super.onMeasure(paramInt1, paramInt2);
+    int i1 = View.MeasureSpec.getMode(paramInt2);
+    Object localObject = y;
+    if (localObject != null) {
+      paramInt2 = ((n0)localObject).l();
+    } else {
+      paramInt2 = 0;
+    }
+    if ((i1 == 0) && (paramInt2 > 0)) {
+      super.onMeasure(paramInt1, View.MeasureSpec.makeMeasureSpec(getMeasuredHeight() + paramInt2, 1073741824));
+    }
+    localObject = e;
+    if (localObject != null)
+    {
+      View localView = f;
+      if ((localView != null) && (localView != this))
+      {
+        setMinimumHeight(f(localView));
+        return;
+      }
+      setMinimumHeight(f((View)localObject));
+    }
+  }
+  
+  protected void onSizeChanged(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onSizeChanged(paramInt1, paramInt2, paramInt3, paramInt4);
+    Drawable localDrawable = p;
+    if (localDrawable != null) {
+      localDrawable.setBounds(0, 0, paramInt1, paramInt2);
+    }
+  }
+  
+  final void q()
+  {
+    if ((p != null) || (q != null))
+    {
+      boolean bool;
+      if (getHeight() + x < getScrimVisibleHeightTrigger()) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      setScrimsShown(bool);
+    }
+  }
+  
+  public void setCollapsedTitleGravity(int paramInt)
+  {
+    m.R(paramInt);
+  }
+  
+  public void setCollapsedTitleTextAppearance(int paramInt)
+  {
+    m.O(paramInt);
+  }
+  
+  public void setCollapsedTitleTextColor(int paramInt)
+  {
+    setCollapsedTitleTextColor(ColorStateList.valueOf(paramInt));
+  }
+  
+  public void setCollapsedTitleTextColor(ColorStateList paramColorStateList)
+  {
+    m.Q(paramColorStateList);
+  }
+  
+  public void setCollapsedTitleTypeface(Typeface paramTypeface)
+  {
+    m.S(paramTypeface);
+  }
+  
+  public void setContentScrim(Drawable paramDrawable)
+  {
+    Drawable localDrawable2 = p;
+    if (localDrawable2 != paramDrawable)
+    {
+      Drawable localDrawable1 = null;
+      if (localDrawable2 != null) {
+        localDrawable2.setCallback(null);
+      }
+      if (paramDrawable != null) {
+        localDrawable1 = paramDrawable.mutate();
+      }
+      p = localDrawable1;
+      if (localDrawable1 != null)
+      {
+        localDrawable1.setBounds(0, 0, getWidth(), getHeight());
+        p.setCallback(this);
+        p.setAlpha(r);
+      }
+      f0.g0(this);
+    }
+  }
+  
+  public void setContentScrimColor(int paramInt)
+  {
+    setContentScrim(new ColorDrawable(paramInt));
+  }
+  
+  public void setContentScrimResource(int paramInt)
+  {
+    setContentScrim(androidx.core.content.a.f(getContext(), paramInt));
+  }
+  
+  public void setExpandedTitleColor(int paramInt)
+  {
+    setExpandedTitleTextColor(ColorStateList.valueOf(paramInt));
+  }
+  
+  public void setExpandedTitleGravity(int paramInt)
+  {
+    m.Z(paramInt);
+  }
+  
+  public void setExpandedTitleMarginBottom(int paramInt)
+  {
+    k = paramInt;
+    requestLayout();
+  }
+  
+  public void setExpandedTitleMarginEnd(int paramInt)
+  {
+    j = paramInt;
+    requestLayout();
+  }
+  
+  public void setExpandedTitleMarginStart(int paramInt)
+  {
+    h = paramInt;
+    requestLayout();
+  }
+  
+  public void setExpandedTitleMarginTop(int paramInt)
+  {
+    i = paramInt;
+    requestLayout();
+  }
+  
+  public void setExpandedTitleTextAppearance(int paramInt)
+  {
+    m.W(paramInt);
+  }
+  
+  public void setExpandedTitleTextColor(ColorStateList paramColorStateList)
+  {
+    m.Y(paramColorStateList);
+  }
+  
+  public void setExpandedTitleTypeface(Typeface paramTypeface)
+  {
+    m.b0(paramTypeface);
+  }
+  
+  public void setMaxLines(int paramInt)
+  {
+    m.f0(paramInt);
+  }
+  
+  void setScrimAlpha(int paramInt)
+  {
+    if (paramInt != r)
+    {
+      if (p != null)
+      {
+        ViewGroup localViewGroup = e;
+        if (localViewGroup != null) {
+          f0.g0(localViewGroup);
+        }
+      }
+      r = paramInt;
+      f0.g0(this);
+    }
+  }
+  
+  public void setScrimAnimationDuration(long paramLong)
+  {
+    u = paramLong;
+  }
+  
+  public void setScrimVisibleHeightTrigger(int paramInt)
+  {
+    if (v != paramInt)
+    {
+      v = paramInt;
+      q();
+    }
+  }
+  
+  public void setScrimsShown(boolean paramBoolean)
+  {
+    boolean bool;
+    if ((f0.T(this)) && (!isInEditMode())) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    m(paramBoolean, bool);
+  }
+  
+  public void setStatusBarScrim(Drawable paramDrawable)
+  {
+    Drawable localDrawable2 = q;
+    if (localDrawable2 != paramDrawable)
+    {
+      Drawable localDrawable1 = null;
+      if (localDrawable2 != null) {
+        localDrawable2.setCallback(null);
+      }
+      if (paramDrawable != null) {
+        localDrawable1 = paramDrawable.mutate();
+      }
+      q = localDrawable1;
+      if (localDrawable1 != null)
+      {
+        if (localDrawable1.isStateful()) {
+          q.setState(getDrawableState());
+        }
+        androidx.core.graphics.drawable.a.m(q, f0.D(this));
+        paramDrawable = q;
+        boolean bool;
+        if (getVisibility() == 0) {
+          bool = true;
+        } else {
+          bool = false;
+        }
+        paramDrawable.setVisible(bool, false);
+        q.setCallback(this);
+        q.setAlpha(r);
+      }
+      f0.g0(this);
+    }
+  }
+  
+  public void setStatusBarScrimColor(int paramInt)
+  {
+    setStatusBarScrim(new ColorDrawable(paramInt));
+  }
+  
+  public void setStatusBarScrimResource(int paramInt)
+  {
+    setStatusBarScrim(androidx.core.content.a.f(getContext(), paramInt));
+  }
+  
+  public void setTitle(CharSequence paramCharSequence)
+  {
+    m.i0(paramCharSequence);
+    o();
+  }
+  
+  public void setTitleEnabled(boolean paramBoolean)
+  {
+    if (paramBoolean != n)
+    {
+      n = paramBoolean;
+      o();
+      p();
+      requestLayout();
+    }
+  }
+  
+  public void setVisibility(int paramInt)
+  {
+    super.setVisibility(paramInt);
+    boolean bool;
+    if (paramInt == 0) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    Drawable localDrawable = q;
+    if ((localDrawable != null) && (localDrawable.isVisible() != bool)) {
+      q.setVisible(bool, false);
+    }
+    localDrawable = p;
+    if ((localDrawable != null) && (localDrawable.isVisible() != bool)) {
+      p.setVisible(bool, false);
+    }
+  }
+  
+  protected boolean verifyDrawable(Drawable paramDrawable)
+  {
+    return (super.verifyDrawable(paramDrawable)) || (paramDrawable == p) || (paramDrawable == q);
+  }
+  
+  public static class LayoutParams
+    extends FrameLayout.LayoutParams
+  {
+    int a = 0;
+    float b = 0.5F;
+    
+    public LayoutParams(int paramInt1, int paramInt2)
+    {
+      super(paramInt2);
+    }
+    
+    public LayoutParams(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      super(paramAttributeSet);
+      paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, l.M1);
+      a = paramContext.getInt(l.N1, 0);
+      a(paramContext.getFloat(l.O1, 0.5F));
+      paramContext.recycle();
+    }
+    
+    public LayoutParams(ViewGroup.LayoutParams paramLayoutParams)
+    {
+      super();
+    }
+    
+    public void a(float paramFloat)
+    {
+      b = paramFloat;
+    }
+  }
+  
+  class a
+    implements z
+  {
+    a() {}
+    
+    public n0 a(View paramView, n0 paramN0)
+    {
+      return l(paramN0);
+    }
+  }
+  
+  class b
+    implements ValueAnimator.AnimatorUpdateListener
+  {
+    b() {}
+    
+    public void onAnimationUpdate(ValueAnimator paramValueAnimator)
+    {
+      setScrimAlpha(((Integer)paramValueAnimator.getAnimatedValue()).intValue());
+    }
+  }
+  
+  private class c
+    implements AppBarLayout.d
+  {
+    c() {}
+    
+    public void a(AppBarLayout paramAppBarLayout, int paramInt)
+    {
+      paramAppBarLayout = CollapsingToolbarLayout.this;
+      x = paramInt;
+      paramAppBarLayout = y;
+      int i;
+      if (paramAppBarLayout != null) {
+        i = paramAppBarLayout.l();
+      } else {
+        i = 0;
+      }
+      int k = getChildCount();
+      int j = 0;
+      while (j < k)
+      {
+        paramAppBarLayout = getChildAt(j);
+        CollapsingToolbarLayout.LayoutParams localLayoutParams = (CollapsingToolbarLayout.LayoutParams)paramAppBarLayout.getLayoutParams();
+        a localA = CollapsingToolbarLayout.i(paramAppBarLayout);
+        int m = a;
+        if (m != 1)
+        {
+          if (m == 2) {
+            localA.f(Math.round(-paramInt * b));
+          }
+        }
+        else {
+          localA.f(c.h.k.a.b(-paramInt, 0, g(paramAppBarLayout)));
+        }
+        j += 1;
+      }
+      q();
+      paramAppBarLayout = CollapsingToolbarLayout.this;
+      if ((q != null) && (i > 0)) {
+        f0.g0(paramAppBarLayout);
+      }
+      j = getHeight();
+      k = f0.E(CollapsingToolbarLayout.this);
+      CollapsingToolbarLayout.this.m.d0(Math.abs(paramInt) / (j - k - i));
+    }
+  }
+}

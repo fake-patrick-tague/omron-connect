@@ -1,0 +1,170 @@
+package androidx.core.app;
+
+import android.app.Notification;
+import android.app.Notification.Builder;
+import android.os.Bundle;
+import android.util.Log;
+import android.util.SparseArray;
+import androidx.core.graphics.drawable.IconCompat;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+class o
+{
+  private static final Object a = new Object();
+  private static Field b;
+  private static boolean c;
+  private static final Object d = new Object();
+  
+  public static SparseArray<Bundle> a(List<Bundle> paramList)
+  {
+    int j = paramList.size();
+    Object localObject1 = null;
+    int i = 0;
+    while (i < j)
+    {
+      Bundle localBundle = (Bundle)paramList.get(i);
+      Object localObject2 = localObject1;
+      if (localBundle != null)
+      {
+        localObject2 = localObject1;
+        if (localObject1 == null) {
+          localObject2 = new SparseArray();
+        }
+        ((SparseArray)localObject2).put(i, localBundle);
+      }
+      i += 1;
+      localObject1 = localObject2;
+    }
+    return localObject1;
+  }
+  
+  static Bundle b(m.a paramA)
+  {
+    Bundle localBundle = new Bundle();
+    Object localObject = paramA.e();
+    int i;
+    if (localObject != null) {
+      i = ((IconCompat)localObject).l();
+    } else {
+      i = 0;
+    }
+    localBundle.putInt("icon", i);
+    localBundle.putCharSequence("title", paramA.i());
+    localBundle.putParcelable("actionIntent", paramA.a());
+    if (paramA.d() != null) {
+      localObject = new Bundle(paramA.d());
+    } else {
+      localObject = new Bundle();
+    }
+    ((Bundle)localObject).putBoolean("android.support.allowGeneratedReplies", paramA.b());
+    localBundle.putBundle("extras", (Bundle)localObject);
+    localBundle.putParcelableArray("remoteInputs", e(paramA.f()));
+    localBundle.putBoolean("showsUserInterface", paramA.h());
+    localBundle.putInt("semanticAction", paramA.g());
+    return localBundle;
+  }
+  
+  public static Bundle c(Notification paramNotification)
+  {
+    synchronized (a)
+    {
+      if (c) {
+        return null;
+      }
+      try
+      {
+        if (b == null)
+        {
+          localObject1 = Notification.class.getDeclaredField("extras");
+          if (!Bundle.class.isAssignableFrom(((Field)localObject1).getType()))
+          {
+            Log.e("NotificationCompat", "Notification.extras field is not of type Bundle");
+            c = true;
+            return null;
+          }
+          ((Field)localObject1).setAccessible(true);
+          b = (Field)localObject1;
+        }
+        Bundle localBundle = (Bundle)b.get(paramNotification);
+        Object localObject1 = localBundle;
+        if (localBundle == null)
+        {
+          localObject1 = new Bundle();
+          b.set(paramNotification, localObject1);
+        }
+        return localObject1;
+      }
+      catch (NoSuchFieldException paramNotification)
+      {
+        Log.e("NotificationCompat", "Unable to access notification extras", paramNotification);
+      }
+      catch (IllegalAccessException paramNotification)
+      {
+        Log.e("NotificationCompat", "Unable to access notification extras", paramNotification);
+      }
+      c = true;
+      return null;
+    }
+  }
+  
+  private static Bundle d(t paramT)
+  {
+    Bundle localBundle = new Bundle();
+    localBundle.putString("resultKey", paramT.i());
+    localBundle.putCharSequence("label", paramT.h());
+    localBundle.putCharSequenceArray("choices", paramT.e());
+    localBundle.putBoolean("allowFreeFormInput", paramT.c());
+    localBundle.putBundle("extras", paramT.g());
+    Object localObject = paramT.d();
+    if ((localObject != null) && (!((Set)localObject).isEmpty()))
+    {
+      paramT = new ArrayList(((Set)localObject).size());
+      localObject = ((Set)localObject).iterator();
+      while (((Iterator)localObject).hasNext()) {
+        paramT.add((String)((Iterator)localObject).next());
+      }
+      localBundle.putStringArrayList("allowedDataTypes", paramT);
+    }
+    return localBundle;
+  }
+  
+  private static Bundle[] e(t[] paramArrayOfT)
+  {
+    if (paramArrayOfT == null) {
+      return null;
+    }
+    Bundle[] arrayOfBundle = new Bundle[paramArrayOfT.length];
+    int i = 0;
+    while (i < paramArrayOfT.length)
+    {
+      arrayOfBundle[i] = d(paramArrayOfT[i]);
+      i += 1;
+    }
+    return arrayOfBundle;
+  }
+  
+  public static Bundle f(Notification.Builder paramBuilder, m.a paramA)
+  {
+    IconCompat localIconCompat = paramA.e();
+    int i;
+    if (localIconCompat != null) {
+      i = localIconCompat.l();
+    } else {
+      i = 0;
+    }
+    paramBuilder.addAction(i, paramA.i(), paramA.a());
+    paramBuilder = new Bundle(paramA.d());
+    if (paramA.f() != null) {
+      paramBuilder.putParcelableArray("android.support.remoteInputs", e(paramA.f()));
+    }
+    if (paramA.c() != null) {
+      paramBuilder.putParcelableArray("android.support.dataRemoteInputs", e(paramA.c()));
+    }
+    paramBuilder.putBoolean("android.support.allowGeneratedReplies", paramA.b());
+    return paramBuilder;
+  }
+}

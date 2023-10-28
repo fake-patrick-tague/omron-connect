@@ -1,0 +1,386 @@
+package androidx.work.impl.utils;
+
+import android.os.Build.VERSION;
+import android.text.TextUtils;
+import androidx.room.RoomDatabase;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.WorkInfo.State;
+import androidx.work.d.a;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.background.systemalarm.RescheduleReceiver;
+import androidx.work.impl.c;
+import androidx.work.impl.e;
+import androidx.work.impl.f;
+import androidx.work.impl.g;
+import androidx.work.impl.n.k;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.p.b;
+import androidx.work.impl.n.q;
+import androidx.work.impl.n.t;
+import androidx.work.impl.workers.ConstraintTrackingWorker;
+import androidx.work.l;
+import androidx.work.l.b.a;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+public class b
+  implements Runnable
+{
+  private static final String b = androidx.work.j.f("EnqueueRunnable");
+  private final g c;
+  private final c d;
+  
+  public b(g paramG)
+  {
+    c = paramG;
+    d = new c();
+  }
+  
+  private static boolean b(g paramG)
+  {
+    Set localSet = g.l(paramG);
+    boolean bool = c(paramG.g(), paramG.f(), (String[])localSet.toArray(new String[0]), paramG.d(), paramG.b());
+    paramG.k();
+    return bool;
+  }
+  
+  private static boolean c(androidx.work.impl.j paramJ, List<? extends androidx.work.s> paramList, String[] paramArrayOfString, String paramString, ExistingWorkPolicy paramExistingWorkPolicy)
+  {
+    long l = System.currentTimeMillis();
+    WorkDatabase localWorkDatabase = paramJ.p();
+    if ((paramArrayOfString != null) && (paramArrayOfString.length > 0)) {
+      m = 1;
+    } else {
+      m = 0;
+    }
+    int i4;
+    Object localObject2;
+    if (m != 0)
+    {
+      i4 = paramArrayOfString.length;
+      i2 = 1;
+      i3 = 0;
+      i1 = 0;
+      for (n = 0;; n = i)
+      {
+        k = i2;
+        j = i1;
+        i = n;
+        if (i3 >= i4) {
+          break;
+        }
+        localObject1 = paramArrayOfString[i3];
+        localObject2 = localWorkDatabase.B().n((String)localObject1);
+        if (localObject2 == null)
+        {
+          androidx.work.j.c().b(b, String.format("Prerequisite %s doesn't exist; not enqueuing", new Object[] { localObject1 }), new Throwable[0]);
+          return false;
+        }
+        localObject1 = d;
+        if (localObject1 == WorkInfo.State.d) {
+          i = 1;
+        } else {
+          i = 0;
+        }
+        i2 &= i;
+        if (localObject1 == WorkInfo.State.e)
+        {
+          i = 1;
+        }
+        else
+        {
+          i = n;
+          if (localObject1 == WorkInfo.State.g)
+          {
+            i1 = 1;
+            i = n;
+          }
+        }
+        i3 += 1;
+      }
+    }
+    int k = 1;
+    int j = 0;
+    int i = 0;
+    boolean bool1 = TextUtils.isEmpty(paramString) ^ true;
+    if ((bool1) && (m == 0)) {
+      i4 = 1;
+    } else {
+      i4 = 0;
+    }
+    Object localObject1 = paramArrayOfString;
+    int n = m;
+    int i1 = k;
+    int i2 = j;
+    int i3 = i;
+    if (i4 != 0)
+    {
+      Object localObject3 = localWorkDatabase.B().d(paramString);
+      localObject1 = paramArrayOfString;
+      n = m;
+      i1 = k;
+      i2 = j;
+      i3 = i;
+      if (!((List)localObject3).isEmpty())
+      {
+        if ((paramExistingWorkPolicy != ExistingWorkPolicy.d) && (paramExistingWorkPolicy != ExistingWorkPolicy.e))
+        {
+          if (paramExistingWorkPolicy == ExistingWorkPolicy.c)
+          {
+            paramExistingWorkPolicy = ((List)localObject3).iterator();
+            while (paramExistingWorkPolicy.hasNext())
+            {
+              localObject1 = nextb;
+              if ((localObject1 == WorkInfo.State.b) || (localObject1 == WorkInfo.State.c)) {
+                return false;
+              }
+            }
+          }
+          a.c(paramString, paramJ, false).run();
+          paramExistingWorkPolicy = localWorkDatabase.B();
+          localObject1 = ((List)localObject3).iterator();
+          while (((Iterator)localObject1).hasNext()) {
+            paramExistingWorkPolicy.a(nexta);
+          }
+          bool2 = true;
+          break label767;
+        }
+        localObject1 = localWorkDatabase.t();
+        localObject2 = new ArrayList();
+        localObject3 = ((List)localObject3).iterator();
+        while (((Iterator)localObject3).hasNext())
+        {
+          p.b localB = (p.b)((Iterator)localObject3).next();
+          if (!((androidx.work.impl.n.b)localObject1).d(a))
+          {
+            WorkInfo.State localState = b;
+            if (localState == WorkInfo.State.d) {
+              n = 1;
+            } else {
+              n = 0;
+            }
+            if (localState == WorkInfo.State.e)
+            {
+              i = 1;
+              m = j;
+              j = i;
+            }
+            else
+            {
+              m = j;
+              j = i;
+              if (localState == WorkInfo.State.g)
+              {
+                m = 1;
+                j = i;
+              }
+            }
+            ((List)localObject2).add(a);
+            k = n & k;
+            i = j;
+          }
+          else
+          {
+            m = j;
+          }
+          j = m;
+        }
+        if ((paramExistingWorkPolicy == ExistingWorkPolicy.e) && ((j != 0) || (i != 0)))
+        {
+          paramExistingWorkPolicy = localWorkDatabase.B();
+          localObject1 = paramExistingWorkPolicy.d(paramString).iterator();
+          while (((Iterator)localObject1).hasNext()) {
+            paramExistingWorkPolicy.a(nexta);
+          }
+          paramExistingWorkPolicy = Collections.emptyList();
+          i = 0;
+          j = 0;
+        }
+        else
+        {
+          paramExistingWorkPolicy = (ExistingWorkPolicy)localObject2;
+        }
+        localObject1 = (String[])paramExistingWorkPolicy.toArray(paramArrayOfString);
+        if (localObject1.length > 0) {
+          n = 1;
+        } else {
+          n = 0;
+        }
+        i3 = i;
+        i2 = j;
+        i1 = k;
+      }
+    }
+    boolean bool2 = false;
+    i = i3;
+    j = i2;
+    k = i1;
+    int m = n;
+    paramArrayOfString = (String[])localObject1;
+    label767:
+    paramList = paramList.iterator();
+    while (paramList.hasNext())
+    {
+      paramExistingWorkPolicy = (androidx.work.s)paramList.next();
+      localObject1 = paramExistingWorkPolicy.c();
+      if ((m != 0) && (k == 0))
+      {
+        if (i != 0) {
+          d = WorkInfo.State.e;
+        } else if (j != 0) {
+          d = WorkInfo.State.g;
+        } else {
+          d = WorkInfo.State.f;
+        }
+      }
+      else
+      {
+        if (((p)localObject1).d()) {
+          break label872;
+        }
+        p = l;
+      }
+      break label878;
+      label872:
+      p = 0L;
+      label878:
+      n = Build.VERSION.SDK_INT;
+      if ((n >= 23) && (n <= 25)) {
+        g((p)localObject1);
+      } else if ((n <= 22) && (h(paramJ, "androidx.work.impl.background.gcm.GcmScheduler"))) {
+        g((p)localObject1);
+      }
+      if (d == WorkInfo.State.b) {
+        bool2 = true;
+      }
+      localWorkDatabase.B().g((p)localObject1);
+      if (m != 0)
+      {
+        i1 = paramArrayOfString.length;
+        n = 0;
+        while (n < i1)
+        {
+          localObject1 = paramArrayOfString[n];
+          localObject1 = new androidx.work.impl.n.a(paramExistingWorkPolicy.a(), (String)localObject1);
+          localWorkDatabase.t().a((androidx.work.impl.n.a)localObject1);
+          n += 1;
+        }
+      }
+      localObject1 = paramExistingWorkPolicy.b().iterator();
+      while (((Iterator)localObject1).hasNext())
+      {
+        localObject2 = (String)((Iterator)localObject1).next();
+        localWorkDatabase.C().a(new androidx.work.impl.n.s((String)localObject2, paramExistingWorkPolicy.a()));
+      }
+      if (bool1) {
+        localWorkDatabase.z().a(new androidx.work.impl.n.j(paramString, paramExistingWorkPolicy.a()));
+      }
+    }
+    return bool2;
+  }
+  
+  private static boolean e(g paramG)
+  {
+    Object localObject = paramG.e();
+    boolean bool = false;
+    if (localObject != null)
+    {
+      localObject = ((List)localObject).iterator();
+      bool = false;
+      while (((Iterator)localObject).hasNext())
+      {
+        g localG = (g)((Iterator)localObject).next();
+        if (!localG.j()) {
+          bool |= e(localG);
+        } else {
+          androidx.work.j.c().h(b, String.format("Already enqueued work ids (%s).", new Object[] { TextUtils.join(", ", localG.c()) }), new Throwable[0]);
+        }
+      }
+    }
+    return b(paramG) | bool;
+  }
+  
+  private static void g(p paramP)
+  {
+    Object localObject = l;
+    String str = e;
+    if ((!str.equals(ConstraintTrackingWorker.class.getName())) && ((((androidx.work.b)localObject).f()) || (((androidx.work.b)localObject).i())))
+    {
+      localObject = new d.a();
+      ((d.a)localObject).c(g).e("androidx.work.impl.workers.ConstraintTrackingWorker.ARGUMENT_CLASS_NAME", str);
+      e = ConstraintTrackingWorker.class.getName();
+      g = ((d.a)localObject).a();
+    }
+  }
+  
+  private static boolean h(androidx.work.impl.j paramJ, String paramString)
+  {
+    try
+    {
+      paramString = Class.forName(paramString);
+      paramJ = paramJ.o().iterator();
+      while (paramJ.hasNext())
+      {
+        boolean bool = paramString.isAssignableFrom(((e)paramJ.next()).getClass());
+        if (bool) {
+          return true;
+        }
+      }
+      return false;
+    }
+    catch (ClassNotFoundException paramJ) {}
+    return false;
+  }
+  
+  public boolean a()
+  {
+    WorkDatabase localWorkDatabase = c.g().p();
+    localWorkDatabase.c();
+    try
+    {
+      boolean bool = e(c);
+      localWorkDatabase.r();
+      return bool;
+    }
+    finally
+    {
+      localWorkDatabase.g();
+    }
+  }
+  
+  public l d()
+  {
+    return d;
+  }
+  
+  public void f()
+  {
+    androidx.work.impl.j localJ = c.g();
+    f.b(localJ.j(), localJ.p(), localJ.o());
+  }
+  
+  public void run()
+  {
+    try
+    {
+      if (!c.h())
+      {
+        if (a())
+        {
+          d.a(c.g().i(), RescheduleReceiver.class, true);
+          f();
+        }
+        d.a(l.a);
+        return;
+      }
+      throw new IllegalStateException(String.format("WorkContinuation has cycles (%s)", new Object[] { c }));
+    }
+    finally
+    {
+      d.a(new l.b.a(localThrowable));
+    }
+  }
+}

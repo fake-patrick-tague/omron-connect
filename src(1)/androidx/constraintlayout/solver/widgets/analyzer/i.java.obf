@@ -1,0 +1,209 @@
+package androidx.constraintlayout.solver.widgets.analyzer;
+
+import androidx.constraintlayout.solver.widgets.ConstraintWidget;
+import androidx.constraintlayout.solver.widgets.b;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class n
+{
+  static int a;
+  ArrayList<ConstraintWidget> b = new ArrayList();
+  int c = -1;
+  boolean d = false;
+  int e = 0;
+  ArrayList<a> f = null;
+  private int g = -1;
+  
+  public n(int paramInt)
+  {
+    int i = a;
+    a = i + 1;
+    c = i;
+    e = paramInt;
+  }
+  
+  private String e()
+  {
+    int i = e;
+    if (i == 0) {
+      return "Horizontal";
+    }
+    if (i == 1) {
+      return "Vertical";
+    }
+    if (i == 2) {
+      return "Both";
+    }
+    return "Unknown";
+  }
+  
+  private int j(androidx.constraintlayout.solver.d paramD, ArrayList<ConstraintWidget> paramArrayList, int paramInt)
+  {
+    int j = 0;
+    androidx.constraintlayout.solver.widgets.d localD = (androidx.constraintlayout.solver.widgets.d)((ConstraintWidget)paramArrayList.get(0)).I();
+    paramD.D();
+    localD.g(paramD, false);
+    int i = 0;
+    while (i < paramArrayList.size())
+    {
+      ((ConstraintWidget)paramArrayList.get(i)).g(paramD, false);
+      i += 1;
+    }
+    if ((paramInt == 0) && (O0 > 0)) {
+      b.b(localD, paramD, paramArrayList, 0);
+    }
+    if ((paramInt == 1) && (P0 > 0)) {
+      b.b(localD, paramD, paramArrayList, 1);
+    }
+    try
+    {
+      paramD.z();
+    }
+    catch (Exception localException)
+    {
+      localException.printStackTrace();
+    }
+    f = new ArrayList();
+    i = j;
+    while (i < paramArrayList.size())
+    {
+      a localA = new a((ConstraintWidget)paramArrayList.get(i), paramD, paramInt);
+      f.add(localA);
+      i += 1;
+    }
+    if (paramInt == 0)
+    {
+      paramInt = paramD.x(I);
+      i = paramD.x(K);
+      paramD.D();
+    }
+    for (;;)
+    {
+      return i - paramInt;
+      paramInt = paramD.x(J);
+      i = paramD.x(L);
+      paramD.D();
+    }
+  }
+  
+  public boolean a(ConstraintWidget paramConstraintWidget)
+  {
+    if (b.contains(paramConstraintWidget)) {
+      return false;
+    }
+    b.add(paramConstraintWidget);
+    return true;
+  }
+  
+  public void b(ArrayList<n> paramArrayList)
+  {
+    int j = b.size();
+    if ((g != -1) && (j > 0))
+    {
+      int i = 0;
+      while (i < paramArrayList.size())
+      {
+        n localN = (n)paramArrayList.get(i);
+        if (g == c) {
+          g(e, localN);
+        }
+        i += 1;
+      }
+    }
+    if (j == 0) {
+      paramArrayList.remove(this);
+    }
+  }
+  
+  public int c()
+  {
+    return c;
+  }
+  
+  public int d()
+  {
+    return e;
+  }
+  
+  public int f(androidx.constraintlayout.solver.d paramD, int paramInt)
+  {
+    if (b.size() == 0) {
+      return 0;
+    }
+    return j(paramD, b, paramInt);
+  }
+  
+  public void g(int paramInt, n paramN)
+  {
+    Iterator localIterator = b.iterator();
+    while (localIterator.hasNext())
+    {
+      ConstraintWidget localConstraintWidget = (ConstraintWidget)localIterator.next();
+      paramN.a(localConstraintWidget);
+      if (paramInt == 0) {
+        B0 = paramN.c();
+      } else {
+        C0 = paramN.c();
+      }
+    }
+    g = c;
+  }
+  
+  public void h(boolean paramBoolean)
+  {
+    d = paramBoolean;
+  }
+  
+  public void i(int paramInt)
+  {
+    e = paramInt;
+  }
+  
+  public String toString()
+  {
+    Object localObject1 = new StringBuilder();
+    ((StringBuilder)localObject1).append(e());
+    ((StringBuilder)localObject1).append(" [");
+    ((StringBuilder)localObject1).append(c);
+    ((StringBuilder)localObject1).append("] <");
+    localObject1 = ((StringBuilder)localObject1).toString();
+    Object localObject2 = b.iterator();
+    while (((Iterator)localObject2).hasNext())
+    {
+      ConstraintWidget localConstraintWidget = (ConstraintWidget)((Iterator)localObject2).next();
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append((String)localObject1);
+      localStringBuilder.append(" ");
+      localStringBuilder.append(localConstraintWidget.r());
+      localObject1 = localStringBuilder.toString();
+    }
+    localObject2 = new StringBuilder();
+    ((StringBuilder)localObject2).append((String)localObject1);
+    ((StringBuilder)localObject2).append(" >");
+    return ((StringBuilder)localObject2).toString();
+  }
+  
+  class a
+  {
+    WeakReference<ConstraintWidget> a;
+    int b;
+    int c;
+    int d;
+    int e;
+    int f;
+    int g;
+    
+    public a(ConstraintWidget paramConstraintWidget, androidx.constraintlayout.solver.d paramD, int paramInt)
+    {
+      a = new WeakReference(paramConstraintWidget);
+      b = paramD.x(I);
+      c = paramD.x(J);
+      d = paramD.x(K);
+      e = paramD.x(L);
+      f = paramD.x(M);
+      g = paramInt;
+    }
+  }
+}

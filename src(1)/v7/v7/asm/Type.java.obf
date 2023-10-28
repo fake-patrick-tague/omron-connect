@@ -1,0 +1,255 @@
+package c.h.n;
+
+import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Typeface;
+import c.e.g;
+import c.h.p.a;
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+
+class f
+{
+  static final c.e.e<String, Typeface> a = new c.e.e(16);
+  private static final ExecutorService b = h.a("fonts-androidx", 10, 10000);
+  static final Object c = new Object();
+  static final g<String, ArrayList<a<e>>> d = new g();
+  
+  private static String a(e paramE, int paramInt)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(paramE.d());
+    localStringBuilder.append("-");
+    localStringBuilder.append(paramInt);
+    return localStringBuilder.toString();
+  }
+  
+  private static int b(g.a paramA)
+  {
+    int i = paramA.c();
+    int j = 1;
+    if (i != 0)
+    {
+      if (paramA.c() != 1) {
+        return -3;
+      }
+      return -2;
+    }
+    paramA = paramA.b();
+    if (paramA != null)
+    {
+      if (paramA.length == 0) {
+        return 1;
+      }
+      int m = paramA.length;
+      int k = 0;
+      i = 0;
+      for (;;)
+      {
+        j = k;
+        if (i >= m) {
+          break;
+        }
+        j = paramA[i].b();
+        if (j != 0)
+        {
+          if (j < 0) {
+            return -3;
+          }
+          return j;
+        }
+        i += 1;
+      }
+    }
+    return j;
+  }
+  
+  static e c(String paramString, Context paramContext, e paramE, int paramInt)
+  {
+    c.e.e localE = a;
+    Typeface localTypeface = (Typeface)localE.get(paramString);
+    if (localTypeface != null) {
+      return new e(localTypeface);
+    }
+    try
+    {
+      paramE = d.d(paramContext, paramE, null);
+      int i = b(paramE);
+      if (i != 0) {
+        return new e(i);
+      }
+      paramContext = androidx.core.graphics.e.b(paramContext, null, paramE.b(), paramInt);
+      if (paramContext != null)
+      {
+        localE.put(paramString, paramContext);
+        return new e(paramContext);
+      }
+      return new e(-3);
+    }
+    catch (PackageManager.NameNotFoundException paramString)
+    {
+      for (;;) {}
+    }
+    return new e(-1);
+  }
+  
+  static Typeface d(final Context paramContext, final e paramE, final int paramInt, Executor paramExecutor, b arg4)
+  {
+    String str = a(paramE, paramInt);
+    Object localObject = (Typeface)a.get(str);
+    if (localObject != null)
+    {
+      ???.b(new e((Typeface)localObject));
+      return localObject;
+    }
+    localObject = new b(???);
+    synchronized (c)
+    {
+      g localG = d;
+      ArrayList localArrayList = (ArrayList)localG.get(str);
+      if (localArrayList != null)
+      {
+        localArrayList.add(localObject);
+        return null;
+      }
+      localArrayList = new ArrayList();
+      localArrayList.add(localObject);
+      localG.put(str, localArrayList);
+      paramE = new c(str, paramContext, paramE, paramInt);
+      paramContext = paramExecutor;
+      if (paramExecutor == null) {
+        paramContext = b;
+      }
+      h.b(paramContext, paramE, new d(str));
+      return null;
+    }
+  }
+  
+  static Typeface e(final Context paramContext, final e paramE, b paramB, final int paramInt1, int paramInt2)
+  {
+    String str = a(paramE, paramInt1);
+    Typeface localTypeface = (Typeface)a.get(str);
+    if (localTypeface != null)
+    {
+      paramB.b(new e(localTypeface));
+      return localTypeface;
+    }
+    if (paramInt2 == -1)
+    {
+      paramContext = c(str, paramContext, paramE, paramInt1);
+      paramB.b(paramContext);
+      return a;
+    }
+    paramContext = new a(str, paramContext, paramE, paramInt1);
+    try
+    {
+      paramContext = (e)h.c(b, paramContext, paramInt2);
+      paramB.b(paramContext);
+      paramContext = a;
+      return paramContext;
+    }
+    catch (InterruptedException paramContext)
+    {
+      for (;;) {}
+    }
+    paramB.b(new e(-3));
+    return null;
+  }
+  
+  class a
+    implements Callable<f.e>
+  {
+    a(Context paramContext, e paramE, int paramInt) {}
+    
+    public f.e a()
+    {
+      return f.c(f.this, paramContext, paramE, paramInt1);
+    }
+  }
+  
+  class b
+    implements a<f.e>
+  {
+    b() {}
+    
+    public void b(f.e paramE)
+    {
+      f.e localE = paramE;
+      if (paramE == null) {
+        localE = new f.e(-3);
+      }
+      f.this.b(localE);
+    }
+  }
+  
+  class c
+    implements Callable<f.e>
+  {
+    c(Context paramContext, e paramE, int paramInt) {}
+    
+    public f.e a()
+    {
+      try
+      {
+        f.e localE = f.c(f.this, paramContext, paramE, paramInt);
+        return localE;
+      }
+      finally
+      {
+        for (;;) {}
+      }
+      return new f.e(-3);
+    }
+  }
+  
+  class d
+    implements a<f.e>
+  {
+    d() {}
+    
+    public void b(f.e paramE)
+    {
+      synchronized (f.c)
+      {
+        g localG = f.d;
+        ArrayList localArrayList = (ArrayList)localG.get(f.this);
+        if (localArrayList == null) {
+          return;
+        }
+        localG.remove(f.this);
+        int i = 0;
+        while (i < localArrayList.size())
+        {
+          ((a)localArrayList.get(i)).a(paramE);
+          i += 1;
+        }
+        return;
+      }
+    }
+  }
+  
+  static final class e
+  {
+    final Typeface a;
+    final int b;
+    
+    e(int paramInt)
+    {
+      a = null;
+      b = paramInt;
+    }
+    
+    e(Typeface paramTypeface)
+    {
+      a = paramTypeface;
+      b = 0;
+    }
+    
+    boolean a()
+    {
+      return b == 0;
+    }
+  }
+}

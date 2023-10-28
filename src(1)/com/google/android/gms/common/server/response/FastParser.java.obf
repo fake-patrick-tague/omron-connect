@@ -1,0 +1,1277 @@
+package com.google.android.gms.common.server.response;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.util.Base64Utils;
+import com.google.android.gms.common.util.JsonUtils;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+
+@KeepForSdk
+@ShowFirstParty
+public class FastParser<T extends FastJsonResponse>
+{
+  private static final char[] zaa = { 117, 108, 108 };
+  private static final char[] zab = { 114, 117, 101 };
+  private static final char[] zac = { 114, 117, 101, 34 };
+  private static final char[] zad = { 97, 108, 115, 101 };
+  private static final char[] zae = { 97, 108, 115, 101, 34 };
+  private static final char[] zaf = { '\n' };
+  private static final zai<Integer> zag = new zaa();
+  private static final zai<Long> zah = new zab();
+  private static final zai<Float> zai = new zac();
+  private static final zai<Double> zaj = new zad();
+  private static final zai<Boolean> zak = new zae();
+  private static final zai<String> zal = new zaf();
+  private static final zai<BigInteger> zam = new zag();
+  private static final zai<BigDecimal> zan = new zah();
+  private final char[] zao = new char[1];
+  private final char[] zap = new char[32];
+  private final char[] zaq = new char['?'];
+  private final StringBuilder zar = new StringBuilder(32);
+  private final StringBuilder zas = new StringBuilder(1024);
+  private final Stack<Integer> zat = new Stack();
+  
+  public FastParser() {}
+  
+  private static final String zaA(BufferedReader paramBufferedReader, char[] paramArrayOfChar1, StringBuilder paramStringBuilder, char[] paramArrayOfChar2)
+    throws FastParser.ParseException, IOException
+  {
+    paramStringBuilder.setLength(0);
+    paramBufferedReader.mark(paramArrayOfChar1.length);
+    int k = 0;
+    int i = k;
+    for (;;)
+    {
+      int n = paramBufferedReader.read(paramArrayOfChar1);
+      if (n == -1) {
+        break;
+      }
+      int j = 0;
+      while (j < n)
+      {
+        char c = paramArrayOfChar1[j];
+        if (Character.isISOControl(c))
+        {
+          if (paramArrayOfChar2 != null)
+          {
+            int m = 0;
+            while (m <= 0)
+            {
+              if (paramArrayOfChar2[m] == c) {
+                break label98;
+              }
+              m += 1;
+            }
+          }
+          throw new ParseException("Unexpected control character while reading string");
+        }
+        label98:
+        if (c == '"')
+        {
+          if (i == 0)
+          {
+            paramStringBuilder.append(paramArrayOfChar1, 0, j);
+            paramBufferedReader.reset();
+            paramBufferedReader.skip(j + 1);
+            if (k != 0) {
+              return JsonUtils.unescapeString(paramStringBuilder.toString());
+            }
+            return paramStringBuilder.toString();
+          }
+        }
+        else if (c == '\\')
+        {
+          i ^= 0x1;
+          k = 1;
+          break label173;
+        }
+        i = 0;
+        label173:
+        j += 1;
+      }
+      paramStringBuilder.append(paramArrayOfChar1, 0, n);
+      paramBufferedReader.mark(paramArrayOfChar1.length);
+    }
+    throw new ParseException("Unexpected EOF while parsing string");
+  }
+  
+  private final char zai(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    if (paramBufferedReader.read(zao) != -1)
+    {
+      while (Character.isWhitespace(zao[0])) {
+        if (paramBufferedReader.read(zao) == -1) {
+          return '\000';
+        }
+      }
+      return zao[0];
+    }
+    return '\000';
+  }
+  
+  private final double zaj(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    int i = zam(paramBufferedReader, zaq);
+    if (i == 0) {
+      return 0.0D;
+    }
+    return Double.parseDouble(new String(zaq, 0, i));
+  }
+  
+  private final float zak(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    int i = zam(paramBufferedReader, zaq);
+    if (i == 0) {
+      return 0.0F;
+    }
+    return Float.parseFloat(new String(zaq, 0, i));
+  }
+  
+  private final int zal(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    int n = zam(paramBufferedReader, zaq);
+    if (n == 0) {
+      return 0;
+    }
+    paramBufferedReader = zaq;
+    if (n > 0)
+    {
+      int i = paramBufferedReader[0];
+      int m;
+      if (i == 45) {
+        m = Integer.MIN_VALUE;
+      } else {
+        m = -2147483647;
+      }
+      if (i == 45) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      int j;
+      int k;
+      if (i < n)
+      {
+        j = i + 1;
+        k = Character.digit(paramBufferedReader[i], 10);
+        if (k >= 0) {
+          k = -k;
+        } else {
+          throw new ParseException("Unexpected non-digit character");
+        }
+      }
+      else
+      {
+        k = 0;
+        j = i;
+      }
+      while (j < n)
+      {
+        int i1 = Character.digit(paramBufferedReader[j], 10);
+        if (i1 >= 0)
+        {
+          if (k >= -214748364)
+          {
+            k *= 10;
+            if (k >= m + i1)
+            {
+              k -= i1;
+              j += 1;
+            }
+            else
+            {
+              throw new ParseException("Number too large");
+            }
+          }
+          else
+          {
+            throw new ParseException("Number too large");
+          }
+        }
+        else {
+          throw new ParseException("Unexpected non-digit character");
+        }
+      }
+      if (i != 0)
+      {
+        if (j > 1) {
+          return k;
+        }
+        throw new ParseException("No digits to parse");
+      }
+      return -k;
+    }
+    throw new ParseException("No number to parse");
+  }
+  
+  private final int zam(BufferedReader paramBufferedReader, char[] paramArrayOfChar)
+    throws FastParser.ParseException, IOException
+  {
+    char c = zai(paramBufferedReader);
+    if (c != 0)
+    {
+      if (c != ',')
+      {
+        if (c == 'n')
+        {
+          zax(paramBufferedReader, zaa);
+          return 0;
+        }
+        paramBufferedReader.mark(1024);
+        int k;
+        if (c == '"')
+        {
+          i = 0;
+          int j = i;
+          for (;;)
+          {
+            k = i;
+            if (i >= 1024) {
+              break label262;
+            }
+            k = i;
+            if (paramBufferedReader.read(paramArrayOfChar, i, 1) == -1) {
+              break label262;
+            }
+            c = paramArrayOfChar[i];
+            if (Character.isISOControl(c)) {
+              break;
+            }
+            if (c == '"')
+            {
+              if (j == 0)
+              {
+                paramBufferedReader.reset();
+                paramBufferedReader.skip(i + 1);
+                return i;
+              }
+            }
+            else if (c == '\\')
+            {
+              j ^= 0x1;
+              break label141;
+            }
+            j = 0;
+            label141:
+            i += 1;
+          }
+          throw new ParseException("Unexpected control character while reading string");
+        }
+        paramArrayOfChar[0] = c;
+        int i = 1;
+        for (;;)
+        {
+          k = i;
+          if (i >= 1024) {
+            break label262;
+          }
+          k = i;
+          if (paramBufferedReader.read(paramArrayOfChar, i, 1) == -1) {
+            break label262;
+          }
+          c = paramArrayOfChar[i];
+          if ((c == '}') || (c == ',') || (Character.isWhitespace(c)) || (paramArrayOfChar[i] == ']')) {
+            break;
+          }
+          i += 1;
+        }
+        paramBufferedReader.reset();
+        paramBufferedReader.skip(i - 1);
+        paramArrayOfChar[i] = '\000';
+        return i;
+        label262:
+        if (k == 1024) {
+          throw new ParseException("Absurdly long value");
+        }
+        throw new ParseException("Unexpected EOF");
+      }
+      throw new ParseException("Missing value");
+    }
+    throw new ParseException("Unexpected EOF");
+  }
+  
+  private final long zan(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    int k = zam(paramBufferedReader, zaq);
+    if (k == 0) {
+      return 0L;
+    }
+    paramBufferedReader = zaq;
+    if (k > 0)
+    {
+      int i = 0;
+      int j = paramBufferedReader[0];
+      long l2;
+      if (j == 45) {
+        l2 = Long.MIN_VALUE;
+      } else {
+        l2 = -9223372036854775807L;
+      }
+      if (j == 45) {
+        i = 1;
+      }
+      int m;
+      long l1;
+      if (i < k)
+      {
+        j = i + 1;
+        m = Character.digit(paramBufferedReader[i], 10);
+        if (m >= 0) {
+          l1 = -m;
+        } else {
+          throw new ParseException("Unexpected non-digit character");
+        }
+      }
+      else
+      {
+        l1 = 0L;
+        j = i;
+      }
+      while (j < k)
+      {
+        m = Character.digit(paramBufferedReader[j], 10);
+        if (m >= 0)
+        {
+          if (l1 >= -922337203685477580L)
+          {
+            l1 *= 10L;
+            long l3 = m;
+            if (l1 >= l2 + l3)
+            {
+              l1 -= l3;
+              j += 1;
+            }
+            else
+            {
+              throw new ParseException("Number too large");
+            }
+          }
+          else
+          {
+            throw new ParseException("Number too large");
+          }
+        }
+        else {
+          throw new ParseException("Unexpected non-digit character");
+        }
+      }
+      if (i != 0)
+      {
+        if (j > 1) {
+          return l1;
+        }
+        throw new ParseException("No digits to parse");
+      }
+      return -l1;
+    }
+    throw new ParseException("No number to parse");
+  }
+  
+  private final String zao(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    return zap(paramBufferedReader, zap, zar, null);
+  }
+  
+  private final String zap(BufferedReader paramBufferedReader, char[] paramArrayOfChar1, StringBuilder paramStringBuilder, char[] paramArrayOfChar2)
+    throws FastParser.ParseException, IOException
+  {
+    int i = zai(paramBufferedReader);
+    if (i != 34)
+    {
+      if (i == 110)
+      {
+        zax(paramBufferedReader, zaa);
+        return null;
+      }
+      throw new ParseException("Expected string");
+    }
+    return zaA(paramBufferedReader, paramArrayOfChar1, paramStringBuilder, paramArrayOfChar2);
+  }
+  
+  private final String zaq(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    zat.push(Integer.valueOf(2));
+    char c = zai(paramBufferedReader);
+    if (c != '"')
+    {
+      if (c != ']')
+      {
+        if (c == '}')
+        {
+          zaw(2);
+          return null;
+        }
+        paramBufferedReader = new StringBuilder(19);
+        paramBufferedReader.append("Unexpected token: ");
+        paramBufferedReader.append(c);
+        throw new ParseException(paramBufferedReader.toString());
+      }
+      zaw(2);
+      zaw(1);
+      zaw(5);
+      return null;
+    }
+    zat.push(Integer.valueOf(3));
+    String str = zaA(paramBufferedReader, zap, zar, null);
+    zaw(3);
+    if (zai(paramBufferedReader) == ':') {
+      return str;
+    }
+    throw new ParseException("Expected key/value separator");
+  }
+  
+  private final String zar(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    paramBufferedReader.mark(1024);
+    int k = zai(paramBufferedReader);
+    int j = 1;
+    int i;
+    int m;
+    int n;
+    if (k != 34)
+    {
+      if (k != 44)
+      {
+        if (k != 91)
+        {
+          if (k != 123)
+          {
+            paramBufferedReader.reset();
+            zam(paramBufferedReader, zaq);
+          }
+          else
+          {
+            zat.push(Integer.valueOf(1));
+            paramBufferedReader.mark(32);
+            i = zai(paramBufferedReader);
+            if (i == 125)
+            {
+              zaw(1);
+            }
+            else if (i == 34)
+            {
+              paramBufferedReader.reset();
+              zaq(paramBufferedReader);
+              while (zar(paramBufferedReader) != null) {}
+              zaw(1);
+            }
+            else
+            {
+              paramBufferedReader = new StringBuilder(18);
+              paramBufferedReader.append("Unexpected token ");
+              paramBufferedReader.append(i);
+              throw new ParseException(paramBufferedReader.toString());
+            }
+          }
+        }
+        else
+        {
+          zat.push(Integer.valueOf(5));
+          paramBufferedReader.mark(32);
+          if (zai(paramBufferedReader) == ']')
+          {
+            zaw(5);
+          }
+          else
+          {
+            paramBufferedReader.reset();
+            m = 0;
+            k = m;
+            while (j > 0)
+            {
+              i = zai(paramBufferedReader);
+              if (i != 0)
+              {
+                if (!Character.isISOControl(i))
+                {
+                  n = m;
+                  char c2 = i;
+                  if (i == 34)
+                  {
+                    n = m;
+                    if (k == 0) {
+                      n = m ^ 0x1;
+                    }
+                    c2 = '"';
+                  }
+                  m = j;
+                  char c1 = c2;
+                  if (c2 == '[')
+                  {
+                    m = j;
+                    if (n == 0) {
+                      m = j + 1;
+                    }
+                    c1 = '[';
+                  }
+                  j = m;
+                  if (c1 == ']')
+                  {
+                    j = m;
+                    if (n == 0) {
+                      j = m - 1;
+                    }
+                  }
+                  if ((c1 == '\\') && (n != 0))
+                  {
+                    k ^= 0x1;
+                    m = n;
+                  }
+                  else
+                  {
+                    k = 0;
+                    m = n;
+                  }
+                }
+                else
+                {
+                  throw new ParseException("Unexpected control character while reading array");
+                }
+              }
+              else {
+                throw new ParseException("Unexpected EOF while parsing array");
+              }
+            }
+            zaw(5);
+          }
+        }
+      }
+      else {
+        throw new ParseException("Missing value");
+      }
+    }
+    else
+    {
+      if (paramBufferedReader.read(zao) == -1) {
+        break label588;
+      }
+      k = zao[0];
+      j = 0;
+    }
+    for (;;)
+    {
+      m = k;
+      n = j;
+      if (k == 34) {
+        if (j != 0)
+        {
+          m = 34;
+          n = 1;
+        }
+        else
+        {
+          i = zai(paramBufferedReader);
+          if (i != 44)
+          {
+            if (i == 125)
+            {
+              zaw(2);
+              return null;
+            }
+            paramBufferedReader = new StringBuilder(18);
+            paramBufferedReader.append("Unexpected token ");
+            paramBufferedReader.append(i);
+            throw new ParseException(paramBufferedReader.toString());
+          }
+          zaw(2);
+          return zaq(paramBufferedReader);
+        }
+      }
+      if (m == 92) {
+        j = n ^ 0x1;
+      } else {
+        j = 0;
+      }
+      if (paramBufferedReader.read(zao) == -1) {
+        break label578;
+      }
+      i = zao[0];
+      if (Character.isISOControl(i)) {
+        break;
+      }
+      k = i;
+    }
+    throw new ParseException("Unexpected control character while reading string");
+    label578:
+    throw new ParseException("Unexpected EOF while parsing string");
+    label588:
+    throw new ParseException("Unexpected EOF while parsing string");
+  }
+  
+  private final BigDecimal zas(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    int i = zam(paramBufferedReader, zaq);
+    if (i == 0) {
+      return null;
+    }
+    return new BigDecimal(new String(zaq, 0, i));
+  }
+  
+  private final BigInteger zat(BufferedReader paramBufferedReader)
+    throws FastParser.ParseException, IOException
+  {
+    int i = zam(paramBufferedReader, zaq);
+    if (i == 0) {
+      return null;
+    }
+    return new BigInteger(new String(zaq, 0, i));
+  }
+  
+  private final <O> ArrayList<O> zau(BufferedReader paramBufferedReader, zai<O> paramZai)
+    throws FastParser.ParseException, IOException
+  {
+    int i = zai(paramBufferedReader);
+    if (i == 110)
+    {
+      zax(paramBufferedReader, zaa);
+      return null;
+    }
+    if (i == 91)
+    {
+      zat.push(Integer.valueOf(5));
+      ArrayList localArrayList = new ArrayList();
+      for (;;)
+      {
+        paramBufferedReader.mark(1024);
+        i = zai(paramBufferedReader);
+        if (i == 0) {
+          break label107;
+        }
+        if (i != 44)
+        {
+          if (i == 93) {
+            break;
+          }
+          paramBufferedReader.reset();
+          localArrayList.add(paramZai.zaa(this, paramBufferedReader));
+        }
+      }
+      zaw(5);
+      return localArrayList;
+      label107:
+      throw new ParseException("Unexpected EOF");
+    }
+    throw new ParseException("Expected start of array");
+  }
+  
+  private final <T extends FastJsonResponse> ArrayList<T> zav(BufferedReader paramBufferedReader, FastJsonResponse.Field<?, ?> paramField)
+    throws FastParser.ParseException, IOException
+  {
+    ArrayList localArrayList = new ArrayList();
+    char c = zai(paramBufferedReader);
+    if (c != ']')
+    {
+      if (c != 'n')
+      {
+        if (c == '{')
+        {
+          zat.push(Integer.valueOf(1));
+          try
+          {
+            for (;;)
+            {
+              FastJsonResponse localFastJsonResponse = paramField.zad();
+              if (!zaz(paramBufferedReader, localFastJsonResponse)) {
+                break label167;
+              }
+              localArrayList.add(localFastJsonResponse);
+              c = zai(paramBufferedReader);
+              if (c != ',')
+              {
+                if (c == ']')
+                {
+                  zaw(5);
+                  return localArrayList;
+                }
+                paramBufferedReader = new StringBuilder(19);
+                paramBufferedReader.append("Unexpected token: ");
+                paramBufferedReader.append(c);
+                throw new ParseException(paramBufferedReader.toString());
+              }
+              if (zai(paramBufferedReader) != '{') {
+                break;
+              }
+              zat.push(Integer.valueOf(1));
+            }
+            throw new ParseException("Expected start of next object in array");
+            label167:
+            return localArrayList;
+          }
+          catch (IllegalAccessException paramBufferedReader)
+          {
+            throw new ParseException("Error instantiating inner object", paramBufferedReader);
+          }
+          catch (InstantiationException paramBufferedReader)
+          {
+            throw new ParseException("Error instantiating inner object", paramBufferedReader);
+          }
+        }
+        paramBufferedReader = new StringBuilder(19);
+        paramBufferedReader.append("Unexpected token: ");
+        paramBufferedReader.append(c);
+        throw new ParseException(paramBufferedReader.toString());
+      }
+      zax(paramBufferedReader, zaa);
+      zaw(5);
+      return null;
+    }
+    zaw(5);
+    return localArrayList;
+  }
+  
+  private final void zaw(int paramInt)
+    throws FastParser.ParseException
+  {
+    if (!zat.isEmpty())
+    {
+      int i = ((Integer)zat.pop()).intValue();
+      if (i == paramInt) {
+        return;
+      }
+      localStringBuilder = new StringBuilder(46);
+      localStringBuilder.append("Expected state ");
+      localStringBuilder.append(paramInt);
+      localStringBuilder.append(" but had ");
+      localStringBuilder.append(i);
+      throw new ParseException(localStringBuilder.toString());
+    }
+    StringBuilder localStringBuilder = new StringBuilder(46);
+    localStringBuilder.append("Expected state ");
+    localStringBuilder.append(paramInt);
+    localStringBuilder.append(" but had empty stack");
+    throw new ParseException(localStringBuilder.toString());
+  }
+  
+  private final void zax(BufferedReader paramBufferedReader, char[] paramArrayOfChar)
+    throws FastParser.ParseException, IOException
+  {
+    int i = 0;
+    for (;;)
+    {
+      int j = paramArrayOfChar.length;
+      if (i >= j) {
+        return;
+      }
+      int k = paramBufferedReader.read(zap, 0, j - i);
+      if (k == -1) {
+        break;
+      }
+      j = 0;
+      while (j < k) {
+        if (paramArrayOfChar[(j + i)] == zap[j]) {
+          j += 1;
+        } else {
+          throw new ParseException("Unexpected character");
+        }
+      }
+      i += k;
+    }
+    throw new ParseException("Unexpected EOF");
+  }
+  
+  private final boolean zay(BufferedReader paramBufferedReader, boolean paramBoolean)
+    throws FastParser.ParseException, IOException
+  {
+    char c = zai(paramBufferedReader);
+    if (c != '"')
+    {
+      char[] arrayOfChar;
+      if (c != 'f')
+      {
+        if (c != 'n')
+        {
+          if (c == 't')
+          {
+            if (paramBoolean) {
+              arrayOfChar = zac;
+            } else {
+              arrayOfChar = zab;
+            }
+            zax(paramBufferedReader, arrayOfChar);
+            return true;
+          }
+          paramBufferedReader = new StringBuilder(19);
+          paramBufferedReader.append("Unexpected token: ");
+          paramBufferedReader.append(c);
+          throw new ParseException(paramBufferedReader.toString());
+        }
+        zax(paramBufferedReader, zaa);
+        return false;
+      }
+      if (paramBoolean) {
+        arrayOfChar = zae;
+      } else {
+        arrayOfChar = zad;
+      }
+      zax(paramBufferedReader, arrayOfChar);
+      return false;
+    }
+    if (!paramBoolean) {
+      return zay(paramBufferedReader, true);
+    }
+    throw new ParseException("No boolean value found in string");
+  }
+  
+  private final boolean zaz(BufferedReader paramBufferedReader, FastJsonResponse paramFastJsonResponse)
+    throws FastParser.ParseException, IOException
+  {
+    Map localMap = paramFastJsonResponse.getFieldMappings();
+    Object localObject = zaq(paramBufferedReader);
+    Integer localInteger = Integer.valueOf(1);
+    if (localObject != null)
+    {
+      while (localObject != null)
+      {
+        FastJsonResponse.Field localField = (FastJsonResponse.Field)localMap.get(localObject);
+        if (localField == null)
+        {
+          localObject = zar(paramBufferedReader);
+        }
+        else
+        {
+          zat.push(Integer.valueOf(4));
+          int i = zaa;
+          switch (i)
+          {
+          default: 
+            paramBufferedReader = new StringBuilder(30);
+            paramBufferedReader.append("Invalid field type ");
+            paramBufferedReader.append(i);
+            throw new ParseException(paramBufferedReader.toString());
+          case 11: 
+            if (zab)
+            {
+              i = zai(paramBufferedReader);
+              if (i == 110)
+              {
+                zax(paramBufferedReader, zaa);
+                paramFastJsonResponse.addConcreteTypeArrayInternal(localField, zae, null);
+              }
+              else
+              {
+                zat.push(Integer.valueOf(5));
+                if (i == 91) {
+                  paramFastJsonResponse.addConcreteTypeArrayInternal(localField, zae, zav(paramBufferedReader, localField));
+                } else {
+                  throw new ParseException("Expected array start");
+                }
+              }
+            }
+            else
+            {
+              i = zai(paramBufferedReader);
+              if (i != 110) {
+                break label310;
+              }
+              zax(paramBufferedReader, zaa);
+              paramFastJsonResponse.addConcreteTypeInternal(localField, zae, null);
+            }
+            for (;;)
+            {
+              break label1094;
+              zat.push(localInteger);
+              if (i == 123) {
+                try
+                {
+                  localObject = localField.zad();
+                  zaz(paramBufferedReader, (FastJsonResponse)localObject);
+                  paramFastJsonResponse.addConcreteTypeInternal(localField, zae, (FastJsonResponse)localObject);
+                }
+                catch (IllegalAccessException paramBufferedReader)
+                {
+                  throw new ParseException("Error instantiating inner object", paramBufferedReader);
+                }
+                catch (InstantiationException paramBufferedReader)
+                {
+                  throw new ParseException("Error instantiating inner object", paramBufferedReader);
+                }
+              }
+            }
+            throw new ParseException("Expected start of object");
+          case 10: 
+            i = zai(paramBufferedReader);
+            if (i == 110)
+            {
+              zax(paramBufferedReader, zaa);
+              localObject = null;
+            }
+            else
+            {
+              if (i != 123) {
+                break label714;
+              }
+              zat.push(localInteger);
+              localObject = new HashMap();
+            }
+            for (;;)
+            {
+              i = zai(paramBufferedReader);
+              if (i == 0) {
+                break;
+              }
+              if (i != 34)
+              {
+                if (i != 125) {
+                  continue;
+                }
+                zaw(1);
+              }
+              else
+              {
+                String str = zaA(paramBufferedReader, zap, zar, null);
+                if (zai(paramBufferedReader) != ':')
+                {
+                  paramBufferedReader = String.valueOf(str);
+                  if (paramBufferedReader.length() != 0) {
+                    paramBufferedReader = "No map value found for key ".concat(paramBufferedReader);
+                  } else {
+                    paramBufferedReader = new String("No map value found for key ");
+                  }
+                  throw new ParseException(paramBufferedReader);
+                }
+                if (zai(paramBufferedReader) != '"')
+                {
+                  paramBufferedReader = String.valueOf(str);
+                  if (paramBufferedReader.length() != 0) {
+                    paramBufferedReader = "Expected String value for key ".concat(paramBufferedReader);
+                  } else {
+                    paramBufferedReader = new String("Expected String value for key ");
+                  }
+                  throw new ParseException(paramBufferedReader);
+                }
+                ((HashMap)localObject).put(str, zaA(paramBufferedReader, zap, zar, null));
+                c = zai(paramBufferedReader);
+                if (c == ',') {
+                  break label700;
+                }
+                if (c != '}') {
+                  break label664;
+                }
+                zaw(1);
+              }
+              paramFastJsonResponse.zaB(localField, (Map)localObject);
+              break label778;
+              paramBufferedReader = new StringBuilder(48);
+              paramBufferedReader.append("Unexpected character while parsing string map: ");
+              paramBufferedReader.append(c);
+              throw new ParseException(paramBufferedReader.toString());
+            }
+            throw new ParseException("Unexpected EOF");
+            throw new ParseException("Expected start of a map object");
+          case 9: 
+            paramFastJsonResponse.zal(localField, Base64Utils.decodeUrlSafe(zap(paramBufferedReader, zaq, zas, zaf)));
+            break;
+          case 8: 
+            label310:
+            label664:
+            label700:
+            label714:
+            paramFastJsonResponse.zal(localField, Base64Utils.decode(zap(paramBufferedReader, zaq, zas, zaf)));
+          }
+          for (;;)
+          {
+            label778:
+            break;
+            if (zab)
+            {
+              paramFastJsonResponse.zaC(localField, zau(paramBufferedReader, zal));
+            }
+            else
+            {
+              paramFastJsonResponse.zaA(localField, zao(paramBufferedReader));
+              continue;
+              if (zab)
+              {
+                paramFastJsonResponse.zaj(localField, zau(paramBufferedReader, zak));
+              }
+              else
+              {
+                paramFastJsonResponse.zai(localField, zay(paramBufferedReader, false));
+                continue;
+                if (zab)
+                {
+                  paramFastJsonResponse.zac(localField, zau(paramBufferedReader, zan));
+                }
+                else
+                {
+                  paramFastJsonResponse.zaa(localField, zas(paramBufferedReader));
+                  continue;
+                  if (zab)
+                  {
+                    paramFastJsonResponse.zao(localField, zau(paramBufferedReader, zaj));
+                  }
+                  else
+                  {
+                    paramFastJsonResponse.zam(localField, zaj(paramBufferedReader));
+                    continue;
+                    if (zab)
+                    {
+                      paramFastJsonResponse.zas(localField, zau(paramBufferedReader, zai));
+                    }
+                    else
+                    {
+                      paramFastJsonResponse.zaq(localField, zak(paramBufferedReader));
+                      continue;
+                      if (zab)
+                      {
+                        paramFastJsonResponse.zay(localField, zau(paramBufferedReader, zah));
+                      }
+                      else
+                      {
+                        paramFastJsonResponse.zax(localField, zan(paramBufferedReader));
+                        continue;
+                        if (zab)
+                        {
+                          paramFastJsonResponse.zag(localField, zau(paramBufferedReader, zam));
+                        }
+                        else
+                        {
+                          paramFastJsonResponse.zae(localField, zat(paramBufferedReader));
+                          continue;
+                          if (zab) {
+                            paramFastJsonResponse.zav(localField, zau(paramBufferedReader, zag));
+                          } else {
+                            paramFastJsonResponse.zau(localField, zal(paramBufferedReader));
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          label1094:
+          zaw(4);
+          zaw(2);
+          char c = zai(paramBufferedReader);
+          if (c != ',')
+          {
+            if (c == '}')
+            {
+              localObject = null;
+            }
+            else
+            {
+              paramBufferedReader = new StringBuilder(55);
+              paramBufferedReader.append("Expected end of object or field separator, but found: ");
+              paramBufferedReader.append(c);
+              throw new ParseException(paramBufferedReader.toString());
+            }
+          }
+          else {
+            localObject = zaq(paramBufferedReader);
+          }
+        }
+      }
+      zaw(1);
+      return true;
+    }
+    zaw(1);
+    return false;
+  }
+  
+  /* Error */
+  @KeepForSdk
+  public void parse(java.io.InputStream paramInputStream, T paramT)
+    throws FastParser.ParseException
+  {
+    // Byte code:
+    //   0: new 137	java/io/BufferedReader
+    //   3: dup
+    //   4: new 512	java/io/InputStreamReader
+    //   7: dup
+    //   8: aload_1
+    //   9: invokespecial 515	java/io/InputStreamReader:<init>	(Ljava/io/InputStream;)V
+    //   12: sipush 1024
+    //   15: invokespecial 518	java/io/BufferedReader:<init>	(Ljava/io/Reader;I)V
+    //   18: astore_1
+    //   19: aload_0
+    //   20: getfield 128	com/google/android/gms/common/server/response/FastParser:zat	Ljava/util/Stack;
+    //   23: iconst_0
+    //   24: invokestatic 286	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   27: invokevirtual 290	java/util/Stack:push	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   30: pop
+    //   31: aload_0
+    //   32: aload_1
+    //   33: invokespecial 253	com/google/android/gms/common/server/response/FastParser:zai	(Ljava/io/BufferedReader;)C
+    //   36: istore_3
+    //   37: iload_3
+    //   38: ifeq +186 -> 224
+    //   41: iload_3
+    //   42: bipush 91
+    //   44: if_icmpeq +67 -> 111
+    //   47: iload_3
+    //   48: bipush 123
+    //   50: if_icmpne +25 -> 75
+    //   53: aload_0
+    //   54: getfield 128	com/google/android/gms/common/server/response/FastParser:zat	Ljava/util/Stack;
+    //   57: iconst_1
+    //   58: invokestatic 286	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   61: invokevirtual 290	java/util/Stack:push	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   64: pop
+    //   65: aload_0
+    //   66: aload_1
+    //   67: aload_2
+    //   68: invokespecial 352	com/google/android/gms/common/server/response/FastParser:zaz	(Ljava/io/BufferedReader;Lcom/google/android/gms/common/server/response/FastJsonResponse;)Z
+    //   71: pop
+    //   72: goto +120 -> 192
+    //   75: new 116	java/lang/StringBuilder
+    //   78: dup
+    //   79: bipush 19
+    //   81: invokespecial 119	java/lang/StringBuilder:<init>	(I)V
+    //   84: astore_2
+    //   85: aload_2
+    //   86: ldc_w 295
+    //   89: invokevirtual 298	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   92: pop
+    //   93: aload_2
+    //   94: iload_3
+    //   95: invokevirtual 301	java/lang/StringBuilder:append	(C)Ljava/lang/StringBuilder;
+    //   98: pop
+    //   99: new 7	com/google/android/gms/common/server/response/FastParser$ParseException
+    //   102: dup
+    //   103: aload_2
+    //   104: invokevirtual 170	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   107: invokespecial 155	com/google/android/gms/common/server/response/FastParser$ParseException:<init>	(Ljava/lang/String;)V
+    //   110: athrow
+    //   111: aload_0
+    //   112: getfield 128	com/google/android/gms/common/server/response/FastParser:zat	Ljava/util/Stack;
+    //   115: iconst_5
+    //   116: invokestatic 286	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   119: invokevirtual 290	java/util/Stack:push	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   122: pop
+    //   123: aload_2
+    //   124: invokevirtual 391	com/google/android/gms/common/server/response/FastJsonResponse:getFieldMappings	()Ljava/util/Map;
+    //   127: astore 4
+    //   129: aload 4
+    //   131: invokeinterface 521 1 0
+    //   136: iconst_1
+    //   137: if_icmpne +76 -> 213
+    //   140: aload 4
+    //   142: invokeinterface 525 1 0
+    //   147: invokeinterface 531 1 0
+    //   152: invokeinterface 536 1 0
+    //   157: checkcast 538	java/util/Map$Entry
+    //   160: invokeinterface 541 1 0
+    //   165: checkcast 345	com/google/android/gms/common/server/response/FastJsonResponse$Field
+    //   168: astore 4
+    //   170: aload_0
+    //   171: aload_1
+    //   172: aload 4
+    //   174: invokespecial 413	com/google/android/gms/common/server/response/FastParser:zav	(Ljava/io/BufferedReader;Lcom/google/android/gms/common/server/response/FastJsonResponse$Field;)Ljava/util/ArrayList;
+    //   177: astore 5
+    //   179: aload_2
+    //   180: aload 4
+    //   182: aload 4
+    //   184: getfield 407	com/google/android/gms/common/server/response/FastJsonResponse$Field:zae	Ljava/lang/String;
+    //   187: aload 5
+    //   189: invokevirtual 411	com/google/android/gms/common/server/response/FastJsonResponse:addConcreteTypeArrayInternal	(Lcom/google/android/gms/common/server/response/FastJsonResponse$Field;Ljava/lang/String;Ljava/util/ArrayList;)V
+    //   192: aload_0
+    //   193: iconst_0
+    //   194: invokespecial 293	com/google/android/gms/common/server/response/FastParser:zaw	(I)V
+    //   197: aload_1
+    //   198: invokevirtual 544	java/io/BufferedReader:close	()V
+    //   201: return
+    //   202: ldc_w 546
+    //   205: ldc_w 548
+    //   208: invokestatic 554	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   211: pop
+    //   212: return
+    //   213: new 7	com/google/android/gms/common/server/response/FastParser$ParseException
+    //   216: dup
+    //   217: ldc_w 556
+    //   220: invokespecial 155	com/google/android/gms/common/server/response/FastParser$ParseException:<init>	(Ljava/lang/String;)V
+    //   223: athrow
+    //   224: new 7	com/google/android/gms/common/server/response/FastParser$ParseException
+    //   227: dup
+    //   228: ldc_w 558
+    //   231: invokespecial 155	com/google/android/gms/common/server/response/FastParser$ParseException:<init>	(Ljava/lang/String;)V
+    //   234: athrow
+    //   235: astore_2
+    //   236: goto +13 -> 249
+    //   239: astore_2
+    //   240: new 7	com/google/android/gms/common/server/response/FastParser$ParseException
+    //   243: dup
+    //   244: aload_2
+    //   245: invokespecial 561	com/google/android/gms/common/server/response/FastParser$ParseException:<init>	(Ljava/lang/Throwable;)V
+    //   248: athrow
+    //   249: aload_1
+    //   250: invokevirtual 544	java/io/BufferedReader:close	()V
+    //   253: goto +13 -> 266
+    //   256: ldc_w 546
+    //   259: ldc_w 548
+    //   262: invokestatic 554	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   265: pop
+    //   266: aload_2
+    //   267: athrow
+    //   268: astore_1
+    //   269: goto -67 -> 202
+    //   272: astore_1
+    //   273: goto -17 -> 256
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	276	0	this	FastParser
+    //   0	276	1	paramInputStream	java.io.InputStream
+    //   0	276	2	paramT	T
+    //   36	59	3	c	char
+    //   127	56	4	localObject	Object
+    //   177	11	5	localArrayList	ArrayList
+    // Exception table:
+    //   from	to	target	type
+    //   19	37	235	finally
+    //   53	72	235	finally
+    //   75	111	235	finally
+    //   111	192	235	finally
+    //   192	197	235	finally
+    //   213	224	235	finally
+    //   224	235	235	finally
+    //   240	249	235	finally
+    //   19	37	239	java/io/IOException
+    //   53	72	239	java/io/IOException
+    //   75	111	239	java/io/IOException
+    //   111	192	239	java/io/IOException
+    //   192	197	239	java/io/IOException
+    //   213	224	239	java/io/IOException
+    //   224	235	239	java/io/IOException
+    //   197	201	268	java/io/IOException
+    //   249	253	272	java/io/IOException
+  }
+  
+  @KeepForSdk
+  @ShowFirstParty
+  public static class ParseException
+    extends Exception
+  {
+    public ParseException(String paramString)
+    {
+      super();
+    }
+    
+    public ParseException(String paramString, Throwable paramThrowable)
+    {
+      super(paramThrowable);
+    }
+    
+    public ParseException(Throwable paramThrowable)
+    {
+      super();
+    }
+  }
+}

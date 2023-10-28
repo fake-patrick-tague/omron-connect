@@ -1,0 +1,97 @@
+package com.alivecor.ecg.record;
+
+import com.alivecor.ai.o;
+import com.alivecor.ai.s;
+import com.alivecor.api.AliveCorDetermination;
+import com.alivecor.api.AliveCorDevice;
+import com.alivecor.api.AliveCorEcg;
+import com.alivecor.api.EcgEvaluation;
+import com.alivecor.api.InternalRecordApiUtil;
+import com.alivecor.api.LeadConfiguration;
+import com.alivecor.api.RecordingConfiguration;
+import com.alivecor.api.RecordingDeviceInfo;
+import com.alivecor.ecg.core.model.b;
+import com.alivecor.ecg.core.model.c;
+import com.alivecor.ecg.core.model.d;
+import com.alivecor.ecg.core.model.d.a;
+
+class RecordSdkHelper
+  extends InternalRecordApiUtil
+{
+  RecordSdkHelper(RecordEkgConfig paramRecordEkgConfig)
+  {
+    super(paramRecordEkgConfig.appContext(), paramRecordEkgConfig.getAppName());
+  }
+  
+  protected AliveCorDetermination externalDetermination(o paramO)
+  {
+    return super.externalDetermination(paramO);
+  }
+  
+  protected AliveCorDevice externalDevice(d.a paramA)
+  {
+    return super.externalDevice(paramA);
+  }
+  
+  protected RecordingDeviceInfo externalDeviceInfo(d paramD, b paramB, String paramString)
+  {
+    return super.externalDeviceInfo(paramD, paramB, paramString);
+  }
+  
+  protected AliveCorEcg externalEcg(RecordResult paramRecordResult, s paramS, RecordingSettings paramRecordingSettings, RecordingConfig paramRecordingConfig)
+  {
+    return super.externalEcg(paramRecordResult, paramS, paramRecordingSettings, paramRecordingConfig);
+  }
+  
+  protected LeadConfiguration externalLeads(b paramB)
+  {
+    return super.externalLeads(paramB);
+  }
+  
+  protected o internalDetermination(AliveCorDetermination paramAliveCorDetermination)
+  {
+    return super.internalDetermination(paramAliveCorDetermination);
+  }
+  
+  protected d.a internalDevice(AliveCorDevice paramAliveCorDevice)
+  {
+    return super.internalDevice(paramAliveCorDevice);
+  }
+  
+  protected b internalLeads(LeadConfiguration paramLeadConfiguration)
+  {
+    return super.internalLeads(paramLeadConfiguration);
+  }
+  
+  protected c internalRecordingDevice(AliveCorDevice paramAliveCorDevice)
+  {
+    return super.internalRecordingDevice(paramAliveCorDevice);
+  }
+  
+  public AliveCorEcg mapFromRecordResult(RecordResult paramRecordResult, s paramS, RecordingSettings paramRecordingSettings, RecordingConfig paramRecordingConfig)
+  {
+    return externalEcg(paramRecordResult, paramS, paramRecordingSettings, paramRecordingConfig);
+  }
+  
+  public ResultDetail resultDetailFromEcg(AliveCorEcg paramAliveCorEcg)
+  {
+    ResultDetail localResultDetail = new ResultDetail();
+    if (paramAliveCorEcg.getEcgEvaluation() != null)
+    {
+      if (paramAliveCorEcg.getEcgEvaluation().getAverageHeartRate() != null) {
+        localResultDetail.setBpm(paramAliveCorEcg.getEcgEvaluation().getAverageHeartRate().floatValue());
+      }
+      kaiResult = internalDetermination(paramAliveCorEcg.getEcgEvaluation().getDetermination());
+      localResultDetail.setInverted(paramAliveCorEcg.getEcgEvaluation().isInverted());
+    }
+    if (paramAliveCorEcg.getRecordingConfiguration() != null)
+    {
+      localResultDetail.setHardwareType(internalDevice(paramAliveCorEcg.getRecordingConfiguration().getDevice()));
+      if (paramAliveCorEcg.getRecordingConfiguration().getLeads() != null) {
+        localResultDetail.setLeadsConfig(internalLeads(paramAliveCorEcg.getRecordingConfiguration().getLeads()));
+      }
+    }
+    localResultDetail.setLocalRecordingID(paramAliveCorEcg.getUuid());
+    return localResultDetail;
+  }
+}

@@ -1,0 +1,125 @@
+package com.google.android.gms.common.internal;
+
+import android.accounts.Account;
+import android.content.Context;
+import android.os.Handler;
+import android.os.IInterface;
+import android.os.Looper;
+import com.google.android.gms.common.Feature;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.api.internal.ConnectionCallbacks;
+import com.google.android.gms.common.api.internal.OnConnectionFailedListener;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.Executor;
+
+@KeepForSdk
+public abstract class GmsClient<T extends IInterface>
+  extends BaseGmsClient<T>
+  implements Api.Client, zaj
+{
+  private static volatile Executor zaa;
+  private final ClientSettings zab;
+  private final Set<Scope> zac;
+  private final Account zad;
+  
+  @KeepForSdk
+  @VisibleForTesting
+  protected GmsClient(Context paramContext, Handler paramHandler, int paramInt, ClientSettings paramClientSettings)
+  {
+    super(paramContext, paramHandler, GmsClientSupervisor.getInstance(paramContext), GoogleApiAvailability.getInstance(), paramInt, null, null);
+    zab = ((ClientSettings)Preconditions.checkNotNull(paramClientSettings));
+    zad = paramClientSettings.getAccount();
+    zac = zaa(paramClientSettings.getAllRequestedScopes());
+  }
+  
+  @KeepForSdk
+  protected GmsClient(Context paramContext, Looper paramLooper, int paramInt, ClientSettings paramClientSettings)
+  {
+    this(paramContext, paramLooper, GmsClientSupervisor.getInstance(paramContext), GoogleApiAvailability.getInstance(), paramInt, paramClientSettings, null, null);
+  }
+  
+  @Deprecated
+  @KeepForSdk
+  protected GmsClient(Context paramContext, Looper paramLooper, int paramInt, ClientSettings paramClientSettings, GoogleApiClient.ConnectionCallbacks paramConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    this(paramContext, paramLooper, paramInt, paramClientSettings, paramConnectionCallbacks, paramOnConnectionFailedListener);
+  }
+  
+  @KeepForSdk
+  protected GmsClient(Context paramContext, Looper paramLooper, int paramInt, ClientSettings paramClientSettings, ConnectionCallbacks paramConnectionCallbacks, OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    this(paramContext, paramLooper, GmsClientSupervisor.getInstance(paramContext), GoogleApiAvailability.getInstance(), paramInt, paramClientSettings, (ConnectionCallbacks)Preconditions.checkNotNull(paramConnectionCallbacks), (OnConnectionFailedListener)Preconditions.checkNotNull(paramOnConnectionFailedListener));
+  }
+  
+  @VisibleForTesting
+  protected GmsClient(Context paramContext, Looper paramLooper, GmsClientSupervisor paramGmsClientSupervisor, GoogleApiAvailability paramGoogleApiAvailability, int paramInt, ClientSettings paramClientSettings, ConnectionCallbacks paramConnectionCallbacks, OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    super(paramContext, paramLooper, paramGmsClientSupervisor, paramGoogleApiAvailability, paramInt, paramConnectionCallbacks, paramOnConnectionFailedListener, paramClientSettings.zac());
+    zab = paramClientSettings;
+    zad = paramClientSettings.getAccount();
+    zac = zaa(paramClientSettings.getAllRequestedScopes());
+  }
+  
+  private final Set<Scope> zaa(Set<Scope> paramSet)
+  {
+    Set localSet = validateScopes(paramSet);
+    Iterator localIterator = localSet.iterator();
+    while (localIterator.hasNext()) {
+      if (!paramSet.contains((Scope)localIterator.next())) {
+        throw new IllegalStateException("Expanding scopes is not permitted, use implied scopes instead");
+      }
+    }
+    return localSet;
+  }
+  
+  public final Account getAccount()
+  {
+    return zad;
+  }
+  
+  protected final Executor getBindServiceExecutor()
+  {
+    return null;
+  }
+  
+  @KeepForSdk
+  protected final ClientSettings getClientSettings()
+  {
+    return zab;
+  }
+  
+  @KeepForSdk
+  public Feature[] getRequiredFeatures()
+  {
+    return new Feature[0];
+  }
+  
+  @KeepForSdk
+  protected final Set<Scope> getScopes()
+  {
+    return zac;
+  }
+  
+  @KeepForSdk
+  public Set<Scope> getScopesForConnectionlessNonSignIn()
+  {
+    if (requiresSignIn()) {
+      return zac;
+    }
+    return Collections.emptySet();
+  }
+  
+  @KeepForSdk
+  protected Set<Scope> validateScopes(Set<Scope> paramSet)
+  {
+    return paramSet;
+  }
+}

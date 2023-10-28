@@ -1,0 +1,152 @@
+package com.google.android.gms.common.api.internal;
+
+import android.app.PendingIntent;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.internal.base.zaq;
+import java.util.concurrent.atomic.AtomicReference;
+
+public abstract class zap
+  extends LifecycleCallback
+  implements DialogInterface.OnCancelListener
+{
+  protected volatile boolean zaa;
+  protected final AtomicReference<zam> zab = new AtomicReference(null);
+  protected final GoogleApiAvailability zac;
+  private final Handler zad = new zaq(Looper.getMainLooper());
+  
+  @VisibleForTesting
+  zap(LifecycleFragment paramLifecycleFragment, GoogleApiAvailability paramGoogleApiAvailability)
+  {
+    super(paramLifecycleFragment);
+    zac = paramGoogleApiAvailability;
+  }
+  
+  private final void zaa(ConnectionResult paramConnectionResult, int paramInt)
+  {
+    zab.set(null);
+    zab(paramConnectionResult, paramInt);
+  }
+  
+  private final void zad()
+  {
+    zab.set(null);
+    zac();
+  }
+  
+  private static final int zae(zam paramZam)
+  {
+    if (paramZam == null) {
+      return -1;
+    }
+    return paramZam.zaa();
+  }
+  
+  public final void onActivityResult(int paramInt1, int paramInt2, Intent paramIntent)
+  {
+    zam localZam = (zam)zab.get();
+    if (paramInt1 != 1)
+    {
+      if (paramInt1 == 2)
+      {
+        paramInt1 = zac.isGooglePlayServicesAvailable(getActivity());
+        if (paramInt1 == 0)
+        {
+          zad();
+          return;
+        }
+        if (localZam == null) {
+          return;
+        }
+        if ((localZam.zab().getErrorCode() != 18) || (paramInt1 != 18)) {}
+      }
+    }
+    else
+    {
+      if (paramInt2 == -1)
+      {
+        zad();
+        return;
+      }
+      if (paramInt2 == 0)
+      {
+        if (localZam == null) {
+          return;
+        }
+        paramInt1 = 13;
+        if (paramIntent != null) {
+          paramInt1 = paramIntent.getIntExtra("<<ResolutionFailureErrorDetail>>", 13);
+        }
+        zaa(new ConnectionResult(paramInt1, null, localZam.zab().toString()), zae(localZam));
+        return;
+      }
+    }
+    if (localZam != null) {
+      zaa(localZam.zab(), localZam.zaa());
+    }
+  }
+  
+  public final void onCancel(DialogInterface paramDialogInterface)
+  {
+    zaa(new ConnectionResult(13, null), zae((zam)zab.get()));
+  }
+  
+  public final void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    if (paramBundle != null)
+    {
+      AtomicReference localAtomicReference = zab;
+      if (paramBundle.getBoolean("resolving_error", false)) {
+        paramBundle = new zam(new ConnectionResult(paramBundle.getInt("failed_status"), (PendingIntent)paramBundle.getParcelable("failed_resolution")), paramBundle.getInt("failed_client_id", -1));
+      } else {
+        paramBundle = null;
+      }
+      localAtomicReference.set(paramBundle);
+    }
+  }
+  
+  public final void onSaveInstanceState(Bundle paramBundle)
+  {
+    super.onSaveInstanceState(paramBundle);
+    zam localZam = (zam)zab.get();
+    if (localZam == null) {
+      return;
+    }
+    paramBundle.putBoolean("resolving_error", true);
+    paramBundle.putInt("failed_client_id", localZam.zaa());
+    paramBundle.putInt("failed_status", localZam.zab().getErrorCode());
+    paramBundle.putParcelable("failed_resolution", localZam.zab().getResolution());
+  }
+  
+  public void onStart()
+  {
+    super.onStart();
+    zaa = true;
+  }
+  
+  public void onStop()
+  {
+    super.onStop();
+    zaa = false;
+  }
+  
+  protected abstract void zab(ConnectionResult paramConnectionResult, int paramInt);
+  
+  protected abstract void zac();
+  
+  public final void zah(ConnectionResult paramConnectionResult, int paramInt)
+  {
+    paramConnectionResult = new zam(paramConnectionResult, paramInt);
+    if (zab.compareAndSet(null, paramConnectionResult)) {
+      zad.post(new zao(this, paramConnectionResult));
+    }
+  }
+}

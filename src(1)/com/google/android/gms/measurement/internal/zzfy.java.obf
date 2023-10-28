@@ -1,0 +1,748 @@
+package com.google.android.gms.measurement.internal;
+
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Pair;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.Clock;
+import com.google.android.gms.common.util.DefaultClock;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.common.wrappers.PackageManagerWrapper;
+import com.google.android.gms.common.wrappers.Wrappers;
+import com.google.android.gms.internal.measurement.zzcl;
+import com.google.android.gms.internal.measurement.zzia;
+import com.google.android.gms.internal.measurement.zznv;
+import java.net.URL;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import org.checkerframework.dataflow.qual.Pure;
+import org.checkerframework.dataflow.qual.SideEffectFree;
+
+public final class zzfy
+  implements zzgt
+{
+  private static volatile zzfy zzd;
+  private zzef zzA;
+  private boolean zzB;
+  private Boolean zzC;
+  private long zzD;
+  private volatile Boolean zzE;
+  private volatile boolean zzF;
+  private int zzG;
+  private final AtomicInteger zzH;
+  @VisibleForTesting
+  protected Boolean zza;
+  @VisibleForTesting
+  protected Boolean zzb;
+  @VisibleForTesting
+  final long zzc;
+  private final Context zze;
+  private final String zzf;
+  private final String zzg;
+  private final String zzh;
+  private final boolean zzi;
+  private final zzab zzj;
+  private final zzag zzk;
+  private final zzfd zzl;
+  private final zzeo zzm;
+  private final zzfv zzn;
+  private final zzki zzo;
+  private final zzlh zzp;
+  private final zzej zzq;
+  private final Clock zzr;
+  private final zzis zzs;
+  private final zzid zzt;
+  private final zzd zzu;
+  private final zzih zzv;
+  private final String zzw;
+  private zzeh zzx;
+  private zzjs zzy;
+  private zzaq zzz;
+  
+  zzfy(zzhb paramZzhb)
+  {
+    int i = 0;
+    zzB = false;
+    zzH = new AtomicInteger(0);
+    Preconditions.checkNotNull(paramZzhb);
+    Object localObject1 = zza;
+    Object localObject2 = new zzab((Context)localObject1);
+    zzj = ((zzab)localObject2);
+    zzdy.zza = (zzab)localObject2;
+    zze = ((Context)localObject1);
+    zzf = zzb;
+    zzg = zzc;
+    zzh = zzd;
+    zzi = zzh;
+    zzE = zze;
+    zzw = zzj;
+    zzF = true;
+    localObject2 = zzg;
+    if (localObject2 != null)
+    {
+      localObject3 = zzg;
+      if (localObject3 != null)
+      {
+        localObject3 = ((Bundle)localObject3).get("measurementEnabled");
+        if ((localObject3 instanceof Boolean)) {
+          zza = ((Boolean)localObject3);
+        }
+        localObject2 = zzg.get("measurementDeactivated");
+        if ((localObject2 instanceof Boolean)) {
+          zzb = ((Boolean)localObject2);
+        }
+      }
+    }
+    zzia.zze((Context)localObject1);
+    localObject2 = DefaultClock.getInstance();
+    zzr = ((Clock)localObject2);
+    Object localObject3 = zzi;
+    long l;
+    if (localObject3 != null) {
+      l = ((Long)localObject3).longValue();
+    } else {
+      l = ((Clock)localObject2).currentTimeMillis();
+    }
+    zzc = l;
+    zzk = new zzag(this);
+    localObject2 = new zzfd(this);
+    ((zzgs)localObject2).zzv();
+    zzl = ((zzfd)localObject2);
+    localObject2 = new zzeo(this);
+    ((zzgs)localObject2).zzv();
+    zzm = ((zzeo)localObject2);
+    localObject2 = new zzlh(this);
+    ((zzgs)localObject2).zzv();
+    zzp = ((zzlh)localObject2);
+    zzq = new zzej(new zzha(paramZzhb, this));
+    zzu = new zzd(this);
+    localObject2 = new zzis(this);
+    ((zzf)localObject2).zzb();
+    zzs = ((zzis)localObject2);
+    localObject2 = new zzid(this);
+    ((zzf)localObject2).zzb();
+    zzt = ((zzid)localObject2);
+    localObject2 = new zzki(this);
+    ((zzf)localObject2).zzb();
+    zzo = ((zzki)localObject2);
+    localObject2 = new zzih(this);
+    ((zzgs)localObject2).zzv();
+    zzv = ((zzih)localObject2);
+    localObject2 = new zzfv(this);
+    ((zzgs)localObject2).zzv();
+    zzn = ((zzfv)localObject2);
+    localObject3 = zzg;
+    if ((localObject3 == null) || (zzb == 0L)) {
+      i = 1;
+    }
+    if ((((Context)localObject1).getApplicationContext() instanceof Application))
+    {
+      localObject1 = zzq();
+      if ((zzs.zze.getApplicationContext() instanceof Application))
+      {
+        localObject3 = (Application)zzs.zze.getApplicationContext();
+        if (zza == null) {
+          zza = new zzic((zzid)localObject1, null);
+        }
+        if (i != 0)
+        {
+          ((Application)localObject3).unregisterActivityLifecycleCallbacks(zza);
+          ((Application)localObject3).registerActivityLifecycleCallbacks(zza);
+          zzs.zzay().zzj().zza("Registered activity lifecycle callback");
+        }
+      }
+    }
+    else
+    {
+      zzay().zzk().zza("Application context is not an Application");
+    }
+    ((zzfv)localObject2).zzp(new zzfx(this, paramZzhb));
+  }
+  
+  static final void zzO()
+  {
+    throw new IllegalStateException("Unexpected call on client side");
+  }
+  
+  private static final void zzP(zzgr paramZzgr)
+  {
+    if (paramZzgr != null) {
+      return;
+    }
+    throw new IllegalStateException("Component not created");
+  }
+  
+  private static final void zzQ(zzf paramZzf)
+  {
+    if (paramZzf != null)
+    {
+      if (paramZzf.zze()) {
+        return;
+      }
+      throw new IllegalStateException("Component not initialized: ".concat(String.valueOf(paramZzf.getClass())));
+    }
+    throw new IllegalStateException("Component not created");
+  }
+  
+  private static final void zzR(zzgs paramZzgs)
+  {
+    if (paramZzgs != null)
+    {
+      if (paramZzgs.zzx()) {
+        return;
+      }
+      throw new IllegalStateException("Component not initialized: ".concat(String.valueOf(paramZzgs.getClass())));
+    }
+    throw new IllegalStateException("Component not created");
+  }
+  
+  public static zzfy zzp(Context paramContext, zzcl paramZzcl, Long paramLong)
+  {
+    zzcl localZzcl = paramZzcl;
+    if (paramZzcl != null) {
+      if (zze != null)
+      {
+        localZzcl = paramZzcl;
+        if (zzf != null) {}
+      }
+      else
+      {
+        localZzcl = new zzcl(zza, zzb, zzc, zzd, null, null, zzg, null);
+      }
+    }
+    Preconditions.checkNotNull(paramContext);
+    Preconditions.checkNotNull(paramContext.getApplicationContext());
+    if (zzd == null)
+    {
+      try
+      {
+        if (zzd == null) {
+          zzd = new zzfy(new zzhb(paramContext, localZzcl, paramLong));
+        }
+      }
+      finally {}
+    }
+    else if (localZzcl != null)
+    {
+      paramContext = zzg;
+      if ((paramContext != null) && (paramContext.containsKey("dataCollectionDefaultEnabled")))
+      {
+        Preconditions.checkNotNull(zzd);
+        zzdzzE = Boolean.valueOf(zzg.getBoolean("dataCollectionDefaultEnabled"));
+      }
+    }
+    Preconditions.checkNotNull(zzd);
+    return zzd;
+  }
+  
+  final void zzB()
+  {
+    zzH.incrementAndGet();
+  }
+  
+  final void zzD()
+  {
+    zzG += 1;
+  }
+  
+  public final void zzE()
+  {
+    zzaz().zzg();
+    zzR(zzr());
+    String str = zzh().zzl();
+    Object localObject3 = zzm().zzb(str);
+    Object localObject1;
+    ConnectivityManager localConnectivityManager;
+    zzih localZzih;
+    if ((zzk.zzr()) && (!((Boolean)second).booleanValue()) && (!TextUtils.isEmpty((CharSequence)first)))
+    {
+      localObject1 = zzr();
+      ((zzgs)localObject1).zzu();
+      localConnectivityManager = (ConnectivityManager)zzs.zze.getSystemService("connectivity");
+      localZzih = null;
+      localObject1 = localZzih;
+      if (localConnectivityManager == null) {}
+    }
+    try
+    {
+      localObject1 = localConnectivityManager.getActiveNetworkInfo();
+      if ((localObject1 != null) && (((NetworkInfo)localObject1).isConnected()))
+      {
+        localObject1 = zzv();
+        zzhzzs.zzk.zzh();
+        localObject1 = ((zzlh)localObject1).zzE(73000L, str, (String)first, zzmzzn.zza() - 1L);
+        if (localObject1 != null)
+        {
+          localZzih = zzr();
+          localObject3 = new zzfw(this);
+          localZzih.zzg();
+          localZzih.zzu();
+          Preconditions.checkNotNull(localObject1);
+          Preconditions.checkNotNull(localObject3);
+          zzs.zzaz().zzo(new zzig(localZzih, str, (URL)localObject1, null, null, (zzfw)localObject3, null));
+        }
+        return;
+      }
+      zzay().zzk().zza("Network is not available for Deferred Deep Link request. Skipping");
+      return;
+      zzay().zzc().zza("ADID unavailable to retrieve Deferred Deep Link. Skipping");
+      return;
+    }
+    catch (SecurityException localSecurityException)
+    {
+      for (;;)
+      {
+        Object localObject2 = localZzih;
+      }
+    }
+  }
+  
+  final void zzF(boolean paramBoolean)
+  {
+    zzE = Boolean.valueOf(paramBoolean);
+  }
+  
+  public final void zzG(boolean paramBoolean)
+  {
+    zzaz().zzg();
+    zzF = paramBoolean;
+  }
+  
+  protected final void zzH(zzcl paramZzcl)
+  {
+    zzaz().zzg();
+    Object localObject1 = zzm().zzc();
+    Object localObject2 = zzm();
+    Object localObject3 = zzs;
+    ((zzgr)localObject2).zzg();
+    localObject2 = ((zzfd)localObject2).zza();
+    int i = 100;
+    int j = ((SharedPreferences)localObject2).getInt("consent_source", 100);
+    localObject2 = zzk;
+    localObject3 = zzs;
+    localObject2 = ((zzag)localObject2).zzk("google_analytics_default_allow_ad_storage");
+    localObject3 = zzk;
+    Object localObject4 = zzs;
+    localObject3 = ((zzag)localObject3).zzk("google_analytics_default_allow_analytics_storage");
+    if (((localObject2 != null) || (localObject3 != null)) && (zzm().zzl(-10)))
+    {
+      paramZzcl = new zzai((Boolean)localObject2, (Boolean)localObject3);
+      i = -10;
+    }
+    else
+    {
+      if ((!TextUtils.isEmpty(zzh().zzm())) && ((j == 0) || (j == 30) || (j == 10) || (j == 30) || (j == 30) || (j == 40)))
+      {
+        zzq().zzS(zzai.zza, -10, zzc);
+      }
+      else if ((TextUtils.isEmpty(zzh().zzm())) && (paramZzcl != null) && (zzg != null) && (zzm().zzl(30)))
+      {
+        paramZzcl = zzai.zza(zzg);
+        if (!paramZzcl.equals(zzai.zza))
+        {
+          i = 30;
+          break label271;
+        }
+      }
+      paramZzcl = null;
+    }
+    label271:
+    if (paramZzcl != null)
+    {
+      zzq().zzS(paramZzcl, i, zzc);
+      localObject1 = paramZzcl;
+    }
+    zzq().zzV((zzai)localObject1);
+    if (zzmzzc.zza() == 0L)
+    {
+      zzay().zzj().zzb("Persisting first open", Long.valueOf(zzc));
+      zzmzzc.zzb(zzc);
+    }
+    zzqzzb.zzc();
+    if (!zzM())
+    {
+      if (zzJ())
+      {
+        if (!zzv().zzad("android.permission.INTERNET")) {
+          zzay().zzd().zza("App is missing INTERNET permission");
+        }
+        if (!zzv().zzad("android.permission.ACCESS_NETWORK_STATE")) {
+          zzay().zzd().zza("App is missing ACCESS_NETWORK_STATE permission");
+        }
+        if ((!Wrappers.packageManager(zze).isCallerInstantApp()) && (!zzk.zzx()))
+        {
+          if (!zzlh.zzaj(zze)) {
+            zzay().zzd().zza("AppMeasurementReceiver not registered/enabled");
+          }
+          if (!zzlh.zzak(zze, false)) {
+            zzay().zzd().zza("AppMeasurementService not registered/enabled");
+          }
+        }
+        zzay().zzd().zza("Uploading is not possible. App measurement disabled");
+      }
+    }
+    else
+    {
+      if ((!TextUtils.isEmpty(zzh().zzm())) || (!TextUtils.isEmpty(zzh().zzk())))
+      {
+        paramZzcl = zzv();
+        localObject1 = zzh().zzm();
+        localObject2 = zzm();
+        ((zzgr)localObject2).zzg();
+        localObject2 = ((zzfd)localObject2).zza().getString("gmp_app_id", null);
+        localObject3 = zzh().zzk();
+        localObject4 = zzm();
+        ((zzgr)localObject4).zzg();
+        if (paramZzcl.zzam((String)localObject1, (String)localObject2, (String)localObject3, ((zzfd)localObject4).zza().getString("admob_app_id", null)))
+        {
+          zzay().zzi().zza("Rechecking which service to use due to a GMP App Id change");
+          paramZzcl = zzm();
+          paramZzcl.zzg();
+          localObject1 = paramZzcl.zzd();
+          localObject2 = paramZzcl.zza().edit();
+          ((SharedPreferences.Editor)localObject2).clear();
+          ((SharedPreferences.Editor)localObject2).apply();
+          if (localObject1 != null) {
+            paramZzcl.zzh((Boolean)localObject1);
+          }
+          zzi().zzj();
+          zzy.zzs();
+          zzy.zzr();
+          zzmzzc.zzb(zzc);
+          zzmzze.zzb(null);
+        }
+        localObject1 = zzm();
+        paramZzcl = zzh().zzm();
+        ((zzgr)localObject1).zzg();
+        localObject1 = ((zzfd)localObject1).zza().edit();
+        ((SharedPreferences.Editor)localObject1).putString("gmp_app_id", paramZzcl);
+        ((SharedPreferences.Editor)localObject1).apply();
+        localObject1 = zzm();
+        paramZzcl = zzh().zzk();
+        ((zzgr)localObject1).zzg();
+        localObject1 = ((zzfd)localObject1).zza().edit();
+        ((SharedPreferences.Editor)localObject1).putString("admob_app_id", paramZzcl);
+        ((SharedPreferences.Editor)localObject1).apply();
+      }
+      if (!zzm().zzc().zzi(zzah.zzb)) {
+        zzmzze.zzb(null);
+      }
+      zzq().zzO(zzmzze.zza());
+      zznv.zzc();
+      if (zzk.zzs(null, zzeb.zzac)) {
+        paramZzcl = zzv();
+      }
+    }
+    try
+    {
+      zzs.zze.getClassLoader().loadClass("com.google.firebase.remoteconfig.FirebaseRemoteConfig");
+    }
+    catch (ClassNotFoundException paramZzcl)
+    {
+      boolean bool;
+      for (;;) {}
+    }
+    if (!TextUtils.isEmpty(zzmzzo.zza()))
+    {
+      zzay().zzk().zza("Remote config removed with active feature rollouts");
+      zzmzzo.zzb(null);
+    }
+    if ((!TextUtils.isEmpty(zzh().zzm())) || (!TextUtils.isEmpty(zzh().zzk())))
+    {
+      bool = zzJ();
+      if ((!zzm().zzj()) && (!zzk.zzv())) {
+        zzm().zzi(bool ^ true);
+      }
+      if (bool) {
+        zzq().zzz();
+      }
+      zzuzza.zza();
+      zzt().zzu(new AtomicReference());
+      zzt().zzH(zzmzzr.zza());
+    }
+    zzmzzi.zza(true);
+  }
+  
+  public final boolean zzI()
+  {
+    return (zzE != null) && (zzE.booleanValue());
+  }
+  
+  public final boolean zzJ()
+  {
+    return zza() == 0;
+  }
+  
+  public final boolean zzK()
+  {
+    zzaz().zzg();
+    return zzF;
+  }
+  
+  @Pure
+  public final boolean zzL()
+  {
+    return TextUtils.isEmpty(zzf);
+  }
+  
+  protected final boolean zzM()
+  {
+    if (zzB)
+    {
+      zzaz().zzg();
+      Boolean localBoolean = zzC;
+      if ((localBoolean == null) || (zzD == 0L) || ((!localBoolean.booleanValue()) && (Math.abs(zzr.elapsedRealtime() - zzD) > 1000L)))
+      {
+        zzD = zzr.elapsedRealtime();
+        boolean bool1 = zzv().zzad("android.permission.INTERNET");
+        boolean bool2 = true;
+        if ((bool1) && (zzv().zzad("android.permission.ACCESS_NETWORK_STATE")) && ((Wrappers.packageManager(zze).isCallerInstantApp()) || (zzk.zzx()) || ((zzlh.zzaj(zze)) && (zzlh.zzak(zze, false))))) {
+          bool1 = true;
+        } else {
+          bool1 = false;
+        }
+        localBoolean = Boolean.valueOf(bool1);
+        zzC = localBoolean;
+        if (localBoolean.booleanValue())
+        {
+          bool1 = bool2;
+          if (!zzv().zzX(zzh().zzm(), zzh().zzk())) {
+            if (!TextUtils.isEmpty(zzh().zzk())) {
+              bool1 = bool2;
+            } else {
+              bool1 = false;
+            }
+          }
+          zzC = Boolean.valueOf(bool1);
+        }
+      }
+      return zzC.booleanValue();
+    }
+    throw new IllegalStateException("AppMeasurement is not initialized");
+  }
+  
+  @Pure
+  public final boolean zzN()
+  {
+    return zzi;
+  }
+  
+  public final int zza()
+  {
+    zzaz().zzg();
+    if (zzk.zzv()) {
+      return 1;
+    }
+    Object localObject = zzb;
+    if ((localObject != null) && (((Boolean)localObject).booleanValue())) {
+      return 2;
+    }
+    zzaz().zzg();
+    if (!zzF) {
+      return 8;
+    }
+    localObject = zzm().zzd();
+    if (localObject != null)
+    {
+      if (((Boolean)localObject).booleanValue()) {
+        return 0;
+      }
+      return 3;
+    }
+    localObject = zzk;
+    zzab localZzab = zzs.zzj;
+    localObject = ((zzag)localObject).zzk("firebase_analytics_collection_enabled");
+    if (localObject != null)
+    {
+      if (((Boolean)localObject).booleanValue()) {
+        return 0;
+      }
+      return 4;
+    }
+    localObject = zza;
+    if (localObject != null)
+    {
+      if (((Boolean)localObject).booleanValue()) {
+        return 0;
+      }
+      return 5;
+    }
+    if (zzE != null)
+    {
+      if (zzE.booleanValue()) {
+        return 0;
+      }
+      return 7;
+    }
+    return 0;
+  }
+  
+  @Pure
+  public final Context zzau()
+  {
+    return zze;
+  }
+  
+  @Pure
+  public final Clock zzav()
+  {
+    return zzr;
+  }
+  
+  @Pure
+  public final zzab zzaw()
+  {
+    return zzj;
+  }
+  
+  @Pure
+  public final zzeo zzay()
+  {
+    zzR(zzm);
+    return zzm;
+  }
+  
+  @Pure
+  public final zzfv zzaz()
+  {
+    zzR(zzn);
+    return zzn;
+  }
+  
+  @Pure
+  public final zzd zzd()
+  {
+    zzd localZzd = zzu;
+    if (localZzd != null) {
+      return localZzd;
+    }
+    throw new IllegalStateException("Component not created");
+  }
+  
+  @Pure
+  public final zzag zzf()
+  {
+    return zzk;
+  }
+  
+  @Pure
+  public final zzaq zzg()
+  {
+    zzR(zzz);
+    return zzz;
+  }
+  
+  @Pure
+  public final zzef zzh()
+  {
+    zzQ(zzA);
+    return zzA;
+  }
+  
+  @Pure
+  public final zzeh zzi()
+  {
+    zzQ(zzx);
+    return zzx;
+  }
+  
+  @Pure
+  public final zzej zzj()
+  {
+    return zzq;
+  }
+  
+  public final zzeo zzl()
+  {
+    zzeo localZzeo = zzm;
+    if ((localZzeo != null) && (localZzeo.zzx())) {
+      return localZzeo;
+    }
+    return null;
+  }
+  
+  @Pure
+  public final zzfd zzm()
+  {
+    zzP(zzl);
+    return zzl;
+  }
+  
+  @SideEffectFree
+  final zzfv zzo()
+  {
+    return zzn;
+  }
+  
+  @Pure
+  public final zzid zzq()
+  {
+    zzQ(zzt);
+    return zzt;
+  }
+  
+  @Pure
+  public final zzih zzr()
+  {
+    zzR(zzv);
+    return zzv;
+  }
+  
+  @Pure
+  public final zzis zzs()
+  {
+    zzQ(zzs);
+    return zzs;
+  }
+  
+  @Pure
+  public final zzjs zzt()
+  {
+    zzQ(zzy);
+    return zzy;
+  }
+  
+  @Pure
+  public final zzki zzu()
+  {
+    zzQ(zzo);
+    return zzo;
+  }
+  
+  @Pure
+  public final zzlh zzv()
+  {
+    zzP(zzp);
+    return zzp;
+  }
+  
+  @Pure
+  public final String zzw()
+  {
+    return zzf;
+  }
+  
+  @Pure
+  public final String zzx()
+  {
+    return zzg;
+  }
+  
+  @Pure
+  public final String zzy()
+  {
+    return zzh;
+  }
+  
+  @Pure
+  public final String zzz()
+  {
+    return zzw;
+  }
+}

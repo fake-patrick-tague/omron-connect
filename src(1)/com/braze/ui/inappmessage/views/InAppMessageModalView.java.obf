@@ -1,0 +1,257 @@
+package com.braze.ui.inappmessage.views;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+import com.braze.enums.inappmessage.ImageStyle;
+import com.braze.models.inappmessage.IInAppMessage;
+import com.braze.models.inappmessage.IInAppMessageImmersive;
+import com.braze.models.inappmessage.InAppMessageImmersiveBase;
+import com.braze.models.inappmessage.InAppMessageModal;
+import com.braze.models.inappmessage.InAppMessageWithImageBase;
+import com.braze.support.BrazeLogger;
+import com.braze.ui.R.dimen;
+import com.braze.ui.R.id;
+import com.braze.ui.inappmessage.config.BrazeInAppMessageParams;
+import com.braze.ui.inappmessage.utils.InAppMessageViewUtils;
+import com.braze.ui.support.ViewUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public class InAppMessageModalView
+  extends InAppMessageImmersiveBaseView
+{
+  private InAppMessageModal inAppMessage;
+  private InAppMessageImageView inAppMessageImageView;
+  
+  public InAppMessageModalView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+  }
+  
+  private static final void resetMessageMargins$lambda-0(InAppMessageModalView paramInAppMessageModalView, View paramView)
+  {
+    i.e(paramInAppMessageModalView, "this$0");
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, paramInAppMessageModalView, null, null, resetMessageMargins.1.1.INSTANCE, 3, null);
+    paramInAppMessageModalView = paramInAppMessageModalView.getMessageClickableView();
+    if (paramInAppMessageModalView != null) {
+      paramInAppMessageModalView.performClick();
+    }
+  }
+  
+  private static final void resizeGraphicFrameIfAppropriate$lambda-2(InAppMessageModalView paramInAppMessageModalView, int paramInt1, int paramInt2, int paramInt3, double paramDouble)
+  {
+    i.e(paramInAppMessageModalView, "this$0");
+    double d1 = Math.min(paramInAppMessageModalView.getMeasuredWidth() - paramInt1, paramInt2);
+    double d2 = Math.min(paramInAppMessageModalView.getMeasuredHeight() - paramInt1, paramInt3);
+    double d3 = d1 / d2;
+    paramInAppMessageModalView = paramInAppMessageModalView.findViewById(R.id.com_braze_inappmessage_modal_graphic_bound);
+    if (paramInAppMessageModalView != null)
+    {
+      Object localObject = paramInAppMessageModalView.getLayoutParams();
+      Objects.requireNonNull(localObject, "null cannot be cast to non-null type android.widget.RelativeLayout.LayoutParams");
+      localObject = (RelativeLayout.LayoutParams)localObject;
+      if (paramDouble >= d3)
+      {
+        width = ((int)d1);
+        height = ((int)(d1 / paramDouble));
+      }
+      else
+      {
+        width = ((int)(paramDouble * d2));
+        height = ((int)d2);
+      }
+      paramInAppMessageModalView.setLayoutParams((ViewGroup.LayoutParams)localObject);
+    }
+  }
+  
+  public void applyInAppMessageParameters(Context paramContext, InAppMessageModal paramInAppMessageModal)
+  {
+    i.e(paramContext, "context");
+    i.e(paramInAppMessageModal, "inAppMessage");
+    inAppMessage = paramInAppMessageModal;
+    InAppMessageImageView localInAppMessageImageView = (InAppMessageImageView)findViewById(R.id.com_braze_inappmessage_modal_imageview);
+    inAppMessageImageView = localInAppMessageImageView;
+    if (localInAppMessageImageView != null) {
+      setInAppMessageImageViewAttributes(paramContext, paramInAppMessageModal, localInAppMessageImageView);
+    }
+    resizeGraphicFrameIfAppropriate(paramContext, paramInAppMessageModal);
+  }
+  
+  public View getFrameView()
+  {
+    return findViewById(R.id.com_braze_inappmessage_modal_frame);
+  }
+  
+  protected final InAppMessageModal getInAppMessage()
+  {
+    return inAppMessage;
+  }
+  
+  protected final InAppMessageImageView getInAppMessageImageView()
+  {
+    return inAppMessageImageView;
+  }
+  
+  public Drawable getMessageBackgroundObject()
+  {
+    View localView = getMessageClickableView();
+    if (localView != null) {
+      return localView.getBackground();
+    }
+    return null;
+  }
+  
+  public List<View> getMessageButtonViews(int paramInt)
+  {
+    ArrayList localArrayList = new ArrayList();
+    View localView1;
+    if (paramInt != 1)
+    {
+      if (paramInt != 2) {
+        return localArrayList;
+      }
+      localView1 = findViewById(R.id.com_braze_inappmessage_modal_button_layout_dual);
+      if (localView1 != null) {
+        localView1.setVisibility(0);
+      }
+      localView1 = findViewById(R.id.com_braze_inappmessage_modal_button_dual_one);
+      View localView2 = findViewById(R.id.com_braze_inappmessage_modal_button_dual_two);
+      if (localView1 != null) {
+        localArrayList.add(localView1);
+      }
+      if (localView2 != null)
+      {
+        localArrayList.add(localView2);
+        return localArrayList;
+      }
+    }
+    else
+    {
+      localView1 = findViewById(R.id.com_braze_inappmessage_modal_button_layout_single);
+      if (localView1 != null) {
+        localView1.setVisibility(0);
+      }
+      localView1 = findViewById(R.id.com_braze_inappmessage_modal_button_single_one);
+      if (localView1 != null) {
+        localArrayList.add(localView1);
+      }
+    }
+    return localArrayList;
+  }
+  
+  public View getMessageClickableView()
+  {
+    return findViewById(R.id.com_braze_inappmessage_modal);
+  }
+  
+  public View getMessageCloseButtonView()
+  {
+    return findViewById(R.id.com_braze_inappmessage_modal_close_button);
+  }
+  
+  public TextView getMessageHeaderTextView()
+  {
+    return (TextView)findViewById(R.id.com_braze_inappmessage_modal_header_text);
+  }
+  
+  public TextView getMessageIconView()
+  {
+    return (TextView)findViewById(R.id.com_braze_inappmessage_modal_icon);
+  }
+  
+  public ImageView getMessageImageView()
+  {
+    return inAppMessageImageView;
+  }
+  
+  public TextView getMessageTextView()
+  {
+    return (TextView)findViewById(R.id.com_braze_inappmessage_modal_message);
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onLayout(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    Context localContext = getContext();
+    i.d(localContext, "this.context");
+    resizeGraphicFrameIfAppropriate(localContext, inAppMessage);
+  }
+  
+  public void resetMessageMargins(boolean paramBoolean)
+  {
+    super.resetMessageMargins(paramBoolean);
+    Object localObject = (RelativeLayout)findViewById(R.id.com_braze_inappmessage_modal_image_layout);
+    if (((paramBoolean) || (getMessageIconView() != null)) && (localObject != null))
+    {
+      RelativeLayout.LayoutParams localLayoutParams = new RelativeLayout.LayoutParams(-1, -2);
+      localLayoutParams.setMargins(0, 0, 0, 0);
+      ((RelativeLayout)localObject).setLayoutParams(localLayoutParams);
+    }
+    localObject = findViewById(R.id.com_braze_inappmessage_modal_text_layout);
+    if (localObject != null) {
+      ((View)localObject).setOnClickListener(new e(this));
+    }
+  }
+  
+  protected void resizeGraphicFrameIfAppropriate(Context paramContext, InAppMessageModal paramInAppMessageModal)
+  {
+    i.e(paramContext, "context");
+    if (paramInAppMessageModal != null)
+    {
+      Bitmap localBitmap = paramInAppMessageModal.getBitmap();
+      if (localBitmap == null) {
+        return;
+      }
+      if (paramInAppMessageModal.getImageStyle() != ImageStyle.GRAPHIC) {
+        return;
+      }
+      double d = localBitmap.getWidth() / localBitmap.getHeight();
+      paramContext = paramContext.getResources();
+      post(new d(this, paramContext.getDimensionPixelSize(R.dimen.com_braze_inappmessage_modal_margin), paramContext.getDimensionPixelSize(R.dimen.com_braze_inappmessage_modal_max_width), paramContext.getDimensionPixelSize(R.dimen.com_braze_inappmessage_modal_max_height), d));
+    }
+  }
+  
+  protected final void setInAppMessage(InAppMessageModal paramInAppMessageModal)
+  {
+    inAppMessage = paramInAppMessageModal;
+  }
+  
+  protected final void setInAppMessageImageView(InAppMessageImageView paramInAppMessageImageView)
+  {
+    inAppMessageImageView = paramInAppMessageImageView;
+  }
+  
+  protected void setInAppMessageImageViewAttributes(Context paramContext, IInAppMessageImmersive paramIInAppMessageImmersive, IInAppMessageImageView paramIInAppMessageImageView)
+  {
+    i.e(paramContext, "context");
+    i.e(paramIInAppMessageImmersive, "inAppMessage");
+    i.e(paramIInAppMessageImageView, "inAppMessageImageView");
+    float f = (float)ViewUtils.convertDpToPixels(paramContext, BrazeInAppMessageParams.getModalizedImageRadiusDp());
+    if (paramIInAppMessageImmersive.getImageStyle() == ImageStyle.GRAPHIC) {
+      paramIInAppMessageImageView.setCornersRadiusPx(f);
+    } else {
+      paramIInAppMessageImageView.setCornersRadiiPx(f, f, 0.0F, 0.0F);
+    }
+    paramIInAppMessageImageView.setInAppMessageImageCropType(paramIInAppMessageImmersive.getCropType());
+  }
+  
+  public void setMessageBackgroundColor(int paramInt)
+  {
+    View localView = findViewById(R.id.com_braze_inappmessage_modal);
+    i.d(localView, "findViewById(R.id.com_braze_inappmessage_modal)");
+    InAppMessageViewUtils.setViewBackgroundColorFilter(localView, paramInt);
+  }
+}

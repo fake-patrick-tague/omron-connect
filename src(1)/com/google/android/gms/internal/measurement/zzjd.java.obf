@@ -1,0 +1,132 @@
+package com.google.android.gms.internal.measurement;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.util.Comparator;
+import java.util.Locale;
+
+public abstract class zzjd
+  implements Iterable, Serializable
+{
+  private static final Comparator zza = new zziv();
+  public static final zzjd zzb = new zzja(zzkm.zzd);
+  private static final zzjc zzd;
+  private int zzc = 0;
+  
+  static
+  {
+    int i = zzip.zza;
+    zzd = new zzjc(null);
+  }
+  
+  zzjd() {}
+  
+  static int zzj(int paramInt1, int paramInt2, int paramInt3)
+  {
+    int i = paramInt2 - paramInt1;
+    if ((paramInt1 | paramInt2 | i | paramInt3 - paramInt2) < 0)
+    {
+      if (paramInt1 >= 0)
+      {
+        if (paramInt2 < paramInt1)
+        {
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Beginning index larger than ending index: ");
+          localStringBuilder.append(paramInt1);
+          localStringBuilder.append(", ");
+          localStringBuilder.append(paramInt2);
+          throw new IndexOutOfBoundsException(localStringBuilder.toString());
+        }
+        localStringBuilder = new StringBuilder();
+        localStringBuilder.append("End index: ");
+        localStringBuilder.append(paramInt2);
+        localStringBuilder.append(" >= ");
+        localStringBuilder.append(paramInt3);
+        throw new IndexOutOfBoundsException(localStringBuilder.toString());
+      }
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Beginning index: ");
+      localStringBuilder.append(paramInt1);
+      localStringBuilder.append(" < 0");
+      throw new IndexOutOfBoundsException(localStringBuilder.toString());
+    }
+    return i;
+  }
+  
+  public static zzjd zzl(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+  {
+    zzj(paramInt1, paramInt1 + paramInt2, paramArrayOfByte.length);
+    byte[] arrayOfByte = new byte[paramInt2];
+    System.arraycopy(paramArrayOfByte, paramInt1, arrayOfByte, 0, paramInt2);
+    return new zzja(arrayOfByte);
+  }
+  
+  public static zzjd zzm(String paramString)
+  {
+    return new zzja(paramString.getBytes(zzkm.zzb));
+  }
+  
+  public abstract boolean equals(Object paramObject);
+  
+  public final int hashCode()
+  {
+    int j = zzc;
+    int i = j;
+    if (j == 0)
+    {
+      i = zzd();
+      j = zze(i, 0, i);
+      i = j;
+      if (j == 0) {
+        i = 1;
+      }
+      zzc = i;
+    }
+    return i;
+  }
+  
+  public final String toString()
+  {
+    Locale localLocale = Locale.ROOT;
+    String str2 = Integer.toHexString(System.identityHashCode(this));
+    int i = zzd();
+    String str1;
+    if (zzd() <= 50) {
+      str1 = zzml.zza(this);
+    } else {
+      str1 = zzml.zza(zzf(0, 47)).concat("...");
+    }
+    return String.format(localLocale, "<ByteString@%s size=%d contents=\"%s\">", new Object[] { str2, Integer.valueOf(i), str1 });
+  }
+  
+  public abstract byte zza(int paramInt);
+  
+  abstract byte zzb(int paramInt);
+  
+  public abstract int zzd();
+  
+  protected abstract int zze(int paramInt1, int paramInt2, int paramInt3);
+  
+  public abstract zzjd zzf(int paramInt1, int paramInt2);
+  
+  protected abstract String zzg(Charset paramCharset);
+  
+  abstract void zzh(zzit paramZzit)
+    throws IOException;
+  
+  public abstract boolean zzi();
+  
+  protected final int zzk()
+  {
+    return zzc;
+  }
+  
+  public final String zzn(Charset paramCharset)
+  {
+    if (zzd() == 0) {
+      return "";
+    }
+    return zzg(paramCharset);
+  }
+}

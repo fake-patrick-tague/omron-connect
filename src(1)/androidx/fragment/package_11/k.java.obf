@@ -1,0 +1,1053 @@
+package androidx.fragment.app;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
+import android.graphics.Rect;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import c.e.a;
+import c.e.g;
+import c.h.m.e;
+import c.h.m.e.b;
+import c.h.p.h;
+import c.h.q.c0;
+import c.h.q.f0;
+import c.h.q.h0;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+class k
+  extends SpecialEffectsController
+{
+  k(ViewGroup paramViewGroup)
+  {
+    super(paramViewGroup);
+  }
+  
+  private void w(List<k> paramList, final List<SpecialEffectsController.Operation> paramList1, boolean paramBoolean, final Map<SpecialEffectsController.Operation, Boolean> paramMap)
+  {
+    final ViewGroup localViewGroup = m();
+    Context localContext = localViewGroup.getContext();
+    Object localObject1 = new ArrayList();
+    paramList = paramList.iterator();
+    int i = 0;
+    int j;
+    Object localObject2;
+    for (;;)
+    {
+      final boolean bool = paramList.hasNext();
+      j = 2;
+      if (!bool) {
+        break;
+      }
+      localObject2 = (k)paramList.next();
+      if (((l)localObject2).d()) {
+        ((l)localObject2).a();
+      }
+      Object localObject3;
+      for (;;)
+      {
+        break;
+        localObject3 = ((k)localObject2).e(localContext);
+        if (localObject3 == null)
+        {
+          ((l)localObject2).a();
+        }
+        else
+        {
+          localObject3 = b;
+          if (localObject3 != null) {
+            break label120;
+          }
+          ((ArrayList)localObject1).add(localObject2);
+        }
+      }
+      label120:
+      final SpecialEffectsController.Operation localOperation = ((l)localObject2).b();
+      Object localObject4 = localOperation.f();
+      if (Boolean.TRUE.equals(paramMap.get(localOperation)))
+      {
+        if (FragmentManager.E0(2))
+        {
+          localObject3 = new StringBuilder();
+          ((StringBuilder)localObject3).append("Ignoring Animator set on ");
+          ((StringBuilder)localObject3).append(localObject4);
+          ((StringBuilder)localObject3).append(" as this Fragment was involved in a Transition.");
+          Log.v("FragmentManager", ((StringBuilder)localObject3).toString());
+        }
+        ((l)localObject2).a();
+      }
+      else
+      {
+        if (localOperation.e() == SpecialEffectsController.Operation.State.d) {
+          bool = true;
+        } else {
+          bool = false;
+        }
+        if (bool) {
+          paramList1.remove(localOperation);
+        }
+        localObject4 = mView;
+        localViewGroup.startViewTransition((View)localObject4);
+        ((Animator)localObject3).addListener(new c(localViewGroup, (View)localObject4, bool, localOperation, (k)localObject2));
+        ((Animator)localObject3).setTarget(localObject4);
+        ((Animator)localObject3).start();
+        if (FragmentManager.E0(2))
+        {
+          localObject4 = new StringBuilder();
+          ((StringBuilder)localObject4).append("Animator from operation ");
+          ((StringBuilder)localObject4).append(localOperation);
+          ((StringBuilder)localObject4).append(" has started.");
+          Log.v("FragmentManager", ((StringBuilder)localObject4).toString());
+        }
+        ((l)localObject2).c().b(new d((Animator)localObject3, localOperation));
+        i = 1;
+      }
+    }
+    paramList = ((ArrayList)localObject1).iterator();
+    int k = i;
+    while (paramList.hasNext())
+    {
+      paramList1 = (k)paramList.next();
+      paramMap = paramList1.b();
+      localObject1 = paramMap.f();
+      if (paramBoolean)
+      {
+        if (FragmentManager.E0(j))
+        {
+          paramMap = new StringBuilder();
+          paramMap.append("Ignoring Animation set on ");
+          paramMap.append(localObject1);
+          paramMap.append(" as Animations cannot run alongside Transitions.");
+          Log.v("FragmentManager", paramMap.toString());
+        }
+        paramList1.a();
+      }
+      else if (k != 0)
+      {
+        if (FragmentManager.E0(j))
+        {
+          paramMap = new StringBuilder();
+          paramMap.append("Ignoring Animation set on ");
+          paramMap.append(localObject1);
+          paramMap.append(" as Animations cannot run alongside Animators.");
+          Log.v("FragmentManager", paramMap.toString());
+        }
+        paramList1.a();
+      }
+      else
+      {
+        localObject1 = mView;
+        localObject2 = (Animation)h.g(gea);
+        if (paramMap.e() != SpecialEffectsController.Operation.State.b)
+        {
+          ((View)localObject1).startAnimation((Animation)localObject2);
+          paramList1.a();
+          i = j;
+        }
+        else
+        {
+          localViewGroup.startViewTransition((View)localObject1);
+          localObject2 = new n.b((Animation)localObject2, localViewGroup, (View)localObject1);
+          ((Animation)localObject2).setAnimationListener(new e(paramMap, localViewGroup, (View)localObject1, paramList1));
+          ((View)localObject1).startAnimation((Animation)localObject2);
+          j = 2;
+          i = j;
+          if (FragmentManager.E0(2))
+          {
+            localObject2 = new StringBuilder();
+            ((StringBuilder)localObject2).append("Animation from operation ");
+            ((StringBuilder)localObject2).append(paramMap);
+            ((StringBuilder)localObject2).append(" has started.");
+            Log.v("FragmentManager", ((StringBuilder)localObject2).toString());
+            i = j;
+          }
+        }
+        paramList1.c().b(new f((View)localObject1, localViewGroup, paramList1, paramMap));
+        j = i;
+      }
+    }
+  }
+  
+  private Map<SpecialEffectsController.Operation, Boolean> x(List<m> paramList, List<SpecialEffectsController.Operation> paramList1, final boolean paramBoolean, final SpecialEffectsController.Operation paramOperation1, final SpecialEffectsController.Operation paramOperation2)
+  {
+    Object localObject4 = paramOperation1;
+    Object localObject3 = paramOperation2;
+    HashMap localHashMap = new HashMap();
+    Object localObject5 = paramList.iterator();
+    Object localObject1 = null;
+    while (((Iterator)localObject5).hasNext())
+    {
+      localObject6 = (m)((Iterator)localObject5).next();
+      if (!((l)localObject6).d())
+      {
+        localObject2 = ((m)localObject6).e();
+        if (localObject1 == null)
+        {
+          localObject1 = localObject2;
+        }
+        else if ((localObject2 != null) && (localObject1 != localObject2))
+        {
+          paramList = new StringBuilder();
+          paramList.append("Mixing framework transitions and AndroidX transitions is not allowed. Fragment ");
+          paramList.append(((l)localObject6).b().f());
+          paramList.append(" returned Transition ");
+          paramList.append(((m)localObject6).h());
+          paramList.append(" which uses a different Transition  type than other Fragments.");
+          throw new IllegalArgumentException(paramList.toString());
+        }
+      }
+    }
+    if (localObject1 == null)
+    {
+      paramList = paramList.iterator();
+      while (paramList.hasNext())
+      {
+        paramList1 = (m)paramList.next();
+        localHashMap.put(paramList1.b(), Boolean.FALSE);
+        paramList1.a();
+      }
+      return localHashMap;
+    }
+    Object localObject8 = new View(m().getContext());
+    localObject5 = new Rect();
+    Object localObject7 = new ArrayList();
+    Object localObject6 = new ArrayList();
+    a localA = new a();
+    Object localObject13 = paramList.iterator();
+    Object localObject10 = null;
+    Object localObject2 = null;
+    int i = 0;
+    final Object localObject9 = localObject1;
+    Object localObject11;
+    Object localObject12;
+    int j;
+    Object localObject15;
+    Object localObject16;
+    for (localObject1 = localObject8;; localObject1 = localObject11)
+    {
+      boolean bool1 = paramBoolean;
+      boolean bool2 = ((Iterator)localObject13).hasNext();
+      localObject11 = "FragmentManager";
+      if (!bool2) {
+        break;
+      }
+      localObject8 = (m)((Iterator)localObject13).next();
+      if ((((m)localObject8).i()) && (localObject4 != null) && (localObject3 != null))
+      {
+        localObject12 = localObject9.u(localObject9.f(((m)localObject8).g()));
+        localArrayList1 = paramOperation2.f().getSharedElementSourceNames();
+        localObject10 = paramOperation1.f().getSharedElementSourceNames();
+        localObject8 = paramOperation1.f().getSharedElementTargetNames();
+        j = 0;
+        while (j < ((ArrayList)localObject8).size())
+        {
+          k = localArrayList1.indexOf(((ArrayList)localObject8).get(j));
+          if (k != -1) {
+            localArrayList1.set(k, (String)((ArrayList)localObject10).get(j));
+          }
+          j += 1;
+        }
+        localObject14 = paramOperation2.f().getSharedElementTargetNames();
+        if (!bool1)
+        {
+          localObject10 = paramOperation1.f().getExitTransitionCallback();
+          localObject8 = paramOperation2.f().getEnterTransitionCallback();
+        }
+        else
+        {
+          localObject10 = paramOperation1.f().getEnterTransitionCallback();
+          localObject8 = paramOperation2.f().getExitTransitionCallback();
+        }
+        j = localArrayList1.size();
+        int k = 0;
+        while (k < j)
+        {
+          localA.put((String)localArrayList1.get(k), (String)((ArrayList)localObject14).get(k));
+          k += 1;
+        }
+        if (FragmentManager.E0(2))
+        {
+          Log.v("FragmentManager", ">>> entering view names <<<");
+          localObject11 = ((ArrayList)localObject14).iterator();
+          while (((Iterator)localObject11).hasNext())
+          {
+            localObject15 = (String)((Iterator)localObject11).next();
+            localObject16 = new StringBuilder();
+            ((StringBuilder)localObject16).append("Name: ");
+            ((StringBuilder)localObject16).append((String)localObject15);
+            Log.v("FragmentManager", ((StringBuilder)localObject16).toString());
+          }
+          Log.v("FragmentManager", ">>> exiting view names <<<");
+          localObject11 = localArrayList1.iterator();
+          while (((Iterator)localObject11).hasNext())
+          {
+            localObject15 = (String)((Iterator)localObject11).next();
+            localObject16 = new StringBuilder();
+            ((StringBuilder)localObject16).append("Name: ");
+            ((StringBuilder)localObject16).append((String)localObject15);
+            Log.v("FragmentManager", ((StringBuilder)localObject16).toString());
+          }
+        }
+        localObject11 = new a();
+        u((Map)localObject11, fmView);
+        ((a)localObject11).o(localArrayList1);
+        if (localObject10 != null)
+        {
+          if (FragmentManager.E0(2))
+          {
+            paramList = new StringBuilder();
+            paramList.append("Executing exit callback for operation ");
+            paramList.append(localObject4);
+            Log.v("FragmentManager", paramList.toString());
+          }
+          throw null;
+        }
+        localA.o(((a)localObject11).keySet());
+        localObject10 = new a();
+        u((Map)localObject10, fmView);
+        ((a)localObject10).o((Collection)localObject14);
+        ((a)localObject10).o(localA.values());
+        if (localObject8 != null)
+        {
+          if (FragmentManager.E0(2))
+          {
+            paramList = new StringBuilder();
+            paramList.append("Executing enter callback for operation ");
+            paramList.append(localObject3);
+            Log.v("FragmentManager", paramList.toString());
+          }
+          throw null;
+        }
+        b0.c(localA, (a)localObject10);
+        v((a)localObject11, localA.keySet());
+        v((a)localObject10, localA.values());
+        if (localA.isEmpty())
+        {
+          ((ArrayList)localObject7).clear();
+          ((ArrayList)localObject6).clear();
+          localObject10 = localObject1;
+          localObject8 = null;
+          localObject1 = localObject3;
+          localObject3 = localObject4;
+          localObject4 = localObject10;
+        }
+        else
+        {
+          b0.a(paramOperation2.f(), paramOperation1.f(), bool1, (a)localObject11, true);
+          c0.a(m(), new g(paramOperation2, paramOperation1, paramBoolean, (a)localObject10));
+          ((ArrayList)localObject7).addAll(((a)localObject11).values());
+          if (!localArrayList1.isEmpty())
+          {
+            localObject2 = (View)((g)localObject11).get((String)localArrayList1.get(0));
+            localObject9.p(localObject12, (View)localObject2);
+          }
+          ((ArrayList)localObject6).addAll(((a)localObject10).values());
+          if (!((ArrayList)localObject14).isEmpty())
+          {
+            localObject3 = (View)((g)localObject10).get((String)((ArrayList)localObject14).get(0));
+            if (localObject3 != null)
+            {
+              c0.a(m(), new h(localObject9, (View)localObject3, (Rect)localObject5));
+              i = 1;
+            }
+          }
+          localObject9.s(localObject12, (View)localObject1, (ArrayList)localObject7);
+          localObject4 = localObject1;
+          localObject8 = localObject12;
+          localObject9.n(localObject12, null, null, null, null, localObject8, (ArrayList)localObject6);
+          localObject11 = Boolean.TRUE;
+          localObject3 = paramOperation1;
+          localObject10 = localHashMap;
+          ((Map)localObject10).put(localObject3, localObject11);
+          localObject1 = paramOperation2;
+          ((Map)localObject10).put(localObject1, localObject11);
+        }
+      }
+      else
+      {
+        localObject11 = localObject4;
+        localObject8 = localObject3;
+        localObject4 = localObject1;
+        localObject3 = localObject11;
+        localObject1 = localObject8;
+        localObject8 = localObject10;
+      }
+      localObject11 = localObject4;
+      localObject10 = localObject8;
+      localObject4 = localObject3;
+      localObject3 = localObject1;
+    }
+    paramOperation1 = (SpecialEffectsController.Operation)localObject7;
+    localObject7 = localObject1;
+    ArrayList localArrayList1 = new ArrayList();
+    Object localObject14 = paramList.iterator();
+    localObject1 = null;
+    paramOperation2 = null;
+    localObject8 = localObject2;
+    localObject2 = localObject6;
+    localObject6 = paramOperation1;
+    paramOperation1 = (SpecialEffectsController.Operation)localObject11;
+    if (((Iterator)localObject14).hasNext())
+    {
+      localObject15 = (m)((Iterator)localObject14).next();
+      if (((l)localObject15).d())
+      {
+        localHashMap.put(((l)localObject15).b(), Boolean.FALSE);
+        ((l)localObject15).a();
+      }
+      for (;;)
+      {
+        break;
+        localObject12 = localObject9.f(((m)localObject15).h());
+        localObject11 = ((l)localObject15).b();
+        if ((localObject10 != null) && ((localObject11 == localObject4) || (localObject11 == localObject3))) {
+          j = 1;
+        } else {
+          j = 0;
+        }
+        if (localObject12 == null)
+        {
+          if (j == 0)
+          {
+            localHashMap.put(localObject11, Boolean.FALSE);
+            ((l)localObject15).a();
+          }
+        }
+        else
+        {
+          localObject16 = new ArrayList();
+          t((ArrayList)localObject16, fmView);
+          if (j != 0) {
+            if (localObject11 == localObject4) {
+              ((ArrayList)localObject16).removeAll((Collection)localObject6);
+            } else {
+              ((ArrayList)localObject16).removeAll((Collection)localObject2);
+            }
+          }
+          if (((ArrayList)localObject16).isEmpty())
+          {
+            localObject9.a(localObject12, (View)localObject7);
+          }
+          else
+          {
+            localObject9.b(localObject12, (ArrayList)localObject16);
+            localObject9.n(localObject12, localObject12, (ArrayList)localObject16, null, null, null, null);
+            if (((SpecialEffectsController.Operation)localObject11).e() == SpecialEffectsController.Operation.State.d)
+            {
+              localObject13 = localObject11;
+              paramList1.remove(localObject13);
+              ArrayList localArrayList2 = new ArrayList((Collection)localObject16);
+              localArrayList2.remove(fmView);
+              localObject9.m(localObject12, fmView, localArrayList2);
+              c0.a(m(), new i((ArrayList)localObject16));
+            }
+          }
+          if (((SpecialEffectsController.Operation)localObject11).e() == SpecialEffectsController.Operation.State.c)
+          {
+            localArrayList1.addAll((Collection)localObject16);
+            if (i != 0) {
+              localObject9.o(localObject12, (Rect)localObject5);
+            }
+          }
+          else
+          {
+            localObject9.p(localObject12, (View)localObject8);
+          }
+          localHashMap.put(localObject11, Boolean.TRUE);
+          if (((m)localObject15).j()) {
+            paramOperation2 = localObject9.k(paramOperation2, localObject12, null);
+          } else {
+            localObject1 = localObject9.k(localObject1, localObject12, null);
+          }
+        }
+      }
+    }
+    paramList1 = localObject9.j(paramOperation2, localObject1, localObject10);
+    if (paramList1 == null) {
+      return localHashMap;
+    }
+    paramOperation2 = paramList.iterator();
+    paramList = paramOperation1;
+    label1954:
+    while (paramOperation2.hasNext())
+    {
+      paramOperation1 = (m)paramOperation2.next();
+      if (!paramOperation1.d())
+      {
+        localObject5 = paramOperation1.h();
+        localObject1 = paramOperation1.b();
+        if ((localObject10 != null) && ((localObject1 == localObject4) || (localObject1 == localObject3))) {
+          i = 1;
+        } else {
+          i = 0;
+        }
+        if ((localObject5 == null) && (i == 0)) {
+          break label1954;
+        }
+        if (!f0.T(m()))
+        {
+          if (FragmentManager.E0(2))
+          {
+            localObject5 = new StringBuilder();
+            ((StringBuilder)localObject5).append("SpecialEffectsController: Container ");
+            ((StringBuilder)localObject5).append(m());
+            ((StringBuilder)localObject5).append(" has not been laid out. Completing operation ");
+            ((StringBuilder)localObject5).append(localObject1);
+            Log.v(paramList, ((StringBuilder)localObject5).toString());
+          }
+          paramOperation1.a();
+        }
+        else
+        {
+          localObject9.q(paramOperation1.b().f(), paramList1, paramOperation1.c(), new j(paramOperation1, (SpecialEffectsController.Operation)localObject1));
+        }
+      }
+    }
+    if (!f0.T(m())) {
+      return localHashMap;
+    }
+    b0.d(localArrayList1, 4);
+    paramOperation1 = localObject9.l((ArrayList)localObject2);
+    if (FragmentManager.E0(2))
+    {
+      Log.v(paramList, ">>>>> Beginning transition <<<<<");
+      Log.v(paramList, ">>>>> SharedElementFirstOutViews <<<<<");
+      paramOperation2 = ((ArrayList)localObject6).iterator();
+      while (paramOperation2.hasNext())
+      {
+        localObject1 = (View)paramOperation2.next();
+        localObject3 = new StringBuilder();
+        ((StringBuilder)localObject3).append("View: ");
+        ((StringBuilder)localObject3).append(localObject1);
+        ((StringBuilder)localObject3).append(" Name: ");
+        ((StringBuilder)localObject3).append(f0.L((View)localObject1));
+        Log.v(paramList, ((StringBuilder)localObject3).toString());
+      }
+      Log.v(paramList, ">>>>> SharedElementLastInViews <<<<<");
+      paramOperation2 = ((ArrayList)localObject2).iterator();
+      while (paramOperation2.hasNext())
+      {
+        localObject1 = (View)paramOperation2.next();
+        localObject3 = new StringBuilder();
+        ((StringBuilder)localObject3).append("View: ");
+        ((StringBuilder)localObject3).append(localObject1);
+        ((StringBuilder)localObject3).append(" Name: ");
+        ((StringBuilder)localObject3).append(f0.L((View)localObject1));
+        Log.v(paramList, ((StringBuilder)localObject3).toString());
+      }
+    }
+    localObject9.c(m(), paramList1);
+    localObject9.r(m(), (ArrayList)localObject6, (ArrayList)localObject2, paramOperation1, localA);
+    b0.d(localArrayList1, 0);
+    localObject9.t(localObject10, (ArrayList)localObject6, (ArrayList)localObject2);
+    return localHashMap;
+  }
+  
+  void f(List<SpecialEffectsController.Operation> paramList, boolean paramBoolean)
+  {
+    Object localObject4 = paramList.iterator();
+    Object localObject2 = null;
+    Object localObject1 = null;
+    while (((Iterator)localObject4).hasNext())
+    {
+      localObject3 = (SpecialEffectsController.Operation)((Iterator)localObject4).next();
+      localObject5 = SpecialEffectsController.Operation.State.c(fmView);
+      int i = a.a[localObject3.e().ordinal()];
+      if ((i != 1) && (i != 2) && (i != 3))
+      {
+        if ((i == 4) && (localObject5 != SpecialEffectsController.Operation.State.c)) {
+          localObject1 = localObject3;
+        }
+      }
+      else if ((localObject5 == SpecialEffectsController.Operation.State.c) && (localObject2 == null)) {
+        localObject2 = localObject3;
+      }
+    }
+    if (FragmentManager.E0(2))
+    {
+      localObject3 = new StringBuilder();
+      ((StringBuilder)localObject3).append("Executing operations from ");
+      ((StringBuilder)localObject3).append(localObject2);
+      ((StringBuilder)localObject3).append(" to ");
+      ((StringBuilder)localObject3).append(localObject1);
+      Log.v("FragmentManager", ((StringBuilder)localObject3).toString());
+    }
+    localObject4 = new ArrayList();
+    Object localObject5 = new ArrayList();
+    Object localObject3 = new ArrayList(paramList);
+    paramList = paramList.iterator();
+    while (paramList.hasNext())
+    {
+      final SpecialEffectsController.Operation localOperation = (SpecialEffectsController.Operation)paramList.next();
+      e localE = new e();
+      localOperation.j(localE);
+      ((List)localObject4).add(new k(localOperation, localE, paramBoolean));
+      localE = new e();
+      localOperation.j(localE);
+      boolean bool = false;
+      if (paramBoolean ? localOperation == localObject2 : localOperation == localObject1) {
+        bool = true;
+      }
+      ((List)localObject5).add(new m(localOperation, localE, paramBoolean, bool));
+      localOperation.a(new b((List)localObject3, localOperation));
+    }
+    paramList = x((List)localObject5, (List)localObject3, paramBoolean, localObject2, localObject1);
+    w((List)localObject4, (List)localObject3, paramList.containsValue(Boolean.TRUE), paramList);
+    paramList = ((List)localObject3).iterator();
+    while (paramList.hasNext()) {
+      s((SpecialEffectsController.Operation)paramList.next());
+    }
+    ((List)localObject3).clear();
+    if (FragmentManager.E0(2))
+    {
+      paramList = new StringBuilder();
+      paramList.append("Completed executing operations from ");
+      paramList.append(localObject2);
+      paramList.append(" to ");
+      paramList.append(localObject1);
+      Log.v("FragmentManager", paramList.toString());
+    }
+  }
+  
+  void s(SpecialEffectsController.Operation paramOperation)
+  {
+    View localView = fmView;
+    paramOperation.e().a(localView);
+  }
+  
+  void t(ArrayList<View> paramArrayList, View paramView)
+  {
+    if ((paramView instanceof ViewGroup))
+    {
+      ViewGroup localViewGroup = (ViewGroup)paramView;
+      if (h0.a(localViewGroup))
+      {
+        if (!paramArrayList.contains(paramView)) {
+          paramArrayList.add(localViewGroup);
+        }
+      }
+      else
+      {
+        int j = localViewGroup.getChildCount();
+        int i = 0;
+        while (i < j)
+        {
+          paramView = localViewGroup.getChildAt(i);
+          if (paramView.getVisibility() == 0) {
+            t(paramArrayList, paramView);
+          }
+          i += 1;
+        }
+      }
+    }
+    else if (!paramArrayList.contains(paramView))
+    {
+      paramArrayList.add(paramView);
+    }
+  }
+  
+  void u(Map<String, View> paramMap, View paramView)
+  {
+    Object localObject = f0.L(paramView);
+    if (localObject != null) {
+      paramMap.put(localObject, paramView);
+    }
+    if ((paramView instanceof ViewGroup))
+    {
+      paramView = (ViewGroup)paramView;
+      int j = paramView.getChildCount();
+      int i = 0;
+      while (i < j)
+      {
+        localObject = paramView.getChildAt(i);
+        if (((View)localObject).getVisibility() == 0) {
+          u(paramMap, (View)localObject);
+        }
+        i += 1;
+      }
+    }
+  }
+  
+  void v(a<String, View> paramA, Collection<String> paramCollection)
+  {
+    paramA = paramA.entrySet().iterator();
+    while (paramA.hasNext()) {
+      if (!paramCollection.contains(f0.L((View)((Map.Entry)paramA.next()).getValue()))) {
+        paramA.remove();
+      }
+    }
+  }
+  
+  class b
+    implements Runnable
+  {
+    b(List paramList, SpecialEffectsController.Operation paramOperation) {}
+    
+    public void run()
+    {
+      if (b.contains(localOperation))
+      {
+        b.remove(localOperation);
+        s(localOperation);
+      }
+    }
+  }
+  
+  class c
+    extends AnimatorListenerAdapter
+  {
+    c(ViewGroup paramViewGroup, View paramView, boolean paramBoolean, SpecialEffectsController.Operation paramOperation, k.k paramK) {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      localViewGroup.endViewTransition(b);
+      if (bool) {
+        localOperation.e().a(b);
+      }
+      e.a();
+      if (FragmentManager.E0(2))
+      {
+        paramAnimator = new StringBuilder();
+        paramAnimator.append("Animator from operation ");
+        paramAnimator.append(localOperation);
+        paramAnimator.append(" has ended.");
+        Log.v("FragmentManager", paramAnimator.toString());
+      }
+    }
+  }
+  
+  class d
+    implements e.b
+  {
+    d(Animator paramAnimator, SpecialEffectsController.Operation paramOperation) {}
+    
+    public void a()
+    {
+      a.end();
+      if (FragmentManager.E0(2))
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Animator from operation ");
+        localStringBuilder.append(localOperation);
+        localStringBuilder.append(" has been canceled.");
+        Log.v("FragmentManager", localStringBuilder.toString());
+      }
+    }
+  }
+  
+  class e
+    implements Animation.AnimationListener
+  {
+    e(SpecialEffectsController.Operation paramOperation, ViewGroup paramViewGroup, View paramView, k.k paramK) {}
+    
+    public void onAnimationEnd(Animation paramAnimation)
+    {
+      localViewGroup.post(new a());
+      if (FragmentManager.E0(2))
+      {
+        paramAnimation = new StringBuilder();
+        paramAnimation.append("Animation from operation ");
+        paramAnimation.append(paramMap);
+        paramAnimation.append(" has ended.");
+        Log.v("FragmentManager", paramAnimation.toString());
+      }
+    }
+    
+    public void onAnimationRepeat(Animation paramAnimation) {}
+    
+    public void onAnimationStart(Animation paramAnimation)
+    {
+      if (FragmentManager.E0(2))
+      {
+        paramAnimation = new StringBuilder();
+        paramAnimation.append("Animation from operation ");
+        paramAnimation.append(paramMap);
+        paramAnimation.append(" has reached onAnimationStart.");
+        Log.v("FragmentManager", paramAnimation.toString());
+      }
+    }
+    
+    class a
+      implements Runnable
+    {
+      a() {}
+      
+      public void run()
+      {
+        k.e localE = k.e.this;
+        b.endViewTransition(c);
+        d.a();
+      }
+    }
+  }
+  
+  class f
+    implements e.b
+  {
+    f(View paramView, ViewGroup paramViewGroup, k.k paramK, SpecialEffectsController.Operation paramOperation) {}
+    
+    public void a()
+    {
+      a.clearAnimation();
+      localViewGroup.endViewTransition(a);
+      paramList1.a();
+      if (FragmentManager.E0(2))
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Animation from operation ");
+        localStringBuilder.append(paramMap);
+        localStringBuilder.append(" has been cancelled.");
+        Log.v("FragmentManager", localStringBuilder.toString());
+      }
+    }
+  }
+  
+  class g
+    implements Runnable
+  {
+    g(SpecialEffectsController.Operation paramOperation1, SpecialEffectsController.Operation paramOperation2, boolean paramBoolean, a paramA) {}
+    
+    public void run()
+    {
+      b0.a(paramOperation2.f(), paramOperation1.f(), paramBoolean, e, false);
+    }
+  }
+  
+  class h
+    implements Runnable
+  {
+    h(d0 paramD0, View paramView, Rect paramRect) {}
+    
+    public void run()
+    {
+      localObject9.h(c, d);
+    }
+  }
+  
+  class i
+    implements Runnable
+  {
+    i(ArrayList paramArrayList) {}
+    
+    public void run()
+    {
+      b0.d(b, 4);
+    }
+  }
+  
+  class j
+    implements Runnable
+  {
+    j(k.m paramM, SpecialEffectsController.Operation paramOperation) {}
+    
+    public void run()
+    {
+      paramOperation1.a();
+      if (FragmentManager.E0(2))
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Transition for operation ");
+        localStringBuilder.append(c);
+        localStringBuilder.append("has completed");
+        Log.v("FragmentManager", localStringBuilder.toString());
+      }
+    }
+  }
+  
+  private static class k
+    extends k.l
+  {
+    private boolean c;
+    private boolean d = false;
+    private n.a e;
+    
+    k(SpecialEffectsController.Operation paramOperation, e paramE, boolean paramBoolean)
+    {
+      super(paramE);
+      c = paramBoolean;
+    }
+    
+    n.a e(Context paramContext)
+    {
+      if (d) {
+        return e;
+      }
+      Fragment localFragment = b().f();
+      boolean bool;
+      if (b().e() == SpecialEffectsController.Operation.State.c) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      paramContext = n.b(paramContext, localFragment, bool, c);
+      e = paramContext;
+      d = true;
+      return paramContext;
+    }
+  }
+  
+  private static class l
+  {
+    private final SpecialEffectsController.Operation a;
+    private final e b;
+    
+    l(SpecialEffectsController.Operation paramOperation, e paramE)
+    {
+      a = paramOperation;
+      b = paramE;
+    }
+    
+    void a()
+    {
+      a.d(b);
+    }
+    
+    SpecialEffectsController.Operation b()
+    {
+      return a;
+    }
+    
+    e c()
+    {
+      return b;
+    }
+    
+    boolean d()
+    {
+      SpecialEffectsController.Operation.State localState1 = SpecialEffectsController.Operation.State.c(a.f().mView);
+      SpecialEffectsController.Operation.State localState2 = a.e();
+      if (localState1 != localState2)
+      {
+        SpecialEffectsController.Operation.State localState3 = SpecialEffectsController.Operation.State.c;
+        if ((localState1 == localState3) || (localState2 == localState3)) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+  
+  private static class m
+    extends k.l
+  {
+    private final Object c;
+    private final boolean d;
+    private final Object e;
+    
+    m(SpecialEffectsController.Operation paramOperation, e paramE, boolean paramBoolean1, boolean paramBoolean2)
+    {
+      super(paramE);
+      if (paramOperation.e() == SpecialEffectsController.Operation.State.c)
+      {
+        if (paramBoolean1) {
+          paramE = paramOperation.f().getReenterTransition();
+        } else {
+          paramE = paramOperation.f().getEnterTransition();
+        }
+        c = paramE;
+        boolean bool;
+        if (paramBoolean1) {
+          bool = paramOperation.f().getAllowReturnTransitionOverlap();
+        } else {
+          bool = paramOperation.f().getAllowEnterTransitionOverlap();
+        }
+        d = bool;
+      }
+      else
+      {
+        if (paramBoolean1) {
+          paramE = paramOperation.f().getReturnTransition();
+        } else {
+          paramE = paramOperation.f().getExitTransition();
+        }
+        c = paramE;
+        d = true;
+      }
+      if (paramBoolean2)
+      {
+        if (paramBoolean1)
+        {
+          e = paramOperation.f().getSharedElementReturnTransition();
+          return;
+        }
+        e = paramOperation.f().getSharedElementEnterTransition();
+        return;
+      }
+      e = null;
+    }
+    
+    private d0 f(Object paramObject)
+    {
+      if (paramObject == null) {
+        return null;
+      }
+      Object localObject = b0.a;
+      if ((localObject != null) && (((d0)localObject).e(paramObject))) {
+        return localObject;
+      }
+      localObject = b0.b;
+      if ((localObject != null) && (((d0)localObject).e(paramObject))) {
+        return localObject;
+      }
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Transition ");
+      ((StringBuilder)localObject).append(paramObject);
+      ((StringBuilder)localObject).append(" for fragment ");
+      ((StringBuilder)localObject).append(b().f());
+      ((StringBuilder)localObject).append(" is not a valid framework Transition or AndroidX Transition");
+      throw new IllegalArgumentException(((StringBuilder)localObject).toString());
+    }
+    
+    d0 e()
+    {
+      Object localObject = f(c);
+      d0 localD0 = f(e);
+      if ((localObject != null) && (localD0 != null) && (localObject != localD0))
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Mixing framework transitions and AndroidX transitions is not allowed. Fragment ");
+        ((StringBuilder)localObject).append(b().f());
+        ((StringBuilder)localObject).append(" returned Transition ");
+        ((StringBuilder)localObject).append(c);
+        ((StringBuilder)localObject).append(" which uses a different Transition  type than its shared element transition ");
+        ((StringBuilder)localObject).append(e);
+        throw new IllegalArgumentException(((StringBuilder)localObject).toString());
+      }
+      if (localObject != null) {
+        return localObject;
+      }
+      return localD0;
+    }
+    
+    public Object g()
+    {
+      return e;
+    }
+    
+    Object h()
+    {
+      return c;
+    }
+    
+    public boolean i()
+    {
+      return e != null;
+    }
+    
+    boolean j()
+    {
+      return d;
+    }
+  }
+}

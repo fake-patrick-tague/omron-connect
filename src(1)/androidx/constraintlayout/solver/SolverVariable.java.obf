@@ -1,0 +1,176 @@
+package androidx.constraintlayout.solver;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
+public class SolverVariable
+{
+  private static int a = 1;
+  public boolean b;
+  private String c;
+  public int d = -1;
+  int e = -1;
+  public int f = 0;
+  public float g;
+  public boolean h = false;
+  float[] i = new float[9];
+  float[] j = new float[9];
+  Type k;
+  b[] l = new b[16];
+  int m = 0;
+  public int n = 0;
+  boolean o = false;
+  int p = -1;
+  float q = 0.0F;
+  HashSet<b> r = null;
+  
+  public SolverVariable(Type paramType, String paramString)
+  {
+    k = paramType;
+  }
+  
+  static void b()
+  {
+    a += 1;
+  }
+  
+  public final void a(b paramB)
+  {
+    int i1 = 0;
+    int i2;
+    for (;;)
+    {
+      i2 = m;
+      if (i1 >= i2) {
+        break;
+      }
+      if (l[i1] == paramB) {
+        return;
+      }
+      i1 += 1;
+    }
+    b[] arrayOfB = l;
+    if (i2 >= arrayOfB.length) {
+      l = ((b[])Arrays.copyOf(arrayOfB, arrayOfB.length * 2));
+    }
+    arrayOfB = l;
+    i1 = m;
+    arrayOfB[i1] = paramB;
+    m = (i1 + 1);
+  }
+  
+  public final void c(b paramB)
+  {
+    int i3 = m;
+    int i1 = 0;
+    while (i1 < i3)
+    {
+      if (l[i1] == paramB)
+      {
+        while (i1 < i3 - 1)
+        {
+          paramB = l;
+          int i2 = i1 + 1;
+          paramB[i1] = paramB[i2];
+          i1 = i2;
+        }
+        m -= 1;
+        return;
+      }
+      i1 += 1;
+    }
+  }
+  
+  public void d()
+  {
+    c = null;
+    k = Type.f;
+    f = 0;
+    d = -1;
+    e = -1;
+    g = 0.0F;
+    h = false;
+    o = false;
+    p = -1;
+    q = 0.0F;
+    int i2 = m;
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      l[i1] = null;
+      i1 += 1;
+    }
+    m = 0;
+    n = 0;
+    b = false;
+    Arrays.fill(j, 0.0F);
+  }
+  
+  public void e(d paramD, float paramFloat)
+  {
+    g = paramFloat;
+    h = true;
+    o = false;
+    p = -1;
+    q = 0.0F;
+    int i2 = m;
+    e = -1;
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      l[i1].A(paramD, this, false);
+      i1 += 1;
+    }
+    m = 0;
+  }
+  
+  public void f(Type paramType, String paramString)
+  {
+    k = paramType;
+  }
+  
+  public final void g(d paramD, b paramB)
+  {
+    int i2 = m;
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      l[i1].B(paramD, paramB, false);
+      i1 += 1;
+    }
+    m = 0;
+  }
+  
+  public String toString()
+  {
+    if (c != null)
+    {
+      localStringBuilder = new StringBuilder();
+      localStringBuilder.append("");
+      localStringBuilder.append(c);
+      return localStringBuilder.toString();
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("");
+    localStringBuilder.append(d);
+    return localStringBuilder.toString();
+  }
+  
+  public static enum Type
+  {
+    static
+    {
+      Type localType1 = new Type("UNRESTRICTED", 0);
+      b = localType1;
+      Type localType2 = new Type("CONSTANT", 1);
+      c = localType2;
+      Type localType3 = new Type("SLACK", 2);
+      d = localType3;
+      Type localType4 = new Type("ERROR", 3);
+      e = localType4;
+      Type localType5 = new Type("UNKNOWN", 4);
+      f = localType5;
+      g = new Type[] { localType1, localType2, localType3, localType4, localType5 };
+    }
+  }
+}

@@ -1,0 +1,300 @@
+package androidx.lifecycle;
+
+import android.app.Application;
+import androidx.lifecycle.n0.a;
+import androidx.lifecycle.n0.a.b;
+import androidx.lifecycle.n0.d;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
+
+public class f0
+{
+  private final i0 a;
+  private final b b;
+  private final a c;
+  
+  public f0(i0 paramI0, b paramB)
+  {
+    this(paramI0, paramB, null, 4, null);
+  }
+  
+  public f0(i0 paramI0, b paramB, a paramA)
+  {
+    a = paramI0;
+    b = paramB;
+    c = paramA;
+  }
+  
+  public f0(j0 paramJ0)
+  {
+    this(localI0, a.e.a(paramJ0), h0.a(paramJ0));
+  }
+  
+  public f0(j0 paramJ0, b paramB)
+  {
+    this(localI0, paramB, h0.a(paramJ0));
+  }
+  
+  public <T extends e0> T a(Class<T> paramClass)
+  {
+    kotlin.x.d.i.e(paramClass, "modelClass");
+    String str = paramClass.getCanonicalName();
+    if (str != null)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("androidx.lifecycle.ViewModelProvider.DefaultKey:");
+      localStringBuilder.append(str);
+      return b(localStringBuilder.toString(), paramClass);
+    }
+    throw new IllegalArgumentException("Local and anonymous classes can not be ViewModels");
+  }
+  
+  public <T extends e0> T b(String paramString, Class<T> paramClass)
+  {
+    kotlin.x.d.i.e(paramString, "key");
+    kotlin.x.d.i.e(paramClass, "modelClass");
+    Object localObject = a.b(paramString);
+    if (paramClass.isInstance(localObject))
+    {
+      paramString = b;
+      if ((paramString instanceof d)) {
+        paramString = (d)paramString;
+      } else {
+        paramString = null;
+      }
+      if (paramString != null)
+      {
+        kotlin.x.d.i.d(localObject, "viewModel");
+        paramString.c((e0)localObject);
+      }
+      Objects.requireNonNull(localObject, "null cannot be cast to non-null type T of androidx.lifecycle.ViewModelProvider.get");
+      return localObject;
+    }
+    localObject = new d(c);
+    ((d)localObject).c(c.d, paramString);
+    try
+    {
+      localObject = b.b(paramClass, (a)localObject);
+      paramClass = (Class<T>)localObject;
+    }
+    catch (AbstractMethodError localAbstractMethodError)
+    {
+      for (;;) {}
+    }
+    paramClass = b.a(paramClass);
+    a.d(paramString, paramClass);
+    return paramClass;
+  }
+  
+  public static class a
+    extends f0.c
+  {
+    public static final a e = new a(null);
+    private static a f;
+    public static final a.b<Application> g = f0.a.a.a.a;
+    private final Application h;
+    
+    public a()
+    {
+      this(null, 0);
+    }
+    
+    public a(Application paramApplication)
+    {
+      this(paramApplication, 0);
+    }
+    
+    private a(Application paramApplication, int paramInt)
+    {
+      h = paramApplication;
+    }
+    
+    private final <T extends e0> T g(Class<T> paramClass, Application paramApplication)
+    {
+      if (b.class.isAssignableFrom(paramClass)) {
+        try
+        {
+          paramApplication = (e0)paramClass.getConstructor(new Class[] { Application.class }).newInstance(new Object[] { paramApplication });
+          kotlin.x.d.i.d(paramApplication, "{\n                try {\n?          }\n            }");
+          return paramApplication;
+        }
+        catch (InvocationTargetException paramApplication)
+        {
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Cannot create an instance of ");
+          localStringBuilder.append(paramClass);
+          throw new RuntimeException(localStringBuilder.toString(), paramApplication);
+        }
+        catch (InstantiationException paramApplication)
+        {
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Cannot create an instance of ");
+          localStringBuilder.append(paramClass);
+          throw new RuntimeException(localStringBuilder.toString(), paramApplication);
+        }
+        catch (IllegalAccessException paramApplication)
+        {
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Cannot create an instance of ");
+          localStringBuilder.append(paramClass);
+          throw new RuntimeException(localStringBuilder.toString(), paramApplication);
+        }
+        catch (NoSuchMethodException paramApplication)
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Cannot create an instance of ");
+          localStringBuilder.append(paramClass);
+          throw new RuntimeException(localStringBuilder.toString(), paramApplication);
+        }
+      }
+      return super.a(paramClass);
+    }
+    
+    public <T extends e0> T a(Class<T> paramClass)
+    {
+      kotlin.x.d.i.e(paramClass, "modelClass");
+      Application localApplication = h;
+      if (localApplication != null) {
+        return g(paramClass, localApplication);
+      }
+      throw new UnsupportedOperationException("AndroidViewModelFactory constructed with empty constructor works only with create(modelClass: Class<T>, extras: CreationExtras).");
+    }
+    
+    public <T extends e0> T b(Class<T> paramClass, a paramA)
+    {
+      kotlin.x.d.i.e(paramClass, "modelClass");
+      kotlin.x.d.i.e(paramA, "extras");
+      if (h != null) {
+        return a(paramClass);
+      }
+      paramA = (Application)paramA.a(g);
+      if (paramA != null) {
+        return g(paramClass, paramA);
+      }
+      if (!b.class.isAssignableFrom(paramClass)) {
+        return super.a(paramClass);
+      }
+      throw new IllegalArgumentException("CreationExtras must have an application by `APPLICATION_KEY`");
+    }
+    
+    public static final class a
+    {
+      private a() {}
+      
+      public final f0.b a(j0 paramJ0)
+      {
+        kotlin.x.d.i.e(paramJ0, "owner");
+        if ((paramJ0 instanceof i))
+        {
+          paramJ0 = ((i)paramJ0).getDefaultViewModelProviderFactory();
+          kotlin.x.d.i.d(paramJ0, "owner.defaultViewModelProviderFactory");
+          return paramJ0;
+        }
+        return f0.c.b.a();
+      }
+      
+      public final f0.a b(Application paramApplication)
+      {
+        kotlin.x.d.i.e(paramApplication, "application");
+        if (f0.a.e() == null) {
+          f0.a.f(new f0.a(paramApplication));
+        }
+        paramApplication = f0.a.e();
+        kotlin.x.d.i.b(paramApplication);
+        return paramApplication;
+      }
+      
+      private static final class a
+        implements a.b<Application>
+      {
+        public static final a a = new a();
+        
+        private a() {}
+      }
+    }
+  }
+  
+  public static abstract interface b
+  {
+    public static final a a = a.a;
+    
+    public abstract <T extends e0> T a(Class<T> paramClass);
+    
+    public abstract <T extends e0> T b(Class<T> paramClass, a paramA);
+    
+    public static final class a
+    {
+      private a() {}
+    }
+  }
+  
+  public static class c
+    implements f0.b
+  {
+    public static final a b = new a(null);
+    private static c c;
+    public static final a.b<String> d = f0.c.a.a.a;
+    
+    public c() {}
+    
+    public <T extends e0> T a(Class<T> paramClass)
+    {
+      kotlin.x.d.i.e(paramClass, "modelClass");
+      try
+      {
+        Object localObject = paramClass.newInstance();
+        kotlin.x.d.i.d(localObject, "{\n                modelC?wInstance()\n            }");
+        localObject = (e0)localObject;
+        return localObject;
+      }
+      catch (IllegalAccessException localIllegalAccessException)
+      {
+        localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Cannot create an instance of ");
+        localStringBuilder.append(paramClass);
+        throw new RuntimeException(localStringBuilder.toString(), localIllegalAccessException);
+      }
+      catch (InstantiationException localInstantiationException)
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Cannot create an instance of ");
+        localStringBuilder.append(paramClass);
+        throw new RuntimeException(localStringBuilder.toString(), localInstantiationException);
+      }
+    }
+    
+    public static final class a
+    {
+      private a() {}
+      
+      public final f0.c a()
+      {
+        if (f0.c.c() == null) {
+          f0.c.d(new f0.c());
+        }
+        f0.c localC = f0.c.c();
+        kotlin.x.d.i.b(localC);
+        return localC;
+      }
+      
+      private static final class a
+        implements a.b<String>
+      {
+        public static final a a = new a();
+        
+        private a() {}
+      }
+    }
+  }
+  
+  public static class d
+  {
+    public d() {}
+    
+    public void c(e0 paramE0)
+    {
+      kotlin.x.d.i.e(paramE0, "viewModel");
+    }
+  }
+}

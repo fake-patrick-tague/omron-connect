@@ -1,0 +1,684 @@
+package androidx.work.impl;
+
+import android.content.Context;
+import androidx.room.RoomDatabase;
+import androidx.work.ListenableWorker;
+import androidx.work.ListenableWorker.a;
+import androidx.work.ListenableWorker.a.a;
+import androidx.work.ListenableWorker.a.b;
+import androidx.work.ListenableWorker.a.c;
+import androidx.work.WorkInfo.State;
+import androidx.work.WorkerParameters;
+import androidx.work.WorkerParameters.a;
+import androidx.work.h;
+import androidx.work.i;
+import androidx.work.impl.background.systemalarm.RescheduleReceiver;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.q;
+import androidx.work.impl.utils.l;
+import androidx.work.impl.utils.m;
+import androidx.work.j;
+import com.google.common.util.concurrent.c;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+
+public class k
+  implements Runnable
+{
+  static final String b = j.f("WorkerWrapper");
+  Context c;
+  private String d;
+  private List<e> e;
+  private WorkerParameters.a f;
+  p g;
+  ListenableWorker h;
+  androidx.work.impl.utils.p.a i;
+  ListenableWorker.a j = ListenableWorker.a.a();
+  private androidx.work.a k;
+  private androidx.work.impl.foreground.a l;
+  private WorkDatabase m;
+  private q n;
+  private androidx.work.impl.n.b o;
+  private androidx.work.impl.n.t p;
+  private List<String> q;
+  private String r;
+  androidx.work.impl.utils.futures.b<Boolean> s = androidx.work.impl.utils.futures.b.t();
+  c<ListenableWorker.a> t = null;
+  private volatile boolean u;
+  
+  k(c paramC)
+  {
+    c = a;
+    i = d;
+    l = c;
+    d = g;
+    e = h;
+    f = i;
+    h = b;
+    k = e;
+    paramC = f;
+    m = paramC;
+    n = paramC.B();
+    o = m.t();
+    p = m.C();
+  }
+  
+  private String a(List<String> paramList)
+  {
+    StringBuilder localStringBuilder = new StringBuilder("Work [ id=");
+    localStringBuilder.append(d);
+    localStringBuilder.append(", tags={ ");
+    paramList = paramList.iterator();
+    int i1 = 1;
+    while (paramList.hasNext())
+    {
+      String str = (String)paramList.next();
+      if (i1 != 0) {
+        i1 = 0;
+      } else {
+        localStringBuilder.append(", ");
+      }
+      localStringBuilder.append(str);
+    }
+    localStringBuilder.append(" } ]");
+    return localStringBuilder.toString();
+  }
+  
+  private void c(ListenableWorker.a paramA)
+  {
+    if ((paramA instanceof ListenableWorker.a.c))
+    {
+      j.c().d(b, String.format("Worker result SUCCESS for %s", new Object[] { r }), new Throwable[0]);
+      if (g.d())
+      {
+        h();
+        return;
+      }
+      m();
+      return;
+    }
+    if ((paramA instanceof ListenableWorker.a.b))
+    {
+      j.c().d(b, String.format("Worker result RETRY for %s", new Object[] { r }), new Throwable[0]);
+      g();
+      return;
+    }
+    j.c().d(b, String.format("Worker result FAILURE for %s", new Object[] { r }), new Throwable[0]);
+    if (g.d())
+    {
+      h();
+      return;
+    }
+    l();
+  }
+  
+  private void e(String paramString)
+  {
+    LinkedList localLinkedList = new LinkedList();
+    localLinkedList.add(paramString);
+    while (!localLinkedList.isEmpty())
+    {
+      paramString = (String)localLinkedList.remove();
+      if (n.m(paramString) != WorkInfo.State.g) {
+        n.b(WorkInfo.State.e, new String[] { paramString });
+      }
+      localLinkedList.addAll(o.b(paramString));
+    }
+  }
+  
+  private void g()
+  {
+    m.c();
+    try
+    {
+      n.b(WorkInfo.State.b, new String[] { d });
+      n.t(d, System.currentTimeMillis());
+      n.c(d, -1L);
+      m.r();
+      return;
+    }
+    finally
+    {
+      m.g();
+      i(true);
+    }
+  }
+  
+  private void h()
+  {
+    m.c();
+    try
+    {
+      n.t(d, System.currentTimeMillis());
+      n.b(WorkInfo.State.b, new String[] { d });
+      n.o(d);
+      n.c(d, -1L);
+      m.r();
+      return;
+    }
+    finally
+    {
+      m.g();
+      i(false);
+    }
+  }
+  
+  private void i(boolean paramBoolean)
+  {
+    m.c();
+    try
+    {
+      if (!m.B().k()) {
+        androidx.work.impl.utils.d.a(c, RescheduleReceiver.class, false);
+      }
+      if (paramBoolean)
+      {
+        n.b(WorkInfo.State.b, new String[] { d });
+        n.c(d, -1L);
+      }
+      if (g != null)
+      {
+        ListenableWorker localListenableWorker = h;
+        if ((localListenableWorker != null) && (localListenableWorker.i())) {
+          l.b(d);
+        }
+      }
+      m.r();
+      m.g();
+      s.p(Boolean.valueOf(paramBoolean));
+      return;
+    }
+    finally
+    {
+      m.g();
+    }
+  }
+  
+  private void j()
+  {
+    WorkInfo.State localState = n.m(d);
+    if (localState == WorkInfo.State.c)
+    {
+      j.c().a(b, String.format("Status for %s is RUNNING;not doing any work and rescheduling for later execution", new Object[] { d }), new Throwable[0]);
+      i(true);
+      return;
+    }
+    j.c().a(b, String.format("Status for %s is %s; not doing any work", new Object[] { d, localState }), new Throwable[0]);
+    i(false);
+  }
+  
+  private void k()
+  {
+    if (n()) {
+      return;
+    }
+    m.c();
+    for (;;)
+    {
+      try
+      {
+        Object localObject1 = n.n(d);
+        g = ((p)localObject1);
+        if (localObject1 == null)
+        {
+          j.c().b(b, String.format("Didn't find WorkSpec for id %s", new Object[] { d }), new Throwable[0]);
+          i(false);
+          m.r();
+          return;
+        }
+        if (d != WorkInfo.State.b)
+        {
+          j();
+          m.r();
+          j.c().a(b, String.format("%s is not in ENQUEUED state. Nothing more to do.", new Object[] { g.e }), new Throwable[0]);
+          return;
+        }
+        if ((((p)localObject1).d()) || (g.c()))
+        {
+          long l1 = System.currentTimeMillis();
+          localObject1 = g;
+          if (p != 0L) {
+            break label787;
+          }
+          i1 = 1;
+          if ((i1 == 0) && (l1 < ((p)localObject1).a()))
+          {
+            j.c().a(b, String.format("Delaying execution for %s because it is being executed before schedule.", new Object[] { g.e }), new Throwable[0]);
+            i(true);
+            m.r();
+            return;
+          }
+        }
+        m.r();
+        m.g();
+        if (g.d())
+        {
+          localObject1 = g.g;
+        }
+        else
+        {
+          localObject1 = k.f().b(g.f);
+          if (localObject1 == null)
+          {
+            j.c().b(b, String.format("Could not create Input Merger %s", new Object[] { g.f }), new Throwable[0]);
+            l();
+            return;
+          }
+          localObject3 = new ArrayList();
+          ((List)localObject3).add(g.g);
+          ((List)localObject3).addAll(n.r(d));
+          localObject1 = ((h)localObject1).b((List)localObject3);
+          continue;
+        }
+        Object localObject3 = new WorkerParameters(UUID.fromString(d), (androidx.work.d)localObject1, q, f, g.m, k.e(), i, k.m(), new androidx.work.impl.utils.n(m, i), new m(m, l, i));
+        if (h == null) {
+          h = k.m().b(c, g.e, (WorkerParameters)localObject3);
+        }
+        localObject1 = h;
+        if (localObject1 == null)
+        {
+          j.c().b(b, String.format("Could not create Worker %s", new Object[] { g.e }), new Throwable[0]);
+          l();
+          return;
+        }
+        if (((ListenableWorker)localObject1).k())
+        {
+          j.c().b(b, String.format("Received an already-used Worker %s; WorkerFactory should return new instances", new Object[] { g.e }), new Throwable[0]);
+          l();
+          return;
+        }
+        h.n();
+        if (o())
+        {
+          if (n()) {
+            return;
+          }
+          localObject1 = androidx.work.impl.utils.futures.b.t();
+          localObject3 = new l(c, g, h, ((WorkerParameters)localObject3).b(), i);
+          i.a().execute((Runnable)localObject3);
+          localObject3 = ((l)localObject3).a();
+          ((c)localObject3).a(new a((c)localObject3, (androidx.work.impl.utils.futures.b)localObject1), i.a());
+          ((androidx.work.impl.utils.futures.a)localObject1).a(new b((androidx.work.impl.utils.futures.b)localObject1, r), i.c());
+          return;
+        }
+        j();
+        return;
+      }
+      finally
+      {
+        m.g();
+      }
+      label787:
+      int i1 = 0;
+    }
+  }
+  
+  private void m()
+  {
+    m.c();
+    try
+    {
+      n.b(WorkInfo.State.d, new String[] { d });
+      Object localObject1 = ((ListenableWorker.a.c)j).e();
+      n.i(d, (androidx.work.d)localObject1);
+      long l1 = System.currentTimeMillis();
+      localObject1 = o.b(d).iterator();
+      while (((Iterator)localObject1).hasNext())
+      {
+        String str = (String)((Iterator)localObject1).next();
+        if ((n.m(str) == WorkInfo.State.f) && (o.c(str)))
+        {
+          j.c().d(b, String.format("Setting status to enqueued for %s", new Object[] { str }), new Throwable[0]);
+          n.b(WorkInfo.State.b, new String[] { str });
+          n.t(str, l1);
+        }
+      }
+      m.r();
+      return;
+    }
+    finally
+    {
+      m.g();
+      i(false);
+    }
+  }
+  
+  private boolean n()
+  {
+    if (u)
+    {
+      j.c().a(b, String.format("Work interrupted for %s", new Object[] { r }), new Throwable[0]);
+      WorkInfo.State localState = n.m(d);
+      if (localState == null)
+      {
+        i(false);
+        return true;
+      }
+      i(localState.a() ^ true);
+      return true;
+    }
+    return false;
+  }
+  
+  private boolean o()
+  {
+    m.c();
+    for (;;)
+    {
+      try
+      {
+        WorkInfo.State localState1 = n.m(d);
+        WorkInfo.State localState2 = WorkInfo.State.b;
+        bool = true;
+        if (localState1 == localState2)
+        {
+          n.b(WorkInfo.State.c, new String[] { d });
+          n.s(d);
+          m.r();
+          return bool;
+        }
+      }
+      finally
+      {
+        m.g();
+      }
+      boolean bool = false;
+    }
+  }
+  
+  public c<Boolean> b()
+  {
+    return s;
+  }
+  
+  public void d()
+  {
+    u = true;
+    n();
+    Object localObject = t;
+    boolean bool;
+    if (localObject != null)
+    {
+      bool = ((Future)localObject).isDone();
+      t.cancel(true);
+    }
+    else
+    {
+      bool = false;
+    }
+    localObject = h;
+    if ((localObject != null) && (!bool))
+    {
+      ((ListenableWorker)localObject).p();
+      return;
+    }
+    localObject = String.format("WorkSpec %s is already done. Not interrupting.", new Object[] { g });
+    j.c().a(b, (String)localObject, new Throwable[0]);
+  }
+  
+  void f()
+  {
+    if (!n())
+    {
+      m.c();
+      try
+      {
+        WorkInfo.State localState = n.m(d);
+        m.A().a(d);
+        if (localState == null) {
+          i(false);
+        } else if (localState == WorkInfo.State.c) {
+          c(j);
+        } else if (!localState.a()) {
+          g();
+        }
+        m.r();
+      }
+      finally
+      {
+        m.g();
+      }
+    }
+    Object localObject2 = e;
+    if (localObject2 != null)
+    {
+      localObject2 = ((List)localObject2).iterator();
+      while (((Iterator)localObject2).hasNext()) {
+        ((e)((Iterator)localObject2).next()).e(d);
+      }
+      f.b(k, m, e);
+    }
+  }
+  
+  void l()
+  {
+    m.c();
+    try
+    {
+      e(d);
+      androidx.work.d localD = ((ListenableWorker.a.a)j).e();
+      n.i(d, localD);
+      m.r();
+      return;
+    }
+    finally
+    {
+      m.g();
+      i(false);
+    }
+  }
+  
+  public void run()
+  {
+    List localList = p.b(d);
+    q = localList;
+    r = a(localList);
+    k();
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(c paramC, androidx.work.impl.utils.futures.b paramB) {}
+    
+    public void run()
+    {
+      try
+      {
+        b.get();
+        j.c().a(k.b, String.format("Starting work for %s", new Object[] { g.e }), new Throwable[0]);
+        k localK = k.this;
+        t = h.o();
+        return;
+      }
+      finally
+      {
+        c.q(localThrowable);
+      }
+    }
+  }
+  
+  class b
+    implements Runnable
+  {
+    b(androidx.work.impl.utils.futures.b paramB, String paramString) {}
+    
+    /* Error */
+    public void run()
+    {
+      // Byte code:
+      //   0: aload_0
+      //   1: getfield 23	androidx/work/impl/k$b:b	Landroidx/work/impl/utils/futures/b;
+      //   4: invokevirtual 41	androidx/work/impl/utils/futures/a:get	()Ljava/lang/Object;
+      //   7: checkcast 43	androidx/work/ListenableWorker$a
+      //   10: astore_1
+      //   11: aload_1
+      //   12: ifnonnull +41 -> 53
+      //   15: invokestatic 48	androidx/work/j:c	()Landroidx/work/j;
+      //   18: getstatic 50	androidx/work/impl/k:b	Ljava/lang/String;
+      //   21: ldc 52
+      //   23: iconst_1
+      //   24: anewarray 4	java/lang/Object
+      //   27: dup
+      //   28: iconst_0
+      //   29: aload_0
+      //   30: getfield 21	androidx/work/impl/k$b:d	Landroidx/work/impl/k;
+      //   33: getfield 56	androidx/work/impl/k:g	Landroidx/work/impl/n/p;
+      //   36: getfield 61	androidx/work/impl/n/p:e	Ljava/lang/String;
+      //   39: aastore
+      //   40: invokestatic 67	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   43: iconst_0
+      //   44: anewarray 69	java/lang/Throwable
+      //   47: invokevirtual 72	androidx/work/j:b	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   50: goto +132 -> 182
+      //   53: invokestatic 48	androidx/work/j:c	()Landroidx/work/j;
+      //   56: getstatic 50	androidx/work/impl/k:b	Ljava/lang/String;
+      //   59: ldc 74
+      //   61: iconst_2
+      //   62: anewarray 4	java/lang/Object
+      //   65: dup
+      //   66: iconst_0
+      //   67: aload_0
+      //   68: getfield 21	androidx/work/impl/k$b:d	Landroidx/work/impl/k;
+      //   71: getfield 56	androidx/work/impl/k:g	Landroidx/work/impl/n/p;
+      //   74: getfield 61	androidx/work/impl/n/p:e	Ljava/lang/String;
+      //   77: aastore
+      //   78: dup
+      //   79: iconst_1
+      //   80: aload_1
+      //   81: aastore
+      //   82: invokestatic 67	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   85: iconst_0
+      //   86: anewarray 69	java/lang/Throwable
+      //   89: invokevirtual 77	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   92: aload_0
+      //   93: getfield 21	androidx/work/impl/k$b:d	Landroidx/work/impl/k;
+      //   96: aload_1
+      //   97: putfield 81	androidx/work/impl/k:j	Landroidx/work/ListenableWorker$a;
+      //   100: goto +82 -> 182
+      //   103: astore_1
+      //   104: goto +86 -> 190
+      //   107: astore_1
+      //   108: goto +4 -> 112
+      //   111: astore_1
+      //   112: invokestatic 48	androidx/work/j:c	()Landroidx/work/j;
+      //   115: getstatic 50	androidx/work/impl/k:b	Ljava/lang/String;
+      //   118: ldc 83
+      //   120: iconst_1
+      //   121: anewarray 4	java/lang/Object
+      //   124: dup
+      //   125: iconst_0
+      //   126: aload_0
+      //   127: getfield 25	androidx/work/impl/k$b:c	Ljava/lang/String;
+      //   130: aastore
+      //   131: invokestatic 67	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   134: iconst_1
+      //   135: anewarray 69	java/lang/Throwable
+      //   138: dup
+      //   139: iconst_0
+      //   140: aload_1
+      //   141: aastore
+      //   142: invokevirtual 72	androidx/work/j:b	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   145: goto +37 -> 182
+      //   148: astore_1
+      //   149: invokestatic 48	androidx/work/j:c	()Landroidx/work/j;
+      //   152: getstatic 50	androidx/work/impl/k:b	Ljava/lang/String;
+      //   155: ldc 85
+      //   157: iconst_1
+      //   158: anewarray 4	java/lang/Object
+      //   161: dup
+      //   162: iconst_0
+      //   163: aload_0
+      //   164: getfield 25	androidx/work/impl/k$b:c	Ljava/lang/String;
+      //   167: aastore
+      //   168: invokestatic 67	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   171: iconst_1
+      //   172: anewarray 69	java/lang/Throwable
+      //   175: dup
+      //   176: iconst_0
+      //   177: aload_1
+      //   178: aastore
+      //   179: invokevirtual 87	androidx/work/j:d	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   182: aload_0
+      //   183: getfield 21	androidx/work/impl/k$b:d	Landroidx/work/impl/k;
+      //   186: invokevirtual 90	androidx/work/impl/k:f	()V
+      //   189: return
+      //   190: aload_0
+      //   191: getfield 21	androidx/work/impl/k$b:d	Landroidx/work/impl/k;
+      //   194: invokevirtual 90	androidx/work/impl/k:f	()V
+      //   197: aload_1
+      //   198: athrow
+      // Local variable table:
+      //   start	length	slot	name	signature
+      //   0	199	0	this	b
+      //   10	87	1	localA	ListenableWorker.a
+      //   103	1	1	localObject	Object
+      //   107	1	1	localExecutionException	java.util.concurrent.ExecutionException
+      //   111	30	1	localInterruptedException	InterruptedException
+      //   148	50	1	localCancellationException	java.util.concurrent.CancellationException
+      // Exception table:
+      //   from	to	target	type
+      //   0	11	103	finally
+      //   15	50	103	finally
+      //   53	100	103	finally
+      //   112	145	103	finally
+      //   149	182	103	finally
+      //   0	11	107	java/util/concurrent/ExecutionException
+      //   15	50	107	java/util/concurrent/ExecutionException
+      //   53	100	107	java/util/concurrent/ExecutionException
+      //   0	11	111	java/lang/InterruptedException
+      //   15	50	111	java/lang/InterruptedException
+      //   53	100	111	java/lang/InterruptedException
+      //   0	11	148	java/util/concurrent/CancellationException
+      //   15	50	148	java/util/concurrent/CancellationException
+      //   53	100	148	java/util/concurrent/CancellationException
+    }
+  }
+  
+  public static class c
+  {
+    Context a;
+    ListenableWorker b;
+    androidx.work.impl.foreground.a c;
+    androidx.work.impl.utils.p.a d;
+    androidx.work.a e;
+    WorkDatabase f;
+    String g;
+    List<e> h;
+    WorkerParameters.a i = new WorkerParameters.a();
+    
+    public c(Context paramContext, androidx.work.a paramA, androidx.work.impl.utils.p.a paramA1, androidx.work.impl.foreground.a paramA2, WorkDatabase paramWorkDatabase, String paramString)
+    {
+      a = paramContext.getApplicationContext();
+      d = paramA1;
+      c = paramA2;
+      e = paramA;
+      f = paramWorkDatabase;
+      g = paramString;
+    }
+    
+    public k a()
+    {
+      return new k(this);
+    }
+    
+    public c b(WorkerParameters.a paramA)
+    {
+      if (paramA != null) {
+        i = paramA;
+      }
+      return this;
+    }
+    
+    public c c(List<e> paramList)
+    {
+      h = paramList;
+      return this;
+    }
+  }
+}

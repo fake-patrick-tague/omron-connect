@@ -1,0 +1,56 @@
+package com.google.android.gms.common.internal;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.util.VisibleForTesting;
+
+@KeepForSdk
+public final class RootTelemetryConfigManager
+{
+  private static RootTelemetryConfigManager zza;
+  private static final RootTelemetryConfiguration zzb = new RootTelemetryConfiguration(0, false, false, 0, 0);
+  private RootTelemetryConfiguration zzc;
+  
+  private RootTelemetryConfigManager() {}
+  
+  @KeepForSdk
+  public static RootTelemetryConfigManager getInstance()
+  {
+    try
+    {
+      if (zza == null) {
+        zza = new RootTelemetryConfigManager();
+      }
+      RootTelemetryConfigManager localRootTelemetryConfigManager = zza;
+      return localRootTelemetryConfigManager;
+    }
+    finally {}
+  }
+  
+  @KeepForSdk
+  public RootTelemetryConfiguration getConfig()
+  {
+    return zzc;
+  }
+  
+  @VisibleForTesting
+  public final void zza(RootTelemetryConfiguration paramRootTelemetryConfiguration)
+  {
+    if (paramRootTelemetryConfiguration == null) {}
+    try
+    {
+      zzc = zzb;
+      return;
+    }
+    finally {}
+    RootTelemetryConfiguration localRootTelemetryConfiguration = zzc;
+    if (localRootTelemetryConfiguration != null)
+    {
+      int i = localRootTelemetryConfiguration.getVersion();
+      int j = paramRootTelemetryConfiguration.getVersion();
+      if (i >= j) {
+        return;
+      }
+    }
+    zzc = paramRootTelemetryConfiguration;
+  }
+}

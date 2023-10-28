@@ -1,0 +1,113 @@
+package com.google.android.gms.fitness.result;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.DataSource;
+import com.google.android.gms.fitness.data.DataType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+@SafeParcelable.Class(creator="DataSourcesResultCreator")
+@SafeParcelable.Reserved({1000})
+public class DataSourcesResult
+  extends AbstractSafeParcelable
+  implements Result
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<DataSourcesResult> CREATOR = new zzd();
+  @SafeParcelable.Field(getter="getDataSources", id=1)
+  private final List<DataSource> zzqq;
+  @SafeParcelable.Field(getter="getStatus", id=2)
+  private final Status zzsv;
+  
+  @ShowFirstParty
+  @SafeParcelable.Constructor
+  public DataSourcesResult(@RecentlyNonNull @SafeParcelable.Param(id=1) List<DataSource> paramList, @RecentlyNonNull @SafeParcelable.Param(id=2) Status paramStatus)
+  {
+    zzqq = Collections.unmodifiableList(paramList);
+    zzsv = paramStatus;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this != paramObject)
+    {
+      if ((paramObject instanceof DataSourcesResult))
+      {
+        paramObject = (DataSourcesResult)paramObject;
+        int i;
+        if ((zzsv.equals(zzsv)) && (Objects.equal(zzqq, zzqq))) {
+          i = 1;
+        } else {
+          i = 0;
+        }
+        if (i != 0) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return true;
+  }
+  
+  @RecentlyNonNull
+  public List<DataSource> getDataSources()
+  {
+    return zzqq;
+  }
+  
+  @RecentlyNonNull
+  public List<DataSource> getDataSources(@RecentlyNonNull DataType paramDataType)
+  {
+    ArrayList localArrayList = new ArrayList();
+    Iterator localIterator = zzqq.iterator();
+    while (localIterator.hasNext())
+    {
+      DataSource localDataSource = (DataSource)localIterator.next();
+      if (localDataSource.getDataType().equals(paramDataType)) {
+        localArrayList.add(localDataSource);
+      }
+    }
+    return Collections.unmodifiableList(localArrayList);
+  }
+  
+  @RecentlyNonNull
+  public Status getStatus()
+  {
+    return zzsv;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzsv, zzqq });
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("status", zzsv).add("dataSources", zzqq).toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeTypedList(paramParcel, 1, getDataSources(), false);
+    SafeParcelWriter.writeParcelable(paramParcel, 2, getStatus(), paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

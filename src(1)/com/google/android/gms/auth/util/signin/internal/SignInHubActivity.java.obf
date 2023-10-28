@@ -1,0 +1,193 @@
+package com.google.android.gms.auth.api.signin.internal;
+
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
+import android.view.accessibility.AccessibilityEvent;
+import androidx.activity.ComponentActivity;
+import androidx.annotation.RecentlyNonNull;
+import androidx.fragment.app.m;
+import c.p.a.a;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.SignInAccount;
+import com.google.android.gms.common.annotation.KeepName;
+import com.google.android.gms.common.api.Status;
+import java.util.Objects;
+
+@KeepName
+public class SignInHubActivity
+  extends m
+{
+  private static boolean zba = false;
+  private boolean zbb = false;
+  private SignInConfiguration zbc;
+  private boolean zbd;
+  private int zbe;
+  private Intent zbf;
+  
+  public SignInHubActivity() {}
+  
+  private final void zbc()
+  {
+    getSupportLoaderManager().d(0, null, new zbw(this, null));
+    zba = false;
+  }
+  
+  private final void zbd(int paramInt)
+  {
+    Status localStatus = new Status(paramInt);
+    Intent localIntent = new Intent();
+    localIntent.putExtra("googleSignInStatus", localStatus);
+    setResult(0, localIntent);
+    finish();
+    zba = false;
+  }
+  
+  private final void zbe(String paramString)
+  {
+    Intent localIntent = new Intent(paramString);
+    if (paramString.equals("com.google.android.gms.auth.GOOGLE_SIGN_IN")) {
+      localIntent.setPackage("com.google.android.gms");
+    } else {
+      localIntent.setPackage(getPackageName());
+    }
+    localIntent.putExtra("config", zbc);
+    try
+    {
+      startActivityForResult(localIntent, 40962);
+      return;
+    }
+    catch (ActivityNotFoundException paramString)
+    {
+      for (;;) {}
+    }
+    zbb = true;
+    Log.w("AuthSignInClient", "Could not launch sign in Intent. Google Play Service is probably being updated...");
+    zbd(17);
+  }
+  
+  public final boolean dispatchPopulateAccessibilityEvent(@RecentlyNonNull AccessibilityEvent paramAccessibilityEvent)
+  {
+    return true;
+  }
+  
+  protected final void onActivityResult(int paramInt1, int paramInt2, Intent paramIntent)
+  {
+    if (zbb) {
+      return;
+    }
+    setResult(0);
+    if (paramInt1 != 40962) {
+      return;
+    }
+    if (paramIntent != null)
+    {
+      Object localObject = (SignInAccount)paramIntent.getParcelableExtra("signInAccount");
+      if ((localObject != null) && (((SignInAccount)localObject).zba() != null))
+      {
+        localObject = ((SignInAccount)localObject).zba();
+        zbn localZbn = zbn.zbc(this);
+        GoogleSignInOptions localGoogleSignInOptions = zbc.zba();
+        Objects.requireNonNull(localObject);
+        localZbn.zbe(localGoogleSignInOptions, (GoogleSignInAccount)localObject);
+        paramIntent.removeExtra("signInAccount");
+        paramIntent.putExtra("googleSignInAccount", (Parcelable)localObject);
+        zbd = true;
+        zbe = paramInt2;
+        zbf = paramIntent;
+        zbc();
+        return;
+      }
+      if (paramIntent.hasExtra("errorCode"))
+      {
+        paramInt2 = paramIntent.getIntExtra("errorCode", 8);
+        paramInt1 = paramInt2;
+        if (paramInt2 == 13) {
+          paramInt1 = 12501;
+        }
+        zbd(paramInt1);
+        return;
+      }
+    }
+    zbd(8);
+  }
+  
+  protected final void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    Object localObject = getIntent();
+    String str = ((Intent)localObject).getAction();
+    Objects.requireNonNull(str);
+    if ("com.google.android.gms.auth.NO_IMPL".equals(str))
+    {
+      zbd(12500);
+      return;
+    }
+    if ((!str.equals("com.google.android.gms.auth.GOOGLE_SIGN_IN")) && (!str.equals("com.google.android.gms.auth.APPAUTH_SIGN_IN")))
+    {
+      paramBundle = String.valueOf(((Intent)localObject).getAction());
+      if (paramBundle.length() != 0) {
+        paramBundle = "Unknown action: ".concat(paramBundle);
+      } else {
+        paramBundle = new String("Unknown action: ");
+      }
+      Log.e("AuthSignInClient", paramBundle);
+      finish();
+      return;
+    }
+    localObject = ((Intent)localObject).getBundleExtra("config");
+    Objects.requireNonNull(localObject);
+    localObject = (SignInConfiguration)((Bundle)localObject).getParcelable("config");
+    if (localObject == null)
+    {
+      Log.e("AuthSignInClient", "Activity started with invalid configuration.");
+      setResult(0);
+      finish();
+      return;
+    }
+    zbc = ((SignInConfiguration)localObject);
+    if (paramBundle == null)
+    {
+      if (zba)
+      {
+        setResult(0);
+        zbd(12502);
+        return;
+      }
+      zba = true;
+      zbe(str);
+      return;
+    }
+    boolean bool = paramBundle.getBoolean("signingInGoogleApiClients");
+    zbd = bool;
+    if (bool)
+    {
+      zbe = paramBundle.getInt("signInResultCode");
+      paramBundle = (Intent)paramBundle.getParcelable("signInResultData");
+      Objects.requireNonNull(paramBundle);
+      zbf = paramBundle;
+      zbc();
+    }
+  }
+  
+  public final void onDestroy()
+  {
+    super.onDestroy();
+    zba = false;
+  }
+  
+  protected final void onSaveInstanceState(@RecentlyNonNull Bundle paramBundle)
+  {
+    super.onSaveInstanceState(paramBundle);
+    paramBundle.putBoolean("signingInGoogleApiClients", zbd);
+    if (zbd)
+    {
+      paramBundle.putInt("signInResultCode", zbe);
+      paramBundle.putParcelable("signInResultData", zbf);
+    }
+  }
+}

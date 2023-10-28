@@ -1,0 +1,86 @@
+package androidx.work.impl.utils;
+
+import android.content.Context;
+import androidx.work.ListenableWorker;
+import androidx.work.e;
+import androidx.work.f;
+import androidx.work.impl.n.p;
+import androidx.work.impl.utils.futures.b;
+import androidx.work.j;
+import com.google.common.util.concurrent.c;
+import java.util.concurrent.Executor;
+
+public class l
+  implements Runnable
+{
+  static final String b = j.f("WorkForegroundRunnable");
+  final b<Void> c = b.t();
+  final Context d;
+  final p e;
+  final ListenableWorker f;
+  final f g;
+  final androidx.work.impl.utils.p.a h;
+  
+  public l(Context paramContext, p paramP, ListenableWorker paramListenableWorker, f paramF, androidx.work.impl.utils.p.a paramA)
+  {
+    d = paramContext;
+    e = paramP;
+    f = paramListenableWorker;
+    g = paramF;
+    h = paramA;
+  }
+  
+  public c<Void> a()
+  {
+    return c;
+  }
+  
+  public void run()
+  {
+    if ((e.s) && (!c.h.m.a.c()))
+    {
+      final b localB = b.t();
+      h.a().execute(new a(localB));
+      localB.a(new b(localB), h.a());
+      return;
+    }
+    c.p(null);
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(b paramB) {}
+    
+    public void run()
+    {
+      localB.r(f.d());
+    }
+  }
+  
+  class b
+    implements Runnable
+  {
+    b(b paramB) {}
+    
+    public void run()
+    {
+      try
+      {
+        e localE = (e)localB.get();
+        if (localE != null)
+        {
+          j.c().a(l.b, String.format("Updating notification for %s", new Object[] { e.e }), new Throwable[0]);
+          f.m(true);
+          l localL = l.this;
+          return;
+        }
+        throw new IllegalStateException(String.format("Worker was marked important (%s) but did not provide ForegroundInfo", new Object[] { e.e }));
+      }
+      finally
+      {
+        c.q(localThrowable);
+      }
+    }
+  }
+}

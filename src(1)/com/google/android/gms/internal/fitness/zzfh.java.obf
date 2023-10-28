@@ -1,0 +1,157 @@
+package com.google.android.gms.internal.fitness;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Set;
+
+public abstract class zzfh<E>
+  extends zzfd<E>
+  implements Set<E>
+{
+  private transient zzfc<E> zztl;
+  
+  zzfh() {}
+  
+  public static <E> zzfh<E> zza(E paramE1, E paramE2, E paramE3, E paramE4, E paramE5)
+  {
+    int k = 5;
+    Object[] arrayOfObject = new Object[5];
+    arrayOfObject[0] = paramE1;
+    arrayOfObject[1] = paramE2;
+    arrayOfObject[2] = paramE3;
+    arrayOfObject[3] = paramE4;
+    arrayOfObject[4] = paramE5;
+    while (k != 0) {
+      if (k != 1)
+      {
+        int i3 = zzh(k);
+        paramE2 = new Object[i3];
+        int i4 = i3 - 1;
+        int m = 0;
+        int j = m;
+        int i2;
+        for (int i = j; m < k; i = i2)
+        {
+          paramE1 = zzfj.zza(arrayOfObject[m], m);
+          int i5 = paramE1.hashCode();
+          int i1 = zzfa.zzg(i5);
+          int n;
+          for (;;)
+          {
+            n = i1 & i4;
+            paramE3 = paramE2[n];
+            if (paramE3 == null)
+            {
+              arrayOfObject[i] = paramE1;
+              paramE2[n] = paramE1;
+              n = j + i5;
+              i2 = i + 1;
+              break;
+            }
+            n = j;
+            i2 = i;
+            if (paramE3.equals(paramE1)) {
+              break;
+            }
+            i1 += 1;
+          }
+          m += 1;
+          j = n;
+        }
+        Arrays.fill(arrayOfObject, i, k, null);
+        if (i == 1) {
+          return new zzfn(arrayOfObject[0], j);
+        }
+        if (zzh(i) < i3 / 2)
+        {
+          k = i;
+        }
+        else
+        {
+          paramE1 = arrayOfObject;
+          if (i < 3) {
+            paramE1 = Arrays.copyOf(arrayOfObject, i);
+          }
+          return new zzfl(paramE1, j, paramE2, i4, i);
+        }
+      }
+      else
+      {
+        return new zzfn(arrayOfObject[0]);
+      }
+    }
+    return zzfl.zzto;
+  }
+  
+  private static int zzh(int paramInt)
+  {
+    int i = Math.max(paramInt, 2);
+    paramInt = 1;
+    if (i < 751619276)
+    {
+      paramInt = Integer.highestOneBit(i - 1) << 1;
+      while (paramInt * 0.7D < i) {
+        paramInt <<= 1;
+      }
+      return paramInt;
+    }
+    if (i >= 1073741824) {
+      paramInt = 0;
+    }
+    if (paramInt != 0) {
+      return 1073741824;
+    }
+    throw new IllegalArgumentException("collection too large");
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (((paramObject instanceof zzfh)) && (zzak()) && (((zzfh)paramObject).zzak()) && (hashCode() != paramObject.hashCode())) {
+      return false;
+    }
+    return zzfk.zza(this, paramObject);
+  }
+  
+  public int hashCode()
+  {
+    Iterator localIterator = iterator();
+    int i = 0;
+    while (localIterator.hasNext())
+    {
+      Object localObject = localIterator.next();
+      int j;
+      if (localObject != null) {
+        j = localObject.hashCode();
+      } else {
+        j = 0;
+      }
+      i += j;
+    }
+    return i;
+  }
+  
+  public final zzfc<E> zzaf()
+  {
+    zzfc localZzfc2 = zztl;
+    zzfc localZzfc1 = localZzfc2;
+    if (localZzfc2 == null)
+    {
+      localZzfc1 = zzal();
+      zztl = localZzfc1;
+    }
+    return localZzfc1;
+  }
+  
+  boolean zzak()
+  {
+    return false;
+  }
+  
+  zzfc<E> zzal()
+  {
+    return zzfc.zza(toArray());
+  }
+}

@@ -1,0 +1,98 @@
+package androidx.work.impl.m.e;
+
+import androidx.work.impl.m.a;
+import androidx.work.impl.m.f.d;
+import androidx.work.impl.n.p;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public abstract class c<T>
+  implements a<T>
+{
+  private final List<String> a = new ArrayList();
+  private T b;
+  private d<T> c;
+  private a d;
+  
+  c(d<T> paramD)
+  {
+    c = paramD;
+  }
+  
+  private void h(a paramA, T paramT)
+  {
+    if (!a.isEmpty())
+    {
+      if (paramA == null) {
+        return;
+      }
+      if ((paramT != null) && (!c(paramT)))
+      {
+        paramA.a(a);
+        return;
+      }
+      paramA.b(a);
+    }
+  }
+  
+  public void a(T paramT)
+  {
+    b = paramT;
+    h(d, paramT);
+  }
+  
+  abstract boolean b(p paramP);
+  
+  abstract boolean c(T paramT);
+  
+  public boolean d(String paramString)
+  {
+    Object localObject = b;
+    return (localObject != null) && (c(localObject)) && (a.contains(paramString));
+  }
+  
+  public void e(Iterable<p> paramIterable)
+  {
+    a.clear();
+    paramIterable = paramIterable.iterator();
+    while (paramIterable.hasNext())
+    {
+      p localP = (p)paramIterable.next();
+      if (b(localP)) {
+        a.add(c);
+      }
+    }
+    if (a.isEmpty()) {
+      c.c(this);
+    } else {
+      c.a(this);
+    }
+    h(d, b);
+  }
+  
+  public void f()
+  {
+    if (!a.isEmpty())
+    {
+      a.clear();
+      c.c(this);
+    }
+  }
+  
+  public void g(a paramA)
+  {
+    if (d != paramA)
+    {
+      d = paramA;
+      h(paramA, b);
+    }
+  }
+  
+  public static abstract interface a
+  {
+    public abstract void a(List<String> paramList);
+    
+    public abstract void b(List<String> paramList);
+  }
+}

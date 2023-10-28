@@ -1,0 +1,279 @@
+package com.google.android.gms.internal.fitness;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+class zzjb<K extends Comparable<K>, V>
+  extends AbstractMap<K, V>
+{
+  private final int zzaba;
+  private List<zzjk> zzabb;
+  private Map<K, V> zzabc;
+  private volatile zzjm zzabd;
+  private Map<K, V> zzabe;
+  private volatile zzjg zzabf;
+  private boolean zzvc;
+  
+  private zzjb(int paramInt)
+  {
+    zzaba = paramInt;
+    zzabb = Collections.emptyList();
+    zzabc = Collections.emptyMap();
+    zzabe = Collections.emptyMap();
+  }
+  
+  private final int binarySearch(Comparable paramComparable)
+  {
+    int j = zzabb.size() - 1;
+    if (j >= 0)
+    {
+      i = paramComparable.compareTo((Comparable)((zzjk)zzabb.get(j)).getKey());
+      if (i > 0) {
+        return -(j + 2);
+      }
+      if (i == 0) {
+        return j;
+      }
+    }
+    int i = 0;
+    while (i <= j)
+    {
+      int k = (i + j) / 2;
+      int m = paramComparable.compareTo((Comparable)((zzjk)zzabb.get(k)).getKey());
+      if (m < 0) {
+        j = k - 1;
+      } else if (m > 0) {
+        i = k + 1;
+      } else {
+        return k;
+      }
+    }
+    return -(i + 1);
+  }
+  
+  static zzjb zzak(int paramInt)
+  {
+    return new zzje(paramInt);
+  }
+  
+  private final Object zzam(int paramInt)
+  {
+    zzdf();
+    Object localObject = ((zzjk)zzabb.remove(paramInt)).getValue();
+    if (!zzabc.isEmpty())
+    {
+      Iterator localIterator = zzdg().entrySet().iterator();
+      zzabb.add(new zzjk(this, (Map.Entry)localIterator.next()));
+      localIterator.remove();
+    }
+    return localObject;
+  }
+  
+  private final void zzdf()
+  {
+    if (!zzvc) {
+      return;
+    }
+    throw new UnsupportedOperationException();
+  }
+  
+  private final SortedMap zzdg()
+  {
+    zzdf();
+    if ((zzabc.isEmpty()) && (!(zzabc instanceof TreeMap)))
+    {
+      TreeMap localTreeMap = new TreeMap();
+      zzabc = localTreeMap;
+      zzabe = ((TreeMap)localTreeMap).descendingMap();
+    }
+    return (SortedMap)zzabc;
+  }
+  
+  public void clear()
+  {
+    zzdf();
+    if (!zzabb.isEmpty()) {
+      zzabb.clear();
+    }
+    if (!zzabc.isEmpty()) {
+      zzabc.clear();
+    }
+  }
+  
+  public boolean containsKey(Object paramObject)
+  {
+    paramObject = (Comparable)paramObject;
+    return (binarySearch(paramObject) >= 0) || (zzabc.containsKey(paramObject));
+  }
+  
+  public Set entrySet()
+  {
+    if (zzabd == null) {
+      zzabd = new zzjm(this, null);
+    }
+    return zzabd;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof zzjb)) {
+      return super.equals(paramObject);
+    }
+    paramObject = (zzjb)paramObject;
+    int j = size();
+    if (j != paramObject.size()) {
+      return false;
+    }
+    int k = zzdc();
+    if (k != paramObject.zzdc()) {
+      return entrySet().equals(paramObject.entrySet());
+    }
+    int i = 0;
+    while (i < k)
+    {
+      if (!zzal(i).equals(paramObject.zzal(i))) {
+        return false;
+      }
+      i += 1;
+    }
+    if (k != j) {
+      return zzabc.equals(zzabc);
+    }
+    return true;
+  }
+  
+  public Object get(Object paramObject)
+  {
+    paramObject = (Comparable)paramObject;
+    int i = binarySearch(paramObject);
+    if (i >= 0) {
+      return ((zzjk)zzabb.get(i)).getValue();
+    }
+    return zzabc.get(paramObject);
+  }
+  
+  public int hashCode()
+  {
+    int k = zzdc();
+    int j = 0;
+    int i = 0;
+    while (j < k)
+    {
+      i += ((zzjk)zzabb.get(j)).hashCode();
+      j += 1;
+    }
+    j = i;
+    if (zzabc.size() > 0) {
+      j = i + zzabc.hashCode();
+    }
+    return j;
+  }
+  
+  public final boolean isImmutable()
+  {
+    return zzvc;
+  }
+  
+  public final Object put(Comparable paramComparable, Object paramObject)
+  {
+    zzdf();
+    int i = binarySearch(paramComparable);
+    if (i >= 0) {
+      return ((zzjk)zzabb.get(i)).setValue(paramObject);
+    }
+    zzdf();
+    if ((zzabb.isEmpty()) && (!(zzabb instanceof ArrayList))) {
+      zzabb = new ArrayList(zzaba);
+    }
+    i = -(i + 1);
+    if (i >= zzaba) {
+      return zzdg().put(paramComparable, paramObject);
+    }
+    int j = zzabb.size();
+    int k = zzaba;
+    if (j == k)
+    {
+      zzjk localZzjk = (zzjk)zzabb.remove(k - 1);
+      zzdg().put((Comparable)localZzjk.getKey(), localZzjk.getValue());
+    }
+    zzabb.add(i, new zzjk(this, paramComparable, paramObject));
+    return null;
+  }
+  
+  public Object remove(Object paramObject)
+  {
+    zzdf();
+    paramObject = (Comparable)paramObject;
+    int i = binarySearch(paramObject);
+    if (i >= 0) {
+      return zzam(i);
+    }
+    if (zzabc.isEmpty()) {
+      return null;
+    }
+    return zzabc.remove(paramObject);
+  }
+  
+  public int size()
+  {
+    return zzabb.size() + zzabc.size();
+  }
+  
+  public final Map.Entry zzal(int paramInt)
+  {
+    return (Map.Entry)zzabb.get(paramInt);
+  }
+  
+  public void zzar()
+  {
+    if (!zzvc)
+    {
+      Map localMap;
+      if (zzabc.isEmpty()) {
+        localMap = Collections.emptyMap();
+      } else {
+        localMap = Collections.unmodifiableMap(zzabc);
+      }
+      zzabc = localMap;
+      if (zzabe.isEmpty()) {
+        localMap = Collections.emptyMap();
+      } else {
+        localMap = Collections.unmodifiableMap(zzabe);
+      }
+      zzabe = localMap;
+      zzvc = true;
+    }
+  }
+  
+  public final int zzdc()
+  {
+    return zzabb.size();
+  }
+  
+  public final Iterable zzdd()
+  {
+    if (zzabc.isEmpty()) {
+      return zzjf.zzdn();
+    }
+    return zzabc.entrySet();
+  }
+  
+  final Set zzde()
+  {
+    if (zzabf == null) {
+      zzabf = new zzjg(this, null);
+    }
+    return zzabf;
+  }
+}

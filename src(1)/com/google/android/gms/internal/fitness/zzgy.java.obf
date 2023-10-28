@@ -1,0 +1,310 @@
+package com.google.android.gms.internal.fitness;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public abstract class zzgy<MessageType extends zzgy<MessageType, BuilderType>, BuilderType extends zzb<MessageType, BuilderType>>
+  extends zzfo<MessageType, BuilderType>
+{
+  private static Map<Object, zzgy<?, ?>> zzxv = new ConcurrentHashMap();
+  protected zzjr zzxt = zzjr.zzdp();
+  private int zzxu = -1;
+  
+  public zzgy() {}
+  
+  static <T extends zzgy<?, ?>> T zza(Class<T> paramClass)
+  {
+    zzgy localZzgy2 = (zzgy)zzxv.get(paramClass);
+    zzgy localZzgy1 = localZzgy2;
+    if (localZzgy2 == null) {
+      try
+      {
+        Class.forName(paramClass.getName(), true, paramClass.getClassLoader());
+        localZzgy1 = (zzgy)zzxv.get(paramClass);
+      }
+      catch (ClassNotFoundException paramClass)
+      {
+        throw new IllegalStateException("Class initialization cannot fail.", paramClass);
+      }
+    }
+    if (localZzgy1 == null)
+    {
+      localZzgy1 = (zzgy)((zzgy)zzjy.zzg(paramClass)).zza(zze.zzyi, null, null);
+      if (localZzgy1 != null)
+      {
+        zzxv.put(paramClass, localZzgy1);
+        return localZzgy1;
+      }
+      throw new IllegalStateException();
+    }
+    return localZzgy1;
+  }
+  
+  protected static Object zza(zzik paramZzik, String paramString, Object[] paramArrayOfObject)
+  {
+    return new zzix(paramZzik, paramString, paramArrayOfObject);
+  }
+  
+  static Object zza(Method paramMethod, Object paramObject, Object... paramVarArgs)
+  {
+    try
+    {
+      paramMethod = paramMethod.invoke(paramObject, paramVarArgs);
+      return paramMethod;
+    }
+    catch (InvocationTargetException paramMethod)
+    {
+      paramMethod = paramMethod.getCause();
+      if (!(paramMethod instanceof RuntimeException))
+      {
+        if ((paramMethod instanceof Error)) {
+          throw ((Error)paramMethod);
+        }
+        throw new RuntimeException("Unexpected exception thrown by generated accessor method.", paramMethod);
+      }
+      throw ((RuntimeException)paramMethod);
+    }
+    catch (IllegalAccessException paramMethod)
+    {
+      throw new RuntimeException("Couldn't use Java reflection to implement protocol message reflection.", paramMethod);
+    }
+  }
+  
+  protected static <T extends zzgy<?, ?>> void zza(Class<T> paramClass, T paramT)
+  {
+    zzxv.put(paramClass, paramT);
+  }
+  
+  protected static final <T extends zzgy<T, ?>> boolean zza(T paramT, boolean paramBoolean)
+  {
+    int i = ((Byte)paramT.zza(zze.zzyd, null, null)).byteValue();
+    if (i == 1) {
+      return true;
+    }
+    if (i == 0) {
+      return false;
+    }
+    boolean bool = zziv.zzcy().zzn(paramT).zzl(paramT);
+    if (paramBoolean)
+    {
+      i = zze.zzye;
+      T ?;
+      if (bool) {
+        ? = paramT;
+      } else {
+        ? = null;
+      }
+      paramT.zza(i, ?, null);
+    }
+    return bool;
+  }
+  
+  protected static zzhg zzbq()
+  {
+    return zzha.zzcb();
+  }
+  
+  protected static zzhi zzbr()
+  {
+    return zzhy.zzcm();
+  }
+  
+  protected static <E> zzhh<E> zzbs()
+  {
+    return zziy.zzdb();
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (paramObject == null) {
+      return false;
+    }
+    if (getClass() != paramObject.getClass()) {
+      return false;
+    }
+    return zziv.zzcy().zzn(this).equals(this, (zzgy)paramObject);
+  }
+  
+  public int hashCode()
+  {
+    int i = zztu;
+    if (i != 0) {
+      return i;
+    }
+    i = zziv.zzcy().zzn(this).hashCode(this);
+    zztu = i;
+    return i;
+  }
+  
+  public final boolean isInitialized()
+  {
+    return zza(this, true);
+  }
+  
+  public String toString()
+  {
+    return zzil.zza(this, super.toString());
+  }
+  
+  protected abstract Object zza(int paramInt, Object paramObject1, Object paramObject2);
+  
+  final int zzan()
+  {
+    return zzxu;
+  }
+  
+  public final void zzb(zzgk paramZzgk)
+    throws IOException
+  {
+    zziv.zzcy().zzn(this).zza(this, zzgn.zza(paramZzgk));
+  }
+  
+  public final int zzbp()
+  {
+    if (zzxu == -1) {
+      zzxu = zziv.zzcy().zzn(this).zzm(this);
+    }
+    return zzxu;
+  }
+  
+  final void zzi(int paramInt)
+  {
+    zzxu = paramInt;
+  }
+  
+  protected static final class zza<T extends zzgy<T, ?>>
+    extends zzft<T>
+  {
+    private final T zzxx;
+    
+    public zza(T paramT)
+    {
+      zzxx = paramT;
+    }
+  }
+  
+  public static class zzb<MessageType extends zzgy<MessageType, BuilderType>, BuilderType extends zzb<MessageType, BuilderType>>
+    extends zzfr<MessageType, BuilderType>
+  {
+    private final MessageType zzxx;
+    private MessageType zzxy;
+    private boolean zzxz;
+    
+    protected zzb(MessageType paramMessageType)
+    {
+      zzxx = paramMessageType;
+      zzxy = ((zzgy)paramMessageType.zza(zzgy.zze.zzyg, null, null));
+      zzxz = false;
+    }
+    
+    private static void zza(MessageType paramMessageType1, MessageType paramMessageType2)
+    {
+      zziv.zzcy().zzn(paramMessageType1).zzd(paramMessageType1, paramMessageType2);
+    }
+    
+    public final boolean isInitialized()
+    {
+      return zzgy.zza(zzxy, false);
+    }
+    
+    public final BuilderType zza(MessageType paramMessageType)
+    {
+      if (zzxz)
+      {
+        zzbw();
+        zzxz = false;
+      }
+      zza(zzxy, paramMessageType);
+      return this;
+    }
+    
+    protected void zzbw()
+    {
+      zzgy localZzgy = (zzgy)zzxy.zza(zzgy.zze.zzyg, null, null);
+      zza(localZzgy, zzxy);
+      zzxy = localZzgy;
+    }
+    
+    public MessageType zzbx()
+    {
+      if (zzxz) {
+        return zzxy;
+      }
+      zzgy localZzgy = zzxy;
+      zziv.zzcy().zzn(localZzgy).zze(localZzgy);
+      zzxz = true;
+      return zzxy;
+    }
+    
+    public final MessageType zzby()
+    {
+      zzgy localZzgy = (zzgy)zzbz();
+      if (localZzgy.isInitialized()) {
+        return localZzgy;
+      }
+      throw new zzjp(localZzgy);
+    }
+  }
+  
+  static final class zzc
+    implements zzgv<zzc>
+  {
+    public final zzij zza(zzij paramZzij, zzik paramZzik)
+    {
+      throw new NoSuchMethodError();
+    }
+    
+    public final zziq zza(zziq paramZziq1, zziq paramZziq2)
+    {
+      throw new NoSuchMethodError();
+    }
+    
+    public final zzkg zzbl()
+    {
+      throw new NoSuchMethodError();
+    }
+    
+    public final zzkj zzbm()
+    {
+      throw new NoSuchMethodError();
+    }
+    
+    public final boolean zzbn()
+    {
+      throw new NoSuchMethodError();
+    }
+    
+    public final boolean zzbo()
+    {
+      throw new NoSuchMethodError();
+    }
+    
+    public final int zzc()
+    {
+      throw new NoSuchMethodError();
+    }
+  }
+  
+  public static abstract class zzd<MessageType extends zzd<MessageType, BuilderType>, BuilderType>
+    extends zzgy<MessageType, BuilderType>
+    implements zzim
+  {
+    protected zzgt<zzgy.zzc> zzya = zzgt.zzbj();
+    
+    public zzd() {}
+  }
+  
+  public static enum zze
+  {
+    public static int[] zzcc()
+    {
+      return (int[])zzyk.clone();
+    }
+  }
+}

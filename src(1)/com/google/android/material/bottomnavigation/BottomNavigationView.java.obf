@@ -1,0 +1,484 @@
+package com.google.android.material.bottomnavigation;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.ClassLoaderCreator;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import androidx.appcompat.view.menu.g.a;
+import androidx.appcompat.view.menu.m;
+import androidx.customview.view.AbsSavedState;
+import c.h.q.f0;
+import com.google.android.material.internal.i;
+import com.google.android.material.internal.j;
+import com.google.android.material.internal.j.c;
+import com.google.android.material.internal.j.d;
+import d.c.a.a.d;
+import d.c.a.a.k;
+import d.c.a.a.l;
+import d.c.a.a.x.h;
+
+public class BottomNavigationView
+  extends FrameLayout
+{
+  private static final int b = k.g;
+  private final androidx.appcompat.view.menu.g c;
+  final BottomNavigationMenuView d;
+  private final BottomNavigationPresenter e;
+  private ColorStateList f;
+  private MenuInflater g;
+  private d h;
+  private c i;
+  
+  public BottomNavigationView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, d.c.a.a.b.d);
+  }
+  
+  public BottomNavigationView(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(com.google.android.material.theme.a.a.c(paramContext, paramAttributeSet, paramInt, b), paramAttributeSet, paramInt);
+    Object localObject = new BottomNavigationPresenter();
+    e = ((BottomNavigationPresenter)localObject);
+    paramContext = getContext();
+    a localA = new a(paramContext);
+    c = localA;
+    BottomNavigationMenuView localBottomNavigationMenuView = new BottomNavigationMenuView(paramContext);
+    d = localBottomNavigationMenuView;
+    FrameLayout.LayoutParams localLayoutParams = new FrameLayout.LayoutParams(-2, -2);
+    gravity = 17;
+    localBottomNavigationMenuView.setLayoutParams(localLayoutParams);
+    ((BottomNavigationPresenter)localObject).b(localBottomNavigationMenuView);
+    ((BottomNavigationPresenter)localObject).h(1);
+    localBottomNavigationMenuView.setPresenter((BottomNavigationPresenter)localObject);
+    localA.b((m)localObject);
+    ((BottomNavigationPresenter)localObject).i(getContext(), localA);
+    localObject = l.M;
+    int m = k.g;
+    int j = l.V;
+    int k = l.U;
+    paramAttributeSet = i.i(paramContext, paramAttributeSet, (int[])localObject, paramInt, m, new int[] { j, k });
+    paramInt = l.S;
+    if (paramAttributeSet.s(paramInt)) {
+      localBottomNavigationMenuView.setIconTintList(paramAttributeSet.c(paramInt));
+    } else {
+      localBottomNavigationMenuView.setIconTintList(localBottomNavigationMenuView.e(16842808));
+    }
+    setItemIconSize(paramAttributeSet.f(l.R, getResources().getDimensionPixelSize(d.e)));
+    if (paramAttributeSet.s(j)) {
+      setItemTextAppearanceInactive(paramAttributeSet.n(j, 0));
+    }
+    if (paramAttributeSet.s(k)) {
+      setItemTextAppearanceActive(paramAttributeSet.n(k, 0));
+    }
+    paramInt = l.W;
+    if (paramAttributeSet.s(paramInt)) {
+      setItemTextColor(paramAttributeSet.c(paramInt));
+    }
+    if ((getBackground() == null) || ((getBackground() instanceof ColorDrawable))) {
+      f0.t0(this, e(paramContext));
+    }
+    paramInt = l.O;
+    if (paramAttributeSet.s(paramInt)) {
+      setElevation(paramAttributeSet.f(paramInt, 0));
+    }
+    localObject = d.c.a.a.u.c.b(paramContext, paramAttributeSet, l.N);
+    androidx.core.graphics.drawable.a.o(getBackground().mutate(), (ColorStateList)localObject);
+    setLabelVisibilityMode(paramAttributeSet.l(l.X, -1));
+    setItemHorizontalTranslationEnabled(paramAttributeSet.a(l.Q, true));
+    paramInt = paramAttributeSet.n(l.P, 0);
+    if (paramInt != 0) {
+      localBottomNavigationMenuView.setItemBackgroundRes(paramInt);
+    } else {
+      setItemRippleColor(d.c.a.a.u.c.b(paramContext, paramAttributeSet, l.T));
+    }
+    paramInt = l.Y;
+    if (paramAttributeSet.s(paramInt)) {
+      f(paramAttributeSet.n(paramInt, 0));
+    }
+    paramAttributeSet.w();
+    addView(localBottomNavigationMenuView, localLayoutParams);
+    if (g()) {
+      c(paramContext);
+    }
+    localA.V(new a());
+    d();
+  }
+  
+  private void c(Context paramContext)
+  {
+    View localView = new View(paramContext);
+    localView.setBackgroundColor(androidx.core.content.a.d(paramContext, d.c.a.a.c.a));
+    localView.setLayoutParams(new FrameLayout.LayoutParams(-1, getResources().getDimensionPixelSize(d.i)));
+    addView(localView);
+  }
+  
+  private void d()
+  {
+    j.a(this, new b());
+  }
+  
+  private d.c.a.a.x.g e(Context paramContext)
+  {
+    d.c.a.a.x.g localG = new d.c.a.a.x.g();
+    Drawable localDrawable = getBackground();
+    if ((localDrawable instanceof ColorDrawable)) {
+      localG.X(ColorStateList.valueOf(((ColorDrawable)localDrawable).getColor()));
+    }
+    localG.M(paramContext);
+    return localG;
+  }
+  
+  private boolean g()
+  {
+    return (Build.VERSION.SDK_INT < 21) && (!(getBackground() instanceof d.c.a.a.x.g));
+  }
+  
+  private MenuInflater getMenuInflater()
+  {
+    if (g == null) {
+      g = new c.a.n.g(getContext());
+    }
+    return g;
+  }
+  
+  public void f(int paramInt)
+  {
+    e.k(true);
+    getMenuInflater().inflate(paramInt, c);
+    e.k(false);
+    e.c(true);
+  }
+  
+  public Drawable getItemBackground()
+  {
+    return d.getItemBackground();
+  }
+  
+  @Deprecated
+  public int getItemBackgroundResource()
+  {
+    return d.getItemBackgroundRes();
+  }
+  
+  public int getItemIconSize()
+  {
+    return d.getItemIconSize();
+  }
+  
+  public ColorStateList getItemIconTintList()
+  {
+    return d.getIconTintList();
+  }
+  
+  public ColorStateList getItemRippleColor()
+  {
+    return f;
+  }
+  
+  public int getItemTextAppearanceActive()
+  {
+    return d.getItemTextAppearanceActive();
+  }
+  
+  public int getItemTextAppearanceInactive()
+  {
+    return d.getItemTextAppearanceInactive();
+  }
+  
+  public ColorStateList getItemTextColor()
+  {
+    return d.getItemTextColor();
+  }
+  
+  public int getLabelVisibilityMode()
+  {
+    return d.getLabelVisibilityMode();
+  }
+  
+  public int getMaxItemCount()
+  {
+    return 5;
+  }
+  
+  public Menu getMenu()
+  {
+    return c;
+  }
+  
+  public int getSelectedItemId()
+  {
+    return d.getSelectedItemId();
+  }
+  
+  protected void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    h.e(this);
+  }
+  
+  protected void onRestoreInstanceState(Parcelable paramParcelable)
+  {
+    if (!(paramParcelable instanceof SavedState))
+    {
+      super.onRestoreInstanceState(paramParcelable);
+      return;
+    }
+    paramParcelable = (SavedState)paramParcelable;
+    super.onRestoreInstanceState(paramParcelable.a());
+    c.S(d);
+  }
+  
+  protected Parcelable onSaveInstanceState()
+  {
+    SavedState localSavedState = new SavedState(super.onSaveInstanceState());
+    Bundle localBundle = new Bundle();
+    d = localBundle;
+    c.U(localBundle);
+    return localSavedState;
+  }
+  
+  public void setElevation(float paramFloat)
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      super.setElevation(paramFloat);
+    }
+    h.d(this, paramFloat);
+  }
+  
+  public void setItemBackground(Drawable paramDrawable)
+  {
+    d.setItemBackground(paramDrawable);
+    f = null;
+  }
+  
+  public void setItemBackgroundResource(int paramInt)
+  {
+    d.setItemBackgroundRes(paramInt);
+    f = null;
+  }
+  
+  public void setItemHorizontalTranslationEnabled(boolean paramBoolean)
+  {
+    if (d.f() != paramBoolean)
+    {
+      d.setItemHorizontalTranslationEnabled(paramBoolean);
+      e.c(false);
+    }
+  }
+  
+  public void setItemIconSize(int paramInt)
+  {
+    d.setItemIconSize(paramInt);
+  }
+  
+  public void setItemIconSizeRes(int paramInt)
+  {
+    setItemIconSize(getResources().getDimensionPixelSize(paramInt));
+  }
+  
+  public void setItemIconTintList(ColorStateList paramColorStateList)
+  {
+    d.setIconTintList(paramColorStateList);
+  }
+  
+  public void setItemRippleColor(ColorStateList paramColorStateList)
+  {
+    if (f == paramColorStateList)
+    {
+      if ((paramColorStateList == null) && (d.getItemBackground() != null)) {
+        d.setItemBackground(null);
+      }
+      return;
+    }
+    f = paramColorStateList;
+    if (paramColorStateList == null)
+    {
+      d.setItemBackground(null);
+      return;
+    }
+    paramColorStateList = d.c.a.a.v.b.a(paramColorStateList);
+    if (Build.VERSION.SDK_INT >= 21)
+    {
+      d.setItemBackground(new RippleDrawable(paramColorStateList, null, null));
+      return;
+    }
+    Object localObject = new GradientDrawable();
+    ((GradientDrawable)localObject).setCornerRadius(1.0E-5F);
+    localObject = androidx.core.graphics.drawable.a.r((Drawable)localObject);
+    androidx.core.graphics.drawable.a.o((Drawable)localObject, paramColorStateList);
+    d.setItemBackground((Drawable)localObject);
+  }
+  
+  public void setItemTextAppearanceActive(int paramInt)
+  {
+    d.setItemTextAppearanceActive(paramInt);
+  }
+  
+  public void setItemTextAppearanceInactive(int paramInt)
+  {
+    d.setItemTextAppearanceInactive(paramInt);
+  }
+  
+  public void setItemTextColor(ColorStateList paramColorStateList)
+  {
+    d.setItemTextColor(paramColorStateList);
+  }
+  
+  public void setLabelVisibilityMode(int paramInt)
+  {
+    if (d.getLabelVisibilityMode() != paramInt)
+    {
+      d.setLabelVisibilityMode(paramInt);
+      e.c(false);
+    }
+  }
+  
+  public void setOnNavigationItemReselectedListener(c paramC)
+  {
+    i = paramC;
+  }
+  
+  public void setOnNavigationItemSelectedListener(d paramD)
+  {
+    h = paramD;
+  }
+  
+  public void setSelectedItemId(int paramInt)
+  {
+    MenuItem localMenuItem = c.findItem(paramInt);
+    if ((localMenuItem != null) && (!c.O(localMenuItem, e, 0))) {
+      localMenuItem.setChecked(true);
+    }
+  }
+  
+  static class SavedState
+    extends AbsSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    Bundle d;
+    
+    public SavedState(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      super(paramClassLoader);
+      ClassLoader localClassLoader = paramClassLoader;
+      if (paramClassLoader == null) {
+        localClassLoader = SavedState.class.getClassLoader();
+      }
+      b(paramParcel, localClassLoader);
+    }
+    
+    public SavedState(Parcelable paramParcelable)
+    {
+      super();
+    }
+    
+    private void b(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      d = paramParcel.readBundle(paramClassLoader);
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      super.writeToParcel(paramParcel, paramInt);
+      paramParcel.writeBundle(d);
+    }
+    
+    static final class a
+      implements Parcelable.ClassLoaderCreator<BottomNavigationView.SavedState>
+    {
+      a() {}
+      
+      public BottomNavigationView.SavedState a(Parcel paramParcel)
+      {
+        return new BottomNavigationView.SavedState(paramParcel, null);
+      }
+      
+      public BottomNavigationView.SavedState b(Parcel paramParcel, ClassLoader paramClassLoader)
+      {
+        return new BottomNavigationView.SavedState(paramParcel, paramClassLoader);
+      }
+      
+      public BottomNavigationView.SavedState[] c(int paramInt)
+      {
+        return new BottomNavigationView.SavedState[paramInt];
+      }
+    }
+  }
+  
+  class a
+    implements g.a
+  {
+    a() {}
+    
+    public boolean a(androidx.appcompat.view.menu.g paramG, MenuItem paramMenuItem)
+    {
+      if ((BottomNavigationView.a(BottomNavigationView.this) != null) && (paramMenuItem.getItemId() == getSelectedItemId()))
+      {
+        BottomNavigationView.a(BottomNavigationView.this).a(paramMenuItem);
+        return true;
+      }
+      return (BottomNavigationView.b(BottomNavigationView.this) != null) && (!BottomNavigationView.b(BottomNavigationView.this).a(paramMenuItem));
+    }
+    
+    public void b(androidx.appcompat.view.menu.g paramG) {}
+  }
+  
+  class b
+    implements j.c
+  {
+    b() {}
+    
+    public c.h.q.n0 a(View paramView, c.h.q.n0 paramN0, j.d paramD)
+    {
+      d += paramN0.i();
+      int j = f0.D(paramView);
+      int i = 1;
+      if (j != 1) {
+        i = 0;
+      }
+      j = paramN0.j();
+      int k = paramN0.k();
+      int n = a;
+      if (i != 0) {
+        m = k;
+      } else {
+        m = j;
+      }
+      a = (n + m);
+      int m = c;
+      if (i == 0) {
+        j = k;
+      }
+      c = (m + j);
+      paramD.a(paramView);
+      return paramN0;
+    }
+  }
+  
+  public static abstract interface c
+  {
+    public abstract void a(MenuItem paramMenuItem);
+  }
+  
+  public static abstract interface d
+  {
+    public abstract boolean a(MenuItem paramMenuItem);
+  }
+}

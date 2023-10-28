@@ -1,0 +1,244 @@
+package androidx.fragment.app;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+public class f0
+  extends Fragment
+{
+  ListAdapter mAdapter;
+  CharSequence mEmptyText;
+  View mEmptyView;
+  private final Handler mHandler = new Handler();
+  ListView mList;
+  View mListContainer;
+  boolean mListShown;
+  private final AdapterView.OnItemClickListener mOnClickListener = new b();
+  View mProgressContainer;
+  private final Runnable mRequestFocus = new a();
+  TextView mStandardEmptyView;
+  
+  public f0() {}
+  
+  private void ensureList()
+  {
+    if (mList != null) {
+      return;
+    }
+    Object localObject1 = getView();
+    if (localObject1 != null)
+    {
+      if ((localObject1 instanceof ListView))
+      {
+        mList = ((ListView)localObject1);
+      }
+      else
+      {
+        Object localObject2 = (TextView)((View)localObject1).findViewById(16711681);
+        mStandardEmptyView = ((TextView)localObject2);
+        if (localObject2 == null) {
+          mEmptyView = ((View)localObject1).findViewById(16908292);
+        } else {
+          ((TextView)localObject2).setVisibility(8);
+        }
+        mProgressContainer = ((View)localObject1).findViewById(16711682);
+        mListContainer = ((View)localObject1).findViewById(16711683);
+        localObject1 = ((View)localObject1).findViewById(16908298);
+        if (!(localObject1 instanceof ListView))
+        {
+          if (localObject1 == null) {
+            throw new RuntimeException("Your content must have a ListView whose id attribute is 'android.R.id.list'");
+          }
+          throw new RuntimeException("Content has view with id attribute 'android.R.id.list' that is not a ListView class");
+        }
+        localObject1 = (ListView)localObject1;
+        mList = ((ListView)localObject1);
+        localObject2 = mEmptyView;
+        if (localObject2 != null)
+        {
+          ((ListView)localObject1).setEmptyView((View)localObject2);
+        }
+        else
+        {
+          localObject1 = mEmptyText;
+          if (localObject1 != null)
+          {
+            mStandardEmptyView.setText((CharSequence)localObject1);
+            mList.setEmptyView(mStandardEmptyView);
+          }
+        }
+      }
+      mListShown = true;
+      mList.setOnItemClickListener(mOnClickListener);
+      localObject1 = mAdapter;
+      if (localObject1 != null)
+      {
+        mAdapter = null;
+        setListAdapter((ListAdapter)localObject1);
+      }
+      else if (mProgressContainer != null)
+      {
+        setListShown(false, false);
+      }
+      mHandler.post(mRequestFocus);
+      return;
+    }
+    throw new IllegalStateException("Content view not yet created");
+  }
+  
+  private void setListShown(boolean paramBoolean1, boolean paramBoolean2)
+  {
+    ensureList();
+    View localView = mProgressContainer;
+    if (localView != null)
+    {
+      if (mListShown == paramBoolean1) {
+        return;
+      }
+      mListShown = paramBoolean1;
+      if (paramBoolean1)
+      {
+        if (paramBoolean2)
+        {
+          localView.startAnimation(AnimationUtils.loadAnimation(getContext(), 17432577));
+          mListContainer.startAnimation(AnimationUtils.loadAnimation(getContext(), 17432576));
+        }
+        else
+        {
+          localView.clearAnimation();
+          mListContainer.clearAnimation();
+        }
+        mProgressContainer.setVisibility(8);
+        mListContainer.setVisibility(0);
+        return;
+      }
+      if (paramBoolean2)
+      {
+        localView.startAnimation(AnimationUtils.loadAnimation(getContext(), 17432576));
+        mListContainer.startAnimation(AnimationUtils.loadAnimation(getContext(), 17432577));
+      }
+      else
+      {
+        localView.clearAnimation();
+        mListContainer.clearAnimation();
+      }
+      mProgressContainer.setVisibility(0);
+      mListContainer.setVisibility(8);
+      return;
+    }
+    throw new IllegalStateException("Can't be used with a custom content view");
+  }
+  
+  public ListView getListView()
+  {
+    ensureList();
+    return mList;
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramViewGroup = requireContext();
+    paramLayoutInflater = new FrameLayout(paramViewGroup);
+    paramBundle = new LinearLayout(paramViewGroup);
+    paramBundle.setId(16711682);
+    paramBundle.setOrientation(1);
+    paramBundle.setVisibility(8);
+    paramBundle.setGravity(17);
+    paramBundle.addView(new ProgressBar(paramViewGroup, null, 16842874), new FrameLayout.LayoutParams(-2, -2));
+    paramLayoutInflater.addView(paramBundle, new FrameLayout.LayoutParams(-1, -1));
+    paramBundle = new FrameLayout(paramViewGroup);
+    paramBundle.setId(16711683);
+    TextView localTextView = new TextView(paramViewGroup);
+    localTextView.setId(16711681);
+    localTextView.setGravity(17);
+    paramBundle.addView(localTextView, new FrameLayout.LayoutParams(-1, -1));
+    paramViewGroup = new ListView(paramViewGroup);
+    paramViewGroup.setId(16908298);
+    paramViewGroup.setDrawSelectorOnTop(false);
+    paramBundle.addView(paramViewGroup, new FrameLayout.LayoutParams(-1, -1));
+    paramLayoutInflater.addView(paramBundle, new FrameLayout.LayoutParams(-1, -1));
+    paramLayoutInflater.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+    return paramLayoutInflater;
+  }
+  
+  public void onDestroyView()
+  {
+    mHandler.removeCallbacks(mRequestFocus);
+    mList = null;
+    mListShown = false;
+    mListContainer = null;
+    mProgressContainer = null;
+    mEmptyView = null;
+    mStandardEmptyView = null;
+    super.onDestroyView();
+  }
+  
+  public void onListItemClick(ListView paramListView, View paramView, int paramInt, long paramLong) {}
+  
+  public void onViewCreated(View paramView, Bundle paramBundle)
+  {
+    super.onViewCreated(paramView, paramBundle);
+    ensureList();
+  }
+  
+  public void setListAdapter(ListAdapter paramListAdapter)
+  {
+    Object localObject = mAdapter;
+    boolean bool = false;
+    int i;
+    if (localObject != null) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    mAdapter = paramListAdapter;
+    localObject = mList;
+    if (localObject != null)
+    {
+      ((ListView)localObject).setAdapter(paramListAdapter);
+      if ((!mListShown) && (i == 0))
+      {
+        if (requireView().getWindowToken() != null) {
+          bool = true;
+        }
+        setListShown(true, bool);
+      }
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    public void run()
+    {
+      ListView localListView = mList;
+      localListView.focusableViewAvailable(localListView);
+    }
+  }
+  
+  class b
+    implements AdapterView.OnItemClickListener
+  {
+    b() {}
+    
+    public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong)
+    {
+      onListItemClick((ListView)paramAdapterView, paramView, paramInt, paramLong);
+    }
+  }
+}

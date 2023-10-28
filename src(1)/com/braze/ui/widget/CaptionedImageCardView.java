@@ -1,0 +1,64 @@
+package com.braze.ui.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.TextView;
+import com.braze.models.cards.CaptionedImageCard;
+import com.braze.support.BrazeLogger;
+import com.braze.ui.R.drawable;
+import com.braze.ui.R.id;
+import com.braze.ui.R.layout;
+import com.braze.ui.actions.IAction;
+import com.braze.ui.feed.view.BaseFeedCardView;
+
+public class CaptionedImageCardView
+  extends BaseFeedCardView<CaptionedImageCard>
+{
+  private static final String NOTIFICATION_URI = BrazeLogger.getBrazeLogTag(CaptionedImageCardView.class);
+  private float mAspectRatio = 1.3333334F;
+  private IAction mCardAction;
+  private final TextView mDescription;
+  private final TextView mDomain;
+  private final ImageView mImage;
+  private final TextView mTitle;
+  
+  public CaptionedImageCardView(Context paramContext)
+  {
+    this(paramContext, null);
+  }
+  
+  public CaptionedImageCardView(Context paramContext, CaptionedImageCard paramCaptionedImageCard)
+  {
+    super(paramContext);
+    paramContext = (ImageView)getProperViewFromInflatedStub(R.id.com_braze_captioned_image_card_imageview_stub);
+    mImage = paramContext;
+    paramContext.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    paramContext.setAdjustViewBounds(true);
+    mTitle = ((TextView)findViewById(R.id.com_braze_captioned_image_title));
+    mDescription = ((TextView)findViewById(R.id.com_braze_captioned_image_description));
+    mDomain = ((TextView)findViewById(R.id.com_braze_captioned_image_card_domain));
+    if (paramCaptionedImageCard != null) {
+      setCard(paramCaptionedImageCard);
+    }
+    setBackground(getResources().getDrawable(R.drawable.com_braze_card_background));
+  }
+  
+  protected int getLayoutResource()
+  {
+    return R.layout.com_braze_captioned_image_card;
+  }
+  
+  public void onSetCard(CaptionedImageCard paramCaptionedImageCard)
+  {
+    mTitle.setText(paramCaptionedImageCard.getTitle());
+    mDescription.setText(paramCaptionedImageCard.getDescription());
+    setOptionalTextView(mDomain, paramCaptionedImageCard.getDomain());
+    mCardAction = BaseCardView.getUriActionForCard(paramCaptionedImageCard);
+    setOnClickListener(new a(this, paramCaptionedImageCard));
+    mAspectRatio = paramCaptionedImageCard.getAspectRatio();
+    setImageViewToUrl(mImage, paramCaptionedImageCard.getImageUrl(), mAspectRatio, paramCaptionedImageCard);
+  }
+}

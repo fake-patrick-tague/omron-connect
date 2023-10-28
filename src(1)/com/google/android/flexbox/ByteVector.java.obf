@@ -1,0 +1,1298 @@
+package com.google.android.flexbox;
+
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup.MarginLayoutParams;
+import c.h.q.n;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+class c
+{
+  private final a a;
+  private boolean[] b;
+  int[] c;
+  long[] d;
+  private long[] e;
+  
+  c(a paramA)
+  {
+    a = paramA;
+  }
+  
+  private int A(boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return a.b();
+    }
+    return a.a();
+  }
+  
+  private int B(boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return a.u();
+    }
+    return a.t();
+  }
+  
+  private int C(boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return a.t();
+    }
+    return a.u();
+  }
+  
+  private int D(View paramView, boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return paramView.getMeasuredHeight();
+    }
+    return paramView.getMeasuredWidth();
+  }
+  
+  private int E(View paramView, boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return paramView.getMeasuredWidth();
+    }
+    return paramView.getMeasuredHeight();
+  }
+  
+  private boolean F(int paramInt1, int paramInt2, b paramB)
+  {
+    return (paramInt1 == paramInt2 - 1) && (paramB.c() != 0);
+  }
+  
+  private boolean G(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, FlexItem paramFlexItem, int paramInt5, int paramInt6, int paramInt7)
+  {
+    int i = a.i();
+    boolean bool = false;
+    if (i == 0) {
+      return false;
+    }
+    if (paramFlexItem.s0()) {
+      return true;
+    }
+    if (paramInt1 == 0) {
+      return false;
+    }
+    paramInt1 = a.g();
+    if ((paramInt1 != -1) && (paramInt1 <= paramInt7 + 1)) {
+      return false;
+    }
+    paramInt5 = a.q(paramView, paramInt5, paramInt6);
+    paramInt1 = paramInt4;
+    if (paramInt5 > 0) {
+      paramInt1 = paramInt4 + paramInt5;
+    }
+    if (paramInt2 < paramInt3 + paramInt1) {
+      bool = true;
+    }
+    return bool;
+  }
+  
+  private void K(int paramInt1, int paramInt2, b paramB, int paramInt3, int paramInt4, boolean paramBoolean)
+  {
+    int m = e;
+    float f1 = k;
+    if (f1 > 0.0F)
+    {
+      if (paramInt3 > m) {
+        return;
+      }
+      float f5 = (m - paramInt3) / f1;
+      e = (paramInt4 + f);
+      if (!paramBoolean) {
+        g = Integer.MIN_VALUE;
+      }
+      int n = 0;
+      int i = 0;
+      int i1 = i;
+      f1 = 0.0F;
+      while (n < h)
+      {
+        int i3 = o + n;
+        View localView = a.k(i3);
+        if ((localView != null) && (localView.getVisibility() != 8))
+        {
+          FlexItem localFlexItem = (FlexItem)localView.getLayoutParams();
+          int j = a.f();
+          long[] arrayOfLong;
+          int k;
+          float f4;
+          float f2;
+          float f3;
+          int i2;
+          double d1;
+          int i4;
+          if ((j != 0) && (j != 1))
+          {
+            j = localView.getMeasuredHeight();
+            arrayOfLong = e;
+            if (arrayOfLong != null) {
+              j = p(arrayOfLong[i3]);
+            }
+            k = localView.getMeasuredWidth();
+            arrayOfLong = e;
+            if (arrayOfLong != null) {
+              k = q(arrayOfLong[i3]);
+            }
+            if ((b[i3] == 0) && (localFlexItem.C() > 0.0F))
+            {
+              f4 = j - localFlexItem.C() * f5;
+              f2 = f1;
+              f3 = f4;
+              if (n == h - 1)
+              {
+                f3 = f4 + f1;
+                f2 = 0.0F;
+              }
+              i2 = Math.round(f3);
+              if (i2 < localFlexItem.o0())
+              {
+                j = localFlexItem.o0();
+                b[i3] = true;
+                k -= localFlexItem.C();
+                k = 1;
+                f1 = f2;
+              }
+              else
+              {
+                f2 += f3 - i2;
+                d1 = f2;
+                if (d1 > 1.0D)
+                {
+                  j = i2 + 1;
+                  f1 = f2 - 1.0F;
+                  k = i;
+                }
+                else
+                {
+                  k = i;
+                  f1 = f2;
+                  j = i2;
+                  if (d1 < -1.0D)
+                  {
+                    j = i2 - 1;
+                    f1 = f2 + 1.0F;
+                    k = i;
+                  }
+                }
+              }
+              i = s(paramInt1, localFlexItem, m);
+              i4 = View.MeasureSpec.makeMeasureSpec(j, 1073741824);
+              localView.measure(i, i4);
+              i2 = localView.getMeasuredWidth();
+              j = localView.getMeasuredHeight();
+              P(i3, i, i4, localView);
+              a.n(i3, localView);
+              i = k;
+              k = i2;
+            }
+            k = Math.max(i1, k + localFlexItem.L() + localFlexItem.m0() + a.x(localView));
+            e += j + localFlexItem.R() + localFlexItem.J();
+            j = k;
+          }
+          else
+          {
+            j = localView.getMeasuredWidth();
+            arrayOfLong = e;
+            if (arrayOfLong != null) {
+              j = q(arrayOfLong[i3]);
+            }
+            k = localView.getMeasuredHeight();
+            arrayOfLong = e;
+            if (arrayOfLong != null) {
+              k = p(arrayOfLong[i3]);
+            }
+            if ((b[i3] == 0) && (localFlexItem.C() > 0.0F))
+            {
+              f4 = j - localFlexItem.C() * f5;
+              f3 = f4;
+              f2 = f1;
+              if (n == h - 1)
+              {
+                f3 = f4 + f1;
+                f2 = 0.0F;
+              }
+              i2 = Math.round(f3);
+              if (i2 < localFlexItem.F())
+              {
+                j = localFlexItem.F();
+                b[i3] = true;
+                k -= localFlexItem.C();
+                k = 1;
+                f1 = f2;
+              }
+              else
+              {
+                f2 += f3 - i2;
+                d1 = f2;
+                if (d1 > 1.0D)
+                {
+                  j = i2 + 1;
+                  f1 = f2 - 1.0F;
+                  k = i;
+                }
+                else
+                {
+                  j = i2;
+                  k = i;
+                  f1 = f2;
+                  if (d1 < -1.0D)
+                  {
+                    j = i2 - 1;
+                    f1 = f2 + 1.0F;
+                    k = i;
+                  }
+                }
+              }
+              i = r(paramInt2, localFlexItem, m);
+              i4 = View.MeasureSpec.makeMeasureSpec(j, 1073741824);
+              localView.measure(i4, i);
+              j = localView.getMeasuredWidth();
+              i2 = localView.getMeasuredHeight();
+              P(i3, i4, i, localView);
+              a.n(i3, localView);
+              i = k;
+            }
+            else
+            {
+              i2 = k;
+            }
+            k = Math.max(i1, i2 + localFlexItem.R() + localFlexItem.J() + a.x(localView));
+            e += j + localFlexItem.L() + localFlexItem.m0();
+            j = k;
+          }
+          g = Math.max(g, j);
+          i1 = j;
+        }
+        n += 1;
+      }
+      if ((i != 0) && (m != e)) {
+        K(paramInt1, paramInt2, paramB, paramInt3, paramInt4, true);
+      }
+    }
+  }
+  
+  private void L(View paramView, int paramInt1, int paramInt2)
+  {
+    Object localObject = (FlexItem)paramView.getLayoutParams();
+    int i = Math.min(Math.max(paramInt1 - ((FlexItem)localObject).L() - ((FlexItem)localObject).m0() - a.x(paramView), ((FlexItem)localObject).F()), ((FlexItem)localObject).G0());
+    localObject = e;
+    if (localObject != null) {
+      paramInt1 = p(localObject[paramInt2]);
+    } else {
+      paramInt1 = paramView.getMeasuredHeight();
+    }
+    paramInt1 = View.MeasureSpec.makeMeasureSpec(paramInt1, 1073741824);
+    i = View.MeasureSpec.makeMeasureSpec(i, 1073741824);
+    paramView.measure(i, paramInt1);
+    P(paramInt2, i, paramInt1, paramView);
+    a.n(paramInt2, paramView);
+  }
+  
+  private void M(View paramView, int paramInt1, int paramInt2)
+  {
+    Object localObject = (FlexItem)paramView.getLayoutParams();
+    int i = Math.min(Math.max(paramInt1 - ((FlexItem)localObject).R() - ((FlexItem)localObject).J() - a.x(paramView), ((FlexItem)localObject).o0()), ((FlexItem)localObject).v0());
+    localObject = e;
+    if (localObject != null) {
+      paramInt1 = q(localObject[paramInt2]);
+    } else {
+      paramInt1 = paramView.getMeasuredWidth();
+    }
+    paramInt1 = View.MeasureSpec.makeMeasureSpec(paramInt1, 1073741824);
+    i = View.MeasureSpec.makeMeasureSpec(i, 1073741824);
+    paramView.measure(paramInt1, i);
+    P(paramInt2, paramInt1, i, paramView);
+    a.n(paramInt2, paramView);
+  }
+  
+  private void P(int paramInt1, int paramInt2, int paramInt3, View paramView)
+  {
+    long[] arrayOfLong = d;
+    if (arrayOfLong != null) {
+      arrayOfLong[paramInt1] = J(paramInt2, paramInt3);
+    }
+    arrayOfLong = e;
+    if (arrayOfLong != null) {
+      arrayOfLong[paramInt1] = J(paramView.getMeasuredWidth(), paramView.getMeasuredHeight());
+    }
+  }
+  
+  private void a(List<b> paramList, b paramB, int paramInt1, int paramInt2)
+  {
+    m = paramInt2;
+    a.j(paramB);
+    p = paramInt1;
+    paramList.add(paramB);
+  }
+  
+  private void g(View paramView, int paramInt)
+  {
+    FlexItem localFlexItem = (FlexItem)paramView.getLayoutParams();
+    int j = paramView.getMeasuredWidth();
+    int m = paramView.getMeasuredHeight();
+    int i = localFlexItem.F();
+    int k = 1;
+    if (j < i) {}
+    for (i = localFlexItem.F();; i = localFlexItem.G0())
+    {
+      int n = 1;
+      j = i;
+      i = n;
+      break label83;
+      if (j <= localFlexItem.G0()) {
+        break;
+      }
+    }
+    i = 0;
+    label83:
+    if (m < localFlexItem.o0())
+    {
+      i = localFlexItem.o0();
+    }
+    else if (m > localFlexItem.v0())
+    {
+      i = localFlexItem.v0();
+    }
+    else
+    {
+      k = i;
+      i = m;
+    }
+    if (k != 0)
+    {
+      j = View.MeasureSpec.makeMeasureSpec(j, 1073741824);
+      i = View.MeasureSpec.makeMeasureSpec(i, 1073741824);
+      paramView.measure(j, i);
+      P(paramInt, j, i, paramView);
+      a.n(paramInt, paramView);
+    }
+  }
+  
+  private void k(int paramInt)
+  {
+    boolean[] arrayOfBoolean = b;
+    int i;
+    if (arrayOfBoolean == null)
+    {
+      i = paramInt;
+      if (paramInt < 10) {
+        i = 10;
+      }
+      b = new boolean[i];
+      return;
+    }
+    if (arrayOfBoolean.length < paramInt)
+    {
+      int j = arrayOfBoolean.length * 2;
+      i = paramInt;
+      if (j >= paramInt) {
+        i = j;
+      }
+      b = new boolean[i];
+      return;
+    }
+    Arrays.fill(arrayOfBoolean, false);
+  }
+  
+  private void o(int paramInt1, int paramInt2, b paramB, int paramInt3, int paramInt4, boolean paramBoolean)
+  {
+    float f1 = j;
+    if (f1 > 0.0F)
+    {
+      int j = e;
+      if (paramInt3 < j) {
+        return;
+      }
+      float f5 = (paramInt3 - j) / f1;
+      e = (paramInt4 + f);
+      if (!paramBoolean) {
+        g = Integer.MIN_VALUE;
+      }
+      int n = 0;
+      int i = 0;
+      int i1 = i;
+      f1 = 0.0F;
+      while (n < h)
+      {
+        int i3 = o + n;
+        View localView = a.k(i3);
+        if ((localView != null) && (localView.getVisibility() != 8))
+        {
+          FlexItem localFlexItem = (FlexItem)localView.getLayoutParams();
+          int k = a.f();
+          long[] arrayOfLong;
+          int m;
+          float f4;
+          float f2;
+          float f3;
+          int i2;
+          double d1;
+          int i4;
+          if ((k != 0) && (k != 1))
+          {
+            k = localView.getMeasuredHeight();
+            arrayOfLong = e;
+            if (arrayOfLong != null) {
+              k = p(arrayOfLong[i3]);
+            }
+            m = localView.getMeasuredWidth();
+            arrayOfLong = e;
+            if (arrayOfLong != null) {
+              m = q(arrayOfLong[i3]);
+            }
+            if ((b[i3] == 0) && (localFlexItem.X() > 0.0F))
+            {
+              f4 = k + localFlexItem.X() * f5;
+              f2 = f1;
+              f3 = f4;
+              if (n == h - 1)
+              {
+                f3 = f4 + f1;
+                f2 = 0.0F;
+              }
+              i2 = Math.round(f3);
+              if (i2 > localFlexItem.v0())
+              {
+                m = localFlexItem.v0();
+                b[i3] = true;
+                j -= localFlexItem.X();
+                k = 1;
+                f1 = f2;
+              }
+              else
+              {
+                f1 = f2 + (f3 - i2);
+                d1 = f1;
+                if (d1 > 1.0D) {
+                  m = i2 + 1;
+                }
+                for (d1 -= 1.0D;; d1 += 1.0D)
+                {
+                  f1 = (float)d1;
+                  k = i;
+                  break;
+                  k = i;
+                  m = i2;
+                  if (d1 >= -1.0D) {
+                    break;
+                  }
+                  m = i2 - 1;
+                }
+              }
+              i = s(paramInt1, localFlexItem, m);
+              i4 = View.MeasureSpec.makeMeasureSpec(m, 1073741824);
+              localView.measure(i, i4);
+              i2 = localView.getMeasuredWidth();
+              m = localView.getMeasuredHeight();
+              P(i3, i, i4, localView);
+              a.n(i3, localView);
+              i = k;
+              k = m;
+              m = i2;
+            }
+            m = Math.max(i1, m + localFlexItem.L() + localFlexItem.m0() + a.x(localView));
+            e += k + localFlexItem.R() + localFlexItem.J();
+            k = m;
+          }
+          else
+          {
+            k = localView.getMeasuredWidth();
+            arrayOfLong = e;
+            if (arrayOfLong != null) {
+              k = q(arrayOfLong[i3]);
+            }
+            i2 = localView.getMeasuredHeight();
+            arrayOfLong = e;
+            m = j;
+            j = i2;
+            if (arrayOfLong != null) {
+              j = p(arrayOfLong[i3]);
+            }
+            if ((b[i3] == 0) && (localFlexItem.X() > 0.0F))
+            {
+              f4 = k + localFlexItem.X() * f5;
+              f3 = f4;
+              f2 = f1;
+              if (n == h - 1)
+              {
+                f3 = f4 + f1;
+                f2 = 0.0F;
+              }
+              i2 = Math.round(f3);
+              if (i2 > localFlexItem.G0())
+              {
+                k = localFlexItem.G0();
+                b[i3] = true;
+                j -= localFlexItem.X();
+                j = 1;
+                f1 = f2;
+              }
+              else
+              {
+                f1 = f2 + (f3 - i2);
+                d1 = f1;
+                if (d1 > 1.0D) {
+                  k = i2 + 1;
+                }
+                for (d1 -= 1.0D;; d1 += 1.0D)
+                {
+                  f1 = (float)d1;
+                  j = i;
+                  break;
+                  k = i2;
+                  j = i;
+                  if (d1 >= -1.0D) {
+                    break;
+                  }
+                  k = i2 - 1;
+                }
+              }
+              i = r(paramInt2, localFlexItem, m);
+              i4 = View.MeasureSpec.makeMeasureSpec(k, 1073741824);
+              localView.measure(i4, i);
+              k = localView.getMeasuredWidth();
+              i2 = localView.getMeasuredHeight();
+              P(i3, i4, i, localView);
+              a.n(i3, localView);
+              i = j;
+            }
+            else
+            {
+              i2 = j;
+            }
+            j = Math.max(i1, i2 + localFlexItem.R() + localFlexItem.J() + a.x(localView));
+            e += k + localFlexItem.L() + localFlexItem.m0();
+            k = j;
+            j = m;
+          }
+          g = Math.max(g, k);
+          i1 = k;
+        }
+        n += 1;
+      }
+      if ((i != 0) && (j != e)) {
+        o(paramInt1, paramInt2, paramB, paramInt3, paramInt4, true);
+      }
+    }
+  }
+  
+  private int r(int paramInt1, FlexItem paramFlexItem, int paramInt2)
+  {
+    a localA = a;
+    paramInt2 = localA.s(paramInt1, localA.u() + a.a() + paramFlexItem.R() + paramFlexItem.J() + paramInt2, paramFlexItem.getHeight());
+    int i = View.MeasureSpec.getSize(paramInt2);
+    if (i > paramFlexItem.v0()) {
+      return View.MeasureSpec.makeMeasureSpec(paramFlexItem.v0(), View.MeasureSpec.getMode(paramInt2));
+    }
+    paramInt1 = paramInt2;
+    if (i < paramFlexItem.o0()) {
+      paramInt1 = View.MeasureSpec.makeMeasureSpec(paramFlexItem.o0(), View.MeasureSpec.getMode(paramInt2));
+    }
+    return paramInt1;
+  }
+  
+  private int s(int paramInt1, FlexItem paramFlexItem, int paramInt2)
+  {
+    a localA = a;
+    paramInt2 = localA.l(paramInt1, localA.v() + a.p() + paramFlexItem.L() + paramFlexItem.m0() + paramInt2, paramFlexItem.getWidth());
+    int i = View.MeasureSpec.getSize(paramInt2);
+    if (i > paramFlexItem.G0()) {
+      return View.MeasureSpec.makeMeasureSpec(paramFlexItem.G0(), View.MeasureSpec.getMode(paramInt2));
+    }
+    paramInt1 = paramInt2;
+    if (i < paramFlexItem.F()) {
+      paramInt1 = View.MeasureSpec.makeMeasureSpec(paramFlexItem.F(), View.MeasureSpec.getMode(paramInt2));
+    }
+    return paramInt1;
+  }
+  
+  private int t(FlexItem paramFlexItem, boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return paramFlexItem.J();
+    }
+    return paramFlexItem.m0();
+  }
+  
+  private int u(FlexItem paramFlexItem, boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return paramFlexItem.m0();
+    }
+    return paramFlexItem.J();
+  }
+  
+  private int v(FlexItem paramFlexItem, boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return paramFlexItem.R();
+    }
+    return paramFlexItem.L();
+  }
+  
+  private int w(FlexItem paramFlexItem, boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return paramFlexItem.L();
+    }
+    return paramFlexItem.R();
+  }
+  
+  private int x(FlexItem paramFlexItem, boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return paramFlexItem.getHeight();
+    }
+    return paramFlexItem.getWidth();
+  }
+  
+  private int y(FlexItem paramFlexItem, boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return paramFlexItem.getWidth();
+    }
+    return paramFlexItem.getHeight();
+  }
+  
+  private int z(boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      return a.a();
+    }
+    return a.b();
+  }
+  
+  void H(View paramView, b paramB, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    FlexItem localFlexItem = (FlexItem)paramView.getLayoutParams();
+    int i = a.m();
+    if (localFlexItem.w() != -1) {
+      i = localFlexItem.w();
+    }
+    int j = g;
+    if (i != 0) {
+      if (i != 1)
+      {
+        if (i != 2)
+        {
+          if (i != 3)
+          {
+            if (i == 4) {}
+          }
+          else
+          {
+            if (a.i() != 2)
+            {
+              i = Math.max(l - paramView.getBaseline(), localFlexItem.R());
+              paramView.layout(paramInt1, paramInt2 + i, paramInt3, paramInt4 + i);
+              return;
+            }
+            i = Math.max(l - paramView.getMeasuredHeight() + paramView.getBaseline(), localFlexItem.J());
+            paramView.layout(paramInt1, paramInt2 - i, paramInt3, paramInt4 - i);
+          }
+        }
+        else
+        {
+          paramInt4 = (j - paramView.getMeasuredHeight() + localFlexItem.R() - localFlexItem.J()) / 2;
+          if (a.i() != 2)
+          {
+            paramInt2 += paramInt4;
+            paramView.layout(paramInt1, paramInt2, paramInt3, paramView.getMeasuredHeight() + paramInt2);
+            return;
+          }
+          paramInt2 -= paramInt4;
+          paramView.layout(paramInt1, paramInt2, paramInt3, paramView.getMeasuredHeight() + paramInt2);
+        }
+      }
+      else
+      {
+        if (a.i() != 2)
+        {
+          paramInt2 += j;
+          paramView.layout(paramInt1, paramInt2 - paramView.getMeasuredHeight() - localFlexItem.J(), paramInt3, paramInt2 - localFlexItem.J());
+          return;
+        }
+        paramView.layout(paramInt1, paramInt2 - j + paramView.getMeasuredHeight() + localFlexItem.R(), paramInt3, paramInt4 - j + paramView.getMeasuredHeight() + localFlexItem.R());
+        return;
+      }
+    }
+    if (a.i() != 2)
+    {
+      paramView.layout(paramInt1, paramInt2 + localFlexItem.R(), paramInt3, paramInt4 + localFlexItem.R());
+      return;
+    }
+    paramView.layout(paramInt1, paramInt2 - localFlexItem.J(), paramInt3, paramInt4 - localFlexItem.J());
+  }
+  
+  void I(View paramView, b paramB, boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    FlexItem localFlexItem = (FlexItem)paramView.getLayoutParams();
+    int i = a.m();
+    if (localFlexItem.w() != -1) {
+      i = localFlexItem.w();
+    }
+    int j = g;
+    if (i != 0) {
+      if (i != 1)
+      {
+        if (i != 2)
+        {
+          if ((i == 3) || (i == 4)) {}
+        }
+        else
+        {
+          paramB = (ViewGroup.MarginLayoutParams)paramView.getLayoutParams();
+          i = (j - paramView.getMeasuredWidth() + n.b(paramB) - n.a(paramB)) / 2;
+          if (!paramBoolean)
+          {
+            paramView.layout(paramInt1 + i, paramInt2, paramInt3 + i, paramInt4);
+            return;
+          }
+          paramView.layout(paramInt1 - i, paramInt2, paramInt3 - i, paramInt4);
+        }
+      }
+      else
+      {
+        if (!paramBoolean)
+        {
+          paramView.layout(paramInt1 + j - paramView.getMeasuredWidth() - localFlexItem.m0(), paramInt2, paramInt3 + j - paramView.getMeasuredWidth() - localFlexItem.m0(), paramInt4);
+          return;
+        }
+        paramView.layout(paramInt1 - j + paramView.getMeasuredWidth() + localFlexItem.L(), paramInt2, paramInt3 - j + paramView.getMeasuredWidth() + localFlexItem.L(), paramInt4);
+        return;
+      }
+    }
+    if (!paramBoolean)
+    {
+      paramView.layout(paramInt1 + localFlexItem.L(), paramInt2, paramInt3 + localFlexItem.L(), paramInt4);
+      return;
+    }
+    paramView.layout(paramInt1 - localFlexItem.m0(), paramInt2, paramInt3 - localFlexItem.m0(), paramInt4);
+  }
+  
+  long J(int paramInt1, int paramInt2)
+  {
+    long l = paramInt2;
+    return paramInt1 & 0xFFFFFFFF | l << 32;
+  }
+  
+  void N()
+  {
+    O(0);
+  }
+  
+  void O(int paramInt)
+  {
+    if (paramInt >= a.c()) {
+      return;
+    }
+    int j = a.f();
+    b localB;
+    Object localObject2;
+    Object localObject3;
+    if (a.m() == 4)
+    {
+      localObject1 = c;
+      if (localObject1 != null) {
+        paramInt = localObject1[paramInt];
+      } else {
+        paramInt = 0;
+      }
+      localObject1 = a.r();
+      int k = ((List)localObject1).size();
+      while (paramInt < k)
+      {
+        localB = (b)((List)localObject1).get(paramInt);
+        int m = h;
+        int i = 0;
+        while (i < m)
+        {
+          int n = o + i;
+          if (i < a.c())
+          {
+            localObject2 = a.k(n);
+            if ((localObject2 != null) && (((View)localObject2).getVisibility() != 8))
+            {
+              localObject3 = (FlexItem)((View)localObject2).getLayoutParams();
+              if ((((FlexItem)localObject3).w() == -1) || (((FlexItem)localObject3).w() == 4)) {
+                if ((j != 0) && (j != 1))
+                {
+                  if ((j != 2) && (j != 3))
+                  {
+                    localObject1 = new StringBuilder();
+                    ((StringBuilder)localObject1).append("Invalid flex direction: ");
+                    ((StringBuilder)localObject1).append(j);
+                    throw new IllegalArgumentException(((StringBuilder)localObject1).toString());
+                  }
+                  L((View)localObject2, g, n);
+                }
+                else
+                {
+                  M((View)localObject2, g, n);
+                }
+              }
+            }
+          }
+          i += 1;
+        }
+        paramInt += 1;
+      }
+    }
+    Object localObject1 = a.r().iterator();
+    while (((Iterator)localObject1).hasNext())
+    {
+      localB = (b)((Iterator)localObject1).next();
+      localObject2 = n.iterator();
+      while (((Iterator)localObject2).hasNext())
+      {
+        localObject3 = (Integer)((Iterator)localObject2).next();
+        View localView = a.k(((Integer)localObject3).intValue());
+        if ((j != 0) && (j != 1))
+        {
+          if ((j != 2) && (j != 3))
+          {
+            localObject1 = new StringBuilder();
+            ((StringBuilder)localObject1).append("Invalid flex direction: ");
+            ((StringBuilder)localObject1).append(j);
+            throw new IllegalArgumentException(((StringBuilder)localObject1).toString());
+          }
+          L(localView, g, ((Integer)localObject3).intValue());
+        }
+        else
+        {
+          M(localView, g, ((Integer)localObject3).intValue());
+        }
+      }
+    }
+  }
+  
+  void b(a paramA, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, List<b> paramList)
+  {
+    int n = paramInt2;
+    int i1 = paramInt5;
+    boolean bool = a.w();
+    int i3 = View.MeasureSpec.getMode(paramInt1);
+    int i2 = View.MeasureSpec.getSize(paramInt1);
+    if (paramList == null) {
+      paramList = new ArrayList();
+    }
+    a = paramList;
+    if (i1 == -1) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    int j = C(bool);
+    int k = A(bool);
+    int i10 = B(bool);
+    int i11 = z(bool);
+    Object localObject1 = new b();
+    o = paramInt4;
+    int i4 = k + j;
+    e = i4;
+    int i5 = a.c();
+    k = Integer.MIN_VALUE;
+    int i7 = 0;
+    int m = 0;
+    int i6 = 0;
+    j = i;
+    int i = i7;
+    for (;;)
+    {
+      i7 = paramInt1;
+      if (paramInt4 >= i5) {
+        break;
+      }
+      View localView = a.k(paramInt4);
+      if (localView == null)
+      {
+        if (F(paramInt4, i5, (b)localObject1)) {
+          a(paramList, (b)localObject1, paramInt4, i);
+        }
+      }
+      else
+      {
+        if (localView.getVisibility() != 8) {
+          break label304;
+        }
+        i += 1;
+        h += 1;
+        if (F(paramInt4, i5, (b)localObject1)) {
+          a(paramList, (b)localObject1, paramInt4, i);
+        }
+      }
+      i7 = n;
+      n = i;
+      i = i7;
+      int i8 = paramInt4;
+      paramInt4 = i1;
+      i7 = j;
+      break label1456;
+      label304:
+      FlexItem localFlexItem = (FlexItem)localView.getLayoutParams();
+      if (localFlexItem.w() == 4) {
+        n.add(Integer.valueOf(paramInt4));
+      }
+      i8 = y(localFlexItem, bool);
+      i1 = i8;
+      if (localFlexItem.c0() != -1.0F)
+      {
+        i1 = i8;
+        if (i3 == 1073741824) {
+          i1 = Math.round(i2 * localFlexItem.c0());
+        }
+      }
+      if (bool)
+      {
+        i1 = a.l(i7, i4 + w(localFlexItem, true) + u(localFlexItem, true), i1);
+        n = a.s(n, i10 + i11 + v(localFlexItem, true) + t(localFlexItem, true) + i, x(localFlexItem, true));
+        localView.measure(i1, n);
+        P(paramInt4, i1, n, localView);
+      }
+      else
+      {
+        n = a.l(n, i10 + i11 + v(localFlexItem, false) + t(localFlexItem, false) + i, x(localFlexItem, false));
+        i1 = a.s(i7, w(localFlexItem, false) + i4 + u(localFlexItem, false), i1);
+        localView.measure(n, i1);
+        P(paramInt4, n, i1, localView);
+      }
+      a.n(paramInt4, localView);
+      g(localView, paramInt4);
+      n = View.combineMeasuredStates(m, localView.getMeasuredState());
+      m = e;
+      i7 = E(localView, bool);
+      i8 = w(localFlexItem, bool);
+      int i9 = u(localFlexItem, bool);
+      int i12 = paramList.size();
+      List<b> localList = paramList;
+      if (G(localView, i3, i2, m, i9 + (i7 + i8), localFlexItem, paramInt4, i6, i12))
+      {
+        if (((b)localObject1).c() > 0)
+        {
+          if (paramInt4 > 0) {
+            k = paramInt4 - 1;
+          } else {
+            k = 0;
+          }
+          a(localList, (b)localObject1, k, i);
+          k = g + i;
+        }
+        else
+        {
+          k = i;
+        }
+        if (bool)
+        {
+          if (localFlexItem.getHeight() == -1)
+          {
+            localObject1 = a;
+            i = ((a)localObject1).s(paramInt2, ((a)localObject1).u() + a.a() + localFlexItem.R() + localFlexItem.J() + k, localFlexItem.getHeight());
+            localObject1 = localView;
+            ((View)localObject1).measure(i1, i);
+            g((View)localObject1, paramInt4);
+          }
+        }
+        else
+        {
+          localObject1 = localView;
+          if (localFlexItem.getWidth() == -1)
+          {
+            localObject2 = a;
+            ((View)localObject1).measure(((a)localObject2).l(paramInt2, ((a)localObject2).v() + a.p() + localFlexItem.L() + localFlexItem.m0() + k, localFlexItem.getWidth()), i1);
+            g((View)localObject1, paramInt4);
+          }
+        }
+        localObject1 = new b();
+        h = 1;
+        e = i4;
+        o = paramInt4;
+        m = Integer.MIN_VALUE;
+        i = 0;
+      }
+      else
+      {
+        h += 1;
+        i6 += 1;
+        i1 = i;
+        m = k;
+        i = i6;
+        k = i1;
+      }
+      i8 = paramInt4;
+      i1 = paramInt2;
+      Object localObject2 = c;
+      if (localObject2 != null) {
+        localObject2[i8] = localList.size();
+      }
+      e += E(localView, bool) + w(localFlexItem, bool) + u(localFlexItem, bool);
+      j += localFlexItem.X();
+      k += localFlexItem.C();
+      a.e(localView, i8, i, (b)localObject1);
+      i6 = Math.max(m, D(localView, bool) + v(localFlexItem, bool) + t(localFlexItem, bool) + a.x(localView));
+      g = Math.max(g, i6);
+      if (bool) {
+        if (a.i() != 2) {
+          l = Math.max(l, localView.getBaseline() + localFlexItem.R());
+        } else {
+          l = Math.max(l, localView.getMeasuredHeight() - localView.getBaseline() + localFlexItem.J());
+        }
+      }
+      m = k;
+      if (F(i8, i5, (b)localObject1))
+      {
+        a(localList, (b)localObject1, i8, k);
+        m = k + g;
+      }
+      i9 = paramInt5;
+      if ((i9 != -1) && (localList.size() > 0) && (getsize1p >= i9) && (i8 >= i9) && (j == 0))
+      {
+        j = -((b)localObject1).a();
+        paramInt4 = 1;
+      }
+      else
+      {
+        paramInt4 = j;
+        j = m;
+      }
+      if ((j > paramInt3) && (paramInt4 != 0))
+      {
+        m = n;
+        break;
+      }
+      k = i6;
+      i6 = i;
+      m = n;
+      i7 = paramInt4;
+      paramInt4 = i9;
+      i = i1;
+      n = j;
+      label1456:
+      i8 += 1;
+      j = i;
+      i1 = paramInt4;
+      i = n;
+      paramInt4 = i8;
+      n = j;
+      j = i7;
+    }
+    b = m;
+  }
+  
+  void c(a paramA, int paramInt1, int paramInt2, int paramInt3, int paramInt4, List<b> paramList)
+  {
+    b(paramA, paramInt1, paramInt2, paramInt3, paramInt4, -1, paramList);
+  }
+  
+  void d(a paramA, int paramInt1, int paramInt2, int paramInt3, int paramInt4, List<b> paramList)
+  {
+    b(paramA, paramInt1, paramInt2, paramInt3, 0, paramInt4, paramList);
+  }
+  
+  void e(a paramA, int paramInt1, int paramInt2, int paramInt3, int paramInt4, List<b> paramList)
+  {
+    b(paramA, paramInt2, paramInt1, paramInt3, paramInt4, -1, paramList);
+  }
+  
+  void f(a paramA, int paramInt1, int paramInt2, int paramInt3, int paramInt4, List<b> paramList)
+  {
+    b(paramA, paramInt2, paramInt1, paramInt3, 0, paramInt4, paramList);
+  }
+  
+  void h(List<b> paramList, int paramInt)
+  {
+    int j = c[paramInt];
+    int i = j;
+    if (j == -1) {
+      i = 0;
+    }
+    j = paramList.size() - 1;
+    while (j >= i)
+    {
+      paramList.remove(j);
+      j -= 1;
+    }
+    paramList = c;
+    i = paramList.length - 1;
+    if (paramInt > i) {
+      Arrays.fill(paramList, -1);
+    } else {
+      Arrays.fill(paramList, paramInt, i, -1);
+    }
+    paramList = d;
+    i = paramList.length - 1;
+    if (paramInt > i)
+    {
+      Arrays.fill(paramList, 0L);
+      return;
+    }
+    Arrays.fill(paramList, paramInt, i, 0L);
+  }
+  
+  void i(int paramInt1, int paramInt2)
+  {
+    j(paramInt1, paramInt2, 0);
+  }
+  
+  void j(int paramInt1, int paramInt2, int paramInt3)
+  {
+    k(a.c());
+    if (paramInt3 >= a.c()) {
+      return;
+    }
+    int i = a.f();
+    int j = a.f();
+    int k;
+    int m;
+    if ((j != 0) && (j != 1))
+    {
+      if ((j != 2) && (j != 3))
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Invalid flex direction: ");
+        ((StringBuilder)localObject).append(i);
+        throw new IllegalArgumentException(((StringBuilder)localObject).toString());
+      }
+      j = View.MeasureSpec.getMode(paramInt2);
+      i = View.MeasureSpec.getSize(paramInt2);
+      if (j != 1073741824) {
+        i = a.h();
+      }
+      k = a.u();
+      m = a.a();
+      j = i;
+    }
+    else
+    {
+      j = View.MeasureSpec.getMode(paramInt1);
+      i = View.MeasureSpec.getSize(paramInt1);
+      if (j != 1073741824) {
+        i = a.h();
+      }
+      k = a.v();
+      m = a.p();
+      j = i;
+    }
+    k += m;
+    i = 0;
+    Object localObject = c;
+    if (localObject != null) {
+      i = localObject[paramInt3];
+    }
+    localObject = a.r();
+    paramInt3 = ((List)localObject).size();
+    while (i < paramInt3)
+    {
+      b localB = (b)((List)localObject).get(i);
+      if (e < j) {
+        o(paramInt1, paramInt2, localB, j, k, false);
+      } else {
+        K(paramInt1, paramInt2, localB, j, k, false);
+      }
+      i += 1;
+    }
+  }
+  
+  void l(int paramInt)
+  {
+    int[] arrayOfInt = c;
+    int i;
+    if (arrayOfInt == null)
+    {
+      i = paramInt;
+      if (paramInt < 10) {
+        i = 10;
+      }
+      c = new int[i];
+      return;
+    }
+    if (arrayOfInt.length < paramInt)
+    {
+      int j = arrayOfInt.length * 2;
+      i = paramInt;
+      if (j >= paramInt) {
+        i = j;
+      }
+      c = Arrays.copyOf(arrayOfInt, i);
+    }
+  }
+  
+  void m(int paramInt)
+  {
+    long[] arrayOfLong = d;
+    int i;
+    if (arrayOfLong == null)
+    {
+      i = paramInt;
+      if (paramInt < 10) {
+        i = 10;
+      }
+      d = new long[i];
+      return;
+    }
+    if (arrayOfLong.length < paramInt)
+    {
+      int j = arrayOfLong.length * 2;
+      i = paramInt;
+      if (j >= paramInt) {
+        i = j;
+      }
+      d = Arrays.copyOf(arrayOfLong, i);
+    }
+  }
+  
+  void n(int paramInt)
+  {
+    long[] arrayOfLong = e;
+    int i;
+    if (arrayOfLong == null)
+    {
+      i = paramInt;
+      if (paramInt < 10) {
+        i = 10;
+      }
+      e = new long[i];
+      return;
+    }
+    if (arrayOfLong.length < paramInt)
+    {
+      int j = arrayOfLong.length * 2;
+      i = paramInt;
+      if (j >= paramInt) {
+        i = j;
+      }
+      e = Arrays.copyOf(arrayOfLong, i);
+    }
+  }
+  
+  int p(long paramLong)
+  {
+    return (int)(paramLong >> 32);
+  }
+  
+  int q(long paramLong)
+  {
+    return (int)paramLong;
+  }
+  
+  static class a
+  {
+    List<b> a;
+    int b;
+    
+    a() {}
+    
+    void a()
+    {
+      a = null;
+      b = 0;
+    }
+  }
+}

@@ -1,0 +1,78 @@
+package com.google.android.gms.auth.api.signin.internal;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+
+@SafeParcelable.Class(creator="SignInConfigurationCreator")
+@SafeParcelable.Reserved({1})
+public final class SignInConfiguration
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<SignInConfiguration> CREATOR = new zbu();
+  @SafeParcelable.Field(getter="getConsumerPkgName", id=2)
+  private final String zba;
+  @SafeParcelable.Field(getter="getGoogleConfig", id=5)
+  private GoogleSignInOptions zbb;
+  
+  @SafeParcelable.Constructor
+  public SignInConfiguration(@RecentlyNonNull @SafeParcelable.Param(id=2) String paramString, @RecentlyNonNull @SafeParcelable.Param(id=5) GoogleSignInOptions paramGoogleSignInOptions)
+  {
+    zba = Preconditions.checkNotEmpty(paramString);
+    zbb = paramGoogleSignInOptions;
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (!(paramObject instanceof SignInConfiguration)) {
+      return false;
+    }
+    Object localObject = (SignInConfiguration)paramObject;
+    if (zba.equals(zba))
+    {
+      paramObject = zbb;
+      localObject = zbb;
+      if (paramObject == null) {
+        if (localObject != null) {
+          break label61;
+        }
+      } else if (!paramObject.equals(localObject)) {
+        return false;
+      }
+      return true;
+    }
+    label61:
+    return false;
+  }
+  
+  public final int hashCode()
+  {
+    return new HashAccumulator().addObject(zba).addObject(zbb).hash();
+  }
+  
+  public final void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeString(paramParcel, 2, zba, false);
+    SafeParcelWriter.writeParcelable(paramParcel, 5, zbb, paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  @RecentlyNonNull
+  public final GoogleSignInOptions zba()
+  {
+    return zbb;
+  }
+}

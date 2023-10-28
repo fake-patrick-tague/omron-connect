@@ -1,0 +1,122 @@
+package androidx.work.impl.n;
+
+import androidx.room.RoomDatabase;
+import androidx.room.b;
+import c.t.a.f;
+
+public final class o
+  implements n
+{
+  private final RoomDatabase a;
+  private final b<m> b;
+  private final androidx.room.n c;
+  private final androidx.room.n d;
+  
+  public o(RoomDatabase paramRoomDatabase)
+  {
+    a = paramRoomDatabase;
+    b = new a(paramRoomDatabase);
+    c = new b(paramRoomDatabase);
+    d = new c(paramRoomDatabase);
+  }
+  
+  public void a(String paramString)
+  {
+    a.b();
+    f localF = c.a();
+    if (paramString == null) {
+      localF.bindNull(1);
+    } else {
+      localF.bindString(1, paramString);
+    }
+    a.c();
+    try
+    {
+      localF.executeUpdateDelete();
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+      c.f(localF);
+    }
+  }
+  
+  public void b()
+  {
+    a.b();
+    f localF = d.a();
+    a.c();
+    try
+    {
+      localF.executeUpdateDelete();
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+      d.f(localF);
+    }
+  }
+  
+  class a
+    extends b<m>
+  {
+    a(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "INSERT OR REPLACE INTO `WorkProgress` (`work_spec_id`,`progress`) VALUES (?,?)";
+    }
+    
+    public void i(f paramF, m paramM)
+    {
+      String str = a;
+      if (str == null) {
+        paramF.bindNull(1);
+      } else {
+        paramF.bindString(1, str);
+      }
+      paramM = androidx.work.d.k(b);
+      if (paramM == null)
+      {
+        paramF.bindNull(2);
+        return;
+      }
+      paramF.bindBlob(2, paramM);
+    }
+  }
+  
+  class b
+    extends androidx.room.n
+  {
+    b(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "DELETE from WorkProgress where work_spec_id=?";
+    }
+  }
+  
+  class c
+    extends androidx.room.n
+  {
+    c(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "DELETE FROM WorkProgress";
+    }
+  }
+}

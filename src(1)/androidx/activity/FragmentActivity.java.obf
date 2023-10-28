@@ -1,0 +1,120 @@
+package androidx.activity;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.k0;
+import androidx.lifecycle.n;
+
+public class i
+  extends Dialog
+  implements androidx.lifecycle.m, k
+{
+  private n b;
+  private final OnBackPressedDispatcher c = new OnBackPressedDispatcher(new f(this));
+  
+  public i(Context paramContext, int paramInt)
+  {
+    super(paramContext, paramInt);
+  }
+  
+  private final n a()
+  {
+    n localN2 = b;
+    n localN1 = localN2;
+    if (localN2 == null)
+    {
+      localN1 = new n(this);
+      b = localN1;
+    }
+    return localN1;
+  }
+  
+  private final void b()
+  {
+    Object localObject = getWindow();
+    kotlin.x.d.i.b(localObject);
+    k0.a(((Window)localObject).getDecorView(), this);
+    localObject = getWindow();
+    kotlin.x.d.i.b(localObject);
+    localObject = ((Window)localObject).getDecorView();
+    kotlin.x.d.i.d(localObject, "window!!.decorView");
+    m.a((View)localObject, this);
+  }
+  
+  private static final void d(i paramI)
+  {
+    kotlin.x.d.i.e(paramI, "this$0");
+    paramI.onBackPressed();
+  }
+  
+  public void addContentView(View paramView, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    kotlin.x.d.i.e(paramView, "view");
+    b();
+    super.addContentView(paramView, paramLayoutParams);
+  }
+  
+  public final Lifecycle getLifecycle()
+  {
+    return a();
+  }
+  
+  public final OnBackPressedDispatcher getOnBackPressedDispatcher()
+  {
+    return c;
+  }
+  
+  public void onBackPressed()
+  {
+    c.f();
+  }
+  
+  protected void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    if (Build.VERSION.SDK_INT >= 33) {
+      c.g(getOnBackInvokedDispatcher());
+    }
+    a().h(Lifecycle.Event.ON_CREATE);
+  }
+  
+  protected void onStart()
+  {
+    super.onStart();
+    a().h(Lifecycle.Event.ON_RESUME);
+  }
+  
+  protected void onStop()
+  {
+    a().h(Lifecycle.Event.ON_DESTROY);
+    b = null;
+    super.onStop();
+  }
+  
+  public void setContentView(int paramInt)
+  {
+    b();
+    super.setContentView(paramInt);
+  }
+  
+  public void setContentView(View paramView)
+  {
+    kotlin.x.d.i.e(paramView, "view");
+    b();
+    super.setContentView(paramView);
+  }
+  
+  public void setContentView(View paramView, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    kotlin.x.d.i.e(paramView, "view");
+    b();
+    super.setContentView(paramView, paramLayoutParams);
+  }
+}

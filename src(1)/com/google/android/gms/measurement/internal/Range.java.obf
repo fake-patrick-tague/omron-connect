@@ -1,0 +1,156 @@
+package com.google.android.gms.measurement.internal;
+
+import com.google.android.gms.internal.measurement.zzfn;
+import com.google.android.gms.internal.measurement.zzfo;
+import com.google.android.gms.internal.measurement.zzfp;
+import com.google.android.gms.internal.measurement.zzfq;
+import com.google.android.gms.internal.measurement.zzgg;
+import com.google.android.gms.internal.measurement.zzgh;
+import com.google.android.gms.internal.measurement.zzgi;
+import com.google.android.gms.internal.measurement.zzgj;
+import com.google.android.gms.internal.measurement.zzka;
+import com.google.android.gms.internal.measurement.zzny;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+final class zzu
+{
+  private String zzb;
+  private boolean zzc;
+  private zzgh zzd;
+  private BitSet zze;
+  private BitSet zzf;
+  private Map zzg;
+  private Map zzh;
+  
+  final zzfo zza(int paramInt)
+  {
+    zzfn localZzfn = zzfo.zzb();
+    localZzfn.zza(paramInt);
+    localZzfn.zzc(zzc);
+    Object localObject1 = zzd;
+    if (localObject1 != null) {
+      localZzfn.zzd((zzgh)localObject1);
+    }
+    zzgg localZzgg = zzgh.zzf();
+    localZzgg.zzb(zzlb.zzr(zze));
+    localZzgg.zzd(zzlb.zzr(zzf));
+    localObject1 = zzg;
+    Iterator localIterator;
+    Object localObject2;
+    Object localObject3;
+    if (localObject1 == null)
+    {
+      localObject1 = null;
+    }
+    else
+    {
+      localObject1 = new ArrayList(((Map)localObject1).size());
+      localIterator = zzg.keySet().iterator();
+      while (localIterator.hasNext())
+      {
+        paramInt = ((Integer)localIterator.next()).intValue();
+        localObject2 = (Long)zzg.get(Integer.valueOf(paramInt));
+        if (localObject2 != null)
+        {
+          localObject3 = zzfq.zzc();
+          ((zzfp)localObject3).zzb(paramInt);
+          ((zzfp)localObject3).zza(((Long)localObject2).longValue());
+          ((ArrayList)localObject1).add((zzfq)((zzka)localObject3).zzaE());
+        }
+      }
+    }
+    if (localObject1 != null) {
+      localZzgg.zza((Iterable)localObject1);
+    }
+    localObject1 = zzh;
+    if (localObject1 == null)
+    {
+      localObject1 = Collections.emptyList();
+    }
+    else
+    {
+      localObject1 = new ArrayList(((Map)localObject1).size());
+      localIterator = zzh.keySet().iterator();
+      while (localIterator.hasNext())
+      {
+        localObject3 = (Integer)localIterator.next();
+        localObject2 = zzgj.zzd();
+        ((zzgi)localObject2).zzb(((Integer)localObject3).intValue());
+        localObject3 = (List)zzh.get(localObject3);
+        if (localObject3 != null)
+        {
+          Collections.sort((List)localObject3);
+          ((zzgi)localObject2).zza((Iterable)localObject3);
+        }
+        ((ArrayList)localObject1).add((zzgj)((zzka)localObject2).zzaE());
+      }
+    }
+    localZzgg.zzc((Iterable)localObject1);
+    localZzfn.zzb(localZzgg);
+    return (zzfo)localZzfn.zzaE();
+  }
+  
+  final void zzc(zzy paramZzy)
+  {
+    int i = paramZzy.zza();
+    Object localObject1 = zzd;
+    if (localObject1 != null) {
+      zzf.set(i, ((Boolean)localObject1).booleanValue());
+    }
+    localObject1 = zze;
+    if (localObject1 != null) {
+      zze.set(i, ((Boolean)localObject1).booleanValue());
+    }
+    Object localObject2;
+    if (zzf != null)
+    {
+      localObject2 = zzg;
+      localObject1 = Integer.valueOf(i);
+      localObject2 = (Long)((Map)localObject2).get(localObject1);
+      long l = zzf.longValue() / 1000L;
+      if ((localObject2 == null) || (l > ((Long)localObject2).longValue())) {
+        zzg.put(localObject1, Long.valueOf(l));
+      }
+    }
+    if (zzg != null)
+    {
+      localObject1 = zzh;
+      Object localObject3 = Integer.valueOf(i);
+      localObject2 = (List)((Map)localObject1).get(localObject3);
+      localObject1 = localObject2;
+      if (localObject2 == null)
+      {
+        localObject1 = new ArrayList();
+        zzh.put(localObject3, localObject1);
+      }
+      if (paramZzy.zzc()) {
+        ((List)localObject1).clear();
+      }
+      zzny.zzc();
+      localObject2 = zza.zzs.zzf();
+      localObject3 = zzb;
+      zzea localZzea = zzeb.zzW;
+      if ((((zzag)localObject2).zzs((String)localObject3, localZzea)) && (paramZzy.zzb())) {
+        ((List)localObject1).clear();
+      }
+      zzny.zzc();
+      if (zza.zzs.zzf().zzs(zzb, localZzea))
+      {
+        paramZzy = Long.valueOf(zzg.longValue() / 1000L);
+        if (!((List)localObject1).contains(paramZzy)) {
+          ((List)localObject1).add(paramZzy);
+        }
+      }
+      else
+      {
+        ((List)localObject1).add(Long.valueOf(zzg.longValue() / 1000L));
+      }
+    }
+  }
+}

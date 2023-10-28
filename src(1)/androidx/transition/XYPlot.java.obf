@@ -1,0 +1,48 @@
+package androidx.transition;
+
+import android.os.Build.VERSION;
+import android.view.ViewGroup;
+
+class r
+{
+  private static boolean a = true;
+  
+  static q a(ViewGroup paramViewGroup)
+  {
+    if (Build.VERSION.SDK_INT >= 18) {
+      return new p(paramViewGroup);
+    }
+    return o.g(paramViewGroup);
+  }
+  
+  private static void b(ViewGroup paramViewGroup, boolean paramBoolean)
+  {
+    if (a) {}
+    try
+    {
+      paramViewGroup.suppressLayout(paramBoolean);
+      return;
+    }
+    catch (NoSuchMethodError paramViewGroup)
+    {
+      for (;;) {}
+    }
+    a = false;
+  }
+  
+  static void c(ViewGroup paramViewGroup, boolean paramBoolean)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 29)
+    {
+      paramViewGroup.suppressLayout(paramBoolean);
+      return;
+    }
+    if (i >= 18)
+    {
+      b(paramViewGroup, paramBoolean);
+      return;
+    }
+    s.b(paramViewGroup, paramBoolean);
+  }
+}

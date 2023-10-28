@@ -1,0 +1,52 @@
+package com.google.android.datatransport.h.b0;
+
+import android.util.SparseArray;
+import com.google.android.datatransport.Priority;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
+public final class a
+{
+  private static SparseArray<Priority> a = new SparseArray();
+  private static HashMap<Priority, Integer> b;
+  
+  static
+  {
+    Object localObject = new HashMap();
+    b = (HashMap)localObject;
+    ((HashMap)localObject).put(Priority.b, Integer.valueOf(0));
+    b.put(Priority.c, Integer.valueOf(1));
+    b.put(Priority.d, Integer.valueOf(2));
+    localObject = b.keySet().iterator();
+    while (((Iterator)localObject).hasNext())
+    {
+      Priority localPriority = (Priority)((Iterator)localObject).next();
+      a.append(((Integer)b.get(localPriority)).intValue(), localPriority);
+    }
+  }
+  
+  public static int a(Priority paramPriority)
+  {
+    Object localObject = (Integer)b.get(paramPriority);
+    if (localObject != null) {
+      return ((Integer)localObject).intValue();
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("PriorityMapping is missing known Priority value ");
+    ((StringBuilder)localObject).append(paramPriority);
+    throw new IllegalStateException(((StringBuilder)localObject).toString());
+  }
+  
+  public static Priority b(int paramInt)
+  {
+    Object localObject = (Priority)a.get(paramInt);
+    if (localObject != null) {
+      return localObject;
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("Unknown Priority for value ");
+    ((StringBuilder)localObject).append(paramInt);
+    throw new IllegalArgumentException(((StringBuilder)localObject).toString());
+  }
+}

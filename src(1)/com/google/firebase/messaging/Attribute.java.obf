@@ -1,0 +1,105 @@
+package com.google.firebase.messaging;
+
+import android.text.TextUtils;
+import android.util.Log;
+import com.google.android.gms.common.internal.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+final class d1
+{
+  private static final Pattern a = Pattern.compile("[a-zA-Z0-9-_.~%]{1,900}");
+  private final String b;
+  private final String c;
+  private final String d;
+  
+  private d1(String paramString1, String paramString2)
+  {
+    b = d(paramString2, paramString1);
+    c = paramString1;
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(paramString1);
+    localStringBuilder.append("!");
+    localStringBuilder.append(paramString2);
+    d = localStringBuilder.toString();
+  }
+  
+  static d1 a(String paramString)
+  {
+    if (TextUtils.isEmpty(paramString)) {
+      return null;
+    }
+    paramString = paramString.split("!", -1);
+    if (paramString.length != 2) {
+      return null;
+    }
+    return new d1(paramString[0], paramString[1]);
+  }
+  
+  private static String d(String paramString1, String paramString2)
+  {
+    String str = paramString1;
+    if (paramString1 != null)
+    {
+      str = paramString1;
+      if (paramString1.startsWith("/topics/"))
+      {
+        Log.w("FirebaseMessaging", String.format("Format /topics/topic-name is deprecated. Only 'topic-name' should be used in %s.", new Object[] { paramString2 }));
+        str = paramString1.substring(8);
+      }
+    }
+    if ((str != null) && (a.matcher(str).matches())) {
+      return str;
+    }
+    throw new IllegalArgumentException(String.format("Invalid topic name: %s does not match the allowed format %s.", new Object[] { str, "[a-zA-Z0-9-_.~%]{1,900}" }));
+  }
+  
+  public static d1 f(String paramString)
+  {
+    return new d1("S", paramString);
+  }
+  
+  public static d1 g(String paramString)
+  {
+    return new d1("U", paramString);
+  }
+  
+  public String b()
+  {
+    return c;
+  }
+  
+  public String c()
+  {
+    return b;
+  }
+  
+  public String e()
+  {
+    return d;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    boolean bool1 = paramObject instanceof d1;
+    boolean bool2 = false;
+    if (!bool1) {
+      return false;
+    }
+    paramObject = (d1)paramObject;
+    bool1 = bool2;
+    if (b.equals(b))
+    {
+      bool1 = bool2;
+      if (c.equals(c)) {
+        bool1 = true;
+      }
+    }
+    return bool1;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { c, b });
+  }
+}

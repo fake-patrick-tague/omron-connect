@@ -1,0 +1,259 @@
+package androidx.work.impl;
+
+import android.content.BroadcastReceiver.PendingResult;
+import android.content.Context;
+import android.content.res.Resources;
+import android.os.Build.VERSION;
+import androidx.work.WorkInfo;
+import androidx.work.WorkerParameters.a;
+import androidx.work.a.c;
+import androidx.work.impl.n.q;
+import androidx.work.impl.utils.ForceStopRunnable;
+import androidx.work.impl.utils.h;
+import androidx.work.impl.utils.i;
+import androidx.work.j.a;
+import androidx.work.l;
+import androidx.work.o;
+import androidx.work.r;
+import androidx.work.s;
+import com.google.common.util.concurrent.c;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+public class j
+  extends r
+{
+  private static final String a = androidx.work.j.f("WorkManagerImpl");
+  private static j b = null;
+  private static j c = null;
+  private static final Object d = new Object();
+  private Context e;
+  private androidx.work.a f;
+  private WorkDatabase g;
+  private androidx.work.impl.utils.p.a h;
+  private List<e> i;
+  private d j;
+  private androidx.work.impl.utils.e k;
+  private boolean l;
+  private BroadcastReceiver.PendingResult m;
+  
+  public j(Context paramContext, androidx.work.a paramA, androidx.work.impl.utils.p.a paramA1)
+  {
+    this(paramContext, paramA, paramA1, paramContext.getResources().getBoolean(o.a));
+  }
+  
+  public j(Context paramContext, androidx.work.a paramA, androidx.work.impl.utils.p.a paramA1, WorkDatabase paramWorkDatabase)
+  {
+    Object localObject = paramContext.getApplicationContext();
+    androidx.work.j.e(new j.a(paramA.j()));
+    localObject = h((Context)localObject, paramA, paramA1);
+    r(paramContext, paramA, paramA1, paramWorkDatabase, (List)localObject, new d(paramContext, paramA, paramA1, paramWorkDatabase, (List)localObject));
+  }
+  
+  public j(Context paramContext, androidx.work.a paramA, androidx.work.impl.utils.p.a paramA1, boolean paramBoolean)
+  {
+    this(paramContext, paramA, paramA1, WorkDatabase.s(paramContext.getApplicationContext(), paramA1.c(), paramBoolean));
+  }
+  
+  public static void f(Context paramContext, androidx.work.a paramA)
+  {
+    synchronized (d)
+    {
+      j localJ = b;
+      if ((localJ != null) && (c != null)) {
+        throw new IllegalStateException("WorkManager is already initialized.  Did you try to initialize it manually without disabling WorkManagerInitializer? See WorkManager#initialize(Context, Configuration) or the class level Javadoc for more information.");
+      }
+      if (localJ == null)
+      {
+        paramContext = paramContext.getApplicationContext();
+        if (c == null) {
+          c = new j(paramContext, paramA, new androidx.work.impl.utils.p.b(paramA.l()));
+        }
+        b = c;
+      }
+      return;
+    }
+  }
+  
+  @Deprecated
+  public static j k()
+  {
+    synchronized (d)
+    {
+      j localJ = b;
+      if (localJ != null) {
+        return localJ;
+      }
+      localJ = c;
+      return localJ;
+    }
+  }
+  
+  public static j l(Context paramContext)
+  {
+    synchronized (d)
+    {
+      j localJ2 = k();
+      j localJ1 = localJ2;
+      if (localJ2 == null)
+      {
+        paramContext = paramContext.getApplicationContext();
+        if ((paramContext instanceof a.c))
+        {
+          f(paramContext, ((a.c)paramContext).a());
+          localJ1 = l(paramContext);
+        }
+        else
+        {
+          throw new IllegalStateException("WorkManager is not initialized properly.  You have explicitly disabled WorkManagerInitializer in your manifest, have not manually called WorkManager#initialize at this point, and your Application does not implement Configuration.Provider.");
+        }
+      }
+      return localJ1;
+    }
+  }
+  
+  private void r(Context paramContext, androidx.work.a paramA, androidx.work.impl.utils.p.a paramA1, WorkDatabase paramWorkDatabase, List<e> paramList, d paramD)
+  {
+    paramContext = paramContext.getApplicationContext();
+    e = paramContext;
+    f = paramA;
+    h = paramA1;
+    g = paramWorkDatabase;
+    i = paramList;
+    j = paramD;
+    k = new androidx.work.impl.utils.e(paramWorkDatabase);
+    l = false;
+    if ((Build.VERSION.SDK_INT >= 24) && (paramContext.isDeviceProtectedStorage())) {
+      throw new IllegalStateException("Cannot initialize WorkManager in direct boot mode");
+    }
+    h.b(new ForceStopRunnable(paramContext, this));
+  }
+  
+  public l a(String paramString)
+  {
+    paramString = androidx.work.impl.utils.a.d(paramString, this);
+    h.b(paramString);
+    return paramString.e();
+  }
+  
+  public l c(List<? extends s> paramList)
+  {
+    if (!paramList.isEmpty()) {
+      return new g(this, paramList).a();
+    }
+    throw new IllegalArgumentException("enqueue needs at least one WorkRequest.");
+  }
+  
+  public c<List<WorkInfo>> e(String paramString)
+  {
+    paramString = i.a(this, paramString);
+    h.c().execute(paramString);
+    return paramString.b();
+  }
+  
+  public l g(UUID paramUUID)
+  {
+    paramUUID = androidx.work.impl.utils.a.b(paramUUID, this);
+    h.b(paramUUID);
+    return paramUUID.e();
+  }
+  
+  public List<e> h(Context paramContext, androidx.work.a paramA, androidx.work.impl.utils.p.a paramA1)
+  {
+    return Arrays.asList(new e[] { f.a(paramContext, this), new androidx.work.impl.l.a.b(paramContext, paramA, paramA1, this) });
+  }
+  
+  public Context i()
+  {
+    return e;
+  }
+  
+  public androidx.work.a j()
+  {
+    return f;
+  }
+  
+  public androidx.work.impl.utils.e m()
+  {
+    return k;
+  }
+  
+  public d n()
+  {
+    return j;
+  }
+  
+  public List<e> o()
+  {
+    return i;
+  }
+  
+  public WorkDatabase p()
+  {
+    return g;
+  }
+  
+  public androidx.work.impl.utils.p.a q()
+  {
+    return h;
+  }
+  
+  public void s()
+  {
+    synchronized (d)
+    {
+      l = true;
+      BroadcastReceiver.PendingResult localPendingResult = m;
+      if (localPendingResult != null)
+      {
+        localPendingResult.finish();
+        m = null;
+      }
+      return;
+    }
+  }
+  
+  public void t()
+  {
+    if (Build.VERSION.SDK_INT >= 23) {
+      androidx.work.impl.background.systemjob.b.b(i());
+    }
+    p().B().v();
+    f.b(j(), p(), o());
+  }
+  
+  public void u(BroadcastReceiver.PendingResult paramPendingResult)
+  {
+    synchronized (d)
+    {
+      m = paramPendingResult;
+      if (l)
+      {
+        paramPendingResult.finish();
+        m = null;
+      }
+      return;
+    }
+  }
+  
+  public void v(String paramString)
+  {
+    w(paramString, null);
+  }
+  
+  public void w(String paramString, WorkerParameters.a paramA)
+  {
+    h.b(new h(this, paramString, paramA));
+  }
+  
+  public void x(String paramString)
+  {
+    h.b(new androidx.work.impl.utils.j(this, paramString, true));
+  }
+  
+  public void y(String paramString)
+  {
+    h.b(new androidx.work.impl.utils.j(this, paramString, false));
+  }
+}

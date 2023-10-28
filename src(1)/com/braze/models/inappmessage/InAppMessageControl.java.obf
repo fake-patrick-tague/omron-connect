@@ -1,0 +1,137 @@
+package com.braze.models.inappmessage;
+
+import bo.app.j.a;
+import bo.app.x1;
+import bo.app.z1;
+import com.braze.enums.inappmessage.MessageType;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import java.util.concurrent.atomic.AtomicBoolean;
+import kotlin.x.c.a;
+import org.json.JSONObject;
+
+public class InAppMessageControl
+  extends InAppMessageBase
+{
+  private final AtomicBoolean controlImpressionLogged = new AtomicBoolean(false);
+  
+  public InAppMessageControl(JSONObject paramJSONObject, z1 paramZ1)
+  {
+    super(paramJSONObject, paramZ1, false, false, 12, null);
+  }
+  
+  public MessageType getMessageType()
+  {
+    return MessageType.CONTROL;
+  }
+  
+  public boolean logImpression()
+  {
+    if (controlImpressionLogged.get())
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, a.b, 2, null);
+      return false;
+    }
+    Object localObject = getTriggerId();
+    int i;
+    if ((localObject != null) && (((CharSequence)localObject).length() != 0)) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if (i != 0)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, b.b, 2, null);
+      return false;
+    }
+    if (getBrazeManager() == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, c.b, 2, null);
+      return false;
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, d.b, 2, null);
+    localObject = getTriggerId();
+    if (localObject != null) {
+      localObject = bo.app.j.h.h((String)localObject);
+    } else {
+      localObject = null;
+    }
+    if (localObject != null)
+    {
+      z1 localZ1 = getBrazeManager();
+      if (localZ1 != null) {
+        localZ1.a((x1)localObject);
+      }
+      controlImpressionLogged.set(true);
+    }
+    return true;
+  }
+  
+  static final class a
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final a b = new a();
+    
+    a()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Control impression already logged for this in-app message. Ignoring.";
+    }
+  }
+  
+  static final class b
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final b b = new b();
+    
+    b()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Trigger Id not found (this is expected for test sends). Not logging in-app message control impression.";
+    }
+  }
+  
+  static final class c
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final c b = new c();
+    
+    c()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Cannot log an in-app message control impression because the BrazeManager is null.";
+    }
+  }
+  
+  static final class d
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final d b = new d();
+    
+    d()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Logging control in-app message impression event";
+    }
+  }
+}

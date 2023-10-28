@@ -1,0 +1,68 @@
+package com.google.android.gms.common;
+
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.os.Bundle;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.l;
+import com.google.android.gms.common.internal.Preconditions;
+
+public class SupportErrorDialogFragment
+  extends l
+{
+  private Dialog zaa;
+  private DialogInterface.OnCancelListener zab;
+  private Dialog zac;
+  
+  public SupportErrorDialogFragment() {}
+  
+  public static SupportErrorDialogFragment newInstance(Dialog paramDialog)
+  {
+    return newInstance(paramDialog, null);
+  }
+  
+  public static SupportErrorDialogFragment newInstance(Dialog paramDialog, DialogInterface.OnCancelListener paramOnCancelListener)
+  {
+    SupportErrorDialogFragment localSupportErrorDialogFragment = new SupportErrorDialogFragment();
+    paramDialog = (Dialog)Preconditions.checkNotNull(paramDialog, "Cannot display null dialog");
+    paramDialog.setOnCancelListener(null);
+    paramDialog.setOnDismissListener(null);
+    zaa = paramDialog;
+    if (paramOnCancelListener != null) {
+      zab = paramOnCancelListener;
+    }
+    return localSupportErrorDialogFragment;
+  }
+  
+  public void onCancel(DialogInterface paramDialogInterface)
+  {
+    DialogInterface.OnCancelListener localOnCancelListener = zab;
+    if (localOnCancelListener != null) {
+      localOnCancelListener.onCancel(paramDialogInterface);
+    }
+  }
+  
+  public Dialog onCreateDialog(Bundle paramBundle)
+  {
+    Dialog localDialog = zaa;
+    paramBundle = localDialog;
+    if (localDialog == null)
+    {
+      setShowsDialog(false);
+      if (zac == null) {
+        zac = new AlertDialog.Builder((Context)Preconditions.checkNotNull(getContext())).create();
+      }
+      paramBundle = zac;
+    }
+    return paramBundle;
+  }
+  
+  public void show(FragmentManager paramFragmentManager, String paramString)
+  {
+    super.show(paramFragmentManager, paramString);
+  }
+}

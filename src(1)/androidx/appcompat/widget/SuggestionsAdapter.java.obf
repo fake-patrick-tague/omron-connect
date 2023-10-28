@@ -1,0 +1,699 @@
+package androidx.appcompat.widget;
+
+import android.app.SearchableInfo;
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.content.res.Resources.Theme;
+import android.database.Cursor;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.net.Uri;
+import android.net.Uri.Builder;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.TextAppearanceSpan;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import c.a.f;
+import c.i.a.c;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.WeakHashMap;
+
+class h0
+  extends c
+  implements View.OnClickListener
+{
+  private final SearchView m;
+  private final SearchableInfo n;
+  private final Context o;
+  private final WeakHashMap<String, Drawable.ConstantState> p;
+  private final int q;
+  private boolean r = false;
+  private int s = 1;
+  private ColorStateList t;
+  private int u = -1;
+  private int v = -1;
+  private int w = -1;
+  private int x = -1;
+  private int y = -1;
+  private int z = -1;
+  
+  public h0(Context paramContext, SearchView paramSearchView, SearchableInfo paramSearchableInfo, WeakHashMap<String, Drawable.ConstantState> paramWeakHashMap)
+  {
+    super(paramContext, paramSearchView.getSuggestionRowLayout(), null, true);
+    m = paramSearchView;
+    n = paramSearchableInfo;
+    q = paramSearchView.getSuggestionCommitIconResId();
+    o = paramContext;
+    p = paramWeakHashMap;
+  }
+  
+  private void A(String paramString, Drawable paramDrawable)
+  {
+    if (paramDrawable != null) {
+      p.put(paramString, paramDrawable.getConstantState());
+    }
+  }
+  
+  private void B(Cursor paramCursor)
+  {
+    if (paramCursor != null) {
+      paramCursor = paramCursor.getExtras();
+    } else {
+      paramCursor = null;
+    }
+    if ((paramCursor != null) && (paramCursor.getBoolean("in_progress"))) {}
+  }
+  
+  private Drawable k(String paramString)
+  {
+    paramString = (Drawable.ConstantState)p.get(paramString);
+    if (paramString == null) {
+      return null;
+    }
+    return paramString.newDrawable();
+  }
+  
+  private CharSequence l(CharSequence paramCharSequence)
+  {
+    if (t == null)
+    {
+      localObject = new TypedValue();
+      o.getTheme().resolveAttribute(c.a.a.M, (TypedValue)localObject, true);
+      t = o.getResources().getColorStateList(resourceId);
+    }
+    Object localObject = new SpannableString(paramCharSequence);
+    ((SpannableString)localObject).setSpan(new TextAppearanceSpan(null, 0, 0, t, null), 0, paramCharSequence.length(), 33);
+    return localObject;
+  }
+  
+  private Drawable m(ComponentName paramComponentName)
+  {
+    Object localObject = o.getPackageManager();
+    try
+    {
+      ActivityInfo localActivityInfo = ((PackageManager)localObject).getActivityInfo(paramComponentName, 128);
+      int i = localActivityInfo.getIconResource();
+      if (i == 0) {
+        return null;
+      }
+      localObject = ((PackageManager)localObject).getDrawable(paramComponentName.getPackageName(), i, applicationInfo);
+      if (localObject == null)
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Invalid icon resource ");
+        ((StringBuilder)localObject).append(i);
+        ((StringBuilder)localObject).append(" for ");
+        ((StringBuilder)localObject).append(paramComponentName.flattenToShortString());
+        Log.w("SuggestionsAdapter", ((StringBuilder)localObject).toString());
+        return null;
+      }
+      return localObject;
+    }
+    catch (PackageManager.NameNotFoundException paramComponentName)
+    {
+      Log.w("SuggestionsAdapter", paramComponentName.toString());
+    }
+    return null;
+  }
+  
+  private Drawable n(ComponentName paramComponentName)
+  {
+    String str = paramComponentName.flattenToShortString();
+    boolean bool = p.containsKey(str);
+    Object localObject = null;
+    if (bool)
+    {
+      paramComponentName = (Drawable.ConstantState)p.get(str);
+      if (paramComponentName == null) {
+        return null;
+      }
+      return paramComponentName.newDrawable(o.getResources());
+    }
+    Drawable localDrawable = m(paramComponentName);
+    if (localDrawable == null) {
+      paramComponentName = localObject;
+    } else {
+      paramComponentName = localDrawable.getConstantState();
+    }
+    p.put(str, paramComponentName);
+    return localDrawable;
+  }
+  
+  public static String o(Cursor paramCursor, String paramString)
+  {
+    return w(paramCursor, paramCursor.getColumnIndex(paramString));
+  }
+  
+  private Drawable p()
+  {
+    Drawable localDrawable = n(n.getSearchActivity());
+    if (localDrawable != null) {
+      return localDrawable;
+    }
+    return o.getPackageManager().getDefaultActivityIcon();
+  }
+  
+  private Drawable q(Uri paramUri)
+  {
+    try
+    {
+      boolean bool = "android.resource".equals(paramUri.getScheme());
+      if (!bool) {}
+    }
+    catch (FileNotFoundException localFileNotFoundException)
+    {
+      Object localObject1;
+      label23:
+      InputStream localInputStream;
+      StringBuilder localStringBuilder1;
+      StringBuilder localStringBuilder2 = new StringBuilder();
+      localStringBuilder2.append("Icon not found: ");
+      localStringBuilder2.append(paramUri);
+      localStringBuilder2.append(", ");
+      localStringBuilder2.append(localFileNotFoundException.getMessage());
+      Log.w("SuggestionsAdapter", localStringBuilder2.toString());
+      return null;
+    }
+    try
+    {
+      localObject1 = r(paramUri);
+      return localObject1;
+    }
+    catch (Resources.NotFoundException localNotFoundException)
+    {
+      break label23;
+    }
+    localObject1 = new StringBuilder();
+    ((StringBuilder)localObject1).append("Resource does not exist: ");
+    ((StringBuilder)localObject1).append(paramUri);
+    throw new FileNotFoundException(((StringBuilder)localObject1).toString());
+    localInputStream = o.getContentResolver().openInputStream(paramUri);
+    if (localInputStream != null) {
+      try
+      {
+        localObject1 = Drawable.createFromStream(localInputStream, null);
+        StringBuilder localStringBuilder3;
+        try
+        {
+          localInputStream.close();
+          return localObject1;
+        }
+        catch (IOException localIOException1)
+        {
+          localStringBuilder3 = new StringBuilder();
+          localStringBuilder3.append("Error closing icon stream for ");
+          localStringBuilder3.append(paramUri);
+          Log.e("SuggestionsAdapter", localStringBuilder3.toString(), localIOException1);
+          return localObject1;
+        }
+        localStringBuilder1 = new StringBuilder();
+      }
+      finally
+      {
+        try
+        {
+          localIOException1.close();
+        }
+        catch (IOException localIOException2)
+        {
+          localStringBuilder3 = new StringBuilder();
+          localStringBuilder3.append("Error closing icon stream for ");
+          localStringBuilder3.append(paramUri);
+          Log.e("SuggestionsAdapter", localStringBuilder3.toString(), localIOException2);
+        }
+      }
+    }
+    localStringBuilder1.append("Failed to open ");
+    localStringBuilder1.append(paramUri);
+    throw new FileNotFoundException(localStringBuilder1.toString());
+  }
+  
+  private Drawable s(String paramString)
+  {
+    Drawable localDrawable = null;
+    Object localObject = localDrawable;
+    if (paramString != null)
+    {
+      localObject = localDrawable;
+      if (!paramString.isEmpty()) {
+        if ("0".equals(paramString)) {
+          return null;
+        }
+      }
+    }
+    try
+    {
+      int i = Integer.parseInt(paramString);
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("android.resource://");
+      ((StringBuilder)localObject).append(o.getPackageName());
+      ((StringBuilder)localObject).append("/");
+      ((StringBuilder)localObject).append(i);
+      localObject = ((StringBuilder)localObject).toString();
+      localDrawable = k((String)localObject);
+      if (localDrawable != null) {
+        return localDrawable;
+      }
+      localDrawable = androidx.core.content.a.f(o, i);
+      A((String)localObject, localDrawable);
+      return localDrawable;
+    }
+    catch (NumberFormatException localNumberFormatException)
+    {
+      for (;;) {}
+    }
+    catch (Resources.NotFoundException localNotFoundException)
+    {
+      for (;;) {}
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("Icon resource not found: ");
+    ((StringBuilder)localObject).append(paramString);
+    Log.w("SuggestionsAdapter", ((StringBuilder)localObject).toString());
+    return null;
+    localObject = k(paramString);
+    if (localObject != null) {
+      return localObject;
+    }
+    localObject = q(Uri.parse(paramString));
+    A(paramString, (Drawable)localObject);
+    return localObject;
+  }
+  
+  private Drawable t(Cursor paramCursor)
+  {
+    int i = x;
+    if (i == -1) {
+      return null;
+    }
+    paramCursor = s(paramCursor.getString(i));
+    if (paramCursor != null) {
+      return paramCursor;
+    }
+    return p();
+  }
+  
+  private Drawable u(Cursor paramCursor)
+  {
+    int i = y;
+    if (i == -1) {
+      return null;
+    }
+    return s(paramCursor.getString(i));
+  }
+  
+  private static String w(Cursor paramCursor, int paramInt)
+  {
+    if (paramInt == -1) {
+      return null;
+    }
+    try
+    {
+      paramCursor = paramCursor.getString(paramInt);
+      return paramCursor;
+    }
+    catch (Exception paramCursor)
+    {
+      Log.e("SuggestionsAdapter", "unexpected error retrieving valid column from cursor, did the remote process die?", paramCursor);
+    }
+    return null;
+  }
+  
+  private void y(ImageView paramImageView, Drawable paramDrawable, int paramInt)
+  {
+    paramImageView.setImageDrawable(paramDrawable);
+    if (paramDrawable == null)
+    {
+      paramImageView.setVisibility(paramInt);
+      return;
+    }
+    paramImageView.setVisibility(0);
+    paramDrawable.setVisible(false, false);
+    paramDrawable.setVisible(true, false);
+  }
+  
+  private void z(TextView paramTextView, CharSequence paramCharSequence)
+  {
+    paramTextView.setText(paramCharSequence);
+    if (TextUtils.isEmpty(paramCharSequence))
+    {
+      paramTextView.setVisibility(8);
+      return;
+    }
+    paramTextView.setVisibility(0);
+  }
+  
+  public void a(Cursor paramCursor)
+  {
+    if (r)
+    {
+      Log.w("SuggestionsAdapter", "Tried to change cursor after adapter was closed.");
+      if (paramCursor != null) {
+        paramCursor.close();
+      }
+      return;
+    }
+    try
+    {
+      super.a(paramCursor);
+      if (paramCursor != null)
+      {
+        u = paramCursor.getColumnIndex("suggest_text_1");
+        v = paramCursor.getColumnIndex("suggest_text_2");
+        w = paramCursor.getColumnIndex("suggest_text_2_url");
+        x = paramCursor.getColumnIndex("suggest_icon_1");
+        y = paramCursor.getColumnIndex("suggest_icon_2");
+        z = paramCursor.getColumnIndex("suggest_flags");
+        return;
+      }
+    }
+    catch (Exception paramCursor)
+    {
+      Log.e("SuggestionsAdapter", "error changing cursor and caching columns", paramCursor);
+    }
+  }
+  
+  public CharSequence c(Cursor paramCursor)
+  {
+    if (paramCursor == null) {
+      return null;
+    }
+    String str = o(paramCursor, "suggest_intent_query");
+    if (str != null) {
+      return str;
+    }
+    if (n.shouldRewriteQueryFromData())
+    {
+      str = o(paramCursor, "suggest_intent_data");
+      if (str != null) {
+        return str;
+      }
+    }
+    if (n.shouldRewriteQueryFromText())
+    {
+      paramCursor = o(paramCursor, "suggest_text_1");
+      if (paramCursor != null) {
+        return paramCursor;
+      }
+    }
+    return null;
+  }
+  
+  public Cursor d(CharSequence paramCharSequence)
+  {
+    if (paramCharSequence == null) {
+      paramCharSequence = "";
+    } else {
+      paramCharSequence = paramCharSequence.toString();
+    }
+    if (m.getVisibility() == 0)
+    {
+      if (m.getWindowVisibility() != 0) {
+        return null;
+      }
+      try
+      {
+        paramCharSequence = v(n, paramCharSequence, 50);
+        if (paramCharSequence != null)
+        {
+          paramCharSequence.getCount();
+          return paramCharSequence;
+        }
+      }
+      catch (RuntimeException paramCharSequence)
+      {
+        Log.w("SuggestionsAdapter", "Search suggestions query threw an exception.", paramCharSequence);
+      }
+    }
+    return null;
+  }
+  
+  public void e(View paramView, Context paramContext, Cursor paramCursor)
+  {
+    paramContext = (a)paramView.getTag();
+    int i = z;
+    if (i != -1) {
+      i = paramCursor.getInt(i);
+    } else {
+      i = 0;
+    }
+    if (a != null)
+    {
+      paramView = w(paramCursor, u);
+      z(a, paramView);
+    }
+    if (b != null)
+    {
+      paramView = w(paramCursor, w);
+      if (paramView != null) {
+        paramView = l(paramView);
+      } else {
+        paramView = w(paramCursor, v);
+      }
+      TextView localTextView;
+      if (TextUtils.isEmpty(paramView))
+      {
+        localTextView = a;
+        if (localTextView != null)
+        {
+          localTextView.setSingleLine(false);
+          a.setMaxLines(2);
+        }
+      }
+      else
+      {
+        localTextView = a;
+        if (localTextView != null)
+        {
+          localTextView.setSingleLine(true);
+          a.setMaxLines(1);
+        }
+      }
+      z(b, paramView);
+    }
+    paramView = c;
+    if (paramView != null) {
+      y(paramView, t(paramCursor), 4);
+    }
+    paramView = d;
+    if (paramView != null) {
+      y(paramView, u(paramCursor), 8);
+    }
+    int j = s;
+    if ((j != 2) && ((j != 1) || ((i & 0x1) == 0)))
+    {
+      e.setVisibility(8);
+      return;
+    }
+    e.setVisibility(0);
+    e.setTag(a.getText());
+    e.setOnClickListener(this);
+  }
+  
+  public View getDropDownView(int paramInt, View paramView, ViewGroup paramViewGroup)
+  {
+    try
+    {
+      paramView = super.getDropDownView(paramInt, paramView, paramViewGroup);
+      return paramView;
+    }
+    catch (RuntimeException paramView)
+    {
+      Log.w("SuggestionsAdapter", "Search suggestions cursor threw exception.", paramView);
+      paramViewGroup = g(o, b(), paramViewGroup);
+      if (paramViewGroup != null) {
+        getTaga.setText(paramView.toString());
+      }
+    }
+    return paramViewGroup;
+  }
+  
+  public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
+  {
+    try
+    {
+      paramView = super.getView(paramInt, paramView, paramViewGroup);
+      return paramView;
+    }
+    catch (RuntimeException paramView)
+    {
+      Log.w("SuggestionsAdapter", "Search suggestions cursor threw exception.", paramView);
+      paramViewGroup = h(o, b(), paramViewGroup);
+      if (paramViewGroup != null) {
+        getTaga.setText(paramView.toString());
+      }
+    }
+    return paramViewGroup;
+  }
+  
+  public View h(Context paramContext, Cursor paramCursor, ViewGroup paramViewGroup)
+  {
+    paramContext = super.h(paramContext, paramCursor, paramViewGroup);
+    paramContext.setTag(new a(paramContext));
+    ((ImageView)paramContext.findViewById(f.q)).setImageResource(q);
+    return paramContext;
+  }
+  
+  public boolean hasStableIds()
+  {
+    return false;
+  }
+  
+  public void notifyDataSetChanged()
+  {
+    super.notifyDataSetChanged();
+    B(b());
+  }
+  
+  public void notifyDataSetInvalidated()
+  {
+    super.notifyDataSetInvalidated();
+    B(b());
+  }
+  
+  public void onClick(View paramView)
+  {
+    paramView = paramView.getTag();
+    if ((paramView instanceof CharSequence)) {
+      m.U((CharSequence)paramView);
+    }
+  }
+  
+  Drawable r(Uri paramUri)
+    throws FileNotFoundException
+  {
+    Object localObject = paramUri.getAuthority();
+    if (!TextUtils.isEmpty((CharSequence)localObject)) {}
+    for (;;)
+    {
+      try
+      {
+        localResources = o.getPackageManager().getResourcesForApplication((String)localObject);
+        localList = paramUri.getPathSegments();
+        if (localList != null)
+        {
+          i = localList.size();
+          if (i != 1) {}
+        }
+      }
+      catch (PackageManager.NameNotFoundException localNameNotFoundException)
+      {
+        Resources localResources;
+        List localList;
+        int i;
+        continue;
+      }
+      try
+      {
+        i = Integer.parseInt((String)localList.get(0));
+      }
+      catch (NumberFormatException localNumberFormatException) {}
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("Single path segment is not a resource ID: ");
+    ((StringBuilder)localObject).append(paramUri);
+    throw new FileNotFoundException(((StringBuilder)localObject).toString());
+    if (i == 2)
+    {
+      i = localResources.getIdentifier((String)localList.get(1), (String)localList.get(0), (String)localObject);
+      if (i != 0) {
+        return localResources.getDrawable(i);
+      }
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("No resource found for: ");
+      ((StringBuilder)localObject).append(paramUri);
+      throw new FileNotFoundException(((StringBuilder)localObject).toString());
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("More than two path segments: ");
+    ((StringBuilder)localObject).append(paramUri);
+    throw new FileNotFoundException(((StringBuilder)localObject).toString());
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("No path: ");
+    ((StringBuilder)localObject).append(paramUri);
+    throw new FileNotFoundException(((StringBuilder)localObject).toString());
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("No package found for authority: ");
+    ((StringBuilder)localObject).append(paramUri);
+    throw new FileNotFoundException(((StringBuilder)localObject).toString());
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("No authority: ");
+    ((StringBuilder)localObject).append(paramUri);
+    throw new FileNotFoundException(((StringBuilder)localObject).toString());
+  }
+  
+  Cursor v(SearchableInfo paramSearchableInfo, String paramString, int paramInt)
+  {
+    Object localObject1 = null;
+    if (paramSearchableInfo == null) {
+      return null;
+    }
+    Object localObject2 = paramSearchableInfo.getSuggestAuthority();
+    if (localObject2 == null) {
+      return null;
+    }
+    localObject2 = new Uri.Builder().scheme("content").authority((String)localObject2).query("").fragment("");
+    String str = paramSearchableInfo.getSuggestPath();
+    if (str != null) {
+      ((Uri.Builder)localObject2).appendEncodedPath(str);
+    }
+    ((Uri.Builder)localObject2).appendPath("search_suggest_query");
+    str = paramSearchableInfo.getSuggestSelection();
+    if (str != null)
+    {
+      paramSearchableInfo = new String[1];
+      paramSearchableInfo[0] = paramString;
+    }
+    else
+    {
+      ((Uri.Builder)localObject2).appendPath(paramString);
+      paramSearchableInfo = localObject1;
+    }
+    if (paramInt > 0) {
+      ((Uri.Builder)localObject2).appendQueryParameter("limit", String.valueOf(paramInt));
+    }
+    paramString = ((Uri.Builder)localObject2).build();
+    return o.getContentResolver().query(paramString, null, str, paramSearchableInfo, null);
+  }
+  
+  public void x(int paramInt)
+  {
+    s = paramInt;
+  }
+  
+  private static final class a
+  {
+    public final TextView a;
+    public final TextView b;
+    public final ImageView c;
+    public final ImageView d;
+    public final ImageView e;
+    
+    public a(View paramView)
+    {
+      a = ((TextView)paramView.findViewById(16908308));
+      b = ((TextView)paramView.findViewById(16908309));
+      c = ((ImageView)paramView.findViewById(16908295));
+      d = ((ImageView)paramView.findViewById(16908296));
+      e = ((ImageView)paramView.findViewById(f.q));
+    }
+  }
+}

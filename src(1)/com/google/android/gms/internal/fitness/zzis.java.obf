@@ -1,0 +1,7 @@
+package com.google.android.gms.internal.fitness;
+
+final class zzis
+  implements zzip
+{
+  zzis() {}
+}

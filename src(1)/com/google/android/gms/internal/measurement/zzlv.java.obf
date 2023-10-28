@@ -1,0 +1,66 @@
+package com.google.android.gms.internal.measurement;
+
+final class zzlv
+  implements zzli
+{
+  private final zzll zza;
+  private final String zzb;
+  private final Object[] zzc;
+  private final int zzd;
+  
+  zzlv(zzll paramZzll, String paramString, Object[] paramArrayOfObject)
+  {
+    zza = paramZzll;
+    zzb = paramString;
+    zzc = paramArrayOfObject;
+    int i = paramString.charAt(0);
+    if (i < 55296)
+    {
+      zzd = i;
+      return;
+    }
+    int k = i & 0x1FFF;
+    int j = 13;
+    i = 1;
+    int m;
+    for (;;)
+    {
+      m = paramString.charAt(i);
+      if (m < 55296) {
+        break;
+      }
+      k |= (m & 0x1FFF) << j;
+      j += 13;
+      i += 1;
+    }
+    zzd = (k | m << j);
+  }
+  
+  public final zzll zza()
+  {
+    return zza;
+  }
+  
+  public final boolean zzb()
+  {
+    return (zzd & 0x2) == 2;
+  }
+  
+  public final int zzc()
+  {
+    if ((zzd & 0x1) == 1) {
+      return 1;
+    }
+    return 2;
+  }
+  
+  final String zzd()
+  {
+    return zzb;
+  }
+  
+  final Object[] zze()
+  {
+    return zzc;
+  }
+}

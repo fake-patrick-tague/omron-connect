@@ -1,0 +1,1889 @@
+package com.google.android.material.chip;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Outline;
+import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Paint.FontMetrics;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.PointF;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.Callback;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.text.TextPaint;
+import android.text.TextUtils;
+import android.text.TextUtils.TruncateAt;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import com.google.android.material.internal.f;
+import com.google.android.material.internal.f.b;
+import com.google.android.material.internal.i;
+import com.google.android.material.internal.j;
+import d.c.a.a.l;
+import d.c.a.a.m.h;
+import d.c.a.a.u.c;
+import d.c.a.a.u.d;
+import d.c.a.a.x.g;
+import d.c.a.a.x.k;
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
+
+public class a
+  extends g
+  implements androidx.core.graphics.drawable.b, Drawable.Callback, f.b
+{
+  private static final ShapeDrawable A = new ShapeDrawable(new OvalShape());
+  private static final int[] z = { 16842910 };
+  private int A0;
+  private ColorStateList B;
+  private int B0 = 255;
+  private ColorStateList C;
+  private ColorFilter C0;
+  private float D;
+  private PorterDuffColorFilter D0;
+  private float E = -1.0F;
+  private ColorStateList E0;
+  private ColorStateList F;
+  private PorterDuff.Mode F0 = PorterDuff.Mode.SRC_IN;
+  private float G;
+  private int[] G0;
+  private ColorStateList H;
+  private boolean H0;
+  private CharSequence I;
+  private ColorStateList I0;
+  private boolean J;
+  private WeakReference<a> J0 = new WeakReference(null);
+  private Drawable K;
+  private TextUtils.TruncateAt K0;
+  private ColorStateList L;
+  private boolean L0;
+  private int M0;
+  private boolean N0;
+  private float P;
+  private boolean Q;
+  private boolean R;
+  private Drawable S;
+  private Drawable T;
+  private ColorStateList U;
+  private float V;
+  private CharSequence W;
+  private boolean X;
+  private boolean Y;
+  private Drawable Z;
+  private ColorStateList a0;
+  private h b0;
+  private h c0;
+  private float d0;
+  private float e0;
+  private float f0;
+  private float g0;
+  private float h0;
+  private float i0;
+  private float j0;
+  private float k0;
+  private final Context l0;
+  private final Paint m0 = new Paint(1);
+  private final Paint n0;
+  private final Paint.FontMetrics o0 = new Paint.FontMetrics();
+  private final RectF p0 = new RectF();
+  private final PointF q0 = new PointF();
+  private final Path r0 = new Path();
+  private final f s0;
+  private int t0;
+  private int u0;
+  private int v0;
+  private int w0;
+  private int x0;
+  private int y0;
+  private boolean z0;
+  
+  private a(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    super(paramContext, paramAttributeSet, paramInt1, paramInt2);
+    M(paramContext);
+    l0 = paramContext;
+    paramAttributeSet = new f(this);
+    s0 = paramAttributeSet;
+    I = "";
+    edensity = getResourcesgetDisplayMetricsdensity;
+    n0 = null;
+    paramContext = z;
+    setState(paramContext);
+    l2(paramContext);
+    L0 = true;
+    if (d.c.a.a.v.b.a) {
+      A.setTint(-1);
+    }
+  }
+  
+  private void A0(Canvas paramCanvas, Rect paramRect)
+  {
+    if (!N0)
+    {
+      m0.setColor(t0);
+      m0.setStyle(Paint.Style.FILL);
+      p0.set(paramRect);
+      paramCanvas.drawRoundRect(p0, I0(), I0(), m0);
+    }
+  }
+  
+  private void B0(Canvas paramCanvas, Rect paramRect)
+  {
+    if (O2())
+    {
+      o0(paramRect, p0);
+      paramRect = p0;
+      float f1 = left;
+      float f2 = top;
+      paramCanvas.translate(f1, f2);
+      S.setBounds(0, 0, (int)p0.width(), (int)p0.height());
+      if (d.c.a.a.v.b.a)
+      {
+        T.setBounds(S.getBounds());
+        T.jumpToCurrentState();
+        T.draw(paramCanvas);
+      }
+      else
+      {
+        S.draw(paramCanvas);
+      }
+      paramCanvas.translate(-f1, -f2);
+    }
+  }
+  
+  private void C0(Canvas paramCanvas, Rect paramRect)
+  {
+    m0.setColor(x0);
+    m0.setStyle(Paint.Style.FILL);
+    p0.set(paramRect);
+    if (!N0)
+    {
+      paramCanvas.drawRoundRect(p0, I0(), I0(), m0);
+      return;
+    }
+    h(new RectF(paramRect), r0);
+    super.p(paramCanvas, m0, r0, u());
+  }
+  
+  private void D0(Canvas paramCanvas, Rect paramRect)
+  {
+    Paint localPaint = n0;
+    if (localPaint != null)
+    {
+      localPaint.setColor(androidx.core.graphics.a.f(-16777216, 127));
+      paramCanvas.drawRect(paramRect, n0);
+      if ((N2()) || (M2()))
+      {
+        l0(paramRect, p0);
+        paramCanvas.drawRect(p0, n0);
+      }
+      if (I != null) {
+        paramCanvas.drawLine(left, paramRect.exactCenterY(), right, paramRect.exactCenterY(), n0);
+      }
+      if (O2())
+      {
+        o0(paramRect, p0);
+        paramCanvas.drawRect(p0, n0);
+      }
+      n0.setColor(androidx.core.graphics.a.f(-65536, 127));
+      n0(paramRect, p0);
+      paramCanvas.drawRect(p0, n0);
+      n0.setColor(androidx.core.graphics.a.f(-16711936, 127));
+      p0(paramRect, p0);
+      paramCanvas.drawRect(p0, n0);
+    }
+  }
+  
+  private void E0(Canvas paramCanvas, Rect paramRect)
+  {
+    if (I != null)
+    {
+      Object localObject = t0(paramRect, q0);
+      r0(paramRect, p0);
+      if (s0.d() != null)
+      {
+        s0.e().drawableState = getState();
+        s0.j(l0);
+      }
+      s0.e().setTextAlign((Paint.Align)localObject);
+      int i = Math.round(s0.f(h1().toString()));
+      int k = Math.round(p0.width());
+      int j = 0;
+      if (i > k) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        j = paramCanvas.save();
+        paramCanvas.clipRect(p0);
+      }
+      localObject = I;
+      paramRect = (Rect)localObject;
+      if (i != 0)
+      {
+        paramRect = (Rect)localObject;
+        if (K0 != null) {
+          paramRect = TextUtils.ellipsize((CharSequence)localObject, s0.e(), p0.width(), K0);
+        }
+      }
+      k = paramRect.length();
+      localObject = q0;
+      paramCanvas.drawText(paramRect, 0, k, x, y, s0.e());
+      if (i != 0) {
+        paramCanvas.restoreToCount(j);
+      }
+    }
+  }
+  
+  private boolean M2()
+  {
+    return (Y) && (Z != null) && (z0);
+  }
+  
+  private boolean N2()
+  {
+    return (J) && (K != null);
+  }
+  
+  private boolean O2()
+  {
+    return (R) && (S != null);
+  }
+  
+  private void P2(Drawable paramDrawable)
+  {
+    if (paramDrawable != null) {
+      paramDrawable.setCallback(null);
+    }
+  }
+  
+  private void Q2()
+  {
+    ColorStateList localColorStateList;
+    if (H0) {
+      localColorStateList = d.c.a.a.v.b.d(H);
+    } else {
+      localColorStateList = null;
+    }
+    I0 = localColorStateList;
+  }
+  
+  private void R2()
+  {
+    T = new RippleDrawable(d.c.a.a.v.b.d(f1()), S, A);
+  }
+  
+  private float Z0()
+  {
+    Drawable localDrawable;
+    if (z0) {
+      localDrawable = Z;
+    } else {
+      localDrawable = K;
+    }
+    float f2 = P;
+    float f1 = f2;
+    if (f2 <= 0.0F)
+    {
+      f1 = f2;
+      if (localDrawable != null)
+      {
+        f2 = (float)Math.ceil(j.b(l0, 24));
+        f1 = f2;
+        if (localDrawable.getIntrinsicHeight() <= f2) {
+          return localDrawable.getIntrinsicHeight();
+        }
+      }
+    }
+    return f1;
+  }
+  
+  private float a1()
+  {
+    Drawable localDrawable;
+    if (z0) {
+      localDrawable = Z;
+    } else {
+      localDrawable = K;
+    }
+    float f = P;
+    if ((f <= 0.0F) && (localDrawable != null)) {
+      return localDrawable.getIntrinsicWidth();
+    }
+    return f;
+  }
+  
+  private void b2(ColorStateList paramColorStateList)
+  {
+    if (B != paramColorStateList)
+    {
+      B = paramColorStateList;
+      onStateChange(getState());
+    }
+  }
+  
+  private void k0(Drawable paramDrawable)
+  {
+    if (paramDrawable == null) {
+      return;
+    }
+    paramDrawable.setCallback(this);
+    androidx.core.graphics.drawable.a.m(paramDrawable, androidx.core.graphics.drawable.a.f(this));
+    paramDrawable.setLevel(getLevel());
+    paramDrawable.setVisible(isVisible(), false);
+    if (paramDrawable == S)
+    {
+      if (paramDrawable.isStateful()) {
+        paramDrawable.setState(W0());
+      }
+      androidx.core.graphics.drawable.a.o(paramDrawable, U);
+      return;
+    }
+    if (paramDrawable.isStateful()) {
+      paramDrawable.setState(getState());
+    }
+    Drawable localDrawable = K;
+    if ((paramDrawable == localDrawable) && (Q)) {
+      androidx.core.graphics.drawable.a.o(localDrawable, L);
+    }
+  }
+  
+  private void l0(Rect paramRect, RectF paramRectF)
+  {
+    paramRectF.setEmpty();
+    if ((N2()) || (M2()))
+    {
+      float f2 = d0 + e0;
+      float f1 = a1();
+      if (androidx.core.graphics.drawable.a.f(this) == 0)
+      {
+        f2 = left + f2;
+        left = f2;
+        right = (f2 + f1);
+      }
+      else
+      {
+        f2 = right - f2;
+        right = f2;
+        left = (f2 - f1);
+      }
+      f1 = Z0();
+      f2 = paramRect.exactCenterY() - f1 / 2.0F;
+      top = f2;
+      bottom = (f2 + f1);
+    }
+  }
+  
+  private ColorFilter l1()
+  {
+    ColorFilter localColorFilter = C0;
+    if (localColorFilter != null) {
+      return localColorFilter;
+    }
+    return D0;
+  }
+  
+  private void n0(Rect paramRect, RectF paramRectF)
+  {
+    paramRectF.set(paramRect);
+    if (O2())
+    {
+      float f = k0 + j0 + V + i0 + h0;
+      if (androidx.core.graphics.drawable.a.f(this) == 0)
+      {
+        right = (right - f);
+        return;
+      }
+      left = (left + f);
+    }
+  }
+  
+  private static boolean n1(int[] paramArrayOfInt, int paramInt)
+  {
+    if (paramArrayOfInt == null) {
+      return false;
+    }
+    int j = paramArrayOfInt.length;
+    int i = 0;
+    while (i < j)
+    {
+      if (paramArrayOfInt[i] == paramInt) {
+        return true;
+      }
+      i += 1;
+    }
+    return false;
+  }
+  
+  private void o0(Rect paramRect, RectF paramRectF)
+  {
+    paramRectF.setEmpty();
+    if (O2())
+    {
+      float f1 = k0 + j0;
+      if (androidx.core.graphics.drawable.a.f(this) == 0)
+      {
+        f1 = right - f1;
+        right = f1;
+        left = (f1 - V);
+      }
+      else
+      {
+        f1 = left + f1;
+        left = f1;
+        right = (f1 + V);
+      }
+      float f2 = paramRect.exactCenterY();
+      f1 = V;
+      f2 -= f1 / 2.0F;
+      top = f2;
+      bottom = (f2 + f1);
+    }
+  }
+  
+  private void p0(Rect paramRect, RectF paramRectF)
+  {
+    paramRectF.setEmpty();
+    if (O2())
+    {
+      float f1 = k0 + j0 + V + i0 + h0;
+      if (androidx.core.graphics.drawable.a.f(this) == 0)
+      {
+        float f2 = right;
+        right = f2;
+        left = (f2 - f1);
+      }
+      else
+      {
+        int i = left;
+        left = i;
+        right = (i + f1);
+      }
+      top = top;
+      bottom = bottom;
+    }
+  }
+  
+  private void r0(Rect paramRect, RectF paramRectF)
+  {
+    paramRectF.setEmpty();
+    if (I != null)
+    {
+      float f1 = d0 + m0() + g0;
+      float f2 = k0 + q0() + h0;
+      if (androidx.core.graphics.drawable.a.f(this) == 0)
+      {
+        left = (left + f1);
+        right = (right - f2);
+      }
+      else
+      {
+        left = (left + f2);
+        right = (right - f1);
+      }
+      top = top;
+      bottom = bottom;
+    }
+  }
+  
+  private static boolean r1(ColorStateList paramColorStateList)
+  {
+    return (paramColorStateList != null) && (paramColorStateList.isStateful());
+  }
+  
+  private float s0()
+  {
+    s0.e().getFontMetrics(o0);
+    Paint.FontMetrics localFontMetrics = o0;
+    return (descent + ascent) / 2.0F;
+  }
+  
+  private static boolean s1(Drawable paramDrawable)
+  {
+    return (paramDrawable != null) && (paramDrawable.isStateful());
+  }
+  
+  private static boolean t1(d paramD)
+  {
+    if (paramD != null)
+    {
+      paramD = a;
+      if ((paramD != null) && (paramD.isStateful())) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  private boolean u0()
+  {
+    return (Y) && (Z != null) && (X);
+  }
+  
+  private void u1(AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    TypedArray localTypedArray = i.h(l0, paramAttributeSet, l.o0, paramInt1, paramInt2, new int[0]);
+    N0 = localTypedArray.hasValue(l.a1);
+    b2(c.a(l0, localTypedArray, l.N0));
+    F1(c.a(l0, localTypedArray, l.A0));
+    T1(localTypedArray.getDimension(l.I0, 0.0F));
+    paramInt1 = l.B0;
+    if (localTypedArray.hasValue(paramInt1)) {
+      H1(localTypedArray.getDimension(paramInt1, 0.0F));
+    }
+    X1(c.a(l0, localTypedArray, l.L0));
+    Z1(localTypedArray.getDimension(l.M0, 0.0F));
+    y2(c.a(l0, localTypedArray, l.Z0));
+    D2(localTypedArray.getText(l.u0));
+    d localD = c.f(l0, localTypedArray, l.p0);
+    n = localTypedArray.getDimension(l.q0, n);
+    E2(localD);
+    paramInt1 = localTypedArray.getInt(l.s0, 0);
+    if (paramInt1 != 1)
+    {
+      if (paramInt1 != 2)
+      {
+        if (paramInt1 == 3) {
+          q2(TextUtils.TruncateAt.END);
+        }
+      }
+      else {
+        q2(TextUtils.TruncateAt.MIDDLE);
+      }
+    }
+    else {
+      q2(TextUtils.TruncateAt.START);
+    }
+    S1(localTypedArray.getBoolean(l.H0, false));
+    if ((paramAttributeSet != null) && (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res-auto", "chipIconEnabled") != null) && (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res-auto", "chipIconVisible") == null)) {
+      S1(localTypedArray.getBoolean(l.E0, false));
+    }
+    L1(c.d(l0, localTypedArray, l.D0));
+    paramInt1 = l.G0;
+    if (localTypedArray.hasValue(paramInt1)) {
+      P1(c.a(l0, localTypedArray, paramInt1));
+    }
+    N1(localTypedArray.getDimension(l.F0, -1.0F));
+    o2(localTypedArray.getBoolean(l.U0, false));
+    if ((paramAttributeSet != null) && (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res-auto", "closeIconEnabled") != null) && (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res-auto", "closeIconVisible") == null)) {
+      o2(localTypedArray.getBoolean(l.P0, false));
+    }
+    c2(c.d(l0, localTypedArray, l.O0));
+    m2(c.a(l0, localTypedArray, l.T0));
+    h2(localTypedArray.getDimension(l.R0, 0.0F));
+    x1(localTypedArray.getBoolean(l.v0, false));
+    E1(localTypedArray.getBoolean(l.z0, false));
+    if ((paramAttributeSet != null) && (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res-auto", "checkedIconEnabled") != null) && (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res-auto", "checkedIconVisible") == null)) {
+      E1(localTypedArray.getBoolean(l.x0, false));
+    }
+    z1(c.d(l0, localTypedArray, l.w0));
+    paramInt1 = l.y0;
+    if (localTypedArray.hasValue(paramInt1)) {
+      B1(c.a(l0, localTypedArray, paramInt1));
+    }
+    B2(h.b(l0, localTypedArray, l.b1));
+    r2(h.b(l0, localTypedArray, l.W0));
+    V1(localTypedArray.getDimension(l.K0, 0.0F));
+    v2(localTypedArray.getDimension(l.Y0, 0.0F));
+    t2(localTypedArray.getDimension(l.X0, 0.0F));
+    I2(localTypedArray.getDimension(l.d1, 0.0F));
+    G2(localTypedArray.getDimension(l.c1, 0.0F));
+    j2(localTypedArray.getDimension(l.S0, 0.0F));
+    e2(localTypedArray.getDimension(l.Q0, 0.0F));
+    J1(localTypedArray.getDimension(l.C0, 0.0F));
+    x2(localTypedArray.getDimensionPixelSize(l.t0, Integer.MAX_VALUE));
+    localTypedArray.recycle();
+  }
+  
+  public static a v0(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    paramContext = new a(paramContext, paramAttributeSet, paramInt1, paramInt2);
+    paramContext.u1(paramAttributeSet, paramInt1, paramInt2);
+    return paramContext;
+  }
+  
+  private void w0(Canvas paramCanvas, Rect paramRect)
+  {
+    if (M2())
+    {
+      l0(paramRect, p0);
+      paramRect = p0;
+      float f1 = left;
+      float f2 = top;
+      paramCanvas.translate(f1, f2);
+      Z.setBounds(0, 0, (int)p0.width(), (int)p0.height());
+      Z.draw(paramCanvas);
+      paramCanvas.translate(-f1, -f2);
+    }
+  }
+  
+  private boolean w1(int[] paramArrayOfInt1, int[] paramArrayOfInt2)
+  {
+    boolean bool1 = super.onStateChange(paramArrayOfInt1);
+    Object localObject = B;
+    if (localObject != null) {
+      i = ((ColorStateList)localObject).getColorForState(paramArrayOfInt1, t0);
+    } else {
+      i = 0;
+    }
+    int j = l(i);
+    int i = t0;
+    boolean bool3 = true;
+    if (i != j)
+    {
+      t0 = j;
+      bool1 = true;
+    }
+    localObject = C;
+    if (localObject != null) {
+      i = ((ColorStateList)localObject).getColorForState(paramArrayOfInt1, u0);
+    } else {
+      i = 0;
+    }
+    i = l(i);
+    if (u0 != i)
+    {
+      u0 = i;
+      bool1 = true;
+    }
+    int k = d.c.a.a.o.a.e(j, i);
+    if (v0 != k) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (x() == null) {
+      j = 1;
+    } else {
+      j = 0;
+    }
+    if ((i | j) != 0)
+    {
+      v0 = k;
+      X(ColorStateList.valueOf(k));
+      bool1 = true;
+    }
+    localObject = F;
+    if (localObject != null) {
+      i = ((ColorStateList)localObject).getColorForState(paramArrayOfInt1, w0);
+    } else {
+      i = 0;
+    }
+    if (w0 != i)
+    {
+      w0 = i;
+      bool1 = true;
+    }
+    if ((I0 != null) && (d.c.a.a.v.b.e(paramArrayOfInt1))) {
+      i = I0.getColorForState(paramArrayOfInt1, x0);
+    } else {
+      i = 0;
+    }
+    boolean bool2 = bool1;
+    if (x0 != i)
+    {
+      x0 = i;
+      bool2 = bool1;
+      if (H0) {
+        bool2 = true;
+      }
+    }
+    if ((s0.d() != null) && (s0.d().a != null)) {
+      i = s0.d().a.getColorForState(paramArrayOfInt1, y0);
+    } else {
+      i = 0;
+    }
+    bool1 = bool2;
+    if (y0 != i)
+    {
+      y0 = i;
+      bool1 = true;
+    }
+    if ((n1(getState(), 16842912)) && (X)) {
+      bool2 = true;
+    } else {
+      bool2 = false;
+    }
+    if ((z0 != bool2) && (Z != null))
+    {
+      float f = m0();
+      z0 = bool2;
+      if (f != m0())
+      {
+        bool1 = true;
+        bool2 = bool1;
+      }
+      else
+      {
+        bool2 = false;
+        bool1 = true;
+      }
+    }
+    else
+    {
+      bool2 = false;
+    }
+    localObject = E0;
+    if (localObject != null) {
+      i = ((ColorStateList)localObject).getColorForState(paramArrayOfInt1, A0);
+    } else {
+      i = 0;
+    }
+    if (A0 != i)
+    {
+      A0 = i;
+      D0 = d.c.a.a.q.a.a(this, E0, F0);
+    }
+    else
+    {
+      bool3 = bool1;
+    }
+    bool1 = bool3;
+    if (s1(K)) {
+      bool1 = bool3 | K.setState(paramArrayOfInt1);
+    }
+    bool3 = bool1;
+    if (s1(Z)) {
+      bool3 = bool1 | Z.setState(paramArrayOfInt1);
+    }
+    bool1 = bool3;
+    if (s1(S))
+    {
+      localObject = new int[paramArrayOfInt1.length + paramArrayOfInt2.length];
+      System.arraycopy(paramArrayOfInt1, 0, localObject, 0, paramArrayOfInt1.length);
+      System.arraycopy(paramArrayOfInt2, 0, localObject, paramArrayOfInt1.length, paramArrayOfInt2.length);
+      bool1 = bool3 | S.setState((int[])localObject);
+    }
+    bool3 = bool1;
+    if (d.c.a.a.v.b.a)
+    {
+      bool3 = bool1;
+      if (s1(T)) {
+        bool3 = bool1 | T.setState(paramArrayOfInt2);
+      }
+    }
+    if (bool3) {
+      invalidateSelf();
+    }
+    if (bool2) {
+      v1();
+    }
+    return bool3;
+  }
+  
+  private void x0(Canvas paramCanvas, Rect paramRect)
+  {
+    if (!N0)
+    {
+      m0.setColor(u0);
+      m0.setStyle(Paint.Style.FILL);
+      m0.setColorFilter(l1());
+      p0.set(paramRect);
+      paramCanvas.drawRoundRect(p0, I0(), I0(), m0);
+    }
+  }
+  
+  private void y0(Canvas paramCanvas, Rect paramRect)
+  {
+    if (N2())
+    {
+      l0(paramRect, p0);
+      paramRect = p0;
+      float f1 = left;
+      float f2 = top;
+      paramCanvas.translate(f1, f2);
+      K.setBounds(0, 0, (int)p0.width(), (int)p0.height());
+      K.draw(paramCanvas);
+      paramCanvas.translate(-f1, -f2);
+    }
+  }
+  
+  private void z0(Canvas paramCanvas, Rect paramRect)
+  {
+    if ((G > 0.0F) && (!N0))
+    {
+      m0.setColor(w0);
+      m0.setStyle(Paint.Style.STROKE);
+      if (!N0) {
+        m0.setColorFilter(l1());
+      }
+      RectF localRectF = p0;
+      float f1 = left;
+      float f2 = G;
+      localRectF.set(f1 + f2 / 2.0F, top + f2 / 2.0F, right - f2 / 2.0F, bottom - f2 / 2.0F);
+      f1 = E - G / 2.0F;
+      paramCanvas.drawRoundRect(p0, f1, f1, m0);
+    }
+  }
+  
+  public void A1(int paramInt)
+  {
+    z1(c.a.k.a.a.b(l0, paramInt));
+  }
+  
+  void A2(boolean paramBoolean)
+  {
+    L0 = paramBoolean;
+  }
+  
+  public void B1(ColorStateList paramColorStateList)
+  {
+    if (a0 != paramColorStateList)
+    {
+      a0 = paramColorStateList;
+      if (u0()) {
+        androidx.core.graphics.drawable.a.o(Z, paramColorStateList);
+      }
+      onStateChange(getState());
+    }
+  }
+  
+  public void B2(h paramH)
+  {
+    b0 = paramH;
+  }
+  
+  public void C1(int paramInt)
+  {
+    B1(c.a.k.a.a.a(l0, paramInt));
+  }
+  
+  public void C2(int paramInt)
+  {
+    B2(h.c(l0, paramInt));
+  }
+  
+  public void D1(int paramInt)
+  {
+    E1(l0.getResources().getBoolean(paramInt));
+  }
+  
+  public void D2(CharSequence paramCharSequence)
+  {
+    Object localObject = paramCharSequence;
+    if (paramCharSequence == null) {
+      localObject = "";
+    }
+    if (!TextUtils.equals(I, (CharSequence)localObject))
+    {
+      I = ((CharSequence)localObject);
+      s0.i(true);
+      invalidateSelf();
+      v1();
+    }
+  }
+  
+  public void E1(boolean paramBoolean)
+  {
+    if (Y != paramBoolean)
+    {
+      boolean bool = M2();
+      Y = paramBoolean;
+      paramBoolean = M2();
+      int i;
+      if (bool != paramBoolean) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        if (paramBoolean) {
+          k0(Z);
+        } else {
+          P2(Z);
+        }
+        invalidateSelf();
+        v1();
+      }
+    }
+  }
+  
+  public void E2(d paramD)
+  {
+    s0.h(paramD, l0);
+  }
+  
+  public Drawable F0()
+  {
+    return Z;
+  }
+  
+  public void F1(ColorStateList paramColorStateList)
+  {
+    if (C != paramColorStateList)
+    {
+      C = paramColorStateList;
+      onStateChange(getState());
+    }
+  }
+  
+  public void F2(int paramInt)
+  {
+    E2(new d(l0, paramInt));
+  }
+  
+  public ColorStateList G0()
+  {
+    return a0;
+  }
+  
+  public void G1(int paramInt)
+  {
+    F1(c.a.k.a.a.a(l0, paramInt));
+  }
+  
+  public void G2(float paramFloat)
+  {
+    if (h0 != paramFloat)
+    {
+      h0 = paramFloat;
+      invalidateSelf();
+      v1();
+    }
+  }
+  
+  public ColorStateList H0()
+  {
+    return C;
+  }
+  
+  @Deprecated
+  public void H1(float paramFloat)
+  {
+    if (E != paramFloat)
+    {
+      E = paramFloat;
+      setShapeAppearanceModel(C().w(paramFloat));
+    }
+  }
+  
+  public void H2(int paramInt)
+  {
+    G2(l0.getResources().getDimension(paramInt));
+  }
+  
+  public float I0()
+  {
+    if (N0) {
+      return F();
+    }
+    return E;
+  }
+  
+  @Deprecated
+  public void I1(int paramInt)
+  {
+    H1(l0.getResources().getDimension(paramInt));
+  }
+  
+  public void I2(float paramFloat)
+  {
+    if (g0 != paramFloat)
+    {
+      g0 = paramFloat;
+      invalidateSelf();
+      v1();
+    }
+  }
+  
+  public float J0()
+  {
+    return k0;
+  }
+  
+  public void J1(float paramFloat)
+  {
+    if (k0 != paramFloat)
+    {
+      k0 = paramFloat;
+      invalidateSelf();
+      v1();
+    }
+  }
+  
+  public void J2(int paramInt)
+  {
+    I2(l0.getResources().getDimension(paramInt));
+  }
+  
+  public Drawable K0()
+  {
+    Drawable localDrawable = K;
+    if (localDrawable != null) {
+      return androidx.core.graphics.drawable.a.q(localDrawable);
+    }
+    return null;
+  }
+  
+  public void K1(int paramInt)
+  {
+    J1(l0.getResources().getDimension(paramInt));
+  }
+  
+  public void K2(boolean paramBoolean)
+  {
+    if (H0 != paramBoolean)
+    {
+      H0 = paramBoolean;
+      Q2();
+      onStateChange(getState());
+    }
+  }
+  
+  public float L0()
+  {
+    return P;
+  }
+  
+  public void L1(Drawable paramDrawable)
+  {
+    Drawable localDrawable = K0();
+    if (localDrawable != paramDrawable)
+    {
+      float f1 = m0();
+      if (paramDrawable != null) {
+        paramDrawable = androidx.core.graphics.drawable.a.r(paramDrawable).mutate();
+      } else {
+        paramDrawable = null;
+      }
+      K = paramDrawable;
+      float f2 = m0();
+      P2(localDrawable);
+      if (N2()) {
+        k0(K);
+      }
+      invalidateSelf();
+      if (f1 != f2) {
+        v1();
+      }
+    }
+  }
+  
+  boolean L2()
+  {
+    return L0;
+  }
+  
+  public ColorStateList M0()
+  {
+    return L;
+  }
+  
+  public void M1(int paramInt)
+  {
+    L1(c.a.k.a.a.b(l0, paramInt));
+  }
+  
+  public float N0()
+  {
+    return D;
+  }
+  
+  public void N1(float paramFloat)
+  {
+    if (P != paramFloat)
+    {
+      float f = m0();
+      P = paramFloat;
+      paramFloat = m0();
+      invalidateSelf();
+      if (f != paramFloat) {
+        v1();
+      }
+    }
+  }
+  
+  public float O0()
+  {
+    return d0;
+  }
+  
+  public void O1(int paramInt)
+  {
+    N1(l0.getResources().getDimension(paramInt));
+  }
+  
+  public ColorStateList P0()
+  {
+    return F;
+  }
+  
+  public void P1(ColorStateList paramColorStateList)
+  {
+    Q = true;
+    if (L != paramColorStateList)
+    {
+      L = paramColorStateList;
+      if (N2()) {
+        androidx.core.graphics.drawable.a.o(K, paramColorStateList);
+      }
+      onStateChange(getState());
+    }
+  }
+  
+  public float Q0()
+  {
+    return G;
+  }
+  
+  public void Q1(int paramInt)
+  {
+    P1(c.a.k.a.a.a(l0, paramInt));
+  }
+  
+  public Drawable R0()
+  {
+    Drawable localDrawable = S;
+    if (localDrawable != null) {
+      return androidx.core.graphics.drawable.a.q(localDrawable);
+    }
+    return null;
+  }
+  
+  public void R1(int paramInt)
+  {
+    S1(l0.getResources().getBoolean(paramInt));
+  }
+  
+  public CharSequence S0()
+  {
+    return W;
+  }
+  
+  public void S1(boolean paramBoolean)
+  {
+    if (J != paramBoolean)
+    {
+      boolean bool = N2();
+      J = paramBoolean;
+      paramBoolean = N2();
+      int i;
+      if (bool != paramBoolean) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        if (paramBoolean) {
+          k0(K);
+        } else {
+          P2(K);
+        }
+        invalidateSelf();
+        v1();
+      }
+    }
+  }
+  
+  public float T0()
+  {
+    return j0;
+  }
+  
+  public void T1(float paramFloat)
+  {
+    if (D != paramFloat)
+    {
+      D = paramFloat;
+      invalidateSelf();
+      v1();
+    }
+  }
+  
+  public float U0()
+  {
+    return V;
+  }
+  
+  public void U1(int paramInt)
+  {
+    T1(l0.getResources().getDimension(paramInt));
+  }
+  
+  public float V0()
+  {
+    return i0;
+  }
+  
+  public void V1(float paramFloat)
+  {
+    if (d0 != paramFloat)
+    {
+      d0 = paramFloat;
+      invalidateSelf();
+      v1();
+    }
+  }
+  
+  public int[] W0()
+  {
+    return G0;
+  }
+  
+  public void W1(int paramInt)
+  {
+    V1(l0.getResources().getDimension(paramInt));
+  }
+  
+  public ColorStateList X0()
+  {
+    return U;
+  }
+  
+  public void X1(ColorStateList paramColorStateList)
+  {
+    if (F != paramColorStateList)
+    {
+      F = paramColorStateList;
+      if (N0) {
+        f0(paramColorStateList);
+      }
+      onStateChange(getState());
+    }
+  }
+  
+  public void Y0(RectF paramRectF)
+  {
+    p0(getBounds(), paramRectF);
+  }
+  
+  public void Y1(int paramInt)
+  {
+    X1(c.a.k.a.a.a(l0, paramInt));
+  }
+  
+  public void Z1(float paramFloat)
+  {
+    if (G != paramFloat)
+    {
+      G = paramFloat;
+      m0.setStrokeWidth(paramFloat);
+      if (N0) {
+        super.g0(paramFloat);
+      }
+      invalidateSelf();
+    }
+  }
+  
+  public void a()
+  {
+    v1();
+    invalidateSelf();
+  }
+  
+  public void a2(int paramInt)
+  {
+    Z1(l0.getResources().getDimension(paramInt));
+  }
+  
+  public TextUtils.TruncateAt b1()
+  {
+    return K0;
+  }
+  
+  public h c1()
+  {
+    return c0;
+  }
+  
+  public void c2(Drawable paramDrawable)
+  {
+    Drawable localDrawable = R0();
+    if (localDrawable != paramDrawable)
+    {
+      float f1 = q0();
+      if (paramDrawable != null) {
+        paramDrawable = androidx.core.graphics.drawable.a.r(paramDrawable).mutate();
+      } else {
+        paramDrawable = null;
+      }
+      S = paramDrawable;
+      if (d.c.a.a.v.b.a) {
+        R2();
+      }
+      float f2 = q0();
+      P2(localDrawable);
+      if (O2()) {
+        k0(S);
+      }
+      invalidateSelf();
+      if (f1 != f2) {
+        v1();
+      }
+    }
+  }
+  
+  public float d1()
+  {
+    return f0;
+  }
+  
+  public void d2(CharSequence paramCharSequence)
+  {
+    if (W != paramCharSequence)
+    {
+      W = c.h.o.a.c().h(paramCharSequence);
+      invalidateSelf();
+    }
+  }
+  
+  public void draw(Canvas paramCanvas)
+  {
+    Rect localRect = getBounds();
+    if (!localRect.isEmpty())
+    {
+      if (getAlpha() == 0) {
+        return;
+      }
+      int i = 0;
+      int j = B0;
+      if (j < 255) {
+        i = d.c.a.a.n.a.a(paramCanvas, left, top, right, bottom, j);
+      }
+      A0(paramCanvas, localRect);
+      x0(paramCanvas, localRect);
+      if (N0) {
+        super.draw(paramCanvas);
+      }
+      z0(paramCanvas, localRect);
+      C0(paramCanvas, localRect);
+      y0(paramCanvas, localRect);
+      w0(paramCanvas, localRect);
+      if (L0) {
+        E0(paramCanvas, localRect);
+      }
+      B0(paramCanvas, localRect);
+      D0(paramCanvas, localRect);
+      if (B0 < 255) {
+        paramCanvas.restoreToCount(i);
+      }
+    }
+  }
+  
+  public float e1()
+  {
+    return e0;
+  }
+  
+  public void e2(float paramFloat)
+  {
+    if (j0 != paramFloat)
+    {
+      j0 = paramFloat;
+      invalidateSelf();
+      if (O2()) {
+        v1();
+      }
+    }
+  }
+  
+  public ColorStateList f1()
+  {
+    return H;
+  }
+  
+  public void f2(int paramInt)
+  {
+    e2(l0.getResources().getDimension(paramInt));
+  }
+  
+  public h g1()
+  {
+    return b0;
+  }
+  
+  public void g2(int paramInt)
+  {
+    c2(c.a.k.a.a.b(l0, paramInt));
+  }
+  
+  public int getAlpha()
+  {
+    return B0;
+  }
+  
+  public ColorFilter getColorFilter()
+  {
+    return C0;
+  }
+  
+  public int getIntrinsicHeight()
+  {
+    return (int)D;
+  }
+  
+  public int getIntrinsicWidth()
+  {
+    return Math.min(Math.round(d0 + m0() + g0 + s0.f(h1().toString()) + h0 + q0() + k0), M0);
+  }
+  
+  public int getOpacity()
+  {
+    return -3;
+  }
+  
+  public void getOutline(Outline paramOutline)
+  {
+    if (N0)
+    {
+      super.getOutline(paramOutline);
+      return;
+    }
+    Rect localRect = getBounds();
+    if (!localRect.isEmpty()) {
+      paramOutline.setRoundRect(localRect, E);
+    } else {
+      paramOutline.setRoundRect(0, 0, getIntrinsicWidth(), getIntrinsicHeight(), E);
+    }
+    paramOutline.setAlpha(getAlpha() / 255.0F);
+  }
+  
+  public CharSequence h1()
+  {
+    return I;
+  }
+  
+  public void h2(float paramFloat)
+  {
+    if (V != paramFloat)
+    {
+      V = paramFloat;
+      invalidateSelf();
+      if (O2()) {
+        v1();
+      }
+    }
+  }
+  
+  public d i1()
+  {
+    return s0.d();
+  }
+  
+  public void i2(int paramInt)
+  {
+    h2(l0.getResources().getDimension(paramInt));
+  }
+  
+  public void invalidateDrawable(Drawable paramDrawable)
+  {
+    paramDrawable = getCallback();
+    if (paramDrawable != null) {
+      paramDrawable.invalidateDrawable(this);
+    }
+  }
+  
+  public boolean isStateful()
+  {
+    return (r1(B)) || (r1(C)) || (r1(F)) || ((H0) && (r1(I0))) || (t1(s0.d())) || (u0()) || (s1(K)) || (s1(Z)) || (r1(E0));
+  }
+  
+  public float j1()
+  {
+    return h0;
+  }
+  
+  public void j2(float paramFloat)
+  {
+    if (i0 != paramFloat)
+    {
+      i0 = paramFloat;
+      invalidateSelf();
+      if (O2()) {
+        v1();
+      }
+    }
+  }
+  
+  public float k1()
+  {
+    return g0;
+  }
+  
+  public void k2(int paramInt)
+  {
+    j2(l0.getResources().getDimension(paramInt));
+  }
+  
+  public boolean l2(int[] paramArrayOfInt)
+  {
+    if (!Arrays.equals(G0, paramArrayOfInt))
+    {
+      G0 = paramArrayOfInt;
+      if (O2()) {
+        return w1(getState(), paramArrayOfInt);
+      }
+    }
+    return false;
+  }
+  
+  float m0()
+  {
+    if ((!N2()) && (!M2())) {
+      return 0.0F;
+    }
+    return e0 + a1() + f0;
+  }
+  
+  public boolean m1()
+  {
+    return H0;
+  }
+  
+  public void m2(ColorStateList paramColorStateList)
+  {
+    if (U != paramColorStateList)
+    {
+      U = paramColorStateList;
+      if (O2()) {
+        androidx.core.graphics.drawable.a.o(S, paramColorStateList);
+      }
+      onStateChange(getState());
+    }
+  }
+  
+  public void n2(int paramInt)
+  {
+    m2(c.a.k.a.a.a(l0, paramInt));
+  }
+  
+  public boolean o1()
+  {
+    return X;
+  }
+  
+  public void o2(boolean paramBoolean)
+  {
+    if (R != paramBoolean)
+    {
+      boolean bool = O2();
+      R = paramBoolean;
+      paramBoolean = O2();
+      int i;
+      if (bool != paramBoolean) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        if (paramBoolean) {
+          k0(S);
+        } else {
+          P2(S);
+        }
+        invalidateSelf();
+        v1();
+      }
+    }
+  }
+  
+  public boolean onLayoutDirectionChanged(int paramInt)
+  {
+    boolean bool2 = super.onLayoutDirectionChanged(paramInt);
+    boolean bool1 = bool2;
+    if (N2()) {
+      bool1 = bool2 | androidx.core.graphics.drawable.a.m(K, paramInt);
+    }
+    bool2 = bool1;
+    if (M2()) {
+      bool2 = bool1 | androidx.core.graphics.drawable.a.m(Z, paramInt);
+    }
+    bool1 = bool2;
+    if (O2()) {
+      bool1 = bool2 | androidx.core.graphics.drawable.a.m(S, paramInt);
+    }
+    if (bool1) {
+      invalidateSelf();
+    }
+    return true;
+  }
+  
+  protected boolean onLevelChange(int paramInt)
+  {
+    boolean bool2 = super.onLevelChange(paramInt);
+    boolean bool1 = bool2;
+    if (N2()) {
+      bool1 = bool2 | K.setLevel(paramInt);
+    }
+    bool2 = bool1;
+    if (M2()) {
+      bool2 = bool1 | Z.setLevel(paramInt);
+    }
+    bool1 = bool2;
+    if (O2()) {
+      bool1 = bool2 | S.setLevel(paramInt);
+    }
+    if (bool1) {
+      invalidateSelf();
+    }
+    return bool1;
+  }
+  
+  public boolean onStateChange(int[] paramArrayOfInt)
+  {
+    if (N0) {
+      super.onStateChange(paramArrayOfInt);
+    }
+    return w1(paramArrayOfInt, W0());
+  }
+  
+  public boolean p1()
+  {
+    return s1(S);
+  }
+  
+  public void p2(a paramA)
+  {
+    J0 = new WeakReference(paramA);
+  }
+  
+  float q0()
+  {
+    if (O2()) {
+      return i0 + V + j0;
+    }
+    return 0.0F;
+  }
+  
+  public boolean q1()
+  {
+    return R;
+  }
+  
+  public void q2(TextUtils.TruncateAt paramTruncateAt)
+  {
+    K0 = paramTruncateAt;
+  }
+  
+  public void r2(h paramH)
+  {
+    c0 = paramH;
+  }
+  
+  public void s2(int paramInt)
+  {
+    r2(h.c(l0, paramInt));
+  }
+  
+  public void scheduleDrawable(Drawable paramDrawable, Runnable paramRunnable, long paramLong)
+  {
+    paramDrawable = getCallback();
+    if (paramDrawable != null) {
+      paramDrawable.scheduleDrawable(this, paramRunnable, paramLong);
+    }
+  }
+  
+  public void setAlpha(int paramInt)
+  {
+    if (B0 != paramInt)
+    {
+      B0 = paramInt;
+      invalidateSelf();
+    }
+  }
+  
+  public void setColorFilter(ColorFilter paramColorFilter)
+  {
+    if (C0 != paramColorFilter)
+    {
+      C0 = paramColorFilter;
+      invalidateSelf();
+    }
+  }
+  
+  public void setTintList(ColorStateList paramColorStateList)
+  {
+    if (E0 != paramColorStateList)
+    {
+      E0 = paramColorStateList;
+      onStateChange(getState());
+    }
+  }
+  
+  public void setTintMode(PorterDuff.Mode paramMode)
+  {
+    if (F0 != paramMode)
+    {
+      F0 = paramMode;
+      D0 = d.c.a.a.q.a.a(this, E0, paramMode);
+      invalidateSelf();
+    }
+  }
+  
+  public boolean setVisible(boolean paramBoolean1, boolean paramBoolean2)
+  {
+    boolean bool2 = super.setVisible(paramBoolean1, paramBoolean2);
+    boolean bool1 = bool2;
+    if (N2()) {
+      bool1 = bool2 | K.setVisible(paramBoolean1, paramBoolean2);
+    }
+    bool2 = bool1;
+    if (M2()) {
+      bool2 = bool1 | Z.setVisible(paramBoolean1, paramBoolean2);
+    }
+    bool1 = bool2;
+    if (O2()) {
+      bool1 = bool2 | S.setVisible(paramBoolean1, paramBoolean2);
+    }
+    if (bool1) {
+      invalidateSelf();
+    }
+    return bool1;
+  }
+  
+  Paint.Align t0(Rect paramRect, PointF paramPointF)
+  {
+    paramPointF.set(0.0F, 0.0F);
+    Paint.Align localAlign = Paint.Align.LEFT;
+    if (I != null)
+    {
+      float f = d0 + m0() + g0;
+      if (androidx.core.graphics.drawable.a.f(this) == 0)
+      {
+        x = (left + f);
+        localAlign = Paint.Align.LEFT;
+      }
+      else
+      {
+        x = (right - f);
+        localAlign = Paint.Align.RIGHT;
+      }
+      y = (paramRect.centerY() - s0());
+    }
+    return localAlign;
+  }
+  
+  public void t2(float paramFloat)
+  {
+    if (f0 != paramFloat)
+    {
+      float f = m0();
+      f0 = paramFloat;
+      paramFloat = m0();
+      invalidateSelf();
+      if (f != paramFloat) {
+        v1();
+      }
+    }
+  }
+  
+  public void u2(int paramInt)
+  {
+    t2(l0.getResources().getDimension(paramInt));
+  }
+  
+  public void unscheduleDrawable(Drawable paramDrawable, Runnable paramRunnable)
+  {
+    paramDrawable = getCallback();
+    if (paramDrawable != null) {
+      paramDrawable.unscheduleDrawable(this, paramRunnable);
+    }
+  }
+  
+  protected void v1()
+  {
+    a localA = (a)J0.get();
+    if (localA != null) {
+      localA.a();
+    }
+  }
+  
+  public void v2(float paramFloat)
+  {
+    if (e0 != paramFloat)
+    {
+      float f = m0();
+      e0 = paramFloat;
+      paramFloat = m0();
+      invalidateSelf();
+      if (f != paramFloat) {
+        v1();
+      }
+    }
+  }
+  
+  public void w2(int paramInt)
+  {
+    v2(l0.getResources().getDimension(paramInt));
+  }
+  
+  public void x1(boolean paramBoolean)
+  {
+    if (X != paramBoolean)
+    {
+      X = paramBoolean;
+      float f1 = m0();
+      if ((!paramBoolean) && (z0)) {
+        z0 = false;
+      }
+      float f2 = m0();
+      invalidateSelf();
+      if (f1 != f2) {
+        v1();
+      }
+    }
+  }
+  
+  public void x2(int paramInt)
+  {
+    M0 = paramInt;
+  }
+  
+  public void y1(int paramInt)
+  {
+    x1(l0.getResources().getBoolean(paramInt));
+  }
+  
+  public void y2(ColorStateList paramColorStateList)
+  {
+    if (H != paramColorStateList)
+    {
+      H = paramColorStateList;
+      Q2();
+      onStateChange(getState());
+    }
+  }
+  
+  public void z1(Drawable paramDrawable)
+  {
+    if (Z != paramDrawable)
+    {
+      float f1 = m0();
+      Z = paramDrawable;
+      float f2 = m0();
+      P2(Z);
+      k0(Z);
+      invalidateSelf();
+      if (f1 != f2) {
+        v1();
+      }
+    }
+  }
+  
+  public void z2(int paramInt)
+  {
+    y2(c.a.k.a.a.a(l0, paramInt));
+  }
+  
+  public static abstract interface a
+  {
+    public abstract void a();
+  }
+}

@@ -1,0 +1,697 @@
+package androidx.appcompat.widget;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.text.InputFilter;
+import android.util.AttributeSet;
+import android.view.ActionMode.Callback;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.view.textclassifier.TextClassifier;
+import android.widget.TextView;
+import androidx.core.graphics.e;
+import androidx.core.widget.i;
+import c.a.k.a.a;
+import c.h.o.c;
+import c.h.o.c.a;
+import c.h.q.e0;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+public class AppCompatTextView
+  extends TextView
+  implements e0, androidx.core.widget.m
+{
+  private final h b;
+  private final t c;
+  private final s d;
+  private m e;
+  private boolean f = false;
+  private a g = null;
+  private Future<c> h;
+  
+  public AppCompatTextView(Context paramContext)
+  {
+    this(paramContext, null);
+  }
+  
+  public AppCompatTextView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, 16842884);
+  }
+  
+  public AppCompatTextView(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(k0.b(paramContext), paramAttributeSet, paramInt);
+    i0.a(this, getContext());
+    paramContext = new h(this);
+    b = paramContext;
+    paramContext.e(paramAttributeSet, paramInt);
+    paramContext = new t(this);
+    c = paramContext;
+    paramContext.m(paramAttributeSet, paramInt);
+    paramContext.b();
+    d = new s(this);
+    getEmojiTextViewHelper().b(paramAttributeSet, paramInt);
+  }
+  
+  private m getEmojiTextViewHelper()
+  {
+    if (e == null) {
+      e = new m(this);
+    }
+    return e;
+  }
+  
+  private void q()
+  {
+    Future localFuture = h;
+    if (localFuture != null) {}
+    try
+    {
+      h = null;
+      i.p(this, (c)localFuture.get());
+      return;
+    }
+    catch (InterruptedException|ExecutionException localInterruptedException) {}
+  }
+  
+  protected void drawableStateChanged()
+  {
+    super.drawableStateChanged();
+    Object localObject = b;
+    if (localObject != null) {
+      ((h)localObject).b();
+    }
+    localObject = c;
+    if (localObject != null) {
+      ((t)localObject).b();
+    }
+  }
+  
+  public int getAutoSizeMaxTextSize()
+  {
+    if (t0.b) {
+      return getSuperCaller().d();
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.e();
+    }
+    return -1;
+  }
+  
+  public int getAutoSizeMinTextSize()
+  {
+    if (t0.b) {
+      return getSuperCaller().i();
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.f();
+    }
+    return -1;
+  }
+  
+  public int getAutoSizeStepGranularity()
+  {
+    if (t0.b) {
+      return getSuperCaller().k();
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.g();
+    }
+    return -1;
+  }
+  
+  public int[] getAutoSizeTextAvailableSizes()
+  {
+    if (t0.b) {
+      return getSuperCaller().b();
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.h();
+    }
+    return new int[0];
+  }
+  
+  public int getAutoSizeTextType()
+  {
+    boolean bool = t0.b;
+    int i = 0;
+    if (bool)
+    {
+      if (getSuperCaller().h() == 1) {
+        i = 1;
+      }
+      return i;
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.i();
+    }
+    return 0;
+  }
+  
+  public ActionMode.Callback getCustomSelectionActionModeCallback()
+  {
+    return i.s(super.getCustomSelectionActionModeCallback());
+  }
+  
+  public int getFirstBaselineToTopHeight()
+  {
+    return i.b(this);
+  }
+  
+  public int getLastBaselineToBottomHeight()
+  {
+    return i.c(this);
+  }
+  
+  a getSuperCaller()
+  {
+    if (g == null)
+    {
+      int i = Build.VERSION.SDK_INT;
+      if (i >= 28) {
+        g = new c();
+      } else if (i >= 26) {
+        g = new b();
+      }
+    }
+    return g;
+  }
+  
+  public ColorStateList getSupportBackgroundTintList()
+  {
+    h localH = b;
+    if (localH != null) {
+      return localH.c();
+    }
+    return null;
+  }
+  
+  public PorterDuff.Mode getSupportBackgroundTintMode()
+  {
+    h localH = b;
+    if (localH != null) {
+      return localH.d();
+    }
+    return null;
+  }
+  
+  public ColorStateList getSupportCompoundDrawablesTintList()
+  {
+    return c.j();
+  }
+  
+  public PorterDuff.Mode getSupportCompoundDrawablesTintMode()
+  {
+    return c.k();
+  }
+  
+  public CharSequence getText()
+  {
+    q();
+    return super.getText();
+  }
+  
+  public TextClassifier getTextClassifier()
+  {
+    if (Build.VERSION.SDK_INT < 28)
+    {
+      s localS = d;
+      if (localS != null) {
+        return localS.a();
+      }
+    }
+    return getSuperCaller().c();
+  }
+  
+  public c.a getTextMetricsParamsCompat()
+  {
+    return i.g(this);
+  }
+  
+  public InputConnection onCreateInputConnection(EditorInfo paramEditorInfo)
+  {
+    InputConnection localInputConnection = super.onCreateInputConnection(paramEditorInfo);
+    c.r(this, localInputConnection, paramEditorInfo);
+    return n.a(localInputConnection, paramEditorInfo, this);
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onLayout(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    t localT = c;
+    if (localT != null) {
+      localT.o(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    q();
+    super.onMeasure(paramInt1, paramInt2);
+  }
+  
+  protected void onTextChanged(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3)
+  {
+    super.onTextChanged(paramCharSequence, paramInt1, paramInt2, paramInt3);
+    paramCharSequence = c;
+    if ((paramCharSequence != null) && (!t0.b) && (paramCharSequence.l())) {
+      paramInt1 = 1;
+    } else {
+      paramInt1 = 0;
+    }
+    if (paramInt1 != 0) {
+      c.c();
+    }
+  }
+  
+  public void setAllCaps(boolean paramBoolean)
+  {
+    super.setAllCaps(paramBoolean);
+    getEmojiTextViewHelper().c(paramBoolean);
+  }
+  
+  public void setAutoSizeTextTypeUniformWithConfiguration(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    throws IllegalArgumentException
+  {
+    if (t0.b)
+    {
+      getSuperCaller().g(paramInt1, paramInt2, paramInt3, paramInt4);
+      return;
+    }
+    t localT = c;
+    if (localT != null) {
+      localT.t(paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+  }
+  
+  public void setAutoSizeTextTypeUniformWithPresetSizes(int[] paramArrayOfInt, int paramInt)
+    throws IllegalArgumentException
+  {
+    if (t0.b)
+    {
+      getSuperCaller().a(paramArrayOfInt, paramInt);
+      return;
+    }
+    t localT = c;
+    if (localT != null) {
+      localT.u(paramArrayOfInt, paramInt);
+    }
+  }
+  
+  public void setAutoSizeTextTypeWithDefaults(int paramInt)
+  {
+    if (t0.b)
+    {
+      getSuperCaller().l(paramInt);
+      return;
+    }
+    t localT = c;
+    if (localT != null) {
+      localT.v(paramInt);
+    }
+  }
+  
+  public void setBackgroundDrawable(Drawable paramDrawable)
+  {
+    super.setBackgroundDrawable(paramDrawable);
+    h localH = b;
+    if (localH != null) {
+      localH.f(paramDrawable);
+    }
+  }
+  
+  public void setBackgroundResource(int paramInt)
+  {
+    super.setBackgroundResource(paramInt);
+    h localH = b;
+    if (localH != null) {
+      localH.g(paramInt);
+    }
+  }
+  
+  public void setCompoundDrawables(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+  {
+    super.setCompoundDrawables(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+    paramDrawable1 = c;
+    if (paramDrawable1 != null) {
+      paramDrawable1.p();
+    }
+  }
+  
+  public void setCompoundDrawablesRelative(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+  {
+    super.setCompoundDrawablesRelative(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+    paramDrawable1 = c;
+    if (paramDrawable1 != null) {
+      paramDrawable1.p();
+    }
+  }
+  
+  public void setCompoundDrawablesRelativeWithIntrinsicBounds(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    Context localContext = getContext();
+    Drawable localDrawable3 = null;
+    if (paramInt1 != 0) {
+      localObject = a.b(localContext, paramInt1);
+    } else {
+      localObject = null;
+    }
+    Drawable localDrawable1;
+    if (paramInt2 != 0) {
+      localDrawable1 = a.b(localContext, paramInt2);
+    } else {
+      localDrawable1 = null;
+    }
+    Drawable localDrawable2;
+    if (paramInt3 != 0) {
+      localDrawable2 = a.b(localContext, paramInt3);
+    } else {
+      localDrawable2 = null;
+    }
+    if (paramInt4 != 0) {
+      localDrawable3 = a.b(localContext, paramInt4);
+    }
+    setCompoundDrawablesRelativeWithIntrinsicBounds((Drawable)localObject, localDrawable1, localDrawable2, localDrawable3);
+    Object localObject = c;
+    if (localObject != null) {
+      ((t)localObject).p();
+    }
+  }
+  
+  public void setCompoundDrawablesRelativeWithIntrinsicBounds(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+  {
+    super.setCompoundDrawablesRelativeWithIntrinsicBounds(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+    paramDrawable1 = c;
+    if (paramDrawable1 != null) {
+      paramDrawable1.p();
+    }
+  }
+  
+  public void setCompoundDrawablesWithIntrinsicBounds(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    Context localContext = getContext();
+    Drawable localDrawable3 = null;
+    if (paramInt1 != 0) {
+      localObject = a.b(localContext, paramInt1);
+    } else {
+      localObject = null;
+    }
+    Drawable localDrawable1;
+    if (paramInt2 != 0) {
+      localDrawable1 = a.b(localContext, paramInt2);
+    } else {
+      localDrawable1 = null;
+    }
+    Drawable localDrawable2;
+    if (paramInt3 != 0) {
+      localDrawable2 = a.b(localContext, paramInt3);
+    } else {
+      localDrawable2 = null;
+    }
+    if (paramInt4 != 0) {
+      localDrawable3 = a.b(localContext, paramInt4);
+    }
+    setCompoundDrawablesWithIntrinsicBounds((Drawable)localObject, localDrawable1, localDrawable2, localDrawable3);
+    Object localObject = c;
+    if (localObject != null) {
+      ((t)localObject).p();
+    }
+  }
+  
+  public void setCompoundDrawablesWithIntrinsicBounds(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+  {
+    super.setCompoundDrawablesWithIntrinsicBounds(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+    paramDrawable1 = c;
+    if (paramDrawable1 != null) {
+      paramDrawable1.p();
+    }
+  }
+  
+  public void setCustomSelectionActionModeCallback(ActionMode.Callback paramCallback)
+  {
+    super.setCustomSelectionActionModeCallback(i.t(this, paramCallback));
+  }
+  
+  public void setEmojiCompatEnabled(boolean paramBoolean)
+  {
+    getEmojiTextViewHelper().d(paramBoolean);
+  }
+  
+  public void setFilters(InputFilter[] paramArrayOfInputFilter)
+  {
+    super.setFilters(getEmojiTextViewHelper().a(paramArrayOfInputFilter));
+  }
+  
+  public void setFirstBaselineToTopHeight(int paramInt)
+  {
+    if (Build.VERSION.SDK_INT >= 28)
+    {
+      getSuperCaller().j(paramInt);
+      return;
+    }
+    i.m(this, paramInt);
+  }
+  
+  public void setLastBaselineToBottomHeight(int paramInt)
+  {
+    if (Build.VERSION.SDK_INT >= 28)
+    {
+      getSuperCaller().f(paramInt);
+      return;
+    }
+    i.n(this, paramInt);
+  }
+  
+  public void setLineHeight(int paramInt)
+  {
+    i.o(this, paramInt);
+  }
+  
+  public void setPrecomputedText(c paramC)
+  {
+    i.p(this, paramC);
+  }
+  
+  public void setSupportBackgroundTintList(ColorStateList paramColorStateList)
+  {
+    h localH = b;
+    if (localH != null) {
+      localH.i(paramColorStateList);
+    }
+  }
+  
+  public void setSupportBackgroundTintMode(PorterDuff.Mode paramMode)
+  {
+    h localH = b;
+    if (localH != null) {
+      localH.j(paramMode);
+    }
+  }
+  
+  public void setSupportCompoundDrawablesTintList(ColorStateList paramColorStateList)
+  {
+    c.w(paramColorStateList);
+    c.b();
+  }
+  
+  public void setSupportCompoundDrawablesTintMode(PorterDuff.Mode paramMode)
+  {
+    c.x(paramMode);
+    c.b();
+  }
+  
+  public void setTextAppearance(Context paramContext, int paramInt)
+  {
+    super.setTextAppearance(paramContext, paramInt);
+    t localT = c;
+    if (localT != null) {
+      localT.q(paramContext, paramInt);
+    }
+  }
+  
+  public void setTextClassifier(TextClassifier paramTextClassifier)
+  {
+    if (Build.VERSION.SDK_INT < 28)
+    {
+      s localS = d;
+      if (localS != null)
+      {
+        localS.b(paramTextClassifier);
+        return;
+      }
+    }
+    getSuperCaller().e(paramTextClassifier);
+  }
+  
+  public void setTextFuture(Future<c> paramFuture)
+  {
+    h = paramFuture;
+    if (paramFuture != null) {
+      requestLayout();
+    }
+  }
+  
+  public void setTextMetricsParamsCompat(c.a paramA)
+  {
+    i.r(this, paramA);
+  }
+  
+  public void setTextSize(int paramInt, float paramFloat)
+  {
+    if (t0.b)
+    {
+      super.setTextSize(paramInt, paramFloat);
+      return;
+    }
+    t localT = c;
+    if (localT != null) {
+      localT.A(paramInt, paramFloat);
+    }
+  }
+  
+  public void setTypeface(Typeface paramTypeface, int paramInt)
+  {
+    if (f) {
+      return;
+    }
+    Object localObject2 = null;
+    Object localObject1 = localObject2;
+    if (paramTypeface != null)
+    {
+      localObject1 = localObject2;
+      if (paramInt > 0) {
+        localObject1 = e.a(getContext(), paramTypeface, paramInt);
+      }
+    }
+    f = true;
+    if (localObject1 != null) {
+      paramTypeface = (Typeface)localObject1;
+    }
+    try
+    {
+      super.setTypeface(paramTypeface, paramInt);
+      return;
+    }
+    finally
+    {
+      f = false;
+    }
+  }
+  
+  private static abstract interface a
+  {
+    public abstract void a(int[] paramArrayOfInt, int paramInt);
+    
+    public abstract int[] b();
+    
+    public abstract TextClassifier c();
+    
+    public abstract int d();
+    
+    public abstract void e(TextClassifier paramTextClassifier);
+    
+    public abstract void f(int paramInt);
+    
+    public abstract void g(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
+    
+    public abstract int h();
+    
+    public abstract int i();
+    
+    public abstract void j(int paramInt);
+    
+    public abstract int k();
+    
+    public abstract void l(int paramInt);
+  }
+  
+  class b
+    implements AppCompatTextView.a
+  {
+    b() {}
+    
+    public void a(int[] paramArrayOfInt, int paramInt)
+    {
+      AppCompatTextView.n(AppCompatTextView.this, paramArrayOfInt, paramInt);
+    }
+    
+    public int[] b()
+    {
+      return AppCompatTextView.j(AppCompatTextView.this);
+    }
+    
+    public TextClassifier c()
+    {
+      return AppCompatTextView.l(AppCompatTextView.this);
+    }
+    
+    public int d()
+    {
+      return AppCompatTextView.c(AppCompatTextView.this);
+    }
+    
+    public void e(TextClassifier paramTextClassifier)
+    {
+      AppCompatTextView.p(AppCompatTextView.this, paramTextClassifier);
+    }
+    
+    public void f(int paramInt) {}
+    
+    public void g(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      AppCompatTextView.m(AppCompatTextView.this, paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+    
+    public int h()
+    {
+      return AppCompatTextView.k(AppCompatTextView.this);
+    }
+    
+    public int i()
+    {
+      return AppCompatTextView.g(AppCompatTextView.this);
+    }
+    
+    public void j(int paramInt) {}
+    
+    public int k()
+    {
+      return AppCompatTextView.i(AppCompatTextView.this);
+    }
+    
+    public void l(int paramInt)
+    {
+      AppCompatTextView.o(AppCompatTextView.this, paramInt);
+    }
+  }
+  
+  class c
+    extends AppCompatTextView.b
+  {
+    c()
+    {
+      super();
+    }
+    
+    public void f(int paramInt)
+    {
+      AppCompatTextView.h(AppCompatTextView.this, paramInt);
+    }
+    
+    public void j(int paramInt)
+    {
+      AppCompatTextView.f(AppCompatTextView.this, paramInt);
+    }
+  }
+}

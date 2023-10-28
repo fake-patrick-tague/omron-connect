@@ -1,0 +1,509 @@
+package androidx.constraintlayout.solver;
+
+import java.util.Arrays;
+
+public class a
+  implements b.a
+{
+  private static float a = 0.001F;
+  int b = 0;
+  private final b c;
+  protected final c d;
+  private int e = 8;
+  private SolverVariable f = null;
+  private int[] g = new int[8];
+  private int[] h = new int[8];
+  private float[] i = new float[8];
+  private int j = -1;
+  private int k = -1;
+  private boolean l = false;
+  
+  a(b paramB, c paramC)
+  {
+    c = paramB;
+    d = paramC;
+  }
+  
+  public int a()
+  {
+    return b;
+  }
+  
+  public SolverVariable b(int paramInt)
+  {
+    int n = j;
+    int m = 0;
+    while ((n != -1) && (m < b))
+    {
+      if (m == paramInt) {
+        return d.d[g[n]];
+      }
+      n = h[n];
+      m += 1;
+    }
+    return null;
+  }
+  
+  public void c()
+  {
+    int n = j;
+    int m = 0;
+    while ((n != -1) && (m < b))
+    {
+      float[] arrayOfFloat = i;
+      arrayOfFloat[n] *= -1.0F;
+      n = h[n];
+      m += 1;
+    }
+  }
+  
+  public final void clear()
+  {
+    int n = j;
+    int m = 0;
+    while ((n != -1) && (m < b))
+    {
+      SolverVariable localSolverVariable = d.d[g[n]];
+      if (localSolverVariable != null) {
+        localSolverVariable.c(c);
+      }
+      n = h[n];
+      m += 1;
+    }
+    j = -1;
+    k = -1;
+    l = false;
+    b = 0;
+  }
+  
+  public float d(int paramInt)
+  {
+    int n = j;
+    int m = 0;
+    while ((n != -1) && (m < b))
+    {
+      if (m == paramInt) {
+        return i[n];
+      }
+      n = h[n];
+      m += 1;
+    }
+    return 0.0F;
+  }
+  
+  public void e(SolverVariable paramSolverVariable, float paramFloat, boolean paramBoolean)
+  {
+    float f1 = a;
+    if ((paramFloat > -f1) && (paramFloat < f1)) {
+      return;
+    }
+    int m = j;
+    if (m == -1)
+    {
+      j = 0;
+      i[0] = paramFloat;
+      g[0] = d;
+      h[0] = -1;
+      n += 1;
+      paramSolverVariable.a(c);
+      b += 1;
+      if (!l)
+      {
+        m = k + 1;
+        k = m;
+        paramSolverVariable = g;
+        if (m >= paramSolverVariable.length)
+        {
+          l = true;
+          k = (paramSolverVariable.length - 1);
+        }
+      }
+      return;
+    }
+    int n = 0;
+    int i2 = -1;
+    int i1;
+    while ((m != -1) && (n < b))
+    {
+      localObject = g;
+      int i3 = localObject[m];
+      i1 = d;
+      if (i3 == i1)
+      {
+        localObject = i;
+        f1 = localObject[m] + paramFloat;
+        float f2 = a;
+        paramFloat = f1;
+        if (f1 > -f2)
+        {
+          paramFloat = f1;
+          if (f1 < f2) {
+            paramFloat = 0.0F;
+          }
+        }
+        localObject[m] = paramFloat;
+        if (paramFloat == 0.0F)
+        {
+          if (m == j)
+          {
+            j = h[m];
+          }
+          else
+          {
+            localObject = h;
+            localObject[i2] = localObject[m];
+          }
+          if (paramBoolean) {
+            paramSolverVariable.c(c);
+          }
+          if (l) {
+            k = m;
+          }
+          n -= 1;
+          b -= 1;
+        }
+        return;
+      }
+      if (localObject[m] < i1) {
+        i2 = m;
+      }
+      m = h[m];
+      n += 1;
+    }
+    m = k;
+    if (l)
+    {
+      localObject = g;
+      if (localObject[m] != -1) {
+        m = localObject.length;
+      }
+    }
+    else
+    {
+      m += 1;
+    }
+    Object localObject = g;
+    n = m;
+    if (m >= localObject.length)
+    {
+      n = m;
+      if (b < localObject.length)
+      {
+        i1 = 0;
+        for (;;)
+        {
+          localObject = g;
+          n = m;
+          if (i1 >= localObject.length) {
+            break;
+          }
+          if (localObject[i1] == -1)
+          {
+            n = i1;
+            break;
+          }
+          i1 += 1;
+        }
+      }
+    }
+    localObject = g;
+    m = n;
+    if (n >= localObject.length)
+    {
+      m = localObject.length;
+      n = e * 2;
+      e = n;
+      l = false;
+      k = (m - 1);
+      i = Arrays.copyOf(i, n);
+      g = Arrays.copyOf(g, e);
+      h = Arrays.copyOf(h, e);
+    }
+    g[m] = d;
+    i[m] = paramFloat;
+    if (i2 != -1)
+    {
+      localObject = h;
+      localObject[m] = localObject[i2];
+      localObject[i2] = m;
+    }
+    else
+    {
+      h[m] = j;
+      j = m;
+    }
+    n += 1;
+    paramSolverVariable.a(c);
+    b += 1;
+    if (!l) {
+      k += 1;
+    }
+    m = k;
+    paramSolverVariable = g;
+    if (m >= paramSolverVariable.length)
+    {
+      l = true;
+      k = (paramSolverVariable.length - 1);
+    }
+  }
+  
+  public final float f(SolverVariable paramSolverVariable)
+  {
+    int n = j;
+    int m = 0;
+    while ((n != -1) && (m < b))
+    {
+      if (g[n] == d) {
+        return i[n];
+      }
+      n = h[n];
+      m += 1;
+    }
+    return 0.0F;
+  }
+  
+  public boolean g(SolverVariable paramSolverVariable)
+  {
+    int n = j;
+    if (n == -1) {
+      return false;
+    }
+    int m = 0;
+    while ((n != -1) && (m < b))
+    {
+      if (g[n] == d) {
+        return true;
+      }
+      n = h[n];
+      m += 1;
+    }
+    return false;
+  }
+  
+  public float h(b paramB, boolean paramBoolean)
+  {
+    float f1 = f(a);
+    j(a, paramBoolean);
+    paramB = e;
+    int n = paramB.a();
+    int m = 0;
+    while (m < n)
+    {
+      SolverVariable localSolverVariable = paramB.b(m);
+      e(localSolverVariable, paramB.f(localSolverVariable) * f1, paramBoolean);
+      m += 1;
+    }
+    return f1;
+  }
+  
+  public final void i(SolverVariable paramSolverVariable, float paramFloat)
+  {
+    if (paramFloat == 0.0F)
+    {
+      j(paramSolverVariable, true);
+      return;
+    }
+    int m = j;
+    if (m == -1)
+    {
+      j = 0;
+      i[0] = paramFloat;
+      g[0] = d;
+      h[0] = -1;
+      n += 1;
+      paramSolverVariable.a(c);
+      b += 1;
+      if (!l)
+      {
+        m = k + 1;
+        k = m;
+        paramSolverVariable = g;
+        if (m >= paramSolverVariable.length)
+        {
+          l = true;
+          k = (paramSolverVariable.length - 1);
+        }
+      }
+      return;
+    }
+    int n = 0;
+    int i2 = -1;
+    int i1;
+    while ((m != -1) && (n < b))
+    {
+      arrayOfInt = g;
+      int i3 = arrayOfInt[m];
+      i1 = d;
+      if (i3 == i1)
+      {
+        i[m] = paramFloat;
+        return;
+      }
+      if (arrayOfInt[m] < i1) {
+        i2 = m;
+      }
+      m = h[m];
+      n += 1;
+    }
+    m = k;
+    if (l)
+    {
+      arrayOfInt = g;
+      if (arrayOfInt[m] != -1) {
+        m = arrayOfInt.length;
+      }
+    }
+    else
+    {
+      m += 1;
+    }
+    int[] arrayOfInt = g;
+    n = m;
+    if (m >= arrayOfInt.length)
+    {
+      n = m;
+      if (b < arrayOfInt.length)
+      {
+        i1 = 0;
+        for (;;)
+        {
+          arrayOfInt = g;
+          n = m;
+          if (i1 >= arrayOfInt.length) {
+            break;
+          }
+          if (arrayOfInt[i1] == -1)
+          {
+            n = i1;
+            break;
+          }
+          i1 += 1;
+        }
+      }
+    }
+    arrayOfInt = g;
+    m = n;
+    if (n >= arrayOfInt.length)
+    {
+      m = arrayOfInt.length;
+      n = e * 2;
+      e = n;
+      l = false;
+      k = (m - 1);
+      i = Arrays.copyOf(i, n);
+      g = Arrays.copyOf(g, e);
+      h = Arrays.copyOf(h, e);
+    }
+    g[m] = d;
+    i[m] = paramFloat;
+    if (i2 != -1)
+    {
+      arrayOfInt = h;
+      arrayOfInt[m] = arrayOfInt[i2];
+      arrayOfInt[i2] = m;
+    }
+    else
+    {
+      h[m] = j;
+      j = m;
+    }
+    n += 1;
+    paramSolverVariable.a(c);
+    m = b + 1;
+    b = m;
+    if (!l) {
+      k += 1;
+    }
+    paramSolverVariable = g;
+    if (m >= paramSolverVariable.length) {
+      l = true;
+    }
+    if (k >= paramSolverVariable.length)
+    {
+      l = true;
+      k = (paramSolverVariable.length - 1);
+    }
+  }
+  
+  public final float j(SolverVariable paramSolverVariable, boolean paramBoolean)
+  {
+    if (f == paramSolverVariable) {
+      f = null;
+    }
+    int m = j;
+    if (m == -1) {
+      return 0.0F;
+    }
+    int n = 0;
+    int i1 = -1;
+    while ((m != -1) && (n < b))
+    {
+      if (g[m] == d)
+      {
+        if (m == j)
+        {
+          j = h[m];
+        }
+        else
+        {
+          int[] arrayOfInt = h;
+          arrayOfInt[i1] = arrayOfInt[m];
+        }
+        if (paramBoolean) {
+          paramSolverVariable.c(c);
+        }
+        n -= 1;
+        b -= 1;
+        g[m] = -1;
+        if (l) {
+          k = m;
+        }
+        return i[m];
+      }
+      int i2 = h[m];
+      n += 1;
+      i1 = m;
+      m = i2;
+    }
+    return 0.0F;
+  }
+  
+  public void k(float paramFloat)
+  {
+    int n = j;
+    int m = 0;
+    while ((n != -1) && (m < b))
+    {
+      float[] arrayOfFloat = i;
+      arrayOfFloat[n] /= paramFloat;
+      n = h[n];
+      m += 1;
+    }
+  }
+  
+  public String toString()
+  {
+    int n = j;
+    String str = "";
+    int m = 0;
+    while ((n != -1) && (m < b))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append(str);
+      localStringBuilder.append(" -> ");
+      str = localStringBuilder.toString();
+      localStringBuilder = new StringBuilder();
+      localStringBuilder.append(str);
+      localStringBuilder.append(i[n]);
+      localStringBuilder.append(" : ");
+      str = localStringBuilder.toString();
+      localStringBuilder = new StringBuilder();
+      localStringBuilder.append(str);
+      localStringBuilder.append(d.d[g[n]]);
+      str = localStringBuilder.toString();
+      n = h[n];
+      m += 1;
+    }
+    return str;
+  }
+}

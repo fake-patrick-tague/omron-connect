@@ -1,0 +1,314 @@
+package com.google.android.gms.common.api.internal;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailabilityLight;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.Api.AbstractClientBuilder;
+import com.google.android.gms.common.api.Api.AnyClient;
+import com.google.android.gms.common.api.Api.AnyClientKey;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.internal.ClientSettings;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.signin.SignInOptions;
+import com.google.android.gms.signin.zae;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import org.checkerframework.checker.initialization.qual.NotOnlyInitialized;
+
+public final class zabi
+  implements zaca, zau
+{
+  final Map<Api.AnyClientKey<?>, Api.Client> zaa;
+  final Map<Api.AnyClientKey<?>, ConnectionResult> zab = new HashMap();
+  final ClientSettings zac;
+  final Map<Api<?>, Boolean> zad;
+  final Api.AbstractClientBuilder<? extends zae, SignInOptions> zae;
+  int zaf;
+  final zabe zag;
+  final zabz zah;
+  private final Lock zai;
+  private final Condition zaj;
+  private final Context zak;
+  private final GoogleApiAvailabilityLight zal;
+  private final zabh zam;
+  @NotOnlyInitialized
+  private volatile zabf zan;
+  private ConnectionResult zao = null;
+  
+  public zabi(Context paramContext, zabe paramZabe, Lock paramLock, Looper paramLooper, GoogleApiAvailabilityLight paramGoogleApiAvailabilityLight, Map<Api.AnyClientKey<?>, Api.Client> paramMap, ClientSettings paramClientSettings, Map<Api<?>, Boolean> paramMap1, Api.AbstractClientBuilder<? extends zae, SignInOptions> paramAbstractClientBuilder, ArrayList<zat> paramArrayList, zabz paramZabz)
+  {
+    zak = paramContext;
+    zai = paramLock;
+    zal = paramGoogleApiAvailabilityLight;
+    zaa = paramMap;
+    zac = paramClientSettings;
+    zad = paramMap1;
+    zae = paramAbstractClientBuilder;
+    zag = paramZabe;
+    zah = paramZabz;
+    int j = paramArrayList.size();
+    int i = 0;
+    while (i < j)
+    {
+      ((zat)paramArrayList.get(i)).zaa(this);
+      i += 1;
+    }
+    zam = new zabh(this, paramLooper);
+    zaj = paramLock.newCondition();
+    zan = new zaax(this);
+  }
+  
+  public final void onConnected(Bundle paramBundle)
+  {
+    zai.lock();
+    try
+    {
+      zan.zag(paramBundle);
+      return;
+    }
+    finally
+    {
+      zai.unlock();
+    }
+  }
+  
+  public final void onConnectionSuspended(int paramInt)
+  {
+    zai.lock();
+    try
+    {
+      zan.zai(paramInt);
+      return;
+    }
+    finally
+    {
+      zai.unlock();
+    }
+  }
+  
+  public final void zaa(ConnectionResult paramConnectionResult, Api<?> paramApi, boolean paramBoolean)
+  {
+    zai.lock();
+    try
+    {
+      zan.zah(paramConnectionResult, paramApi, paramBoolean);
+      return;
+    }
+    finally
+    {
+      zai.unlock();
+    }
+  }
+  
+  public final ConnectionResult zab()
+  {
+    zaq();
+    for (;;)
+    {
+      if (!(zan instanceof zaaw)) {
+        break label43;
+      }
+      try
+      {
+        zaj.await();
+      }
+      catch (InterruptedException localInterruptedException)
+      {
+        ConnectionResult localConnectionResult;
+        for (;;) {}
+      }
+    }
+    Thread.currentThread().interrupt();
+    return new ConnectionResult(15, null);
+    label43:
+    if ((zan instanceof zaaj)) {
+      return ConnectionResult.RESULT_SUCCESS;
+    }
+    localConnectionResult = zao;
+    if (localConnectionResult != null) {
+      return localConnectionResult;
+    }
+    return new ConnectionResult(13, null);
+  }
+  
+  public final ConnectionResult zac(long paramLong, TimeUnit paramTimeUnit)
+  {
+    zaq();
+    for (paramLong = paramTimeUnit.toNanos(paramLong);; paramLong = zaj.awaitNanos(paramLong))
+    {
+      if ((!(zan instanceof zaaw)) || (paramLong <= 0L)) {}
+      try
+      {
+        zar();
+        return new ConnectionResult(14, null);
+      }
+      catch (InterruptedException paramTimeUnit)
+      {
+        for (;;) {}
+      }
+    }
+    Thread.currentThread().interrupt();
+    return new ConnectionResult(15, null);
+    if ((zan instanceof zaaj)) {
+      return ConnectionResult.RESULT_SUCCESS;
+    }
+    paramTimeUnit = zao;
+    if (paramTimeUnit != null) {
+      return paramTimeUnit;
+    }
+    return new ConnectionResult(13, null);
+  }
+  
+  public final ConnectionResult zad(Api<?> paramApi)
+  {
+    paramApi = paramApi.zab();
+    if (zaa.containsKey(paramApi))
+    {
+      if (((Api.Client)zaa.get(paramApi)).isConnected()) {
+        return ConnectionResult.RESULT_SUCCESS;
+      }
+      if (zab.containsKey(paramApi)) {
+        return (ConnectionResult)zab.get(paramApi);
+      }
+    }
+    return null;
+  }
+  
+  public final <A extends Api.AnyClient, R extends Result, T extends BaseImplementation.ApiMethodImpl<R, A>> T zae(T paramT)
+  {
+    paramT.zak();
+    zan.zaa(paramT);
+    return paramT;
+  }
+  
+  public final <A extends Api.AnyClient, T extends BaseImplementation.ApiMethodImpl<? extends Result, A>> T zaf(T paramT)
+  {
+    paramT.zak();
+    return zan.zab(paramT);
+  }
+  
+  final void zai()
+  {
+    zai.lock();
+    try
+    {
+      zag.zak();
+      zan = new zaaj(this);
+      zan.zad();
+      zaj.signalAll();
+      return;
+    }
+    finally
+    {
+      zai.unlock();
+    }
+  }
+  
+  final void zaj()
+  {
+    zai.lock();
+    try
+    {
+      zan = new zaaw(this, zac, zad, zal, zae, zai, zak);
+      zan.zad();
+      zaj.signalAll();
+      return;
+    }
+    finally
+    {
+      zai.unlock();
+    }
+  }
+  
+  final void zak(ConnectionResult paramConnectionResult)
+  {
+    zai.lock();
+    try
+    {
+      zao = paramConnectionResult;
+      zan = new zaax(this);
+      zan.zad();
+      zaj.signalAll();
+      return;
+    }
+    finally
+    {
+      zai.unlock();
+    }
+  }
+  
+  final void zal(zabg paramZabg)
+  {
+    paramZabg = zam.obtainMessage(1, paramZabg);
+    zam.sendMessage(paramZabg);
+  }
+  
+  final void zam(RuntimeException paramRuntimeException)
+  {
+    paramRuntimeException = zam.obtainMessage(2, paramRuntimeException);
+    zam.sendMessage(paramRuntimeException);
+  }
+  
+  public final void zaq()
+  {
+    zan.zae();
+  }
+  
+  public final void zar()
+  {
+    if (zan.zaj()) {
+      zab.clear();
+    }
+  }
+  
+  public final void zas(String paramString, FileDescriptor paramFileDescriptor, PrintWriter paramPrintWriter, String[] paramArrayOfString)
+  {
+    String str = String.valueOf(paramString).concat("  ");
+    paramPrintWriter.append(paramString).append("mState=").println(zan);
+    Iterator localIterator = zad.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      Api localApi = (Api)localIterator.next();
+      paramPrintWriter.append(paramString).append(localApi.zad()).println(":");
+      ((Api.Client)Preconditions.checkNotNull((Api.Client)zaa.get(localApi.zab()))).dump(str, paramFileDescriptor, paramPrintWriter, paramArrayOfString);
+    }
+  }
+  
+  public final void zat()
+  {
+    if ((zan instanceof zaaj)) {
+      ((zaaj)zan).zaf();
+    }
+  }
+  
+  public final void zau() {}
+  
+  public final boolean zaw()
+  {
+    return zan instanceof zaaj;
+  }
+  
+  public final boolean zax()
+  {
+    return zan instanceof zaaw;
+  }
+  
+  public final boolean zay(SignInConnectionListener paramSignInConnectionListener)
+  {
+    return false;
+  }
+}

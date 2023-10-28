@@ -1,0 +1,2533 @@
+package com.google.android.flexbox;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.SparseArray;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
+import androidx.recyclerview.widget.RecyclerView.o;
+import androidx.recyclerview.widget.RecyclerView.o.d;
+import androidx.recyclerview.widget.RecyclerView.u;
+import androidx.recyclerview.widget.RecyclerView.x;
+import androidx.recyclerview.widget.RecyclerView.x.b;
+import androidx.recyclerview.widget.RecyclerView.y;
+import androidx.recyclerview.widget.o;
+import androidx.recyclerview.widget.s;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FlexboxLayoutManager
+  extends RecyclerView.o
+  implements a, RecyclerView.x.b
+{
+  private static final Rect s = new Rect();
+  private List<b> A = new ArrayList();
+  private final c B = new c(this);
+  private RecyclerView.u C;
+  private RecyclerView.y D;
+  private c E;
+  private b F = new b(null);
+  private s G;
+  private s H;
+  private SavedState I;
+  private int J = -1;
+  private int K = Integer.MIN_VALUE;
+  private int L = Integer.MIN_VALUE;
+  private int M = Integer.MIN_VALUE;
+  private boolean N;
+  private SparseArray<View> O = new SparseArray();
+  private final Context P;
+  private View Q;
+  private int R = -1;
+  private c.a S = new c.a();
+  private int t;
+  private int u;
+  private int v;
+  private int w;
+  private int x = -1;
+  private boolean y;
+  private boolean z;
+  
+  public FlexboxLayoutManager(Context paramContext)
+  {
+    this(paramContext, 0, 1);
+  }
+  
+  public FlexboxLayoutManager(Context paramContext, int paramInt1, int paramInt2)
+  {
+    b3(paramInt1);
+    c3(paramInt2);
+    a3(4);
+    U1(true);
+    P = paramContext;
+  }
+  
+  public FlexboxLayoutManager(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    paramAttributeSet = RecyclerView.o.B0(paramContext, paramAttributeSet, paramInt1, paramInt2);
+    paramInt1 = a;
+    if (paramInt1 != 0)
+    {
+      if (paramInt1 == 1) {
+        if (c) {
+          b3(3);
+        } else {
+          b3(2);
+        }
+      }
+    }
+    else if (c) {
+      b3(1);
+    } else {
+      b3(0);
+    }
+    c3(1);
+    a3(4);
+    U1(true);
+    P = paramContext;
+  }
+  
+  private View B2(int paramInt)
+  {
+    View localView = F2(g0() - 1, -1, paramInt);
+    if (localView == null) {
+      return null;
+    }
+    paramInt = A0(localView);
+    paramInt = B.c[paramInt];
+    return C2(localView, (b)A.get(paramInt));
+  }
+  
+  private View C2(View paramView, b paramB)
+  {
+    boolean bool = w();
+    int i = g0() - 2;
+    int j = g0();
+    int k = h;
+    while (i > j - k - 1)
+    {
+      View localView = f0(i);
+      paramB = paramView;
+      if (localView != null) {
+        if (localView.getVisibility() == 8)
+        {
+          paramB = paramView;
+        }
+        else
+        {
+          if ((y) && (!bool))
+          {
+            paramB = paramView;
+            if (G.g(paramView) <= G.g(localView)) {
+              break label127;
+            }
+          }
+          else
+          {
+            paramB = paramView;
+            if (G.d(paramView) >= G.d(localView)) {
+              break label127;
+            }
+          }
+          paramB = localView;
+        }
+      }
+      label127:
+      i -= 1;
+      paramView = paramB;
+    }
+    return paramView;
+  }
+  
+  private View E2(int paramInt1, int paramInt2, boolean paramBoolean)
+  {
+    int i;
+    if (paramInt2 > paramInt1) {
+      i = 1;
+    } else {
+      i = -1;
+    }
+    while (paramInt1 != paramInt2)
+    {
+      View localView = f0(paramInt1);
+      if (Q2(localView, paramBoolean)) {
+        return localView;
+      }
+      paramInt1 += i;
+    }
+    return null;
+  }
+  
+  private View F2(int paramInt1, int paramInt2, int paramInt3)
+  {
+    w2();
+    v2();
+    int j = G.m();
+    int k = G.i();
+    int i;
+    if (paramInt2 > paramInt1) {
+      i = 1;
+    } else {
+      i = -1;
+    }
+    Object localObject2 = null;
+    Object localObject4;
+    for (Object localObject1 = null; paramInt1 != paramInt2; localObject1 = localObject4)
+    {
+      View localView = f0(paramInt1);
+      int m = A0(localView);
+      Object localObject3 = localObject2;
+      localObject4 = localObject1;
+      if (m >= 0)
+      {
+        localObject3 = localObject2;
+        localObject4 = localObject1;
+        if (m < paramInt3) {
+          if (((RecyclerView.LayoutParams)localView.getLayoutParams()).c())
+          {
+            localObject3 = localObject2;
+            localObject4 = localObject1;
+            if (localObject1 == null)
+            {
+              localObject4 = localView;
+              localObject3 = localObject2;
+            }
+          }
+          else
+          {
+            if ((G.g(localView) >= j) && (G.d(localView) <= k)) {
+              return localView;
+            }
+            localObject3 = localObject2;
+            localObject4 = localObject1;
+            if (localObject2 == null)
+            {
+              localObject3 = localView;
+              localObject4 = localObject1;
+            }
+          }
+        }
+      }
+      paramInt1 += i;
+      localObject2 = localObject3;
+    }
+    if (localObject2 != null) {
+      return localObject2;
+    }
+    return localObject1;
+  }
+  
+  private int G2(int paramInt, RecyclerView.u paramU, RecyclerView.y paramY, boolean paramBoolean)
+  {
+    int i;
+    if ((!w()) && (y)) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (i != 0)
+    {
+      i = paramInt - G.m();
+      if (i > 0) {
+        i = O2(i, paramU, paramY);
+      } else {
+        return 0;
+      }
+    }
+    else
+    {
+      i = G.i() - paramInt;
+      if (i <= 0) {
+        break label125;
+      }
+      i = -O2(-i, paramU, paramY);
+    }
+    if (paramBoolean)
+    {
+      paramInt = G.i() - (paramInt + i);
+      if (paramInt > 0)
+      {
+        G.r(paramInt);
+        return paramInt + i;
+      }
+    }
+    return i;
+    label125:
+    return 0;
+  }
+  
+  private int H2(int paramInt, RecyclerView.u paramU, RecyclerView.y paramY, boolean paramBoolean)
+  {
+    int i;
+    if ((!w()) && (y))
+    {
+      i = G.i() - paramInt;
+      if (i > 0) {
+        i = O2(-i, paramU, paramY);
+      } else {
+        return 0;
+      }
+    }
+    else
+    {
+      i = paramInt - G.m();
+      if (i <= 0) {
+        break label121;
+      }
+      i = -O2(i, paramU, paramY);
+    }
+    int j = i;
+    if (paramBoolean)
+    {
+      paramInt = paramInt + i - G.m();
+      j = i;
+      if (paramInt > 0)
+      {
+        G.r(-paramInt);
+        j = i - paramInt;
+      }
+    }
+    return j;
+    label121:
+    return 0;
+  }
+  
+  private int I2(View paramView)
+  {
+    RecyclerView.LayoutParams localLayoutParams = (RecyclerView.LayoutParams)paramView.getLayoutParams();
+    return l0(paramView) + bottomMargin;
+  }
+  
+  private View J2()
+  {
+    return f0(0);
+  }
+  
+  private int K2(View paramView)
+  {
+    RecyclerView.LayoutParams localLayoutParams = (RecyclerView.LayoutParams)paramView.getLayoutParams();
+    return n0(paramView) - leftMargin;
+  }
+  
+  private int L2(View paramView)
+  {
+    RecyclerView.LayoutParams localLayoutParams = (RecyclerView.LayoutParams)paramView.getLayoutParams();
+    return q0(paramView) + rightMargin;
+  }
+  
+  private int M2(View paramView)
+  {
+    RecyclerView.LayoutParams localLayoutParams = (RecyclerView.LayoutParams)paramView.getLayoutParams();
+    return r0(paramView) - topMargin;
+  }
+  
+  private int O2(int paramInt, RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    if (g0() != 0)
+    {
+      if (paramInt == 0) {
+        return 0;
+      }
+      w2();
+      c localC = E;
+      int j = 1;
+      c.v(localC, true);
+      int i;
+      if ((!w()) && (y)) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        if (paramInt < 0) {}
+      }
+      else {
+        while (paramInt <= 0)
+        {
+          j = -1;
+          break;
+        }
+      }
+      int k = Math.abs(paramInt);
+      i3(j, k);
+      int m = c.k(E) + x2(paramU, paramY, E);
+      if (m < 0) {
+        return 0;
+      }
+      if (i != 0)
+      {
+        if (k > m) {
+          paramInt = -j * m;
+        }
+      }
+      else if (k > m) {
+        paramInt = j * m;
+      }
+      G.r(-paramInt);
+      c.t(E, paramInt);
+      return paramInt;
+    }
+    return 0;
+  }
+  
+  private int P2(int paramInt)
+  {
+    int i = g0();
+    int k = 0;
+    if (i != 0)
+    {
+      if (paramInt == 0) {
+        return 0;
+      }
+      w2();
+      boolean bool = w();
+      View localView = Q;
+      if (bool) {
+        i = localView.getWidth();
+      } else {
+        i = localView.getHeight();
+      }
+      int j;
+      if (bool) {
+        j = H0();
+      } else {
+        j = t0();
+      }
+      if (w0() == 1) {
+        k = 1;
+      }
+      if (k != 0)
+      {
+        k = Math.abs(paramInt);
+        if (paramInt < 0) {
+          paramInt = Math.min(j + b.j(F) - i, k);
+        } else {
+          if (b.j(F) + paramInt <= 0) {
+            break label186;
+          }
+        }
+      }
+      for (paramInt = b.j(F);; paramInt = b.j(F))
+      {
+        return -paramInt;
+        if (paramInt > 0) {
+          return Math.min(j - b.j(F) - i, paramInt);
+        }
+        if (b.j(F) + paramInt >= 0) {
+          return paramInt;
+        }
+      }
+      label186:
+      return paramInt;
+    }
+    return 0;
+  }
+  
+  private static boolean Q0(int paramInt1, int paramInt2, int paramInt3)
+  {
+    int i = View.MeasureSpec.getMode(paramInt2);
+    paramInt2 = View.MeasureSpec.getSize(paramInt2);
+    boolean bool2 = false;
+    boolean bool1 = false;
+    if ((paramInt3 > 0) && (paramInt1 != paramInt3)) {
+      return false;
+    }
+    if (i != Integer.MIN_VALUE)
+    {
+      if (i != 0)
+      {
+        if (i != 1073741824) {
+          return false;
+        }
+        if (paramInt2 == paramInt1) {
+          bool1 = true;
+        }
+        return bool1;
+      }
+      return true;
+    }
+    bool1 = bool2;
+    if (paramInt2 >= paramInt1) {
+      bool1 = true;
+    }
+    return bool1;
+  }
+  
+  private boolean Q2(View paramView, boolean paramBoolean)
+  {
+    int j = v();
+    int m = u();
+    int k = H0() - p();
+    int n = t0() - a();
+    int i3 = K2(paramView);
+    int i1 = M2(paramView);
+    int i4 = L2(paramView);
+    int i2 = I2(paramView);
+    int i;
+    if ((j <= i3) && (k >= i4)) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if ((i3 < k) && (i4 < j)) {
+      j = 0;
+    } else {
+      j = 1;
+    }
+    if ((m <= i1) && (n >= i2)) {
+      k = 1;
+    } else {
+      k = 0;
+    }
+    if ((i1 < n) && (i2 < m)) {
+      m = 0;
+    } else {
+      m = 1;
+    }
+    if (paramBoolean) {
+      return (i != 0) && (k != 0);
+    }
+    return (j != 0) && (m != 0);
+  }
+  
+  private int R2(b paramB, c paramC)
+  {
+    if (w()) {
+      return S2(paramB, paramC);
+    }
+    return T2(paramB, paramC);
+  }
+  
+  private int S2(b paramB, c paramC)
+  {
+    int i1 = v();
+    int k = p();
+    int n = H0();
+    int i = c.a(paramC);
+    int j = i;
+    if (c.p(paramC) == -1) {
+      j = i - g;
+    }
+    int m = c.n(paramC);
+    i = v;
+    if (i != 0)
+    {
+      if (i != 1)
+      {
+        if (i != 2)
+        {
+          if (i != 3)
+          {
+            if (i != 4)
+            {
+              if (i == 5)
+              {
+                i = h;
+                if (i != 0) {
+                  f3 = (n - e) / (i + 1);
+                } else {
+                  f3 = 0.0F;
+                }
+                f1 = i1 + f3;
+                f2 = n - k - f3;
+                break label387;
+              }
+              paramB = new StringBuilder();
+              paramB.append("Invalid justifyContent is set: ");
+              paramB.append(v);
+              throw new IllegalStateException(paramB.toString());
+            }
+            i = h;
+            if (i != 0) {
+              f3 = (n - e) / i;
+            } else {
+              f3 = 0.0F;
+            }
+            f1 = i1;
+            f2 = f3 / 2.0F;
+            f1 += f2;
+            f2 = n - k - f2;
+            break label387;
+          }
+          f2 = i1;
+          i = h;
+          if (i != 1) {
+            f1 = i - 1;
+          } else {
+            f1 = 1.0F;
+          }
+          f3 = (n - e) / f1;
+          f4 = n - k;
+          f1 = f2;
+          f2 = f4;
+          break label387;
+        }
+        f1 = i1;
+        i = e;
+        f1 += (n - i) / 2.0F;
+        f2 = n - k - (n - i) / 2.0F;
+      }
+      else
+      {
+        i = e;
+        f1 = n - i + k;
+        f2 = i - i1;
+        f3 = 0.0F;
+        break label387;
+      }
+    }
+    else
+    {
+      f1 = i1;
+      f2 = n - k;
+    }
+    float f3 = 0.0F;
+    label387:
+    float f4 = f1 - b.j(F);
+    float f1 = f2 - b.j(F);
+    f3 = Math.max(f3, 0.0F);
+    i = 0;
+    n = paramB.b();
+    k = m;
+    float f2 = f4;
+    while (k < m + n)
+    {
+      View localView = N2(k);
+      if (localView != null)
+      {
+        if (c.p(paramC) == 1)
+        {
+          G(localView, s);
+          A(localView);
+        }
+        else
+        {
+          G(localView, s);
+          B(localView, i);
+          i += 1;
+        }
+        Object localObject = B;
+        long l = d[k];
+        i1 = ((c)localObject).q(l);
+        int i2 = B.p(l);
+        localObject = (LayoutParams)localView.getLayoutParams();
+        if (c2(localView, i1, i2, (RecyclerView.LayoutParams)localObject)) {
+          localView.measure(i1, i2);
+        }
+        f2 += leftMargin + x0(localView);
+        f1 -= rightMargin + C0(localView);
+        i1 = j + F0(localView);
+        if (y) {
+          B.H(localView, paramB, Math.round(f1) - localView.getMeasuredWidth(), i1, Math.round(f1), i1 + localView.getMeasuredHeight());
+        } else {
+          B.H(localView, paramB, Math.round(f2), i1, Math.round(f2) + localView.getMeasuredWidth(), i1 + localView.getMeasuredHeight());
+        }
+        float f5 = localView.getMeasuredWidth() + rightMargin + C0(localView);
+        f4 = localView.getMeasuredWidth() + leftMargin + x0(localView);
+        f2 += f5 + f3;
+        f1 -= f4 + f3;
+      }
+      k += 1;
+    }
+    c.h(paramC, c.g(paramC) + c.p(E));
+    return paramB.a();
+  }
+  
+  private int T2(b paramB, c paramC)
+  {
+    int i3 = u();
+    int i1 = a();
+    int i2 = t0();
+    int m = c.a(paramC);
+    int i = c.a(paramC);
+    int k = m;
+    int j = i;
+    if (c.p(paramC) == -1)
+    {
+      j = g;
+      k = m - j;
+      j = i + j;
+    }
+    int n = c.n(paramC);
+    i = v;
+    boolean bool = true;
+    float f2;
+    if (i != 0)
+    {
+      if (i != 1)
+      {
+        if (i != 2)
+        {
+          if (i != 3)
+          {
+            if (i != 4)
+            {
+              if (i == 5)
+              {
+                i = h;
+                if (i != 0) {
+                  f3 = (i2 - e) / (i + 1);
+                } else {
+                  f3 = 0.0F;
+                }
+                f1 = i3 + f3;
+                f2 = i2 - i1 - f3;
+                break label411;
+              }
+              paramB = new StringBuilder();
+              paramB.append("Invalid justifyContent is set: ");
+              paramB.append(v);
+              throw new IllegalStateException(paramB.toString());
+            }
+            i = h;
+            if (i != 0) {
+              f3 = (i2 - e) / i;
+            } else {
+              f3 = 0.0F;
+            }
+            f1 = i3;
+            f2 = f3 / 2.0F;
+            f1 += f2;
+            f2 = i2 - i1 - f2;
+            break label411;
+          }
+          f2 = i3;
+          i = h;
+          if (i != 1) {
+            f1 = i - 1;
+          } else {
+            f1 = 1.0F;
+          }
+          f3 = (i2 - e) / f1;
+          f4 = i2 - i1;
+          f1 = f2;
+          f2 = f4;
+          break label411;
+        }
+        f1 = i3;
+        i = e;
+        f1 += (i2 - i) / 2.0F;
+        f2 = i2 - i1 - (i2 - i) / 2.0F;
+      }
+      else
+      {
+        i = e;
+        f1 = i2 - i + i1;
+        f2 = i - i3;
+        f3 = 0.0F;
+        break label411;
+      }
+    }
+    else
+    {
+      f1 = i3;
+      f2 = i2 - i1;
+    }
+    float f3 = 0.0F;
+    label411:
+    float f4 = f1 - b.j(F);
+    f2 -= b.j(F);
+    float f1 = Math.max(f3, 0.0F);
+    i = 0;
+    i1 = paramB.b();
+    m = n;
+    f3 = f4;
+    while (m < n + i1)
+    {
+      View localView = N2(m);
+      if (localView != null)
+      {
+        Object localObject1 = B;
+        Object localObject2 = d;
+        f4 = f1;
+        long l = localObject2[m];
+        i2 = ((c)localObject1).q(l);
+        i3 = B.p(l);
+        localObject2 = (LayoutParams)localView.getLayoutParams();
+        if (c2(localView, i2, i3, (RecyclerView.LayoutParams)localObject2)) {
+          localView.measure(i2, i3);
+        }
+        f3 += topMargin + F0(localView);
+        f2 -= rightMargin + e0(localView);
+        if (c.p(paramC) == 1)
+        {
+          G(localView, s);
+          A(localView);
+        }
+        else
+        {
+          G(localView, s);
+          B(localView, i);
+          i += 1;
+        }
+        i2 = k + x0(localView);
+        i3 = j - C0(localView);
+        bool = y;
+        if (bool)
+        {
+          if (z)
+          {
+            B.I(localView, paramB, bool, i3 - localView.getMeasuredWidth(), Math.round(f2) - localView.getMeasuredHeight(), i3, Math.round(f2));
+          }
+          else
+          {
+            localObject1 = localView;
+            B.I((View)localObject1, paramB, bool, i3 - ((View)localObject1).getMeasuredWidth(), Math.round(f3), i3, Math.round(f3) + ((View)localObject1).getMeasuredHeight());
+          }
+        }
+        else
+        {
+          localObject1 = localView;
+          if (z) {
+            B.I((View)localObject1, paramB, bool, i2, Math.round(f2) - ((View)localObject1).getMeasuredHeight(), i2 + ((View)localObject1).getMeasuredWidth(), Math.round(f2));
+          } else {
+            B.I((View)localObject1, paramB, bool, i2, Math.round(f3), i2 + ((View)localObject1).getMeasuredWidth(), Math.round(f3) + ((View)localObject1).getMeasuredHeight());
+          }
+        }
+        bool = true;
+        float f6 = localView.getMeasuredHeight() + topMargin + e0(localView);
+        float f5 = localView.getMeasuredHeight() + bottomMargin + F0(localView);
+        f3 += f6 + f4;
+        f2 -= f5 + f4;
+      }
+      m += 1;
+    }
+    c.h(paramC, c.g(paramC) + c.p(E));
+    return paramB.a();
+  }
+  
+  private void U2(RecyclerView.u paramU, c paramC)
+  {
+    if (!c.u(paramC)) {
+      return;
+    }
+    if (c.p(paramC) == -1)
+    {
+      W2(paramU, paramC);
+      return;
+    }
+    X2(paramU, paramC);
+  }
+  
+  private void V2(RecyclerView.u paramU, int paramInt1, int paramInt2)
+  {
+    while (paramInt2 >= paramInt1)
+    {
+      I1(paramInt2, paramU);
+      paramInt2 -= 1;
+    }
+  }
+  
+  private void W2(RecyclerView.u paramU, c paramC)
+  {
+    if (c.k(paramC) < 0) {
+      return;
+    }
+    G.h();
+    c.k(paramC);
+    int j = g0();
+    if (j == 0) {
+      return;
+    }
+    int n = j - 1;
+    Object localObject1 = f0(n);
+    int k = B.c[A0(localObject1)];
+    if (k == -1) {
+      return;
+    }
+    localObject1 = (b)A.get(k);
+    int i = n;
+    int m;
+    for (;;)
+    {
+      m = j;
+      if (i < 0) {
+        break;
+      }
+      View localView = f0(i);
+      m = j;
+      if (!p2(localView, c.k(paramC))) {
+        break;
+      }
+      m = k;
+      Object localObject2 = localObject1;
+      if (o == A0(localView))
+      {
+        if (k <= 0)
+        {
+          m = i;
+          break;
+        }
+        m = k + c.p(paramC);
+        localObject2 = (b)A.get(m);
+        j = i;
+      }
+      i -= 1;
+      k = m;
+      localObject1 = localObject2;
+    }
+    V2(paramU, m, n);
+  }
+  
+  private void X2(RecyclerView.u paramU, c paramC)
+  {
+    if (c.k(paramC) < 0) {
+      return;
+    }
+    int n = g0();
+    if (n == 0) {
+      return;
+    }
+    Object localObject1 = f0(0);
+    int k = B.c[A0(localObject1)];
+    int j = -1;
+    if (k == -1) {
+      return;
+    }
+    localObject1 = (b)A.get(k);
+    int i = 0;
+    int m;
+    for (;;)
+    {
+      m = j;
+      if (i >= n) {
+        break;
+      }
+      View localView = f0(i);
+      m = j;
+      if (!q2(localView, c.k(paramC))) {
+        break;
+      }
+      m = k;
+      Object localObject2 = localObject1;
+      if (p == A0(localView))
+      {
+        if (k >= A.size() - 1)
+        {
+          m = i;
+          break;
+        }
+        m = k + c.p(paramC);
+        localObject2 = (b)A.get(m);
+        j = i;
+      }
+      i += 1;
+      k = m;
+      localObject1 = localObject2;
+    }
+    V2(paramU, 0, m);
+  }
+  
+  private void Y2()
+  {
+    int i;
+    if (w()) {
+      i = u0();
+    } else {
+      i = I0();
+    }
+    c localC = E;
+    boolean bool;
+    if ((i != 0) && (i != Integer.MIN_VALUE)) {
+      bool = false;
+    } else {
+      bool = true;
+    }
+    c.d(localC, bool);
+  }
+  
+  private void Z2()
+  {
+    int i = w0();
+    int j = t;
+    boolean bool2 = false;
+    boolean bool3 = false;
+    boolean bool1 = false;
+    if (j != 0)
+    {
+      if (j != 1)
+      {
+        if (j != 2)
+        {
+          if (j != 3)
+          {
+            y = false;
+            z = false;
+            return;
+          }
+          if (i == 1) {
+            bool1 = true;
+          }
+          y = bool1;
+          if (u == 2) {
+            y = (bool1 ^ true);
+          }
+          z = true;
+          return;
+        }
+        if (i == 1) {
+          bool1 = true;
+        } else {
+          bool1 = false;
+        }
+        y = bool1;
+        if (u == 2) {
+          y = (bool1 ^ true);
+        }
+        z = false;
+        return;
+      }
+      if (i != 1) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      y = bool1;
+      bool1 = bool2;
+      if (u == 2) {
+        bool1 = true;
+      }
+      z = bool1;
+      return;
+    }
+    if (i == 1) {
+      bool1 = true;
+    } else {
+      bool1 = false;
+    }
+    y = bool1;
+    bool1 = bool3;
+    if (u == 2) {
+      bool1 = true;
+    }
+    z = bool1;
+  }
+  
+  private boolean c2(View paramView, int paramInt1, int paramInt2, RecyclerView.LayoutParams paramLayoutParams)
+  {
+    return (paramView.isLayoutRequested()) || (!P0()) || (!Q0(paramView.getWidth(), paramInt1, width)) || (!Q0(paramView.getHeight(), paramInt2, height));
+  }
+  
+  private boolean d3(RecyclerView.y paramY, b paramB)
+  {
+    int j = g0();
+    int i = 0;
+    if (j == 0) {
+      return false;
+    }
+    View localView;
+    if (b.o(paramB)) {
+      localView = B2(paramY.b());
+    } else {
+      localView = y2(paramY.b());
+    }
+    if (localView != null)
+    {
+      b.i(paramB, localView);
+      if ((!paramY.e()) && (i2()))
+      {
+        if ((G.g(localView) >= G.i()) || (G.d(localView) < G.m())) {
+          i = 1;
+        }
+        if (i != 0)
+        {
+          if (b.o(paramB)) {
+            i = G.i();
+          } else {
+            i = G.m();
+          }
+          b.g(paramB, i);
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  private boolean e3(RecyclerView.y paramY, b paramB, SavedState paramSavedState)
+  {
+    boolean bool2 = paramY.e();
+    boolean bool1 = false;
+    if (!bool2)
+    {
+      int i = J;
+      if (i == -1) {
+        return false;
+      }
+      if ((i >= 0) && (i < paramY.b()))
+      {
+        b.b(paramB, J);
+        b.d(paramB, B.c[b.a(paramB)]);
+        SavedState localSavedState = I;
+        if ((localSavedState != null) && (SavedState.f(localSavedState, paramY.b())))
+        {
+          b.g(paramB, G.m() + SavedState.c(paramSavedState));
+          b.h(paramB, true);
+          b.d(paramB, -1);
+          return true;
+        }
+        if (K == Integer.MIN_VALUE)
+        {
+          paramY = Z(J);
+          if (paramY != null)
+          {
+            if (G.e(paramY) > G.n())
+            {
+              b.e(paramB);
+              return true;
+            }
+            if (G.g(paramY) - G.m() < 0)
+            {
+              b.g(paramB, G.m());
+              b.p(paramB, false);
+              return true;
+            }
+            if (G.i() - G.d(paramY) < 0)
+            {
+              b.g(paramB, G.i());
+              b.p(paramB, true);
+              return true;
+            }
+            if (b.o(paramB)) {
+              i = G.d(paramY) + G.o();
+            } else {
+              i = G.g(paramY);
+            }
+            b.g(paramB, i);
+            return true;
+          }
+          if (g0() > 0)
+          {
+            i = A0(f0(0));
+            if (J < i) {
+              bool1 = true;
+            }
+            b.p(paramB, bool1);
+          }
+          b.e(paramB);
+          return true;
+        }
+        if ((!w()) && (y))
+        {
+          b.g(paramB, K - G.j());
+          return true;
+        }
+        b.g(paramB, G.m() + K);
+        return true;
+      }
+      J = -1;
+      K = Integer.MIN_VALUE;
+    }
+    return false;
+  }
+  
+  private void f3(RecyclerView.y paramY, b paramB)
+  {
+    if (e3(paramY, paramB, I)) {
+      return;
+    }
+    if (d3(paramY, paramB)) {
+      return;
+    }
+    b.e(paramB);
+    b.b(paramB, 0);
+    b.d(paramB, 0);
+  }
+  
+  private void g3(int paramInt)
+  {
+    if (paramInt >= D2()) {
+      return;
+    }
+    int i = g0();
+    B.m(i);
+    B.n(i);
+    B.l(i);
+    if (paramInt >= B.c.length) {
+      return;
+    }
+    R = paramInt;
+    View localView = J2();
+    if (localView == null) {
+      return;
+    }
+    J = A0(localView);
+    if ((!w()) && (y))
+    {
+      K = (G.d(localView) + G.j());
+      return;
+    }
+    K = (G.g(localView) - G.m());
+  }
+  
+  private void h3(int paramInt)
+  {
+    int k = View.MeasureSpec.makeMeasureSpec(H0(), I0());
+    int m = View.MeasureSpec.makeMeasureSpec(t0(), u0());
+    int n = H0();
+    int i1 = t0();
+    boolean bool = w();
+    int i = 1;
+    int j = 1;
+    if (bool)
+    {
+      i = L;
+      if ((i == Integer.MIN_VALUE) || (i == n)) {
+        j = 0;
+      }
+      if (c.c(E)) {
+        i = P.getResources().getDisplayMetrics().heightPixels;
+      } else {
+        i = c.e(E);
+      }
+    }
+    else
+    {
+      j = M;
+      if ((j != Integer.MIN_VALUE) && (j != i1)) {
+        j = i;
+      } else {
+        j = 0;
+      }
+      if (c.c(E)) {
+        i = P.getResources().getDisplayMetrics().widthPixels;
+      } else {
+        i = c.e(E);
+      }
+    }
+    L = n;
+    M = i1;
+    n = R;
+    if ((n == -1) && ((J != -1) || (j != 0)))
+    {
+      if (b.o(F)) {
+        return;
+      }
+      A.clear();
+      S.a();
+      if (w()) {
+        B.d(S, k, m, i, b.a(F), A);
+      } else {
+        B.f(S, k, m, i, b.a(F), A);
+      }
+      A = S.a;
+      B.i(k, m);
+      B.N();
+      b localB = F;
+      b.d(localB, B.c[b.a(localB)]);
+      c.h(E, b.c(F));
+      return;
+    }
+    if (n != -1) {
+      j = Math.min(n, b.a(F));
+    } else {
+      j = b.a(F);
+    }
+    S.a();
+    if (w())
+    {
+      if (A.size() > 0)
+      {
+        B.h(A, j);
+        B.b(S, k, m, i, j, b.a(F), A);
+      }
+      else
+      {
+        B.l(paramInt);
+        B.c(S, k, m, i, 0, A);
+      }
+    }
+    else if (A.size() > 0)
+    {
+      B.h(A, j);
+      B.b(S, m, k, i, j, b.a(F), A);
+    }
+    else
+    {
+      B.l(paramInt);
+      B.e(S, k, m, i, 0, A);
+    }
+    A = S.a;
+    B.j(k, m, j);
+    B.O(j);
+  }
+  
+  private void i3(int paramInt1, int paramInt2)
+  {
+    c.q(E, paramInt1);
+    boolean bool = w();
+    int m = View.MeasureSpec.makeMeasureSpec(H0(), I0());
+    int n = View.MeasureSpec.makeMeasureSpec(t0(), u0());
+    int j = 0;
+    int k = 0;
+    int i;
+    if ((!bool) && (y)) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    Object localObject2;
+    if (paramInt1 == 1)
+    {
+      localObject1 = f0(g0() - 1);
+      c.b(E, G.d((View)localObject1));
+      paramInt1 = A0((View)localObject1);
+      j = B.c[paramInt1];
+      localObject1 = C2((View)localObject1, (b)A.get(j));
+      c.s(E, 1);
+      localObject2 = E;
+      c.o((c)localObject2, paramInt1 + c.r((c)localObject2));
+      if (B.c.length <= c.n(E))
+      {
+        c.h(E, -1);
+      }
+      else
+      {
+        localObject2 = E;
+        c.h((c)localObject2, B.c[c.n(localObject2)]);
+      }
+      if (i != 0)
+      {
+        c.b(E, G.g((View)localObject1));
+        c.l(E, -G.g((View)localObject1) + G.m());
+        localObject1 = E;
+        paramInt1 = k;
+        if (c.k((c)localObject1) >= 0) {
+          paramInt1 = c.k(E);
+        }
+        c.l((c)localObject1, paramInt1);
+      }
+      else
+      {
+        c.b(E, G.d((View)localObject1));
+        c.l(E, G.d((View)localObject1) - G.i());
+      }
+      if (((c.g(E) == -1) || (c.g(E) > A.size() - 1)) && (c.n(E) <= c()))
+      {
+        paramInt1 = paramInt2 - c.k(E);
+        S.a();
+        if (paramInt1 > 0)
+        {
+          if (bool) {
+            B.c(S, m, n, paramInt1, c.n(E), A);
+          } else {
+            B.e(S, m, n, paramInt1, c.n(E), A);
+          }
+          B.j(m, n, c.n(E));
+          B.O(c.n(E));
+        }
+      }
+    }
+    else
+    {
+      localObject1 = f0(0);
+      c.b(E, G.g((View)localObject1));
+      m = A0((View)localObject1);
+      paramInt1 = B.c[m];
+      localObject1 = z2((View)localObject1, (b)A.get(paramInt1));
+      c.s(E, 1);
+      k = B.c[m];
+      paramInt1 = k;
+      if (k == -1) {
+        paramInt1 = 0;
+      }
+      if (paramInt1 > 0)
+      {
+        localObject2 = (b)A.get(paramInt1 - 1);
+        c.o(E, m - ((b)localObject2).b());
+      }
+      else
+      {
+        c.o(E, -1);
+      }
+      localObject2 = E;
+      if (paramInt1 > 0) {
+        paramInt1 -= 1;
+      } else {
+        paramInt1 = 0;
+      }
+      c.h((c)localObject2, paramInt1);
+      if (i != 0)
+      {
+        c.b(E, G.d((View)localObject1));
+        c.l(E, G.d((View)localObject1) - G.i());
+        localObject1 = E;
+        paramInt1 = j;
+        if (c.k((c)localObject1) >= 0) {
+          paramInt1 = c.k(E);
+        }
+        c.l((c)localObject1, paramInt1);
+      }
+      else
+      {
+        c.b(E, G.g((View)localObject1));
+        c.l(E, -G.g((View)localObject1) + G.m());
+      }
+    }
+    Object localObject1 = E;
+    c.f((c)localObject1, paramInt2 - c.k((c)localObject1));
+  }
+  
+  private void j3(b paramB, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    if (paramBoolean2) {
+      Y2();
+    } else {
+      c.d(E, false);
+    }
+    if ((!w()) && (y)) {
+      c.f(E, b.f(paramB) - p());
+    } else {
+      c.f(E, G.i() - b.f(paramB));
+    }
+    c.o(E, b.a(paramB));
+    c.s(E, 1);
+    c.q(E, 1);
+    c.b(E, b.f(paramB));
+    c.l(E, Integer.MIN_VALUE);
+    c.h(E, b.c(paramB));
+    if ((paramBoolean1) && (A.size() > 1) && (b.c(paramB) >= 0) && (b.c(paramB) < A.size() - 1))
+    {
+      paramB = (b)A.get(b.c(paramB));
+      c.i(E);
+      c localC = E;
+      c.o(localC, c.n(localC) + paramB.b());
+    }
+  }
+  
+  private void k3(b paramB, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    if (paramBoolean2) {
+      Y2();
+    } else {
+      c.d(E, false);
+    }
+    if ((!w()) && (y)) {
+      c.f(E, Q.getWidth() - b.f(paramB) - G.m());
+    } else {
+      c.f(E, b.f(paramB) - G.m());
+    }
+    c.o(E, b.a(paramB));
+    c.s(E, 1);
+    c.q(E, -1);
+    c.b(E, b.f(paramB));
+    c.l(E, Integer.MIN_VALUE);
+    c.h(E, b.c(paramB));
+    if ((paramBoolean1) && (b.c(paramB) > 0) && (A.size() > b.c(paramB)))
+    {
+      paramB = (b)A.get(b.c(paramB));
+      c.j(E);
+      c localC = E;
+      c.o(localC, c.n(localC) - paramB.b());
+    }
+  }
+  
+  private boolean p2(View paramView, int paramInt)
+  {
+    if ((!w()) && (y)) {
+      return G.d(paramView) <= paramInt;
+    }
+    return G.g(paramView) >= G.h() - paramInt;
+  }
+  
+  private boolean q2(View paramView, int paramInt)
+  {
+    if ((!w()) && (y)) {
+      return G.h() - G.g(paramView) <= paramInt;
+    }
+    return G.d(paramView) <= paramInt;
+  }
+  
+  private void r2()
+  {
+    A.clear();
+    b.n(F);
+    b.k(F, 0);
+  }
+  
+  private int s2(RecyclerView.y paramY)
+  {
+    if (g0() == 0) {
+      return 0;
+    }
+    int i = paramY.b();
+    w2();
+    View localView1 = y2(i);
+    View localView2 = B2(i);
+    if ((paramY.b() != 0) && (localView1 != null))
+    {
+      if (localView2 == null) {
+        return 0;
+      }
+      i = G.d(localView2);
+      int j = G.g(localView1);
+      return Math.min(G.n(), i - j);
+    }
+    return 0;
+  }
+  
+  private int t2(RecyclerView.y paramY)
+  {
+    if (g0() == 0) {
+      return 0;
+    }
+    int i = paramY.b();
+    View localView1 = y2(i);
+    View localView2 = B2(i);
+    if ((paramY.b() != 0) && (localView1 != null))
+    {
+      if (localView2 == null) {
+        return 0;
+      }
+      int k = A0(localView1);
+      int j = A0(localView2);
+      i = Math.abs(G.d(localView2) - G.g(localView1));
+      paramY = B.c;
+      k = paramY[k];
+      if (k != 0)
+      {
+        if (k == -1) {
+          return 0;
+        }
+        j = paramY[j];
+        float f = i / (j - k + 1);
+        return Math.round(k * f + (G.m() - G.g(localView1)));
+      }
+    }
+    return 0;
+  }
+  
+  private int u2(RecyclerView.y paramY)
+  {
+    if (g0() == 0) {
+      return 0;
+    }
+    int i = paramY.b();
+    View localView1 = y2(i);
+    View localView2 = B2(i);
+    if ((paramY.b() != 0) && (localView1 != null))
+    {
+      if (localView2 == null) {
+        return 0;
+      }
+      i = A2();
+      int j = D2();
+      return (int)(Math.abs(G.d(localView2) - G.g(localView1)) / (j - i + 1) * paramY.b());
+    }
+    return 0;
+  }
+  
+  private void v2()
+  {
+    if (E == null) {
+      E = new c(null);
+    }
+  }
+  
+  private void w2()
+  {
+    if (G != null) {
+      return;
+    }
+    if (w())
+    {
+      if (u == 0)
+      {
+        G = s.a(this);
+        H = s.c(this);
+        return;
+      }
+      G = s.c(this);
+      H = s.a(this);
+      return;
+    }
+    if (u == 0)
+    {
+      G = s.c(this);
+      H = s.a(this);
+      return;
+    }
+    G = s.a(this);
+    H = s.c(this);
+  }
+  
+  private int x2(RecyclerView.u paramU, RecyclerView.y paramY, c paramC)
+  {
+    if (c.k(paramC) != Integer.MIN_VALUE)
+    {
+      if (c.e(paramC) < 0) {
+        c.l(paramC, c.k(paramC) + c.e(paramC));
+      }
+      U2(paramU, paramC);
+    }
+    int k = c.e(paramC);
+    int i = c.e(paramC);
+    int j = 0;
+    boolean bool = w();
+    while (((i > 0) || (c.c(E))) && (c.m(paramC, paramY, A)))
+    {
+      b localB = (b)A.get(c.g(paramC));
+      c.o(paramC, o);
+      j += R2(localB, paramC);
+      if ((!bool) && (y)) {
+        c.b(paramC, c.a(paramC) - localB.a() * c.p(paramC));
+      } else {
+        c.b(paramC, c.a(paramC) + localB.a() * c.p(paramC));
+      }
+      i -= localB.a();
+    }
+    c.f(paramC, c.e(paramC) - j);
+    if (c.k(paramC) != Integer.MIN_VALUE)
+    {
+      c.l(paramC, c.k(paramC) + j);
+      if (c.e(paramC) < 0) {
+        c.l(paramC, c.k(paramC) + c.e(paramC));
+      }
+      U2(paramU, paramC);
+    }
+    return k - c.e(paramC);
+  }
+  
+  private View y2(int paramInt)
+  {
+    View localView = F2(0, g0(), paramInt);
+    if (localView == null) {
+      return null;
+    }
+    paramInt = A0(localView);
+    paramInt = B.c[paramInt];
+    if (paramInt == -1) {
+      return null;
+    }
+    return z2(localView, (b)A.get(paramInt));
+  }
+  
+  private View z2(View paramView, b paramB)
+  {
+    boolean bool = w();
+    int j = h;
+    int i = 1;
+    while (i < j)
+    {
+      View localView = f0(i);
+      paramB = paramView;
+      if (localView != null) {
+        if (localView.getVisibility() == 8)
+        {
+          paramB = paramView;
+        }
+        else
+        {
+          if ((y) && (!bool))
+          {
+            paramB = paramView;
+            if (G.d(paramView) >= G.d(localView)) {
+              break label111;
+            }
+          }
+          else
+          {
+            paramB = paramView;
+            if (G.g(paramView) <= G.g(localView)) {
+              break label111;
+            }
+          }
+          paramB = localView;
+        }
+      }
+      label111:
+      i += 1;
+      paramView = paramB;
+    }
+    return paramView;
+  }
+  
+  public int A2()
+  {
+    View localView = E2(0, g0(), false);
+    if (localView == null) {
+      return -1;
+    }
+    return A0(localView);
+  }
+  
+  public int D2()
+  {
+    View localView = E2(g0() - 1, -1, false);
+    if (localView == null) {
+      return -1;
+    }
+    return A0(localView);
+  }
+  
+  public boolean H()
+  {
+    return (!w()) || (H0() > Q.getWidth());
+  }
+  
+  public boolean I()
+  {
+    return (w()) || (t0() > Q.getHeight());
+  }
+  
+  public boolean J(RecyclerView.LayoutParams paramLayoutParams)
+  {
+    return paramLayoutParams instanceof LayoutParams;
+  }
+  
+  public int N(RecyclerView.y paramY)
+  {
+    return s2(paramY);
+  }
+  
+  public View N2(int paramInt)
+  {
+    View localView = (View)O.get(paramInt);
+    if (localView != null) {
+      return localView;
+    }
+    return C.o(paramInt);
+  }
+  
+  public int O(RecyclerView.y paramY)
+  {
+    return t2(paramY);
+  }
+  
+  public int P(RecyclerView.y paramY)
+  {
+    return u2(paramY);
+  }
+  
+  public int Q(RecyclerView.y paramY)
+  {
+    return s2(paramY);
+  }
+  
+  public int R(RecyclerView.y paramY)
+  {
+    return t2(paramY);
+  }
+  
+  public int R1(int paramInt, RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    if (!w())
+    {
+      paramInt = O2(paramInt, paramU, paramY);
+      O.clear();
+      return paramInt;
+    }
+    paramInt = P2(paramInt);
+    paramU = F;
+    b.k(paramU, b.j(paramU) + paramInt);
+    H.r(-paramInt);
+    return paramInt;
+  }
+  
+  public int S(RecyclerView.y paramY)
+  {
+    return u2(paramY);
+  }
+  
+  public void S1(int paramInt)
+  {
+    J = paramInt;
+    K = Integer.MIN_VALUE;
+    SavedState localSavedState = I;
+    if (localSavedState != null) {
+      SavedState.e(localSavedState);
+    }
+    O1();
+  }
+  
+  public int T1(int paramInt, RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    if (w())
+    {
+      paramInt = O2(paramInt, paramU, paramY);
+      O.clear();
+      return paramInt;
+    }
+    paramInt = P2(paramInt);
+    paramU = F;
+    b.k(paramU, b.j(paramU) + paramInt);
+    H.r(-paramInt);
+    return paramInt;
+  }
+  
+  public void Y0(RecyclerView.Adapter paramAdapter1, RecyclerView.Adapter paramAdapter2)
+  {
+    E1();
+  }
+  
+  public RecyclerView.LayoutParams a0()
+  {
+    return new LayoutParams(-2, -2);
+  }
+  
+  public void a1(RecyclerView paramRecyclerView)
+  {
+    super.a1(paramRecyclerView);
+    Q = ((View)paramRecyclerView.getParent());
+  }
+  
+  public void a3(int paramInt)
+  {
+    int i = w;
+    if (i != paramInt)
+    {
+      if ((i == 4) || (paramInt == 4))
+      {
+        E1();
+        r2();
+      }
+      w = paramInt;
+      O1();
+    }
+  }
+  
+  public RecyclerView.LayoutParams b0(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    return new LayoutParams(paramContext, paramAttributeSet);
+  }
+  
+  public void b3(int paramInt)
+  {
+    if (t != paramInt)
+    {
+      E1();
+      t = paramInt;
+      G = null;
+      H = null;
+      r2();
+      O1();
+    }
+  }
+  
+  public int c()
+  {
+    return D.b();
+  }
+  
+  public void c1(RecyclerView paramRecyclerView, RecyclerView.u paramU)
+  {
+    super.c1(paramRecyclerView, paramU);
+    if (N)
+    {
+      F1(paramU);
+      paramU.c();
+    }
+  }
+  
+  public void c3(int paramInt)
+  {
+    if (paramInt != 2)
+    {
+      int i = u;
+      if (i != paramInt)
+      {
+        if ((i == 0) || (paramInt == 0))
+        {
+          E1();
+          r2();
+        }
+        u = paramInt;
+        G = null;
+        H = null;
+        O1();
+      }
+      return;
+    }
+    throw new UnsupportedOperationException("wrap_reverse is not supported in FlexboxLayoutManager");
+  }
+  
+  public PointF d(int paramInt)
+  {
+    if (g0() == 0) {
+      return null;
+    }
+    if (paramInt < A0(f0(0))) {
+      paramInt = -1;
+    } else {
+      paramInt = 1;
+    }
+    if (w()) {
+      return new PointF(0.0F, paramInt);
+    }
+    return new PointF(paramInt, 0.0F);
+  }
+  
+  public void e(View paramView, int paramInt1, int paramInt2, b paramB)
+  {
+    G(paramView, s);
+    if (w())
+    {
+      paramInt1 = x0(paramView) + C0(paramView);
+      e += paramInt1;
+      f += paramInt1;
+      return;
+    }
+    paramInt1 = F0(paramView) + e0(paramView);
+    e += paramInt1;
+    f += paramInt1;
+  }
+  
+  public int f()
+  {
+    return t;
+  }
+  
+  public void f2(RecyclerView paramRecyclerView, RecyclerView.y paramY, int paramInt)
+  {
+    paramRecyclerView = new o(paramRecyclerView.getContext());
+    paramRecyclerView.p(paramInt);
+    g2(paramRecyclerView);
+  }
+  
+  public int g()
+  {
+    return x;
+  }
+  
+  public int h()
+  {
+    int j = A.size();
+    int i = 0;
+    if (j == 0) {
+      return 0;
+    }
+    j = Integer.MIN_VALUE;
+    int k = A.size();
+    while (i < k)
+    {
+      j = Math.max(j, A.get(i)).e);
+      i += 1;
+    }
+    return j;
+  }
+  
+  public int i()
+  {
+    return u;
+  }
+  
+  public void j(b paramB) {}
+  
+  public View k(int paramInt)
+  {
+    return N2(paramInt);
+  }
+  
+  public int l(int paramInt1, int paramInt2, int paramInt3)
+  {
+    return RecyclerView.o.h0(H0(), I0(), paramInt2, paramInt3, H());
+  }
+  
+  public void l1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2)
+  {
+    super.l1(paramRecyclerView, paramInt1, paramInt2);
+    g3(paramInt1);
+  }
+  
+  public int m()
+  {
+    return w;
+  }
+  
+  public void n(int paramInt, View paramView)
+  {
+    O.put(paramInt, paramView);
+  }
+  
+  public void n1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2, int paramInt3)
+  {
+    super.n1(paramRecyclerView, paramInt1, paramInt2, paramInt3);
+    g3(Math.min(paramInt1, paramInt2));
+  }
+  
+  public void o1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2)
+  {
+    super.o1(paramRecyclerView, paramInt1, paramInt2);
+    g3(paramInt1);
+  }
+  
+  public void p1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2)
+  {
+    super.p1(paramRecyclerView, paramInt1, paramInt2);
+    g3(paramInt1);
+  }
+  
+  public int q(View paramView, int paramInt1, int paramInt2)
+  {
+    if (w()) {
+      paramInt2 = x0(paramView);
+    }
+    for (paramInt1 = C0(paramView);; paramInt1 = e0(paramView))
+    {
+      return paramInt2 + paramInt1;
+      paramInt2 = F0(paramView);
+    }
+  }
+  
+  public void q1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2, Object paramObject)
+  {
+    super.q1(paramRecyclerView, paramInt1, paramInt2, paramObject);
+    g3(paramInt1);
+  }
+  
+  public List<b> r()
+  {
+    return A;
+  }
+  
+  public void r1(RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    C = paramU;
+    D = paramY;
+    int i = paramY.b();
+    if ((i == 0) && (paramY.e())) {
+      return;
+    }
+    Z2();
+    w2();
+    v2();
+    B.m(i);
+    B.n(i);
+    B.l(i);
+    c.v(E, false);
+    SavedState localSavedState = I;
+    if ((localSavedState != null) && (SavedState.f(localSavedState, i))) {
+      J = SavedState.a(I);
+    }
+    if ((!b.l(F)) || (J != -1) || (I != null))
+    {
+      b.n(F);
+      f3(paramY, F);
+      b.m(F, true);
+    }
+    T(paramU);
+    if (b.o(F)) {
+      k3(F, false, true);
+    } else {
+      j3(F, false, true);
+    }
+    h3(i);
+    int j;
+    if (b.o(F))
+    {
+      x2(paramU, paramY, E);
+      i = c.a(E);
+      j3(F, true, false);
+      x2(paramU, paramY, E);
+      j = c.a(E);
+    }
+    else
+    {
+      x2(paramU, paramY, E);
+      j = c.a(E);
+      k3(F, true, false);
+      x2(paramU, paramY, E);
+      i = c.a(E);
+    }
+    if (g0() > 0)
+    {
+      if (b.o(F))
+      {
+        H2(i + G2(j, paramU, paramY, true), paramU, paramY, false);
+        return;
+      }
+      G2(j + H2(i, paramU, paramY, true), paramU, paramY, false);
+    }
+  }
+  
+  public int s(int paramInt1, int paramInt2, int paramInt3)
+  {
+    return RecyclerView.o.h0(t0(), u0(), paramInt2, paramInt3, I());
+  }
+  
+  public void s1(RecyclerView.y paramY)
+  {
+    super.s1(paramY);
+    I = null;
+    J = -1;
+    K = Integer.MIN_VALUE;
+    R = -1;
+    b.n(F);
+    O.clear();
+  }
+  
+  public boolean w()
+  {
+    int i = t;
+    boolean bool = true;
+    if (i != 0)
+    {
+      if (i == 1) {
+        return true;
+      }
+      bool = false;
+    }
+    return bool;
+  }
+  
+  public void w1(Parcelable paramParcelable)
+  {
+    if ((paramParcelable instanceof SavedState))
+    {
+      I = ((SavedState)paramParcelable);
+      O1();
+    }
+  }
+  
+  public int x(View paramView)
+  {
+    int i;
+    if (w()) {
+      i = F0(paramView);
+    }
+    for (int j = e0(paramView);; j = C0(paramView))
+    {
+      return i + j;
+      i = x0(paramView);
+    }
+  }
+  
+  public Parcelable x1()
+  {
+    if (I != null) {
+      return new SavedState(I, null);
+    }
+    SavedState localSavedState = new SavedState();
+    if (g0() > 0)
+    {
+      View localView = J2();
+      SavedState.b(localSavedState, A0(localView));
+      SavedState.d(localSavedState, G.g(localView) - G.m());
+      return localSavedState;
+    }
+    SavedState.e(localSavedState);
+    return localSavedState;
+  }
+  
+  public static class LayoutParams
+    extends RecyclerView.LayoutParams
+    implements FlexItem
+  {
+    public static final Parcelable.Creator<LayoutParams> CREATOR = new a();
+    private float f = 0.0F;
+    private float g = 1.0F;
+    private int h = -1;
+    private float i = -1.0F;
+    private int j;
+    private int k;
+    private int l = 16777215;
+    private int m = 16777215;
+    private boolean n;
+    
+    public LayoutParams(int paramInt1, int paramInt2)
+    {
+      super(paramInt2);
+    }
+    
+    public LayoutParams(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      super(paramAttributeSet);
+    }
+    
+    protected LayoutParams(Parcel paramParcel)
+    {
+      super(-2);
+      f = paramParcel.readFloat();
+      g = paramParcel.readFloat();
+      h = paramParcel.readInt();
+      i = paramParcel.readFloat();
+      j = paramParcel.readInt();
+      k = paramParcel.readInt();
+      l = paramParcel.readInt();
+      m = paramParcel.readInt();
+      boolean bool;
+      if (paramParcel.readByte() != 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      n = bool;
+      bottomMargin = paramParcel.readInt();
+      leftMargin = paramParcel.readInt();
+      rightMargin = paramParcel.readInt();
+      topMargin = paramParcel.readInt();
+      height = paramParcel.readInt();
+      width = paramParcel.readInt();
+    }
+    
+    public float C()
+    {
+      return g;
+    }
+    
+    public int F()
+    {
+      return j;
+    }
+    
+    public int G0()
+    {
+      return l;
+    }
+    
+    public int J()
+    {
+      return bottomMargin;
+    }
+    
+    public int L()
+    {
+      return leftMargin;
+    }
+    
+    public int R()
+    {
+      return topMargin;
+    }
+    
+    public float X()
+    {
+      return f;
+    }
+    
+    public float c0()
+    {
+      return i;
+    }
+    
+    public int describeContents()
+    {
+      return 0;
+    }
+    
+    public int getHeight()
+    {
+      return height;
+    }
+    
+    public int getWidth()
+    {
+      return width;
+    }
+    
+    public int m0()
+    {
+      return rightMargin;
+    }
+    
+    public int o0()
+    {
+      return k;
+    }
+    
+    public boolean s0()
+    {
+      return n;
+    }
+    
+    public int v0()
+    {
+      return m;
+    }
+    
+    public int w()
+    {
+      return h;
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    static final class a
+      implements Parcelable.Creator<FlexboxLayoutManager.LayoutParams>
+    {
+      a() {}
+      
+      public FlexboxLayoutManager.LayoutParams a(Parcel paramParcel)
+      {
+        return new FlexboxLayoutManager.LayoutParams(paramParcel);
+      }
+      
+      public FlexboxLayoutManager.LayoutParams[] b(int paramInt)
+      {
+        return new FlexboxLayoutManager.LayoutParams[paramInt];
+      }
+    }
+  }
+  
+  private static class SavedState
+    implements Parcelable
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    private int b;
+    private int c;
+    
+    SavedState() {}
+    
+    private SavedState(Parcel paramParcel)
+    {
+      b = paramParcel.readInt();
+      c = paramParcel.readInt();
+    }
+    
+    private SavedState(SavedState paramSavedState)
+    {
+      b = b;
+      c = c;
+    }
+    
+    private boolean g(int paramInt)
+    {
+      int i = b;
+      return (i >= 0) && (i < paramInt);
+    }
+    
+    private void h()
+    {
+      b = -1;
+    }
+    
+    public int describeContents()
+    {
+      return 0;
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SavedState{mAnchorPosition=");
+      localStringBuilder.append(b);
+      localStringBuilder.append(", mAnchorOffset=");
+      localStringBuilder.append(c);
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      paramParcel.writeInt(b);
+      paramParcel.writeInt(c);
+    }
+    
+    static final class a
+      implements Parcelable.Creator<FlexboxLayoutManager.SavedState>
+    {
+      a() {}
+      
+      public FlexboxLayoutManager.SavedState a(Parcel paramParcel)
+      {
+        return new FlexboxLayoutManager.SavedState(paramParcel, null);
+      }
+      
+      public FlexboxLayoutManager.SavedState[] b(int paramInt)
+      {
+        return new FlexboxLayoutManager.SavedState[paramInt];
+      }
+    }
+  }
+  
+  private class b
+  {
+    private int a;
+    private int b;
+    private int c;
+    private int d = 0;
+    private boolean e;
+    private boolean f;
+    private boolean g;
+    
+    private b() {}
+    
+    private void q()
+    {
+      int i;
+      if ((!w()) && (FlexboxLayoutManager.l2(FlexboxLayoutManager.this)))
+      {
+        if (e) {
+          i = FlexboxLayoutManager.m2(FlexboxLayoutManager.this).i();
+        } else {
+          i = H0() - FlexboxLayoutManager.m2(FlexboxLayoutManager.this).m();
+        }
+        c = i;
+        return;
+      }
+      if (e) {
+        i = FlexboxLayoutManager.m2(FlexboxLayoutManager.this).i();
+      } else {
+        i = FlexboxLayoutManager.m2(FlexboxLayoutManager.this).m();
+      }
+      c = i;
+    }
+    
+    private void r(View paramView)
+    {
+      if ((!w()) && (FlexboxLayoutManager.l2(FlexboxLayoutManager.this)))
+      {
+        if (e) {
+          c = (FlexboxLayoutManager.m2(FlexboxLayoutManager.this).g(paramView) + FlexboxLayoutManager.m2(FlexboxLayoutManager.this).o());
+        } else {
+          c = FlexboxLayoutManager.m2(FlexboxLayoutManager.this).d(paramView);
+        }
+      }
+      else if (e) {
+        c = (FlexboxLayoutManager.m2(FlexboxLayoutManager.this).d(paramView) + FlexboxLayoutManager.m2(FlexboxLayoutManager.this).o());
+      } else {
+        c = FlexboxLayoutManager.m2(FlexboxLayoutManager.this).g(paramView);
+      }
+      a = A0(paramView);
+      int j = 0;
+      g = false;
+      paramView = n2c;
+      int i = a;
+      if (i == -1) {
+        i = 0;
+      }
+      int k = paramView[i];
+      i = j;
+      if (k != -1) {
+        i = k;
+      }
+      b = i;
+      if (FlexboxLayoutManager.o2(FlexboxLayoutManager.this).size() > b) {
+        a = o2getb)).o;
+      }
+    }
+    
+    private void s()
+    {
+      a = -1;
+      b = -1;
+      c = Integer.MIN_VALUE;
+      boolean bool2 = false;
+      boolean bool3 = false;
+      boolean bool4 = false;
+      boolean bool1 = false;
+      f = false;
+      g = false;
+      if (w())
+      {
+        if (FlexboxLayoutManager.j2(FlexboxLayoutManager.this) == 0)
+        {
+          if (FlexboxLayoutManager.k2(FlexboxLayoutManager.this) == 1) {
+            bool1 = true;
+          }
+          e = bool1;
+          return;
+        }
+        bool1 = bool2;
+        if (FlexboxLayoutManager.j2(FlexboxLayoutManager.this) == 2) {
+          bool1 = true;
+        }
+        e = bool1;
+        return;
+      }
+      if (FlexboxLayoutManager.j2(FlexboxLayoutManager.this) == 0)
+      {
+        bool1 = bool3;
+        if (FlexboxLayoutManager.k2(FlexboxLayoutManager.this) == 3) {
+          bool1 = true;
+        }
+        e = bool1;
+        return;
+      }
+      bool1 = bool4;
+      if (FlexboxLayoutManager.j2(FlexboxLayoutManager.this) == 2) {
+        bool1 = true;
+      }
+      e = bool1;
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("AnchorInfo{mPosition=");
+      localStringBuilder.append(a);
+      localStringBuilder.append(", mFlexLinePosition=");
+      localStringBuilder.append(b);
+      localStringBuilder.append(", mCoordinate=");
+      localStringBuilder.append(c);
+      localStringBuilder.append(", mPerpendicularCoordinate=");
+      localStringBuilder.append(d);
+      localStringBuilder.append(", mLayoutFromEnd=");
+      localStringBuilder.append(e);
+      localStringBuilder.append(", mValid=");
+      localStringBuilder.append(f);
+      localStringBuilder.append(", mAssignedFromSavedState=");
+      localStringBuilder.append(g);
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  private static class c
+  {
+    private int a;
+    private boolean b;
+    private int c;
+    private int d;
+    private int e;
+    private int f;
+    private int g;
+    private int h = 1;
+    private int i = 1;
+    private boolean j;
+    
+    private c() {}
+    
+    private boolean w(RecyclerView.y paramY, List<b> paramList)
+    {
+      int k = d;
+      if ((k >= 0) && (k < paramY.b()))
+      {
+        k = c;
+        if ((k >= 0) && (k < paramList.size())) {
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("LayoutState{mAvailable=");
+      localStringBuilder.append(a);
+      localStringBuilder.append(", mFlexLinePosition=");
+      localStringBuilder.append(c);
+      localStringBuilder.append(", mPosition=");
+      localStringBuilder.append(d);
+      localStringBuilder.append(", mOffset=");
+      localStringBuilder.append(e);
+      localStringBuilder.append(", mScrollingOffset=");
+      localStringBuilder.append(f);
+      localStringBuilder.append(", mLastScrollDelta=");
+      localStringBuilder.append(g);
+      localStringBuilder.append(", mItemDirection=");
+      localStringBuilder.append(h);
+      localStringBuilder.append(", mLayoutDirection=");
+      localStringBuilder.append(i);
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+  }
+}

@@ -1,0 +1,174 @@
+package com.google.android.gms.common.api.internal;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.text.TextUtils;
+import com.google.android.gms.common.R.string;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.StringResourceValueReader;
+import com.google.android.gms.common.internal.zzag;
+import com.google.android.gms.common.util.VisibleForTesting;
+
+@Deprecated
+@KeepForSdk
+public final class GoogleServices
+{
+  private static final Object zza = new Object();
+  private static GoogleServices zzb;
+  private final String zzc;
+  private final Status zzd;
+  private final boolean zze;
+  private final boolean zzf;
+  
+  @KeepForSdk
+  @VisibleForTesting
+  GoogleServices(Context paramContext)
+  {
+    Object localObject = paramContext.getResources();
+    int i = ((Resources)localObject).getIdentifier("google_app_measurement_enable", "integer", ((Resources)localObject).getResourcePackageName(R.string.common_google_play_services_unknown_issue));
+    boolean bool2 = true;
+    boolean bool1 = true;
+    if (i != 0)
+    {
+      i = ((Resources)localObject).getInteger(i);
+      if (i != 0) {
+        bool2 = false;
+      } else {
+        bool2 = true;
+      }
+      if (i == 0) {
+        bool1 = false;
+      }
+      zzf = bool2;
+    }
+    else
+    {
+      zzf = false;
+      bool1 = bool2;
+    }
+    zze = bool1;
+    String str = zzag.zzb(paramContext);
+    localObject = str;
+    if (str == null) {
+      localObject = new StringResourceValueReader(paramContext).getString("google_app_id");
+    }
+    if (TextUtils.isEmpty((CharSequence)localObject))
+    {
+      zzd = new Status(10, "Missing google app id value from from string resources with name google_app_id.");
+      zzc = null;
+      return;
+    }
+    zzc = ((String)localObject);
+    zzd = Status.RESULT_SUCCESS;
+  }
+  
+  @KeepForSdk
+  @VisibleForTesting
+  GoogleServices(String paramString, boolean paramBoolean)
+  {
+    zzc = paramString;
+    zzd = Status.RESULT_SUCCESS;
+    zze = paramBoolean;
+    zzf = (paramBoolean ^ true);
+  }
+  
+  @KeepForSdk
+  private static GoogleServices checkInitialized(String paramString)
+  {
+    synchronized (zza)
+    {
+      Object localObject2 = zzb;
+      if (localObject2 != null) {
+        return localObject2;
+      }
+      localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append("Initialize must be called before ");
+      ((StringBuilder)localObject2).append(paramString);
+      ((StringBuilder)localObject2).append(".");
+      throw new IllegalStateException(((StringBuilder)localObject2).toString());
+    }
+  }
+  
+  @KeepForSdk
+  @VisibleForTesting
+  static void clearInstanceForTest()
+  {
+    synchronized (zza)
+    {
+      zzb = null;
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public static String getGoogleAppId()
+  {
+    return checkInitialized"getGoogleAppId"zzc;
+  }
+  
+  @KeepForSdk
+  public static Status initialize(Context paramContext)
+  {
+    Preconditions.checkNotNull(paramContext, "Context must not be null.");
+    synchronized (zza)
+    {
+      if (zzb == null) {
+        zzb = new GoogleServices(paramContext);
+      }
+      paramContext = zzbzzd;
+      return paramContext;
+    }
+  }
+  
+  @KeepForSdk
+  public static Status initialize(Context arg0, String paramString, boolean paramBoolean)
+  {
+    Preconditions.checkNotNull(???, "Context must not be null.");
+    Preconditions.checkNotEmpty(paramString, "App ID must be nonempty.");
+    synchronized (zza)
+    {
+      GoogleServices localGoogleServices = zzb;
+      if (localGoogleServices != null)
+      {
+        paramString = localGoogleServices.checkGoogleAppId(paramString);
+        return paramString;
+      }
+      paramString = new GoogleServices(paramString, paramBoolean);
+      zzb = paramString;
+      paramString = zzd;
+      return paramString;
+    }
+  }
+  
+  @KeepForSdk
+  public static boolean isMeasurementEnabled()
+  {
+    GoogleServices localGoogleServices = checkInitialized("isMeasurementEnabled");
+    return (zzd.isSuccess()) && (zze);
+  }
+  
+  @KeepForSdk
+  public static boolean isMeasurementExplicitlyDisabled()
+  {
+    return checkInitialized"isMeasurementExplicitlyDisabled"zzf;
+  }
+  
+  @KeepForSdk
+  @VisibleForTesting
+  Status checkGoogleAppId(String paramString)
+  {
+    Object localObject = zzc;
+    if ((localObject != null) && (!((String)localObject).equals(paramString)))
+    {
+      paramString = zzc;
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Initialize was called with two different Google App IDs.  Only the first app ID will be used: '");
+      ((StringBuilder)localObject).append(paramString);
+      ((StringBuilder)localObject).append("'.");
+      return new Status(10, ((StringBuilder)localObject).toString());
+    }
+    return Status.RESULT_SUCCESS;
+  }
+}

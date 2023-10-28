@@ -1,0 +1,849 @@
+package com.google.android.gms.common.internal;
+
+import android.accounts.Account;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.DeadObjectException;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Looper;
+import android.os.RemoteException;
+import android.util.Log;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Feature;
+import com.google.android.gms.common.GoogleApiAvailabilityLight;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@KeepForSdk
+public abstract class BaseGmsClient<T extends IInterface>
+{
+  @KeepForSdk
+  public static final int CONNECT_STATE_CONNECTED = 4;
+  @KeepForSdk
+  public static final int CONNECT_STATE_DISCONNECTED = 1;
+  @KeepForSdk
+  public static final int CONNECT_STATE_DISCONNECTING = 5;
+  @KeepForSdk
+  public static final String DEFAULT_ACCOUNT = "<<default account>>";
+  @KeepForSdk
+  public static final String[] GOOGLE_PLUS_REQUIRED_FEATURES = { "service_esmobile", "service_googleme" };
+  @KeepForSdk
+  public static final String KEY_PENDING_INTENT = "pendingIntent";
+  private static final Feature[] zze = new Feature[0];
+  private volatile String zzA;
+  private ConnectionResult zzB = null;
+  private boolean zzC = false;
+  private volatile zzj zzD = null;
+  @VisibleForTesting
+  zzu zza;
+  final Handler zzb;
+  @VisibleForTesting
+  protected ConnectionProgressReportCallbacks zzc;
+  @VisibleForTesting
+  protected AtomicInteger zzd = new AtomicInteger(0);
+  private int zzf;
+  private long zzg;
+  private long zzh;
+  private int zzi;
+  private long zzj;
+  private volatile String zzk = null;
+  private final Context zzl;
+  private final Looper zzm;
+  private final GmsClientSupervisor zzn;
+  private final GoogleApiAvailabilityLight zzo;
+  private final Object zzp = new Object();
+  private final Object zzq = new Object();
+  private IGmsServiceBroker zzr;
+  private IInterface zzs;
+  private final ArrayList zzt = new ArrayList();
+  private zze zzu;
+  private int zzv = 1;
+  private final BaseConnectionCallbacks zzw;
+  private final BaseOnConnectionFailedListener zzx;
+  private final int zzy;
+  private final String zzz;
+  
+  @KeepForSdk
+  @VisibleForTesting
+  protected BaseGmsClient(Context paramContext, Handler paramHandler, GmsClientSupervisor paramGmsClientSupervisor, GoogleApiAvailabilityLight paramGoogleApiAvailabilityLight, int paramInt, BaseConnectionCallbacks paramBaseConnectionCallbacks, BaseOnConnectionFailedListener paramBaseOnConnectionFailedListener)
+  {
+    Preconditions.checkNotNull(paramContext, "Context must not be null");
+    zzl = paramContext;
+    Preconditions.checkNotNull(paramHandler, "Handler must not be null");
+    zzb = paramHandler;
+    zzm = paramHandler.getLooper();
+    Preconditions.checkNotNull(paramGmsClientSupervisor, "Supervisor must not be null");
+    zzn = paramGmsClientSupervisor;
+    Preconditions.checkNotNull(paramGoogleApiAvailabilityLight, "API availability must not be null");
+    zzo = paramGoogleApiAvailabilityLight;
+    zzy = paramInt;
+    zzw = paramBaseConnectionCallbacks;
+    zzx = paramBaseOnConnectionFailedListener;
+    zzz = null;
+  }
+  
+  @KeepForSdk
+  protected BaseGmsClient(Context paramContext, Looper paramLooper, int paramInt, BaseConnectionCallbacks paramBaseConnectionCallbacks, BaseOnConnectionFailedListener paramBaseOnConnectionFailedListener, String paramString)
+  {
+    this(paramContext, paramLooper, localGmsClientSupervisor, localGoogleApiAvailabilityLight, paramInt, paramBaseConnectionCallbacks, paramBaseOnConnectionFailedListener, paramString);
+  }
+  
+  @KeepForSdk
+  @VisibleForTesting
+  protected BaseGmsClient(Context paramContext, Looper paramLooper, GmsClientSupervisor paramGmsClientSupervisor, GoogleApiAvailabilityLight paramGoogleApiAvailabilityLight, int paramInt, BaseConnectionCallbacks paramBaseConnectionCallbacks, BaseOnConnectionFailedListener paramBaseOnConnectionFailedListener, String paramString)
+  {
+    Preconditions.checkNotNull(paramContext, "Context must not be null");
+    zzl = paramContext;
+    Preconditions.checkNotNull(paramLooper, "Looper must not be null");
+    zzm = paramLooper;
+    Preconditions.checkNotNull(paramGmsClientSupervisor, "Supervisor must not be null");
+    zzn = paramGmsClientSupervisor;
+    Preconditions.checkNotNull(paramGoogleApiAvailabilityLight, "API availability must not be null");
+    zzo = paramGoogleApiAvailabilityLight;
+    zzb = new zzb(this, paramLooper);
+    zzy = paramInt;
+    zzw = paramBaseConnectionCallbacks;
+    zzx = paramBaseOnConnectionFailedListener;
+    zzz = paramString;
+  }
+  
+  private final void zzp(int paramInt, IInterface paramIInterface)
+  {
+    boolean bool = false;
+    int i;
+    if (paramInt != 4) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    int j;
+    if (paramIInterface == null) {
+      j = 0;
+    } else {
+      j = 1;
+    }
+    if (i == j) {
+      bool = true;
+    }
+    Preconditions.checkArgument(bool);
+    synchronized (zzp)
+    {
+      zzv = paramInt;
+      zzs = paramIInterface;
+      Object localObject3;
+      Object localObject2;
+      if (paramInt != 1)
+      {
+        if ((paramInt != 2) && (paramInt != 3))
+        {
+          if (paramInt == 4)
+          {
+            Preconditions.checkNotNull(paramIInterface);
+            onConnectedLocked(paramIInterface);
+          }
+        }
+        else
+        {
+          paramIInterface = zzu;
+          if (paramIInterface != null)
+          {
+            localObject3 = zza;
+            if (localObject3 != null)
+            {
+              localObject2 = ((zzu)localObject3).zzc();
+              localObject3 = ((zzu)localObject3).zzb();
+              localObject4 = new StringBuilder();
+              ((StringBuilder)localObject4).append("Calling connect() while still connected, missing disconnect() for ");
+              ((StringBuilder)localObject4).append((String)localObject2);
+              ((StringBuilder)localObject4).append(" on ");
+              ((StringBuilder)localObject4).append((String)localObject3);
+              Log.e("GmsClient", ((StringBuilder)localObject4).toString());
+              localObject2 = zzn;
+              localObject3 = zza.zzc();
+              Preconditions.checkNotNull(localObject3);
+              ((GmsClientSupervisor)localObject2).zzb((String)localObject3, zza.zzb(), zza.zza(), paramIInterface, zze(), zza.zzd());
+              zzd.incrementAndGet();
+            }
+          }
+          localObject2 = new zze(this, zzd.get());
+          zzu = ((zze)localObject2);
+          if ((zzv == 3) && (getLocalStartServiceAction() != null)) {
+            paramIInterface = new zzu(getContext().getPackageName(), getLocalStartServiceAction(), true, GmsClientSupervisor.getDefaultBindFlags(), false);
+          } else {
+            paramIInterface = new zzu(getStartServicePackage(), getStartServiceAction(), false, GmsClientSupervisor.getDefaultBindFlags(), getUseDynamicLookup());
+          }
+          zza = paramIInterface;
+          if ((paramIInterface.zzd()) && (getMinApkVersion() < 17895000)) {
+            throw new IllegalStateException("Internal Error, the minimum apk version of this BaseGmsClient is too low to support dynamic lookup. Start service action: ".concat(String.valueOf(zza.zzc())));
+          }
+          paramIInterface = zzn;
+          localObject3 = zza.zzc();
+          Preconditions.checkNotNull(localObject3);
+          Object localObject4 = zza.zzb();
+          paramInt = zza.zza();
+          String str = zze();
+          bool = zza.zzd();
+          Executor localExecutor = getBindServiceExecutor();
+          if (!paramIInterface.zzc(new zzn((String)localObject3, (String)localObject4, paramInt, bool), (ServiceConnection)localObject2, str, localExecutor))
+          {
+            paramIInterface = zza.zzc();
+            localObject2 = zza.zzb();
+            localObject3 = new StringBuilder();
+            ((StringBuilder)localObject3).append("unable to connect to service: ");
+            ((StringBuilder)localObject3).append(paramIInterface);
+            ((StringBuilder)localObject3).append(" on ");
+            ((StringBuilder)localObject3).append((String)localObject2);
+            Log.w("GmsClient", ((StringBuilder)localObject3).toString());
+            zzl(16, null, zzd.get());
+          }
+        }
+      }
+      else
+      {
+        paramIInterface = zzu;
+        if (paramIInterface != null)
+        {
+          localObject2 = zzn;
+          localObject3 = zza.zzc();
+          Preconditions.checkNotNull(localObject3);
+          ((GmsClientSupervisor)localObject2).zzb((String)localObject3, zza.zzb(), zza.zza(), paramIInterface, zze(), zza.zzd());
+          zzu = null;
+        }
+      }
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public void checkAvailabilityAndConnect()
+  {
+    int i = zzo.isGooglePlayServicesAvailable(zzl, getMinApkVersion());
+    if (i != 0)
+    {
+      zzp(1, null);
+      triggerNotAvailable(new LegacyClientCallbackAdapter(), i, null);
+      return;
+    }
+    connect(new LegacyClientCallbackAdapter());
+  }
+  
+  @KeepForSdk
+  protected final void checkConnected()
+  {
+    if (isConnected()) {
+      return;
+    }
+    throw new IllegalStateException("Not connected. Call connect() and wait for onConnected() to be called.");
+  }
+  
+  @KeepForSdk
+  public void connect(ConnectionProgressReportCallbacks paramConnectionProgressReportCallbacks)
+  {
+    Preconditions.checkNotNull(paramConnectionProgressReportCallbacks, "Connection progress callbacks cannot be null.");
+    zzc = paramConnectionProgressReportCallbacks;
+    zzp(2, null);
+  }
+  
+  @KeepForSdk
+  protected abstract T createServiceInterface(IBinder paramIBinder);
+  
+  @KeepForSdk
+  public void disconnect()
+  {
+    zzd.incrementAndGet();
+    synchronized (zzt)
+    {
+      int j = zzt.size();
+      int i = 0;
+      while (i < j)
+      {
+        ((zzc)zzt.get(i)).zzf();
+        i += 1;
+      }
+      zzt.clear();
+      synchronized (zzq)
+      {
+        zzr = null;
+        zzp(1, null);
+        return;
+      }
+    }
+  }
+  
+  @KeepForSdk
+  public void disconnect(String paramString)
+  {
+    zzk = paramString;
+    disconnect();
+  }
+  
+  @KeepForSdk
+  public void dump(String paramString, FileDescriptor paramFileDescriptor, PrintWriter paramPrintWriter, String[] arg4)
+  {
+    synchronized (zzp)
+    {
+      int i = zzv;
+      paramFileDescriptor = zzs;
+      synchronized (zzq)
+      {
+        Object localObject = zzr;
+        paramPrintWriter.append(paramString).append("mConnectState=");
+        if (i != 1)
+        {
+          if (i != 2)
+          {
+            if (i != 3)
+            {
+              if (i != 4)
+              {
+                if (i != 5) {
+                  paramPrintWriter.print("UNKNOWN");
+                } else {
+                  paramPrintWriter.print("DISCONNECTING");
+                }
+              }
+              else {
+                paramPrintWriter.print("CONNECTED");
+              }
+            }
+            else {
+              paramPrintWriter.print("LOCAL_CONNECTING");
+            }
+          }
+          else {
+            paramPrintWriter.print("REMOTE_CONNECTING");
+          }
+        }
+        else {
+          paramPrintWriter.print("DISCONNECTED");
+        }
+        paramPrintWriter.append(" mService=");
+        if (paramFileDescriptor == null) {
+          paramPrintWriter.append("null");
+        } else {
+          paramPrintWriter.append(getServiceDescriptor()).append("@").append(Integer.toHexString(System.identityHashCode(paramFileDescriptor.asBinder())));
+        }
+        paramPrintWriter.append(" mServiceBroker=");
+        if (localObject == null) {
+          paramPrintWriter.println("null");
+        } else {
+          paramPrintWriter.append("IGmsServiceBroker@").println(Integer.toHexString(System.identityHashCode(((IInterface)localObject).asBinder())));
+        }
+        paramFileDescriptor = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+        long l;
+        StringBuilder localStringBuilder;
+        if (zzh > 0L)
+        {
+          ??? = paramPrintWriter.append(paramString).append("lastConnectedTime=");
+          l = zzh;
+          localObject = paramFileDescriptor.format(new Date(l));
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append(l);
+          localStringBuilder.append(" ");
+          localStringBuilder.append((String)localObject);
+          ???.println(localStringBuilder.toString());
+        }
+        if (zzg > 0L)
+        {
+          paramPrintWriter.append(paramString).append("lastSuspendedCause=");
+          i = zzf;
+          if (i != 1)
+          {
+            if (i != 2)
+            {
+              if (i != 3) {
+                paramPrintWriter.append(String.valueOf(i));
+              } else {
+                paramPrintWriter.append("CAUSE_DEAD_OBJECT_EXCEPTION");
+              }
+            }
+            else {
+              paramPrintWriter.append("CAUSE_NETWORK_LOST");
+            }
+          }
+          else {
+            paramPrintWriter.append("CAUSE_SERVICE_DISCONNECTED");
+          }
+          ??? = paramPrintWriter.append(" lastSuspendedTime=");
+          l = zzg;
+          localObject = paramFileDescriptor.format(new Date(l));
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append(l);
+          localStringBuilder.append(" ");
+          localStringBuilder.append((String)localObject);
+          ???.println(localStringBuilder.toString());
+        }
+        if (zzj > 0L)
+        {
+          paramPrintWriter.append(paramString).append("lastFailedStatus=").append(CommonStatusCodes.getStatusCodeString(zzi));
+          paramString = paramPrintWriter.append(" lastFailedTime=");
+          l = zzj;
+          paramFileDescriptor = paramFileDescriptor.format(new Date(l));
+          paramPrintWriter = new StringBuilder();
+          paramPrintWriter.append(l);
+          paramPrintWriter.append(" ");
+          paramPrintWriter.append(paramFileDescriptor);
+          paramString.println(paramPrintWriter.toString());
+        }
+        return;
+      }
+    }
+  }
+  
+  @KeepForSdk
+  protected boolean enableLocalFallback()
+  {
+    return false;
+  }
+  
+  @KeepForSdk
+  public Account getAccount()
+  {
+    return null;
+  }
+  
+  @KeepForSdk
+  public Feature[] getApiFeatures()
+  {
+    return zze;
+  }
+  
+  @KeepForSdk
+  public final Feature[] getAvailableFeatures()
+  {
+    zzj localZzj = zzD;
+    if (localZzj == null) {
+      return null;
+    }
+    return zzb;
+  }
+  
+  @KeepForSdk
+  protected Executor getBindServiceExecutor()
+  {
+    return null;
+  }
+  
+  @KeepForSdk
+  public Bundle getConnectionHint()
+  {
+    return null;
+  }
+  
+  @KeepForSdk
+  public final Context getContext()
+  {
+    return zzl;
+  }
+  
+  @KeepForSdk
+  public String getEndpointPackageName()
+  {
+    if (isConnected())
+    {
+      zzu localZzu = zza;
+      if (localZzu != null) {
+        return localZzu.zzb();
+      }
+    }
+    throw new RuntimeException("Failed to connect when checking package");
+  }
+  
+  @KeepForSdk
+  public int getGCoreServiceId()
+  {
+    return zzy;
+  }
+  
+  @KeepForSdk
+  protected Bundle getGetServiceRequestExtraArgs()
+  {
+    return new Bundle();
+  }
+  
+  @KeepForSdk
+  public String getLastDisconnectMessage()
+  {
+    return zzk;
+  }
+  
+  @KeepForSdk
+  protected String getLocalStartServiceAction()
+  {
+    return null;
+  }
+  
+  @KeepForSdk
+  public final Looper getLooper()
+  {
+    return zzm;
+  }
+  
+  @KeepForSdk
+  public int getMinApkVersion()
+  {
+    return GoogleApiAvailabilityLight.GOOGLE_PLAY_SERVICES_VERSION_CODE;
+  }
+  
+  @KeepForSdk
+  public void getRemoteService(IAccountAccessor arg1, Set<Scope> paramSet)
+  {
+    Object localObject1 = getGetServiceRequestExtraArgs();
+    int i = zzy;
+    Object localObject2 = zzA;
+    int j = GoogleApiAvailabilityLight.GOOGLE_PLAY_SERVICES_VERSION_CODE;
+    Scope[] arrayOfScope = GetServiceRequest.zza;
+    Bundle localBundle = new Bundle();
+    Feature[] arrayOfFeature = GetServiceRequest.zzb;
+    localObject2 = new GetServiceRequest(6, i, j, null, null, arrayOfScope, localBundle, null, arrayOfFeature, arrayOfFeature, true, 0, false, (String)localObject2);
+    zzf = zzl.getPackageName();
+    zzi = ((Bundle)localObject1);
+    if (paramSet != null) {
+      zzh = ((Scope[])paramSet.toArray(new Scope[0]));
+    }
+    if (requiresSignIn())
+    {
+      localObject1 = getAccount();
+      paramSet = (Set<Scope>)localObject1;
+      if (localObject1 == null) {
+        paramSet = new Account("<<default account>>", "com.google");
+      }
+      zzj = paramSet;
+      if (??? != null) {
+        zzg = ???.asBinder();
+      }
+    }
+    else if (requiresAccount())
+    {
+      zzj = getAccount();
+    }
+    zzk = zze;
+    zzl = getApiFeatures();
+    if (usesClientTelemetry()) {
+      zzo = true;
+    }
+    try
+    {
+      try
+      {
+        synchronized (zzq)
+        {
+          paramSet = zzr;
+          if (paramSet != null) {
+            paramSet.getService(new zzd(this, zzd.get()), (GetServiceRequest)localObject2);
+          } else {
+            Log.w("GmsClient", "mServiceBroker is null, client disconnected");
+          }
+          return;
+        }
+        Log.w("GmsClient", "IGmsServiceBroker.getService failed", ???);
+      }
+      catch (RuntimeException ???) {}catch (RemoteException ???) {}
+      onPostInitHandler(8, null, null, zzd.get());
+      return;
+    }
+    catch (SecurityException ???)
+    {
+      throw ???;
+    }
+    catch (DeadObjectException ???)
+    {
+      Log.w("GmsClient", "IGmsServiceBroker.getService failed", ???);
+      triggerConnectionSuspended(3);
+    }
+  }
+  
+  @KeepForSdk
+  protected Set<Scope> getScopes()
+  {
+    return Collections.emptySet();
+  }
+  
+  @KeepForSdk
+  public final T getService()
+    throws DeadObjectException
+  {
+    synchronized (zzp)
+    {
+      if (zzv != 5)
+      {
+        checkConnected();
+        IInterface localIInterface = zzs;
+        Preconditions.checkNotNull(localIInterface, "Client is connected but service is null");
+        return localIInterface;
+      }
+      throw new DeadObjectException();
+    }
+  }
+  
+  @KeepForSdk
+  public IBinder getServiceBrokerBinder()
+  {
+    synchronized (zzq)
+    {
+      Object localObject2 = zzr;
+      if (localObject2 == null) {
+        return null;
+      }
+      localObject2 = ((IInterface)localObject2).asBinder();
+      return localObject2;
+    }
+  }
+  
+  @KeepForSdk
+  protected abstract String getServiceDescriptor();
+  
+  @KeepForSdk
+  public Intent getSignInIntent()
+  {
+    throw new UnsupportedOperationException("Not a sign in API");
+  }
+  
+  @KeepForSdk
+  protected abstract String getStartServiceAction();
+  
+  @KeepForSdk
+  protected String getStartServicePackage()
+  {
+    return "com.google.android.gms";
+  }
+  
+  @KeepForSdk
+  public ConnectionTelemetryConfiguration getTelemetryConfiguration()
+  {
+    zzj localZzj = zzD;
+    if (localZzj == null) {
+      return null;
+    }
+    return zzd;
+  }
+  
+  @KeepForSdk
+  protected boolean getUseDynamicLookup()
+  {
+    return getMinApkVersion() >= 211700000;
+  }
+  
+  @KeepForSdk
+  public boolean hasConnectionInfo()
+  {
+    return zzD != null;
+  }
+  
+  @KeepForSdk
+  public boolean isConnected()
+  {
+    for (;;)
+    {
+      synchronized (zzp)
+      {
+        if (zzv == 4)
+        {
+          bool = true;
+          return bool;
+        }
+      }
+      boolean bool = false;
+    }
+  }
+  
+  @KeepForSdk
+  public boolean isConnecting()
+  {
+    for (;;)
+    {
+      synchronized (zzp)
+      {
+        int i = zzv;
+        boolean bool2 = true;
+        bool1 = bool2;
+        if (i != 2)
+        {
+          if (i != 3) {
+            break label46;
+          }
+          bool1 = bool2;
+        }
+        return bool1;
+      }
+      label46:
+      boolean bool1 = false;
+    }
+  }
+  
+  @KeepForSdk
+  protected void onConnectedLocked(T paramT)
+  {
+    zzh = System.currentTimeMillis();
+  }
+  
+  @KeepForSdk
+  protected void onConnectionFailed(ConnectionResult paramConnectionResult)
+  {
+    zzi = paramConnectionResult.getErrorCode();
+    zzj = System.currentTimeMillis();
+  }
+  
+  @KeepForSdk
+  protected void onConnectionSuspended(int paramInt)
+  {
+    zzf = paramInt;
+    zzg = System.currentTimeMillis();
+  }
+  
+  @KeepForSdk
+  protected void onPostInitHandler(int paramInt1, IBinder paramIBinder, Bundle paramBundle, int paramInt2)
+  {
+    Handler localHandler = zzb;
+    localHandler.sendMessage(localHandler.obtainMessage(1, paramInt2, -1, new zzf(this, paramInt1, paramIBinder, paramBundle)));
+  }
+  
+  @KeepForSdk
+  public void onUserSignOut(SignOutCallbacks paramSignOutCallbacks)
+  {
+    paramSignOutCallbacks.onSignOutComplete();
+  }
+  
+  @KeepForSdk
+  public boolean providesSignIn()
+  {
+    return false;
+  }
+  
+  @KeepForSdk
+  public boolean requiresAccount()
+  {
+    return false;
+  }
+  
+  @KeepForSdk
+  public boolean requiresGooglePlayServices()
+  {
+    return true;
+  }
+  
+  @KeepForSdk
+  public boolean requiresSignIn()
+  {
+    return false;
+  }
+  
+  @KeepForSdk
+  public void setAttributionTag(String paramString)
+  {
+    zzA = paramString;
+  }
+  
+  @KeepForSdk
+  public void triggerConnectionSuspended(int paramInt)
+  {
+    Handler localHandler = zzb;
+    localHandler.sendMessage(localHandler.obtainMessage(6, zzd.get(), paramInt));
+  }
+  
+  @KeepForSdk
+  @VisibleForTesting
+  protected void triggerNotAvailable(ConnectionProgressReportCallbacks paramConnectionProgressReportCallbacks, int paramInt, PendingIntent paramPendingIntent)
+  {
+    Preconditions.checkNotNull(paramConnectionProgressReportCallbacks, "Connection progress callbacks cannot be null.");
+    zzc = paramConnectionProgressReportCallbacks;
+    paramConnectionProgressReportCallbacks = zzb;
+    paramConnectionProgressReportCallbacks.sendMessage(paramConnectionProgressReportCallbacks.obtainMessage(3, zzd.get(), paramInt, paramPendingIntent));
+  }
+  
+  @KeepForSdk
+  public boolean usesClientTelemetry()
+  {
+    return false;
+  }
+  
+  protected final String zze()
+  {
+    String str2 = zzz;
+    String str1 = str2;
+    if (str2 == null) {
+      str1 = zzl.getClass().getName();
+    }
+    return str1;
+  }
+  
+  protected final void zzl(int paramInt1, Bundle paramBundle, int paramInt2)
+  {
+    paramBundle = zzb;
+    paramBundle.sendMessage(paramBundle.obtainMessage(7, paramInt2, -1, new zzg(this, paramInt1, null)));
+  }
+  
+  @KeepForSdk
+  public static abstract interface BaseConnectionCallbacks
+  {
+    @KeepForSdk
+    public static final int CAUSE_DEAD_OBJECT_EXCEPTION = 3;
+    @KeepForSdk
+    public static final int CAUSE_SERVICE_DISCONNECTED = 1;
+    
+    @KeepForSdk
+    public abstract void onConnected(Bundle paramBundle);
+    
+    @KeepForSdk
+    public abstract void onConnectionSuspended(int paramInt);
+  }
+  
+  @KeepForSdk
+  public static abstract interface BaseOnConnectionFailedListener
+  {
+    @KeepForSdk
+    public abstract void onConnectionFailed(ConnectionResult paramConnectionResult);
+  }
+  
+  @KeepForSdk
+  public static abstract interface ConnectionProgressReportCallbacks
+  {
+    @KeepForSdk
+    public abstract void onReportServiceBinding(ConnectionResult paramConnectionResult);
+  }
+  
+  protected class LegacyClientCallbackAdapter
+    implements BaseGmsClient.ConnectionProgressReportCallbacks
+  {
+    @KeepForSdk
+    public LegacyClientCallbackAdapter() {}
+    
+    public final void onReportServiceBinding(ConnectionResult paramConnectionResult)
+    {
+      if (paramConnectionResult.isSuccess())
+      {
+        paramConnectionResult = BaseGmsClient.this;
+        paramConnectionResult.getRemoteService(null, paramConnectionResult.getScopes());
+        return;
+      }
+      if (BaseGmsClient.zzc(BaseGmsClient.this) != null) {
+        BaseGmsClient.zzc(BaseGmsClient.this).onConnectionFailed(paramConnectionResult);
+      }
+    }
+  }
+  
+  @KeepForSdk
+  public static abstract interface SignOutCallbacks
+  {
+    @KeepForSdk
+    public abstract void onSignOutComplete();
+  }
+}

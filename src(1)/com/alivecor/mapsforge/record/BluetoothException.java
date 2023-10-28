@@ -1,0 +1,19 @@
+package com.alivecor.mapsforge.record;
+
+import com.alivecor.universal_monitor.bluetooth.BluetoothDeviceConnectionError;
+
+class BluetoothException
+  extends Exception
+{
+  private final BluetoothDeviceConnectionError errorCode;
+  
+  BluetoothException(BluetoothDeviceConnectionError paramBluetoothDeviceConnectionError)
+  {
+    errorCode = paramBluetoothDeviceConnectionError;
+  }
+  
+  BluetoothDeviceConnectionError getErrorCode()
+  {
+    return errorCode;
+  }
+}

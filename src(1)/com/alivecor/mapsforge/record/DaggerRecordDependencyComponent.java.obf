@@ -1,0 +1,167 @@
+package com.alivecor.ecg.record;
+
+import com.alivecor.ai.l;
+import com.alivecor.ai.p;
+
+public final class DaggerRecordDependencyComponent
+{
+  private DaggerRecordDependencyComponent() {}
+  
+  public static Builder builder()
+  {
+    return new Builder(null);
+  }
+  
+  public static final class Builder
+  {
+    private com.alivecor.ai.a aiComponent;
+    private b.a.a.a.a contextModule;
+    private RecordEkgLibraryModule recordEkgLibraryModule;
+    
+    private Builder() {}
+    
+    public Builder aiComponent(com.alivecor.ai.a paramA)
+    {
+      aiComponent = ((com.alivecor.ai.a)dagger.internal.b.b(paramA));
+      return this;
+    }
+    
+    public RecordDependencyComponent build()
+    {
+      dagger.internal.b.a(contextModule, b.a.a.a.a.class);
+      if (recordEkgLibraryModule == null) {
+        recordEkgLibraryModule = new RecordEkgLibraryModule();
+      }
+      dagger.internal.b.a(aiComponent, com.alivecor.ai.a.class);
+      return new DaggerRecordDependencyComponent.RecordDependencyComponentImpl(contextModule, recordEkgLibraryModule, aiComponent, null);
+    }
+    
+    public Builder contextModule(b.a.a.a.a paramA)
+    {
+      contextModule = ((b.a.a.a.a)dagger.internal.b.b(paramA));
+      return this;
+    }
+    
+    public Builder recordEkgLibraryModule(RecordEkgLibraryModule paramRecordEkgLibraryModule)
+    {
+      recordEkgLibraryModule = ((RecordEkgLibraryModule)dagger.internal.b.b(paramRecordEkgLibraryModule));
+      return this;
+    }
+  }
+  
+  private static final class RecordDependencyComponentImpl
+    implements RecordDependencyComponent
+  {
+    private final com.alivecor.ai.a aiComponent;
+    private final b.a.a.a.a contextModule;
+    private g.a.a<AppPreferences> providesAppPreferencesProvider;
+    private final RecordDependencyComponentImpl recordDependencyComponentImpl = this;
+    
+    private RecordDependencyComponentImpl(b.a.a.a.a paramA, RecordEkgLibraryModule paramRecordEkgLibraryModule, com.alivecor.ai.a paramA1)
+    {
+      aiComponent = paramA1;
+      contextModule = paramA;
+      initialize(paramA, paramRecordEkgLibraryModule, paramA1);
+    }
+    
+    private void initialize(b.a.a.a.a paramA, RecordEkgLibraryModule paramRecordEkgLibraryModule, com.alivecor.ai.a paramA1)
+    {
+      providesAppPreferencesProvider = dagger.internal.a.a(RecordEkgLibraryModule_ProvidesAppPreferencesFactory.create(paramRecordEkgLibraryModule));
+    }
+    
+    private AppPreferences injectAppPreferences(AppPreferences paramAppPreferences)
+    {
+      AppPreferences_MembersInjector.injectContext(paramAppPreferences, b.a.a.a.b.a(contextModule));
+      return paramAppPreferences;
+    }
+    
+    private EcgMonitorViewModel injectEcgMonitorViewModel(EcgMonitorViewModel paramEcgMonitorViewModel)
+    {
+      EcgMonitorViewModel_MembersInjector.injectApplicationContext(paramEcgMonitorViewModel, b.a.a.a.b.a(contextModule));
+      EcgMonitorViewModel_MembersInjector.injectAppPreferences(paramEcgMonitorViewModel, providesAppPreferencesProvider.get());
+      EcgMonitorViewModel_MembersInjector.injectEcgEvaluator(paramEcgMonitorViewModel, (p)dagger.internal.b.c(aiComponent.a()));
+      return paramEcgMonitorViewModel;
+    }
+    
+    private FragEcgRealtime injectFragEcgRealtime(FragEcgRealtime paramFragEcgRealtime)
+    {
+      FragEcgRealtime_MembersInjector.injectAppPreferences(paramFragEcgRealtime, providesAppPreferencesProvider.get());
+      return paramFragEcgRealtime;
+    }
+    
+    private FragEcgResults injectFragEcgResults(FragEcgResults paramFragEcgResults)
+    {
+      FragEcgResults_MembersInjector.injectAppPreferences(paramFragEcgResults, providesAppPreferencesProvider.get());
+      return paramFragEcgResults;
+    }
+    
+    private MicPermissionErrorFragment injectMicPermissionErrorFragment(MicPermissionErrorFragment paramMicPermissionErrorFragment)
+    {
+      MicPermissionErrorFragment_MembersInjector.injectAppPreferences(paramMicPermissionErrorFragment, providesAppPreferencesProvider.get());
+      return paramMicPermissionErrorFragment;
+    }
+    
+    private TriangleBluetoothWrapperClass injectTriangleBluetoothWrapperClass(TriangleBluetoothWrapperClass paramTriangleBluetoothWrapperClass)
+    {
+      TriangleBluetoothWrapperClass_MembersInjector.injectApplicationContext(paramTriangleBluetoothWrapperClass, b.a.a.a.b.a(contextModule));
+      return paramTriangleBluetoothWrapperClass;
+    }
+    
+    private TriangleIntroFragment injectTriangleIntroFragment(TriangleIntroFragment paramTriangleIntroFragment)
+    {
+      TriangleIntroFragment_MembersInjector.injectAppPreferences(paramTriangleIntroFragment, providesAppPreferencesProvider.get());
+      return paramTriangleIntroFragment;
+    }
+    
+    private Util injectUtil(Util paramUtil)
+    {
+      Util_MembersInjector.injectAppPreferences(paramUtil, providesAppPreferencesProvider.get());
+      return paramUtil;
+    }
+    
+    public l classifyRunner()
+    {
+      return (l)dagger.internal.b.c(aiComponent.b());
+    }
+    
+    public void inject(AppPreferences paramAppPreferences)
+    {
+      injectAppPreferences(paramAppPreferences);
+    }
+    
+    public void inject(EcgMonitorViewModel paramEcgMonitorViewModel)
+    {
+      injectEcgMonitorViewModel(paramEcgMonitorViewModel);
+    }
+    
+    public void inject(FragEcgRealtime paramFragEcgRealtime)
+    {
+      injectFragEcgRealtime(paramFragEcgRealtime);
+    }
+    
+    public void inject(FragEcgResults paramFragEcgResults)
+    {
+      injectFragEcgResults(paramFragEcgResults);
+    }
+    
+    public void inject(MicPermissionErrorFragment paramMicPermissionErrorFragment)
+    {
+      injectMicPermissionErrorFragment(paramMicPermissionErrorFragment);
+    }
+    
+    public void inject(TriangleBluetoothWrapperClass paramTriangleBluetoothWrapperClass)
+    {
+      injectTriangleBluetoothWrapperClass(paramTriangleBluetoothWrapperClass);
+    }
+    
+    public void inject(TriangleIntroFragment paramTriangleIntroFragment)
+    {
+      injectTriangleIntroFragment(paramTriangleIntroFragment);
+    }
+    
+    public void inject(Util paramUtil)
+    {
+      injectUtil(paramUtil);
+    }
+  }
+}

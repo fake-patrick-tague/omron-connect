@@ -1,0 +1,278 @@
+package com.google.android.gms.auth;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.text.TextUtils;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.GooglePlayServicesUtilLight;
+import com.google.android.gms.common.UserRecoverableException;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.logging.Logger;
+import java.io.IOException;
+import java.util.List;
+
+public class zzd
+{
+  private static final String[] ACCEPTABLE_ACCOUNT_TYPES = { "com.google", "com.google.work", "cn.google" };
+  public static final int CHANGE_TYPE_ACCOUNT_ADDED = 1;
+  public static final int CHANGE_TYPE_ACCOUNT_REMOVED = 2;
+  public static final int CHANGE_TYPE_ACCOUNT_RENAMED_FROM = 3;
+  public static final int CHANGE_TYPE_ACCOUNT_RENAMED_TO = 4;
+  public static final String GOOGLE_ACCOUNT_TYPE = "com.google";
+  public static final String KEY_ANDROID_PACKAGE_NAME = "androidPackageName";
+  public static final String KEY_CALLER_UID = "callerUid";
+  public static final String KEY_SUPPRESS_PROGRESS_SCREEN = "suppressProgressScreen";
+  public static final String WORK_ACCOUNT_TYPE = "com.google.work";
+  private static final ComponentName zzm = new ComponentName("com.google.android.gms", "com.google.android.gms.auth.GetToken");
+  private static final Logger zzn = new Logger("Auth", new String[] { "GoogleAuthUtil" });
+  
+  zzd() {}
+  
+  public static void clearToken(Context paramContext, String paramString)
+    throws GooglePlayServicesAvailabilityException, GoogleAuthException, IOException
+  {
+    Preconditions.checkNotMainThread("Calling this from your main thread can lead to deadlock");
+    ensurePlayServicesAvailable(paramContext, 8400000);
+    Bundle localBundle = new Bundle();
+    String str1 = getApplicationInfopackageName;
+    localBundle.putString("clientPackageName", str1);
+    String str2 = KEY_ANDROID_PACKAGE_NAME;
+    if (!localBundle.containsKey(str2)) {
+      localBundle.putString(str2, str1);
+    }
+    paramString = new zzf(paramString, localBundle);
+    zza(paramContext, zzm, paramString);
+  }
+  
+  private static void ensurePlayServicesAvailable(Context paramContext, int paramInt)
+    throws GoogleAuthException
+  {
+    try
+    {
+      GooglePlayServicesUtilLight.ensurePlayServicesAvailable(paramContext.getApplicationContext(), paramInt);
+      return;
+    }
+    catch (GooglePlayServicesNotAvailableException paramContext)
+    {
+      throw new GoogleAuthException(paramContext.getMessage());
+    }
+    catch (GooglePlayServicesRepairableException paramContext)
+    {
+      throw new GooglePlayServicesAvailabilityException(paramContext.getConnectionStatusCode(), paramContext.getMessage(), paramContext.getIntent());
+    }
+  }
+  
+  public static List<AccountChangeEvent> getAccountChangeEvents(Context paramContext, int paramInt, String paramString)
+    throws GoogleAuthException, IOException
+  {
+    Preconditions.checkNotEmpty(paramString, "accountName must be provided");
+    Preconditions.checkNotMainThread("Calling this from your main thread can lead to deadlock");
+    ensurePlayServicesAvailable(paramContext, 8400000);
+    paramString = new zzg(paramString, paramInt);
+    return (List)zza(paramContext, zzm, paramString);
+  }
+  
+  public static String getAccountId(Context paramContext, String paramString)
+    throws GoogleAuthException, IOException
+  {
+    Preconditions.checkNotEmpty(paramString, "accountName must be provided");
+    Preconditions.checkNotMainThread("Calling this from your main thread can lead to deadlock");
+    ensurePlayServicesAvailable(paramContext, 8400000);
+    return getToken(paramContext, paramString, "^^_account_id_^^", new Bundle());
+  }
+  
+  public static String getToken(Context paramContext, Account paramAccount, String paramString)
+    throws IOException, UserRecoverableAuthException, GoogleAuthException
+  {
+    return getToken(paramContext, paramAccount, paramString, new Bundle());
+  }
+  
+  public static String getToken(Context paramContext, Account paramAccount, String paramString, Bundle paramBundle)
+    throws IOException, UserRecoverableAuthException, GoogleAuthException
+  {
+    zzb(paramAccount);
+    return zzb(paramContext, paramAccount, paramString, paramBundle).zzb();
+  }
+  
+  @Deprecated
+  public static String getToken(Context paramContext, String paramString1, String paramString2)
+    throws IOException, UserRecoverableAuthException, GoogleAuthException
+  {
+    return getToken(paramContext, new Account(paramString1, "com.google"), paramString2);
+  }
+  
+  @Deprecated
+  public static String getToken(Context paramContext, String paramString1, String paramString2, Bundle paramBundle)
+    throws IOException, UserRecoverableAuthException, GoogleAuthException
+  {
+    return getToken(paramContext, new Account(paramString1, "com.google"), paramString2, paramBundle);
+  }
+  
+  @Deprecated
+  public static void invalidateToken(Context paramContext, String paramString)
+  {
+    AccountManager.get(paramContext).invalidateAuthToken("com.google", paramString);
+  }
+  
+  public static Bundle removeAccount(Context paramContext, Account paramAccount)
+    throws GoogleAuthException, IOException
+  {
+    Preconditions.checkNotNull(paramContext);
+    zzb(paramAccount);
+    ensurePlayServicesAvailable(paramContext, 8400000);
+    paramAccount = new zzh(paramAccount);
+    return (Bundle)zza(paramContext, zzm, paramAccount);
+  }
+  
+  public static Boolean requestGoogleAccountsAccess(Context paramContext)
+    throws GoogleAuthException, IOException
+  {
+    Preconditions.checkNotNull(paramContext);
+    ensurePlayServicesAvailable(paramContext, 11400000);
+    zzi localZzi = new zzi(getApplicationInfopackageName);
+    return (Boolean)zza(paramContext, zzm, localZzi);
+  }
+  
+  /* Error */
+  private static <T> T zza(Context paramContext, ComponentName paramComponentName, zzj<T> paramZzj)
+    throws IOException, GoogleAuthException
+  {
+    // Byte code:
+    //   0: new 244	com/google/android/gms/common/BlockingServiceConnection
+    //   3: dup
+    //   4: invokespecial 245	com/google/android/gms/common/BlockingServiceConnection:<init>	()V
+    //   7: astore_3
+    //   8: aload_0
+    //   9: invokestatic 251	com/google/android/gms/common/internal/GmsClientSupervisor:getInstance	(Landroid/content/Context;)Lcom/google/android/gms/common/internal/GmsClientSupervisor;
+    //   12: astore 4
+    //   14: aload 4
+    //   16: aload_1
+    //   17: aload_3
+    //   18: ldc 65
+    //   20: invokevirtual 255	com/google/android/gms/common/internal/GmsClientSupervisor:bindService	(Landroid/content/ComponentName;Landroid/content/ServiceConnection;Ljava/lang/String;)Z
+    //   23: ifeq +79 -> 102
+    //   26: aload_2
+    //   27: aload_3
+    //   28: invokevirtual 259	com/google/android/gms/common/BlockingServiceConnection:getService	()Landroid/os/IBinder;
+    //   31: invokeinterface 264 2 0
+    //   36: astore_0
+    //   37: aload 4
+    //   39: aload_1
+    //   40: aload_3
+    //   41: ldc 65
+    //   43: invokevirtual 268	com/google/android/gms/common/internal/GmsClientSupervisor:unbindService	(Landroid/content/ComponentName;Landroid/content/ServiceConnection;Ljava/lang/String;)V
+    //   46: aload_0
+    //   47: areturn
+    //   48: astore_0
+    //   49: goto +42 -> 91
+    //   52: astore_0
+    //   53: goto +4 -> 57
+    //   56: astore_0
+    //   57: getstatic 70	com/google/android/gms/auth/zzd:zzn	Lcom/google/android/gms/common/logging/Logger;
+    //   60: ldc 65
+    //   62: iconst_2
+    //   63: anewarray 4	java/lang/Object
+    //   66: dup
+    //   67: iconst_0
+    //   68: ldc_w 270
+    //   71: aastore
+    //   72: dup
+    //   73: iconst_1
+    //   74: aload_0
+    //   75: aastore
+    //   76: invokevirtual 274	com/google/android/gms/common/logging/Logger:i	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   79: new 81	java/io/IOException
+    //   82: dup
+    //   83: ldc_w 270
+    //   86: aload_0
+    //   87: invokespecial 277	java/io/IOException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   90: athrow
+    //   91: aload 4
+    //   93: aload_1
+    //   94: aload_3
+    //   95: ldc 65
+    //   97: invokevirtual 268	com/google/android/gms/common/internal/GmsClientSupervisor:unbindService	(Landroid/content/ComponentName;Landroid/content/ServiceConnection;Ljava/lang/String;)V
+    //   100: aload_0
+    //   101: athrow
+    //   102: new 81	java/io/IOException
+    //   105: dup
+    //   106: ldc_w 279
+    //   109: invokespecial 280	java/io/IOException:<init>	(Ljava/lang/String;)V
+    //   112: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	113	0	paramContext	Context
+    //   0	113	1	paramComponentName	ComponentName
+    //   0	113	2	paramZzj	zzj<T>
+    //   7	88	3	localBlockingServiceConnection	com.google.android.gms.common.BlockingServiceConnection
+    //   12	80	4	localGmsClientSupervisor	com.google.android.gms.common.internal.GmsClientSupervisor
+    // Exception table:
+    //   from	to	target	type
+    //   26	37	48	finally
+    //   57	91	48	finally
+    //   26	37	52	java/lang/InterruptedException
+    //   26	37	56	android/os/RemoteException
+  }
+  
+  private static <T> T zza(T paramT)
+    throws IOException
+  {
+    if (paramT != null) {
+      return paramT;
+    }
+    zzn.w("GoogleAuthUtil", new Object[] { "Binder call returned null." });
+    throw new IOException("Service unavailable.");
+  }
+  
+  public static TokenData zzb(Context paramContext, Account paramAccount, String paramString, Bundle paramBundle)
+    throws IOException, UserRecoverableAuthException, GoogleAuthException
+  {
+    Preconditions.checkNotMainThread("Calling this from your main thread can lead to deadlock");
+    Preconditions.checkNotEmpty(paramString, "Scope cannot be empty or null.");
+    zzb(paramAccount);
+    ensurePlayServicesAvailable(paramContext, 8400000);
+    if (paramBundle == null) {
+      paramBundle = new Bundle();
+    } else {
+      paramBundle = new Bundle(paramBundle);
+    }
+    String str1 = getApplicationInfopackageName;
+    paramBundle.putString("clientPackageName", str1);
+    String str2 = KEY_ANDROID_PACKAGE_NAME;
+    if (TextUtils.isEmpty(paramBundle.getString(str2))) {
+      paramBundle.putString(str2, str1);
+    }
+    paramBundle.putLong("service_connection_start_time_millis", SystemClock.elapsedRealtime());
+    paramAccount = new zze(paramAccount, paramString, paramBundle);
+    return (TokenData)zza(paramContext, zzm, paramAccount);
+  }
+  
+  private static void zzb(Account paramAccount)
+  {
+    if (paramAccount != null)
+    {
+      if (!TextUtils.isEmpty(name))
+      {
+        String[] arrayOfString = ACCEPTABLE_ACCOUNT_TYPES;
+        int j = arrayOfString.length;
+        int i = 0;
+        while (i < j)
+        {
+          if (arrayOfString[i].equals(type)) {
+            return;
+          }
+          i += 1;
+        }
+        throw new IllegalArgumentException("Account type not supported");
+      }
+      throw new IllegalArgumentException("Account name cannot be empty!");
+    }
+    throw new IllegalArgumentException("Account cannot be null");
+  }
+}

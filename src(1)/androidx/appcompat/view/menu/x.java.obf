@@ -1,0 +1,132 @@
+package androidx.appcompat.view.menu;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import java.util.ArrayList;
+
+public class f
+  extends BaseAdapter
+{
+  g b;
+  private int c = -1;
+  private boolean d;
+  private final boolean e;
+  private final LayoutInflater f;
+  private final int g;
+  
+  public f(g paramG, LayoutInflater paramLayoutInflater, boolean paramBoolean, int paramInt)
+  {
+    e = paramBoolean;
+    f = paramLayoutInflater;
+    b = paramG;
+    g = paramInt;
+    a();
+  }
+  
+  void a()
+  {
+    i localI = b.x();
+    if (localI != null)
+    {
+      ArrayList localArrayList = b.B();
+      int j = localArrayList.size();
+      int i = 0;
+      while (i < j)
+      {
+        if ((i)localArrayList.get(i) == localI)
+        {
+          c = i;
+          return;
+        }
+        i += 1;
+      }
+    }
+    c = -1;
+  }
+  
+  public g b()
+  {
+    return b;
+  }
+  
+  public i c(int paramInt)
+  {
+    ArrayList localArrayList;
+    if (e) {
+      localArrayList = b.B();
+    } else {
+      localArrayList = b.G();
+    }
+    int j = c;
+    int i = paramInt;
+    if (j >= 0)
+    {
+      i = paramInt;
+      if (paramInt >= j) {
+        i = paramInt + 1;
+      }
+    }
+    return (i)localArrayList.get(i);
+  }
+  
+  public void d(boolean paramBoolean)
+  {
+    d = paramBoolean;
+  }
+  
+  public int getCount()
+  {
+    ArrayList localArrayList;
+    if (e) {
+      localArrayList = b.B();
+    } else {
+      localArrayList = b.G();
+    }
+    if (c < 0) {
+      return localArrayList.size();
+    }
+    return localArrayList.size() - 1;
+  }
+  
+  public long getItemId(int paramInt)
+  {
+    return paramInt;
+  }
+  
+  public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
+  {
+    View localView = paramView;
+    if (paramView == null) {
+      localView = f.inflate(g, paramViewGroup, false);
+    }
+    int j = c(paramInt).getGroupId();
+    int i = paramInt - 1;
+    if (i >= 0) {
+      i = c(i).getGroupId();
+    } else {
+      i = j;
+    }
+    paramView = (ListMenuItemView)localView;
+    boolean bool;
+    if ((b.H()) && (j != i)) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    paramView.setGroupDividerEnabled(bool);
+    paramViewGroup = (n.a)localView;
+    if (d) {
+      paramView.setForceShowIcon(true);
+    }
+    paramViewGroup.e(c(paramInt), 0);
+    return localView;
+  }
+  
+  public void notifyDataSetChanged()
+  {
+    a();
+    super.notifyDataSetChanged();
+  }
+}

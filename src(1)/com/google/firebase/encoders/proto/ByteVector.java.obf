@@ -1,0 +1,361 @@
+package com.google.firebase.encoders.proto;
+
+import com.google.firebase.p.b;
+import com.google.firebase.p.c.b;
+import com.google.firebase.p.d;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+final class f
+  implements com.google.firebase.p.e
+{
+  private static final Charset a = Charset.forName("UTF-8");
+  private static final com.google.firebase.p.c b = com.google.firebase.p.c.a("key").b(c.b().c(1).a()).a();
+  private static final com.google.firebase.p.c c = com.google.firebase.p.c.a("value").b(c.b().c(2).a()).a();
+  private static final d<Map.Entry<Object, Object>> d = a.a;
+  private OutputStream e;
+  private final Map<Class<?>, d<?>> f;
+  private final Map<Class<?>, com.google.firebase.p.f<?>> g;
+  private final d<Object> h;
+  private final h i = new h(this);
+  
+  f(OutputStream paramOutputStream, Map<Class<?>, d<?>> paramMap, Map<Class<?>, com.google.firebase.p.f<?>> paramMap1, d<Object> paramD)
+  {
+    e = paramOutputStream;
+    f = paramMap;
+    g = paramMap1;
+    h = paramD;
+  }
+  
+  private static ByteBuffer l(int paramInt)
+  {
+    return ByteBuffer.allocate(paramInt).order(ByteOrder.LITTLE_ENDIAN);
+  }
+  
+  /* Error */
+  private <T> long m(d<T> paramD, T paramT)
+    throws IOException
+  {
+    // Byte code:
+    //   0: new 123	com/google/firebase/encoders/proto/d
+    //   3: dup
+    //   4: invokespecial 124	com/google/firebase/encoders/proto/d:<init>	()V
+    //   7: astore 5
+    //   9: aload_0
+    //   10: getfield 92	com/google/firebase/encoders/proto/f:e	Ljava/io/OutputStream;
+    //   13: astore 6
+    //   15: aload_0
+    //   16: aload 5
+    //   18: putfield 92	com/google/firebase/encoders/proto/f:e	Ljava/io/OutputStream;
+    //   21: aload_1
+    //   22: aload_2
+    //   23: aload_0
+    //   24: invokeinterface 129 3 0
+    //   29: aload_0
+    //   30: aload 6
+    //   32: putfield 92	com/google/firebase/encoders/proto/f:e	Ljava/io/OutputStream;
+    //   35: aload 5
+    //   37: invokevirtual 132	com/google/firebase/encoders/proto/d:a	()J
+    //   40: lstore_3
+    //   41: aload 5
+    //   43: invokevirtual 137	java/io/OutputStream:close	()V
+    //   46: lload_3
+    //   47: lreturn
+    //   48: astore_1
+    //   49: aload_0
+    //   50: aload 6
+    //   52: putfield 92	com/google/firebase/encoders/proto/f:e	Ljava/io/OutputStream;
+    //   55: aload_1
+    //   56: athrow
+    //   57: astore_1
+    //   58: aload 5
+    //   60: invokevirtual 137	java/io/OutputStream:close	()V
+    //   63: goto +9 -> 72
+    //   66: astore_2
+    //   67: aload_1
+    //   68: aload_2
+    //   69: invokevirtual 143	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   72: aload_1
+    //   73: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	74	0	this	f
+    //   0	74	1	paramD	d<T>
+    //   0	74	2	paramT	T
+    //   40	7	3	l	long
+    //   7	52	5	localD	d
+    //   13	38	6	localOutputStream	OutputStream
+    // Exception table:
+    //   from	to	target	type
+    //   21	29	48	finally
+    //   9	21	57	finally
+    //   29	41	57	finally
+    //   49	57	57	finally
+    //   58	63	66	finally
+  }
+  
+  private <T> f n(d<T> paramD, com.google.firebase.p.c paramC, T paramT, boolean paramBoolean)
+    throws IOException
+  {
+    long l = m(paramD, paramT);
+    if ((paramBoolean) && (l == 0L)) {
+      return this;
+    }
+    t(r(paramC) << 3 | 0x2);
+    u(l);
+    paramD.a(paramT, this);
+    return this;
+  }
+  
+  private <T> f o(com.google.firebase.p.f<T> paramF, com.google.firebase.p.c paramC, T paramT, boolean paramBoolean)
+    throws IOException
+  {
+    i.b(paramC, paramBoolean);
+    paramF.a(paramT, i);
+    return this;
+  }
+  
+  private static Protobuf q(com.google.firebase.p.c paramC)
+  {
+    paramC = (Protobuf)paramC.c(Protobuf.class);
+    if (paramC != null) {
+      return paramC;
+    }
+    throw new b("Field has no @Protobuf config");
+  }
+  
+  private static int r(com.google.firebase.p.c paramC)
+  {
+    paramC = (Protobuf)paramC.c(Protobuf.class);
+    if (paramC != null) {
+      return paramC.tag();
+    }
+    throw new b("Field has no @Protobuf config");
+  }
+  
+  private void t(int paramInt)
+    throws IOException
+  {
+    while ((paramInt & 0xFFFFFF80) != 0L)
+    {
+      e.write(paramInt & 0x7F | 0x80);
+      paramInt >>>= 7;
+    }
+    e.write(paramInt & 0x7F);
+  }
+  
+  private void u(long paramLong)
+    throws IOException
+  {
+    while ((0xFFFFFFFFFFFFFF80 & paramLong) != 0L)
+    {
+      e.write((int)paramLong & 0x7F | 0x80);
+      paramLong >>>= 7;
+    }
+    e.write((int)paramLong & 0x7F);
+  }
+  
+  com.google.firebase.p.e c(com.google.firebase.p.c paramC, double paramDouble, boolean paramBoolean)
+    throws IOException
+  {
+    if ((paramBoolean) && (paramDouble == 0.0D)) {
+      return this;
+    }
+    t(r(paramC) << 3 | 0x1);
+    e.write(l(8).putDouble(paramDouble).array());
+    return this;
+  }
+  
+  com.google.firebase.p.e d(com.google.firebase.p.c paramC, float paramFloat, boolean paramBoolean)
+    throws IOException
+  {
+    if ((paramBoolean) && (paramFloat == 0.0F)) {
+      return this;
+    }
+    t(r(paramC) << 3 | 0x5);
+    e.write(l(4).putFloat(paramFloat).array());
+    return this;
+  }
+  
+  public com.google.firebase.p.e e(com.google.firebase.p.c paramC, Object paramObject)
+    throws IOException
+  {
+    return f(paramC, paramObject, true);
+  }
+  
+  com.google.firebase.p.e f(com.google.firebase.p.c paramC, Object paramObject, boolean paramBoolean)
+    throws IOException
+  {
+    if (paramObject == null) {
+      return this;
+    }
+    if ((paramObject instanceof CharSequence))
+    {
+      paramObject = (CharSequence)paramObject;
+      if ((paramBoolean) && (paramObject.length() == 0)) {
+        return this;
+      }
+      t(r(paramC) << 3 | 0x2);
+      paramC = paramObject.toString().getBytes(a);
+      t(paramC.length);
+      e.write(paramC);
+      return this;
+    }
+    if ((paramObject instanceof Collection))
+    {
+      paramObject = ((Collection)paramObject).iterator();
+      while (paramObject.hasNext()) {
+        f(paramC, paramObject.next(), false);
+      }
+      return this;
+    }
+    if ((paramObject instanceof Map))
+    {
+      paramObject = ((Map)paramObject).entrySet().iterator();
+      while (paramObject.hasNext())
+      {
+        localObject = (Map.Entry)paramObject.next();
+        n(d, paramC, localObject, false);
+      }
+      return this;
+    }
+    if ((paramObject instanceof Double)) {
+      return c(paramC, ((Double)paramObject).doubleValue(), paramBoolean);
+    }
+    if ((paramObject instanceof Float)) {
+      return d(paramC, ((Float)paramObject).floatValue(), paramBoolean);
+    }
+    if ((paramObject instanceof Number)) {
+      return j(paramC, ((Number)paramObject).longValue(), paramBoolean);
+    }
+    if ((paramObject instanceof Boolean)) {
+      return k(paramC, ((Boolean)paramObject).booleanValue(), paramBoolean);
+    }
+    if ((paramObject instanceof byte[]))
+    {
+      paramObject = (byte[])paramObject;
+      if ((paramBoolean) && (paramObject.length == 0)) {
+        return this;
+      }
+      t(r(paramC) << 3 | 0x2);
+      t(paramObject.length);
+      e.write(paramObject);
+      return this;
+    }
+    Object localObject = (d)f.get(paramObject.getClass());
+    if (localObject != null) {
+      return n((d)localObject, paramC, paramObject, paramBoolean);
+    }
+    localObject = (com.google.firebase.p.f)g.get(paramObject.getClass());
+    if (localObject != null) {
+      return o((com.google.firebase.p.f)localObject, paramC, paramObject, paramBoolean);
+    }
+    if ((paramObject instanceof e)) {
+      return g(paramC, ((e)paramObject).x());
+    }
+    if ((paramObject instanceof Enum)) {
+      return g(paramC, ((Enum)paramObject).ordinal());
+    }
+    return n(h, paramC, paramObject, paramBoolean);
+  }
+  
+  public f g(com.google.firebase.p.c paramC, int paramInt)
+    throws IOException
+  {
+    return h(paramC, paramInt, true);
+  }
+  
+  f h(com.google.firebase.p.c paramC, int paramInt, boolean paramBoolean)
+    throws IOException
+  {
+    if ((paramBoolean) && (paramInt == 0)) {
+      return this;
+    }
+    paramC = q(paramC);
+    int j = a.a[paramC.intEncoding().ordinal()];
+    if (j != 1)
+    {
+      if (j != 2)
+      {
+        if (j != 3) {
+          return this;
+        }
+        t(paramC.tag() << 3 | 0x5);
+        e.write(l(4).putInt(paramInt).array());
+        return this;
+      }
+      t(paramC.tag() << 3);
+      t(paramInt << 1 ^ paramInt >> 31);
+      return this;
+    }
+    t(paramC.tag() << 3);
+    t(paramInt);
+    return this;
+  }
+  
+  public f i(com.google.firebase.p.c paramC, long paramLong)
+    throws IOException
+  {
+    return j(paramC, paramLong, true);
+  }
+  
+  f j(com.google.firebase.p.c paramC, long paramLong, boolean paramBoolean)
+    throws IOException
+  {
+    if ((paramBoolean) && (paramLong == 0L)) {
+      return this;
+    }
+    paramC = q(paramC);
+    int j = a.a[paramC.intEncoding().ordinal()];
+    if (j != 1)
+    {
+      if (j != 2)
+      {
+        if (j != 3) {
+          return this;
+        }
+        t(paramC.tag() << 3 | 0x1);
+        e.write(l(8).putLong(paramLong).array());
+        return this;
+      }
+      t(paramC.tag() << 3);
+      u(paramLong >> 63 ^ paramLong << 1);
+      return this;
+    }
+    t(paramC.tag() << 3);
+    u(paramLong);
+    return this;
+  }
+  
+  f k(com.google.firebase.p.c paramC, boolean paramBoolean1, boolean paramBoolean2)
+    throws IOException
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  f p(Object paramObject)
+    throws IOException
+  {
+    if (paramObject == null) {
+      return this;
+    }
+    Object localObject = (d)f.get(paramObject.getClass());
+    if (localObject != null)
+    {
+      ((d)localObject).a(paramObject, this);
+      return this;
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("No encoder for ");
+    ((StringBuilder)localObject).append(paramObject.getClass());
+    throw new b(((StringBuilder)localObject).toString());
+  }
+}

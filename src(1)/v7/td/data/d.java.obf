@@ -1,0 +1,120 @@
+package c.t.a;
+
+public final class a
+  implements e
+{
+  private final String b;
+  private final Object[] c;
+  
+  public a(String paramString)
+  {
+    this(paramString, null);
+  }
+  
+  public a(String paramString, Object[] paramArrayOfObject)
+  {
+    b = paramString;
+    c = paramArrayOfObject;
+  }
+  
+  private static void b(d paramD, int paramInt, Object paramObject)
+  {
+    if (paramObject == null)
+    {
+      paramD.bindNull(paramInt);
+      return;
+    }
+    if ((paramObject instanceof byte[]))
+    {
+      paramD.bindBlob(paramInt, (byte[])paramObject);
+      return;
+    }
+    if ((paramObject instanceof Float))
+    {
+      paramD.bindDouble(paramInt, ((Float)paramObject).floatValue());
+      return;
+    }
+    if ((paramObject instanceof Double))
+    {
+      paramD.bindDouble(paramInt, ((Double)paramObject).doubleValue());
+      return;
+    }
+    if ((paramObject instanceof Long))
+    {
+      paramD.bindLong(paramInt, ((Long)paramObject).longValue());
+      return;
+    }
+    if ((paramObject instanceof Integer))
+    {
+      paramD.bindLong(paramInt, ((Integer)paramObject).intValue());
+      return;
+    }
+    if ((paramObject instanceof Short))
+    {
+      paramD.bindLong(paramInt, ((Short)paramObject).shortValue());
+      return;
+    }
+    if ((paramObject instanceof Byte))
+    {
+      paramD.bindLong(paramInt, ((Byte)paramObject).byteValue());
+      return;
+    }
+    if ((paramObject instanceof String))
+    {
+      paramD.bindString(paramInt, (String)paramObject);
+      return;
+    }
+    if ((paramObject instanceof Boolean))
+    {
+      long l;
+      if (((Boolean)paramObject).booleanValue()) {
+        l = 1L;
+      } else {
+        l = 0L;
+      }
+      paramD.bindLong(paramInt, l);
+      return;
+    }
+    paramD = new StringBuilder();
+    paramD.append("Cannot bind ");
+    paramD.append(paramObject);
+    paramD.append(" at index ");
+    paramD.append(paramInt);
+    paramD.append(" Supported types: null, byte[], float, double, long, int, short, byte, string");
+    throw new IllegalArgumentException(paramD.toString());
+  }
+  
+  public static void c(d paramD, Object[] paramArrayOfObject)
+  {
+    if (paramArrayOfObject == null) {
+      return;
+    }
+    int j = paramArrayOfObject.length;
+    int i = 0;
+    while (i < j)
+    {
+      Object localObject = paramArrayOfObject[i];
+      i += 1;
+      b(paramD, i, localObject);
+    }
+  }
+  
+  public int a()
+  {
+    Object[] arrayOfObject = c;
+    if (arrayOfObject == null) {
+      return 0;
+    }
+    return arrayOfObject.length;
+  }
+  
+  public String h()
+  {
+    return b;
+  }
+  
+  public void i(d paramD)
+  {
+    c(paramD, c);
+  }
+}

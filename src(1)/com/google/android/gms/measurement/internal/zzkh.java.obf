@@ -1,0 +1,81 @@
+package com.google.android.gms.measurement.internal;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.os.Bundle;
+import android.text.TextUtils;
+import com.google.android.gms.common.util.Clock;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.internal.measurement.zznv;
+import com.google.android.gms.internal.measurement.zzoz;
+
+final class zzkh
+{
+  zzkh(zzki paramZzki) {}
+  
+  final void zza()
+  {
+    zza.zzg();
+    if (zza.zzs.zzm().zzk(zza.zzs.zzav().currentTimeMillis()))
+    {
+      zza.zzs.zzm().zzg.zza(true);
+      ActivityManager.RunningAppProcessInfo localRunningAppProcessInfo = new ActivityManager.RunningAppProcessInfo();
+      ActivityManager.getMyMemoryState(localRunningAppProcessInfo);
+      if (importance == 100)
+      {
+        zza.zzs.zzay().zzj().zza("Detected application was in foreground");
+        zzc(zza.zzs.zzav().currentTimeMillis(), false);
+      }
+    }
+  }
+  
+  final void zzb(long paramLong, boolean paramBoolean)
+  {
+    zza.zzg();
+    zzki.zzi(zza);
+    if (zza.zzs.zzm().zzk(paramLong))
+    {
+      zza.zzs.zzm().zzg.zza(true);
+      zzoz.zzc();
+      if (zza.zzs.zzf().zzs(null, zzeb.zzas)) {
+        zza.zzs.zzh().zzo();
+      }
+    }
+    zza.zzs.zzm().zzj.zzb(paramLong);
+    if (zza.zzs.zzm().zzg.zzb()) {
+      zzc(paramLong, paramBoolean);
+    }
+  }
+  
+  @VisibleForTesting
+  final void zzc(long paramLong, boolean paramBoolean)
+  {
+    zza.zzg();
+    if (!zza.zzs.zzJ()) {
+      return;
+    }
+    zza.zzs.zzm().zzj.zzb(paramLong);
+    long l = zza.zzs.zzav().elapsedRealtime();
+    zza.zzs.zzay().zzj().zzb("Session started, time", Long.valueOf(l));
+    Object localObject = Long.valueOf(paramLong / 1000L);
+    zza.zzs.zzq().zzY("auto", "_sid", localObject, paramLong);
+    zza.zzs.zzm().zzg.zza(false);
+    Bundle localBundle = new Bundle();
+    localBundle.putLong("_sid", ((Long)localObject).longValue());
+    if ((zza.zzs.zzf().zzs(null, zzeb.zzZ)) && (paramBoolean)) {
+      localBundle.putLong("_aib", 1L);
+    }
+    zza.zzs.zzq().zzH("auto", "_s", paramLong, localBundle);
+    zznv.zzc();
+    if (zza.zzs.zzf().zzs(null, zzeb.zzac))
+    {
+      localObject = zza.zzs.zzm().zzo.zza();
+      if (!TextUtils.isEmpty((CharSequence)localObject))
+      {
+        localBundle = new Bundle();
+        localBundle.putString("_ffr", (String)localObject);
+        zza.zzs.zzq().zzH("auto", "_ssr", paramLong, localBundle);
+      }
+    }
+  }
+}

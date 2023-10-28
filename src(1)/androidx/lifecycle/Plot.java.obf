@@ -1,0 +1,128 @@
+package androidx.lifecycle;
+
+import android.app.Application;
+import android.os.Bundle;
+import androidx.lifecycle.n0.a;
+import androidx.savedstate.c;
+import androidx.savedstate.e;
+import java.lang.reflect.Constructor;
+import kotlin.x.d.i;
+
+public final class b0
+  extends f0.d
+  implements f0.b
+{
+  private Application b;
+  private final f0.b c;
+  private Bundle d;
+  private Lifecycle e;
+  private c f;
+  
+  public b0(Application paramApplication, e paramE, Bundle paramBundle)
+  {
+    f = paramE.getSavedStateRegistry();
+    e = paramE.getLifecycle();
+    d = paramBundle;
+    b = paramApplication;
+    if (paramApplication != null) {
+      paramApplication = f0.a.e.b(paramApplication);
+    } else {
+      paramApplication = new f0.a();
+    }
+    c = paramApplication;
+  }
+  
+  public <T extends e0> T a(Class<T> paramClass)
+  {
+    i.e(paramClass, "modelClass");
+    String str = paramClass.getCanonicalName();
+    if (str != null) {
+      return d(str, paramClass);
+    }
+    throw new IllegalArgumentException("Local and anonymous classes can not be ViewModels");
+  }
+  
+  public <T extends e0> T b(Class<T> paramClass, a paramA)
+  {
+    i.e(paramClass, "modelClass");
+    i.e(paramA, "extras");
+    Object localObject = (String)paramA.a(f0.c.d);
+    if (localObject != null)
+    {
+      if ((paramA.a(y.a) != null) && (paramA.a(y.b) != null))
+      {
+        Application localApplication = (Application)paramA.a(f0.a.g);
+        boolean bool = b.class.isAssignableFrom(paramClass);
+        if ((bool) && (localApplication != null)) {
+          localObject = c0.c(paramClass, c0.a());
+        } else {
+          localObject = c0.c(paramClass, c0.b());
+        }
+        if (localObject == null) {
+          return c.b(paramClass, paramA);
+        }
+        if ((bool) && (localApplication != null)) {
+          return c0.d(paramClass, (Constructor)localObject, new Object[] { localApplication, y.a(paramA) });
+        }
+        return c0.d(paramClass, (Constructor)localObject, new Object[] { y.a(paramA) });
+      }
+      if (e != null) {
+        return d((String)localObject, paramClass);
+      }
+      throw new IllegalStateException("SAVED_STATE_REGISTRY_OWNER_KEY andVIEW_MODEL_STORE_OWNER_KEY must be provided in the creation extras tosuccessfully create a ViewModel.");
+    }
+    throw new IllegalStateException("VIEW_MODEL_KEY must always be provided by ViewModelProvider");
+  }
+  
+  public void c(e0 paramE0)
+  {
+    i.e(paramE0, "viewModel");
+    Lifecycle localLifecycle = e;
+    if (localLifecycle != null) {
+      LegacySavedStateHandleController.a(paramE0, f, localLifecycle);
+    }
+  }
+  
+  public final <T extends e0> T d(String paramString, Class<T> paramClass)
+  {
+    i.e(paramString, "key");
+    i.e(paramClass, "modelClass");
+    if (e != null)
+    {
+      boolean bool = b.class.isAssignableFrom(paramClass);
+      Constructor localConstructor;
+      if ((bool) && (b != null)) {
+        localConstructor = c0.c(paramClass, c0.a());
+      } else {
+        localConstructor = c0.c(paramClass, c0.b());
+      }
+      if (localConstructor == null)
+      {
+        if (b != null) {
+          return c.a(paramClass);
+        }
+        return f0.c.b.a().a(paramClass);
+      }
+      SavedStateHandleController localSavedStateHandleController = LegacySavedStateHandleController.b(f, e, paramString, d);
+      if (bool)
+      {
+        paramString = b;
+        if (paramString != null)
+        {
+          i.b(paramString);
+          x localX = localSavedStateHandleController.i();
+          i.d(localX, "controller.handle");
+          paramString = c0.d(paramClass, localConstructor, new Object[] { paramString, localX });
+          break label191;
+        }
+      }
+      paramString = localSavedStateHandleController.i();
+      i.d(paramString, "controller.handle");
+      paramString = c0.d(paramClass, localConstructor, new Object[] { paramString });
+      label191:
+      paramString.setTagIfAbsent("androidx.lifecycle.savedstate.vm.tag", localSavedStateHandleController);
+      return paramString;
+    }
+    throw new UnsupportedOperationException("SavedStateViewModelFactory constructed with empty constructor supports only calls to create(modelClass: Class<T>, extras: CreationExtras).");
+  }
+}

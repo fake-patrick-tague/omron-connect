@@ -1,0 +1,155 @@
+package com.google.android.material.datepicker;
+
+import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+final class Month
+  implements Comparable<Month>, Parcelable
+{
+  public static final Parcelable.Creator<Month> CREATOR = new a();
+  private final Calendar b;
+  final int c;
+  final int d;
+  final int e;
+  final int f;
+  final long g;
+  private String h;
+  
+  private Month(Calendar paramCalendar)
+  {
+    paramCalendar.set(5, 1);
+    paramCalendar = n.d(paramCalendar);
+    b = paramCalendar;
+    c = paramCalendar.get(2);
+    d = paramCalendar.get(1);
+    e = paramCalendar.getMaximum(7);
+    f = paramCalendar.getActualMaximum(5);
+    g = paramCalendar.getTimeInMillis();
+  }
+  
+  static Month b(int paramInt1, int paramInt2)
+  {
+    Calendar localCalendar = n.k();
+    localCalendar.set(1, paramInt1);
+    localCalendar.set(2, paramInt2);
+    return new Month(localCalendar);
+  }
+  
+  static Month c(long paramLong)
+  {
+    Calendar localCalendar = n.k();
+    localCalendar.setTimeInMillis(paramLong);
+    return new Month(localCalendar);
+  }
+  
+  static Month d()
+  {
+    return new Month(n.i());
+  }
+  
+  public int a(Month paramMonth)
+  {
+    return b.compareTo(b);
+  }
+  
+  public int describeContents()
+  {
+    return 0;
+  }
+  
+  int e()
+  {
+    int j = b.get(7) - b.getFirstDayOfWeek();
+    int i = j;
+    if (j < 0) {
+      i = j + e;
+    }
+    return i;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof Month)) {
+      return false;
+    }
+    paramObject = (Month)paramObject;
+    return (c == c) && (d == d);
+  }
+  
+  long f(int paramInt)
+  {
+    Calendar localCalendar = n.d(b);
+    localCalendar.set(5, paramInt);
+    return localCalendar.getTimeInMillis();
+  }
+  
+  int g(long paramLong)
+  {
+    Calendar localCalendar = n.d(b);
+    localCalendar.setTimeInMillis(paramLong);
+    return localCalendar.get(5);
+  }
+  
+  String h(Context paramContext)
+  {
+    if (h == null) {
+      h = c.c(paramContext, b.getTimeInMillis());
+    }
+    return h;
+  }
+  
+  public int hashCode()
+  {
+    return Arrays.hashCode(new Object[] { Integer.valueOf(c), Integer.valueOf(d) });
+  }
+  
+  long j()
+  {
+    return b.getTimeInMillis();
+  }
+  
+  Month k(int paramInt)
+  {
+    Calendar localCalendar = n.d(b);
+    localCalendar.add(2, paramInt);
+    return new Month(localCalendar);
+  }
+  
+  int l(Month paramMonth)
+  {
+    if ((b instanceof GregorianCalendar)) {
+      return (d - d) * 12 + (c - c);
+    }
+    throw new IllegalArgumentException("Only Gregorian calendars are supported.");
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramParcel.writeInt(d);
+    paramParcel.writeInt(c);
+  }
+  
+  static final class a
+    implements Parcelable.Creator<Month>
+  {
+    a() {}
+    
+    public Month a(Parcel paramParcel)
+    {
+      return Month.b(paramParcel.readInt(), paramParcel.readInt());
+    }
+    
+    public Month[] b(int paramInt)
+    {
+      return new Month[paramInt];
+    }
+  }
+}

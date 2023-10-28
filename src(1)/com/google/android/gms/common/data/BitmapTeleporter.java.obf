@@ -1,0 +1,345 @@
+package com.google.android.gms.common.data;
+
+import android.graphics.Bitmap;
+import android.os.ParcelFileDescriptor;
+import android.os.Parcelable.Creator;
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
+
+@KeepForSdk
+@ShowFirstParty
+@SafeParcelable.Class(creator="BitmapTeleporterCreator")
+public class BitmapTeleporter
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  @KeepForSdk
+  public static final Parcelable.Creator<BitmapTeleporter> CREATOR = new zaa();
+  @SafeParcelable.VersionField(id=1)
+  final int zaa;
+  @SafeParcelable.Field(id=2)
+  ParcelFileDescriptor zab;
+  @SafeParcelable.Field(id=3)
+  final int zac;
+  private Bitmap zad;
+  private boolean zae;
+  private File zaf;
+  
+  @SafeParcelable.Constructor
+  BitmapTeleporter(@SafeParcelable.Param(id=1) int paramInt1, @SafeParcelable.Param(id=2) ParcelFileDescriptor paramParcelFileDescriptor, @SafeParcelable.Param(id=3) int paramInt2)
+  {
+    zaa = paramInt1;
+    zab = paramParcelFileDescriptor;
+    zac = paramInt2;
+    zad = null;
+    zae = false;
+  }
+  
+  @KeepForSdk
+  public BitmapTeleporter(Bitmap paramBitmap)
+  {
+    zaa = 1;
+    zab = null;
+    zac = 0;
+    zad = paramBitmap;
+    zae = true;
+  }
+  
+  private static final void zaa(Closeable paramCloseable)
+  {
+    try
+    {
+      paramCloseable.close();
+      return;
+    }
+    catch (IOException paramCloseable)
+    {
+      Log.w("BitmapTeleporter", "Could not close stream", paramCloseable);
+    }
+  }
+  
+  /* Error */
+  @KeepForSdk
+  public Bitmap get()
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: getfield 55	com/google/android/gms/common/data/BitmapTeleporter:zae	Z
+    //   4: ifne +127 -> 131
+    //   7: new 80	java/io/DataInputStream
+    //   10: dup
+    //   11: new 82	android/os/ParcelFileDescriptor$AutoCloseInputStream
+    //   14: dup
+    //   15: aload_0
+    //   16: getfield 49	com/google/android/gms/common/data/BitmapTeleporter:zab	Landroid/os/ParcelFileDescriptor;
+    //   19: invokestatic 88	com/google/android/gms/common/internal/Preconditions:checkNotNull	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   22: checkcast 90	android/os/ParcelFileDescriptor
+    //   25: invokespecial 93	android/os/ParcelFileDescriptor$AutoCloseInputStream:<init>	(Landroid/os/ParcelFileDescriptor;)V
+    //   28: invokespecial 96	java/io/DataInputStream:<init>	(Ljava/io/InputStream;)V
+    //   31: astore_3
+    //   32: aload_3
+    //   33: invokevirtual 100	java/io/DataInputStream:readInt	()I
+    //   36: newarray byte
+    //   38: astore 5
+    //   40: aload_3
+    //   41: invokevirtual 100	java/io/DataInputStream:readInt	()I
+    //   44: istore_1
+    //   45: aload_3
+    //   46: invokevirtual 100	java/io/DataInputStream:readInt	()I
+    //   49: istore_2
+    //   50: aload_3
+    //   51: invokevirtual 104	java/io/DataInputStream:readUTF	()Ljava/lang/String;
+    //   54: invokestatic 110	android/graphics/Bitmap$Config:valueOf	(Ljava/lang/String;)Landroid/graphics/Bitmap$Config;
+    //   57: astore 4
+    //   59: aload_3
+    //   60: aload 5
+    //   62: invokevirtual 114	java/io/DataInputStream:read	([B)I
+    //   65: pop
+    //   66: aload_3
+    //   67: invokestatic 116	com/google/android/gms/common/data/BitmapTeleporter:zaa	(Ljava/io/Closeable;)V
+    //   70: aload 5
+    //   72: invokestatic 122	java/nio/ByteBuffer:wrap	([B)Ljava/nio/ByteBuffer;
+    //   75: astore_3
+    //   76: iload_1
+    //   77: iload_2
+    //   78: aload 4
+    //   80: invokestatic 128	android/graphics/Bitmap:createBitmap	(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;
+    //   83: astore 4
+    //   85: aload 4
+    //   87: aload_3
+    //   88: invokevirtual 132	android/graphics/Bitmap:copyPixelsFromBuffer	(Ljava/nio/Buffer;)V
+    //   91: aload_0
+    //   92: aload 4
+    //   94: putfield 53	com/google/android/gms/common/data/BitmapTeleporter:zad	Landroid/graphics/Bitmap;
+    //   97: aload_0
+    //   98: iconst_1
+    //   99: putfield 55	com/google/android/gms/common/data/BitmapTeleporter:zae	Z
+    //   102: goto +29 -> 131
+    //   105: astore 4
+    //   107: goto +17 -> 124
+    //   110: astore 4
+    //   112: new 134	java/lang/IllegalStateException
+    //   115: dup
+    //   116: ldc -120
+    //   118: aload 4
+    //   120: invokespecial 139	java/lang/IllegalStateException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   123: athrow
+    //   124: aload_3
+    //   125: invokestatic 116	com/google/android/gms/common/data/BitmapTeleporter:zaa	(Ljava/io/Closeable;)V
+    //   128: aload 4
+    //   130: athrow
+    //   131: aload_0
+    //   132: getfield 53	com/google/android/gms/common/data/BitmapTeleporter:zad	Landroid/graphics/Bitmap;
+    //   135: areturn
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	136	0	this	BitmapTeleporter
+    //   44	33	1	i	int
+    //   49	29	2	j	int
+    //   31	94	3	localObject1	Object
+    //   57	36	4	localObject2	Object
+    //   105	1	4	localObject3	Object
+    //   110	19	4	localIOException	IOException
+    //   38	33	5	arrayOfByte	byte[]
+    // Exception table:
+    //   from	to	target	type
+    //   32	66	105	finally
+    //   112	124	105	finally
+    //   32	66	110	java/io/IOException
+  }
+  
+  @KeepForSdk
+  public void release()
+  {
+    if (!zae) {
+      try
+      {
+        ((ParcelFileDescriptor)Preconditions.checkNotNull(zab)).close();
+        return;
+      }
+      catch (IOException localIOException)
+      {
+        Log.w("BitmapTeleporter", "Could not close PFD", localIOException);
+      }
+    }
+  }
+  
+  @KeepForSdk
+  public void setTempDir(File paramFile)
+  {
+    Objects.requireNonNull(paramFile, "Cannot set null temp directory");
+    zaf = paramFile;
+  }
+  
+  /* Error */
+  public final void writeToParcel(android.os.Parcel paramParcel, int paramInt)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: getfield 49	com/google/android/gms/common/data/BitmapTeleporter:zab	Landroid/os/ParcelFileDescriptor;
+    //   4: ifnonnull +224 -> 228
+    //   7: aload_0
+    //   8: getfield 53	com/google/android/gms/common/data/BitmapTeleporter:zad	Landroid/graphics/Bitmap;
+    //   11: invokestatic 88	com/google/android/gms/common/internal/Preconditions:checkNotNull	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   14: checkcast 124	android/graphics/Bitmap
+    //   17: astore 4
+    //   19: aload 4
+    //   21: invokevirtual 162	android/graphics/Bitmap:getRowBytes	()I
+    //   24: aload 4
+    //   26: invokevirtual 165	android/graphics/Bitmap:getHeight	()I
+    //   29: imul
+    //   30: invokestatic 169	java/nio/ByteBuffer:allocate	(I)Ljava/nio/ByteBuffer;
+    //   33: astore 5
+    //   35: aload 4
+    //   37: aload 5
+    //   39: invokevirtual 172	android/graphics/Bitmap:copyPixelsToBuffer	(Ljava/nio/Buffer;)V
+    //   42: aload 5
+    //   44: invokevirtual 176	java/nio/ByteBuffer:array	()[B
+    //   47: astore 5
+    //   49: aload_0
+    //   50: getfield 155	com/google/android/gms/common/data/BitmapTeleporter:zaf	Ljava/io/File;
+    //   53: astore 6
+    //   55: aload 6
+    //   57: ifnull +161 -> 218
+    //   60: ldc -78
+    //   62: ldc -76
+    //   64: aload 6
+    //   66: invokestatic 186	java/io/File:createTempFile	(Ljava/lang/String;Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
+    //   69: astore 6
+    //   71: new 188	java/io/FileOutputStream
+    //   74: dup
+    //   75: aload 6
+    //   77: invokespecial 190	java/io/FileOutputStream:<init>	(Ljava/io/File;)V
+    //   80: astore 7
+    //   82: aload_0
+    //   83: aload 6
+    //   85: ldc -65
+    //   87: invokestatic 195	android/os/ParcelFileDescriptor:open	(Ljava/io/File;I)Landroid/os/ParcelFileDescriptor;
+    //   90: putfield 49	com/google/android/gms/common/data/BitmapTeleporter:zab	Landroid/os/ParcelFileDescriptor;
+    //   93: aload 6
+    //   95: invokevirtual 199	java/io/File:delete	()Z
+    //   98: pop
+    //   99: new 201	java/io/DataOutputStream
+    //   102: dup
+    //   103: new 203	java/io/BufferedOutputStream
+    //   106: dup
+    //   107: aload 7
+    //   109: invokespecial 206	java/io/BufferedOutputStream:<init>	(Ljava/io/OutputStream;)V
+    //   112: invokespecial 207	java/io/DataOutputStream:<init>	(Ljava/io/OutputStream;)V
+    //   115: astore 6
+    //   117: aload 6
+    //   119: aload 5
+    //   121: arraylength
+    //   122: invokevirtual 211	java/io/DataOutputStream:writeInt	(I)V
+    //   125: aload 6
+    //   127: aload 4
+    //   129: invokevirtual 214	android/graphics/Bitmap:getWidth	()I
+    //   132: invokevirtual 211	java/io/DataOutputStream:writeInt	(I)V
+    //   135: aload 6
+    //   137: aload 4
+    //   139: invokevirtual 165	android/graphics/Bitmap:getHeight	()I
+    //   142: invokevirtual 211	java/io/DataOutputStream:writeInt	(I)V
+    //   145: aload 6
+    //   147: aload 4
+    //   149: invokevirtual 218	android/graphics/Bitmap:getConfig	()Landroid/graphics/Bitmap$Config;
+    //   152: invokevirtual 221	android/graphics/Bitmap$Config:toString	()Ljava/lang/String;
+    //   155: invokevirtual 225	java/io/DataOutputStream:writeUTF	(Ljava/lang/String;)V
+    //   158: aload 6
+    //   160: aload 5
+    //   162: invokevirtual 229	java/io/DataOutputStream:write	([B)V
+    //   165: aload 6
+    //   167: invokestatic 116	com/google/android/gms/common/data/BitmapTeleporter:zaa	(Ljava/io/Closeable;)V
+    //   170: goto +58 -> 228
+    //   173: astore_1
+    //   174: goto +15 -> 189
+    //   177: astore_1
+    //   178: new 134	java/lang/IllegalStateException
+    //   181: dup
+    //   182: ldc -25
+    //   184: aload_1
+    //   185: invokespecial 139	java/lang/IllegalStateException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   188: athrow
+    //   189: aload 6
+    //   191: invokestatic 116	com/google/android/gms/common/data/BitmapTeleporter:zaa	(Ljava/io/Closeable;)V
+    //   194: aload_1
+    //   195: athrow
+    //   196: new 134	java/lang/IllegalStateException
+    //   199: dup
+    //   200: ldc -23
+    //   202: invokespecial 235	java/lang/IllegalStateException:<init>	(Ljava/lang/String;)V
+    //   205: athrow
+    //   206: astore_1
+    //   207: new 134	java/lang/IllegalStateException
+    //   210: dup
+    //   211: ldc -19
+    //   213: aload_1
+    //   214: invokespecial 139	java/lang/IllegalStateException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   217: athrow
+    //   218: new 134	java/lang/IllegalStateException
+    //   221: dup
+    //   222: ldc -17
+    //   224: invokespecial 235	java/lang/IllegalStateException:<init>	(Ljava/lang/String;)V
+    //   227: athrow
+    //   228: aload_1
+    //   229: invokestatic 245	com/google/android/gms/common/internal/safeparcel/SafeParcelWriter:beginObjectHeader	(Landroid/os/Parcel;)I
+    //   232: istore_3
+    //   233: aload_1
+    //   234: iconst_1
+    //   235: aload_0
+    //   236: getfield 47	com/google/android/gms/common/data/BitmapTeleporter:zaa	I
+    //   239: invokestatic 248	com/google/android/gms/common/internal/safeparcel/SafeParcelWriter:writeInt	(Landroid/os/Parcel;II)V
+    //   242: aload_1
+    //   243: iconst_2
+    //   244: aload_0
+    //   245: getfield 49	com/google/android/gms/common/data/BitmapTeleporter:zab	Landroid/os/ParcelFileDescriptor;
+    //   248: iload_2
+    //   249: iconst_1
+    //   250: ior
+    //   251: iconst_0
+    //   252: invokestatic 252	com/google/android/gms/common/internal/safeparcel/SafeParcelWriter:writeParcelable	(Landroid/os/Parcel;ILandroid/os/Parcelable;IZ)V
+    //   255: aload_1
+    //   256: iconst_3
+    //   257: aload_0
+    //   258: getfield 51	com/google/android/gms/common/data/BitmapTeleporter:zac	I
+    //   261: invokestatic 248	com/google/android/gms/common/internal/safeparcel/SafeParcelWriter:writeInt	(Landroid/os/Parcel;II)V
+    //   264: aload_1
+    //   265: iload_3
+    //   266: invokestatic 255	com/google/android/gms/common/internal/safeparcel/SafeParcelWriter:finishObjectHeader	(Landroid/os/Parcel;I)V
+    //   269: aload_0
+    //   270: aconst_null
+    //   271: putfield 49	com/google/android/gms/common/data/BitmapTeleporter:zab	Landroid/os/ParcelFileDescriptor;
+    //   274: return
+    //   275: astore_1
+    //   276: goto -80 -> 196
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	279	0	this	BitmapTeleporter
+    //   0	279	1	paramParcel	android.os.Parcel
+    //   0	279	2	paramInt	int
+    //   232	34	3	i	int
+    //   17	131	4	localBitmap	Bitmap
+    //   33	128	5	localObject1	Object
+    //   53	137	6	localObject2	Object
+    //   80	28	7	localFileOutputStream	java.io.FileOutputStream
+    // Exception table:
+    //   from	to	target	type
+    //   117	165	173	finally
+    //   178	189	173	finally
+    //   117	165	177	java/io/IOException
+    //   60	71	206	java/io/IOException
+    //   71	93	275	java/io/FileNotFoundException
+  }
+}

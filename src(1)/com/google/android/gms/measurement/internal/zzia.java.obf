@@ -1,0 +1,92 @@
+package com.google.android.gms.measurement.internal;
+
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.TextUtils;
+
+final class zzia
+  implements Runnable
+{
+  zzia(zzic paramZzic, boolean paramBoolean, Uri paramUri, String paramString1, String paramString2) {}
+  
+  public final void run()
+  {
+    zzic localZzic = zze;
+    boolean bool1 = zza;
+    Uri localUri = zzb;
+    String str1 = zzc;
+    String str2 = zzd;
+    zza.zzg();
+    try
+    {
+      Object localObject = zza.zzs.zzv();
+      boolean bool2 = TextUtils.isEmpty(str2);
+      if (bool2) {}
+      for (;;)
+      {
+        localObject = null;
+        break label188;
+        if ((str2.contains("gclid")) || (str2.contains("utm_campaign")) || (str2.contains("utm_source")) || (str2.contains("utm_medium")) || (str2.contains("utm_id")) || (str2.contains("dclid")) || (str2.contains("srsltid"))) {
+          break;
+        }
+        zzs.zzay().zzc().zza("Activity created with data 'referrer' without required params");
+      }
+      Bundle localBundle = ((zzlh)localObject).zzs(Uri.parse("https://google.com/search?".concat(str2)));
+      localObject = localBundle;
+      if (localBundle != null)
+      {
+        localBundle.putString("_cis", "referrer");
+        localObject = localBundle;
+      }
+      label188:
+      if (bool1)
+      {
+        localBundle = zza.zzs.zzv().zzs(localUri);
+        if (localBundle != null)
+        {
+          localBundle.putString("_cis", "intent");
+          if ((!localBundle.containsKey("gclid")) && (localObject != null) && (((Bundle)localObject).containsKey("gclid"))) {
+            localBundle.putString("_cer", String.format("gclid=%s", new Object[] { ((Bundle)localObject).getString("gclid") }));
+          }
+          zza.zzG(str1, "_cmp", localBundle);
+          zza.zzb.zza(str1, localBundle);
+        }
+      }
+      if (TextUtils.isEmpty(str2)) {
+        return;
+      }
+      zza.zzs.zzay().zzc().zzb("Activity created with referrer", str2);
+      bool1 = zza.zzs.zzf().zzs(null, zzeb.zzY);
+      if (bool1)
+      {
+        if (localObject != null)
+        {
+          zza.zzG(str1, "_cmp", (Bundle)localObject);
+          zza.zzb.zza(str1, (Bundle)localObject);
+        }
+        else
+        {
+          zza.zzs.zzay().zzc().zzb("Referrer does not contain valid parameters", str2);
+        }
+        zza.zzW("auto", "_ldl", null, true);
+        return;
+      }
+      if ((str2.contains("gclid")) && ((str2.contains("utm_campaign")) || (str2.contains("utm_source")) || (str2.contains("utm_medium")) || (str2.contains("utm_term")) || (str2.contains("utm_content"))))
+      {
+        if (!TextUtils.isEmpty(str2)) {
+          zza.zzW("auto", "_ldl", str2, true);
+        }
+      }
+      else
+      {
+        zza.zzs.zzay().zzc().zza("Activity created with data 'referrer' without required params");
+        return;
+      }
+    }
+    catch (RuntimeException localRuntimeException)
+    {
+      zza.zzs.zzay().zzd().zzb("Throwable caught in handleReferrerForOnActivityCreated", localRuntimeException);
+      return;
+    }
+  }
+}

@@ -1,0 +1,195 @@
+package androidx.recyclerview.widget;
+
+import android.os.Handler;
+import android.os.Looper;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
+
+public class d<T>
+{
+  private static final Executor a = new c();
+  private final q b;
+  final c<T> c;
+  Executor d;
+  private final List<b<T>> e = new CopyOnWriteArrayList();
+  private List<T> f;
+  private List<T> g = Collections.emptyList();
+  int h;
+  
+  public d(q paramQ, c<T> paramC)
+  {
+    b = paramQ;
+    c = paramC;
+    if (paramC.c() != null)
+    {
+      d = paramC.c();
+      return;
+    }
+    d = a;
+  }
+  
+  private void d(List<T> paramList, Runnable paramRunnable)
+  {
+    Iterator localIterator = e.iterator();
+    while (localIterator.hasNext()) {
+      ((b)localIterator.next()).a(paramList, g);
+    }
+    if (paramRunnable != null) {
+      paramRunnable.run();
+    }
+  }
+  
+  public void a(b<T> paramB)
+  {
+    e.add(paramB);
+  }
+  
+  public List<T> b()
+  {
+    return g;
+  }
+  
+  void c(List<T> paramList, h.e paramE, Runnable paramRunnable)
+  {
+    List localList = g;
+    f = paramList;
+    g = Collections.unmodifiableList(paramList);
+    paramE.b(b);
+    d(localList, paramRunnable);
+  }
+  
+  public void e(List<T> paramList)
+  {
+    f(paramList, null);
+  }
+  
+  public void f(final List<T> paramList, final Runnable paramRunnable)
+  {
+    final int i = h + 1;
+    h = i;
+    final List localList1 = f;
+    if (paramList == localList1)
+    {
+      if (paramRunnable != null) {
+        paramRunnable.run();
+      }
+      return;
+    }
+    List localList2 = g;
+    if (paramList == null)
+    {
+      i = localList1.size();
+      f = null;
+      g = Collections.emptyList();
+      b.c(0, i);
+      d(localList2, paramRunnable);
+      return;
+    }
+    if (localList1 == null)
+    {
+      f = paramList;
+      g = Collections.unmodifiableList(paramList);
+      b.b(0, paramList.size());
+      d(localList2, paramRunnable);
+      return;
+    }
+    c.a().execute(new a(localList1, paramList, i, paramRunnable));
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(List paramList1, List paramList2, int paramInt, Runnable paramRunnable) {}
+    
+    public void run()
+    {
+      final h.e localE = h.b(new a());
+      d.execute(new b(localE));
+    }
+    
+    class a
+      extends h.b
+    {
+      a() {}
+      
+      public boolean areContentsTheSame(int paramInt1, int paramInt2)
+      {
+        Object localObject1 = b.get(paramInt1);
+        Object localObject2 = c.get(paramInt2);
+        if ((localObject1 != null) && (localObject2 != null)) {
+          return c.b().a(localObject1, localObject2);
+        }
+        if ((localObject1 == null) && (localObject2 == null)) {
+          return true;
+        }
+        throw new AssertionError();
+      }
+      
+      public boolean areItemsTheSame(int paramInt1, int paramInt2)
+      {
+        Object localObject1 = b.get(paramInt1);
+        Object localObject2 = c.get(paramInt2);
+        if ((localObject1 != null) && (localObject2 != null)) {
+          return c.b().b(localObject1, localObject2);
+        }
+        return (localObject1 == null) && (localObject2 == null);
+      }
+      
+      public Object getChangePayload(int paramInt1, int paramInt2)
+      {
+        Object localObject1 = b.get(paramInt1);
+        Object localObject2 = c.get(paramInt2);
+        if ((localObject1 != null) && (localObject2 != null)) {
+          return c.b().c(localObject1, localObject2);
+        }
+        throw new AssertionError();
+      }
+      
+      public int getNewListSize()
+      {
+        return c.size();
+      }
+      
+      public int getOldListSize()
+      {
+        return b.size();
+      }
+    }
+    
+    class b
+      implements Runnable
+    {
+      b(h.e paramE) {}
+      
+      public void run()
+      {
+        d.a localA = d.a.this;
+        d localD = f;
+        if (h == d) {
+          localD.c(c, localE, e);
+        }
+      }
+    }
+  }
+  
+  public static abstract interface b<T>
+  {
+    public abstract void a(List<T> paramList1, List<T> paramList2);
+  }
+  
+  private static class c
+    implements Executor
+  {
+    final Handler b = new Handler(Looper.getMainLooper());
+    
+    c() {}
+    
+    public void execute(Runnable paramRunnable)
+    {
+      b.post(paramRunnable);
+    }
+  }
+}

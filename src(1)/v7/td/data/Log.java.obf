@@ -1,0 +1,224 @@
+package c.t.a;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.os.Build.VERSION;
+import android.text.TextUtils;
+import android.util.Log;
+import android.util.Pair;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
+public abstract interface c
+  extends Closeable
+{
+  public abstract void close();
+  
+  public abstract String getDatabaseName();
+  
+  public abstract b getWritableDatabase();
+  
+  public abstract void setWriteAheadLoggingEnabled(boolean paramBoolean);
+  
+  public static abstract class a
+  {
+    public final int a;
+    
+    public a(int paramInt)
+    {
+      a = paramInt;
+    }
+    
+    private void a(String paramString)
+    {
+      if (!paramString.equalsIgnoreCase(":memory:"))
+      {
+        if (paramString.trim().length() == 0) {
+          return;
+        }
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("deleting the database file: ");
+        localStringBuilder.append(paramString);
+        Log.w("SupportSQLite", localStringBuilder.toString());
+        try
+        {
+          if (Build.VERSION.SDK_INT >= 16)
+          {
+            SQLiteDatabase.deleteDatabase(new File(paramString));
+            return;
+          }
+          try
+          {
+            if (!new File(paramString).delete())
+            {
+              localStringBuilder = new StringBuilder();
+              localStringBuilder.append("Could not delete the database file ");
+              localStringBuilder.append(paramString);
+              Log.e("SupportSQLite", localStringBuilder.toString());
+              return;
+            }
+          }
+          catch (Exception paramString)
+          {
+            Log.e("SupportSQLite", "error while deleting corrupted database file", paramString);
+            return;
+          }
+          return;
+        }
+        catch (Exception paramString)
+        {
+          Log.w("SupportSQLite", "delete failed: ", paramString);
+        }
+      }
+    }
+    
+    public void b(b paramB) {}
+    
+    public void c(b paramB)
+    {
+      Object localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("Corruption reported by sqlite on database: ");
+      ((StringBuilder)localObject1).append(paramB.getPath());
+      Log.e("SupportSQLite", ((StringBuilder)localObject1).toString());
+      if (!paramB.isOpen())
+      {
+        a(paramB.getPath());
+        return;
+      }
+      localObject1 = null;
+      Object localObject3 = null;
+      try
+      {
+        try
+        {
+          List localList = paramB.getAttachedDbs();
+          localObject1 = localList;
+        }
+        finally
+        {
+          break label89;
+        }
+      }
+      catch (SQLiteException localSQLiteException)
+      {
+        label89:
+        for (;;) {}
+      }
+      localObject3 = localObject2;
+      for (;;) {}
+      try
+      {
+        paramB.close();
+      }
+      catch (IOException localIOException)
+      {
+        for (;;) {}
+      }
+      if (localObject3 != null)
+      {
+        paramB = localObject3.iterator();
+        while (paramB.hasNext()) {
+          a((String)nextsecond);
+        }
+      }
+      else
+      {
+        a(paramB.getPath());
+      }
+      throw localObject2;
+      if (localObject2 != null)
+      {
+        paramB = localObject2.iterator();
+        while (paramB.hasNext()) {
+          a((String)nextsecond);
+        }
+      }
+      a(paramB.getPath());
+    }
+    
+    public abstract void d(b paramB);
+    
+    public abstract void e(b paramB, int paramInt1, int paramInt2);
+    
+    public void f(b paramB) {}
+    
+    public abstract void g(b paramB, int paramInt1, int paramInt2);
+  }
+  
+  public static class b
+  {
+    public final Context a;
+    public final String b;
+    public final c.a c;
+    public final boolean d;
+    
+    b(Context paramContext, String paramString, c.a paramA, boolean paramBoolean)
+    {
+      a = paramContext;
+      b = paramString;
+      c = paramA;
+      d = paramBoolean;
+    }
+    
+    public static a a(Context paramContext)
+    {
+      return new a(paramContext);
+    }
+    
+    public static class a
+    {
+      Context a;
+      String b;
+      c.a c;
+      boolean d;
+      
+      a(Context paramContext)
+      {
+        a = paramContext;
+      }
+      
+      public c.b a()
+      {
+        if (c != null)
+        {
+          if (a != null)
+          {
+            if ((d) && (TextUtils.isEmpty(b))) {
+              throw new IllegalArgumentException("Must set a non-null database name to a configuration that uses the no backup directory.");
+            }
+            return new c.b(a, b, c, d);
+          }
+          throw new IllegalArgumentException("Must set a non-null context to create the configuration.");
+        }
+        throw new IllegalArgumentException("Must set a callback to create the configuration.");
+      }
+      
+      public a b(c.a paramA)
+      {
+        c = paramA;
+        return this;
+      }
+      
+      public a c(String paramString)
+      {
+        b = paramString;
+        return this;
+      }
+      
+      public a d(boolean paramBoolean)
+      {
+        d = paramBoolean;
+        return this;
+      }
+    }
+  }
+  
+  public static abstract interface c
+  {
+    public abstract c create(c.b paramB);
+  }
+}

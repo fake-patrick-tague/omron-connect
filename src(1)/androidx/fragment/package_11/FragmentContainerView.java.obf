@@ -1,0 +1,319 @@
+package androidx.fragment.app;
+
+import android.animation.LayoutTransition;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.View.OnApplyWindowInsetsListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowInsets;
+import android.widget.FrameLayout;
+import c.h.q.f0;
+import c.h.q.n0;
+import c.m.c;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import kotlin.x.d.i;
+
+public final class FragmentContainerView
+  extends FrameLayout
+{
+  private final List<View> b = new ArrayList();
+  private final List<View> c = new ArrayList();
+  private View.OnApplyWindowInsetsListener d;
+  private boolean e = true;
+  
+  public FragmentContainerView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, 0, 4, null);
+  }
+  
+  public FragmentContainerView(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(paramContext, paramAttributeSet, paramInt);
+    if (paramAttributeSet != null)
+    {
+      Object localObject1 = paramAttributeSet.getClassAttribute();
+      Object localObject2 = c.e;
+      i.d(localObject2, "FragmentContainerView");
+      localObject2 = paramContext.obtainStyledAttributes(paramAttributeSet, (int[])localObject2, 0, 0);
+      if (localObject1 == null)
+      {
+        paramAttributeSet = ((TypedArray)localObject2).getString(c.f);
+        paramContext = "android:name";
+      }
+      else
+      {
+        paramContext = "class";
+        paramAttributeSet = (AttributeSet)localObject1;
+      }
+      ((TypedArray)localObject2).recycle();
+      if (paramAttributeSet != null)
+      {
+        if (isInEditMode()) {
+          return;
+        }
+        localObject1 = new StringBuilder();
+        ((StringBuilder)localObject1).append("FragmentContainerView must be within a FragmentActivity to use ");
+        ((StringBuilder)localObject1).append(paramContext);
+        ((StringBuilder)localObject1).append("=\"");
+        ((StringBuilder)localObject1).append(paramAttributeSet);
+        ((StringBuilder)localObject1).append('"');
+        throw new UnsupportedOperationException(((StringBuilder)localObject1).toString());
+      }
+    }
+  }
+  
+  public FragmentContainerView(Context paramContext, AttributeSet paramAttributeSet, FragmentManager paramFragmentManager)
+  {
+    super(paramContext, paramAttributeSet);
+    String str = paramAttributeSet.getClassAttribute();
+    Object localObject1 = c.e;
+    i.d(localObject1, "FragmentContainerView");
+    Object localObject2 = paramContext.obtainStyledAttributes(paramAttributeSet, (int[])localObject1, 0, 0);
+    localObject1 = str;
+    if (str == null) {
+      localObject1 = ((TypedArray)localObject2).getString(c.f);
+    }
+    str = ((TypedArray)localObject2).getString(c.g);
+    ((TypedArray)localObject2).recycle();
+    int i = getId();
+    localObject2 = paramFragmentManager.d0(i);
+    if ((localObject1 != null) && (localObject2 == null))
+    {
+      if (i == -1)
+      {
+        if (str != null)
+        {
+          paramContext = new StringBuilder();
+          paramContext.append(" with tag ");
+          paramContext.append(str);
+          paramContext = paramContext.toString();
+        }
+        else
+        {
+          paramContext = "";
+        }
+        paramAttributeSet = new StringBuilder();
+        paramAttributeSet.append("FragmentContainerView must have an android:id to add Fragment ");
+        paramAttributeSet.append((String)localObject1);
+        paramAttributeSet.append(paramContext);
+        throw new IllegalStateException(paramAttributeSet.toString());
+      }
+      localObject1 = paramFragmentManager.p0().a(paramContext.getClassLoader(), (String)localObject1);
+      i.d(localObject1, "fm.fragmentFactory.insta?ontext.classLoader, name)");
+      ((Fragment)localObject1).onInflate(paramContext, paramAttributeSet, null);
+      paramFragmentManager.k().t(true).d(this, (Fragment)localObject1, str).k();
+    }
+    paramFragmentManager.a1(this);
+  }
+  
+  private final void a(View paramView)
+  {
+    if (c.contains(paramView)) {
+      b.add(paramView);
+    }
+  }
+  
+  public void addView(View paramView, int paramInt, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    i.e(paramView, "child");
+    if (FragmentManager.y0(paramView) != null)
+    {
+      super.addView(paramView, paramInt, paramLayoutParams);
+      return;
+    }
+    paramLayoutParams = new StringBuilder();
+    paramLayoutParams.append("Views added to a FragmentContainerView must be associated with a Fragment. View ");
+    paramLayoutParams.append(paramView);
+    paramLayoutParams.append(" is not associated with a Fragment.");
+    throw new IllegalStateException(paramLayoutParams.toString().toString());
+  }
+  
+  public WindowInsets dispatchApplyWindowInsets(WindowInsets paramWindowInsets)
+  {
+    i.e(paramWindowInsets, "insets");
+    Object localObject2 = n0.v(paramWindowInsets);
+    i.d(localObject2, "toWindowInsetsCompat(insets)");
+    Object localObject1 = d;
+    if (localObject1 != null)
+    {
+      localObject2 = a.a;
+      i.b(localObject1);
+      localObject1 = n0.v(((a)localObject2).a((View.OnApplyWindowInsetsListener)localObject1, this, paramWindowInsets));
+    }
+    else
+    {
+      localObject1 = f0.b0(this, (n0)localObject2);
+    }
+    i.d(localObject1, "if (applyWindowInsetsLis?, insetsCompat)\n        }");
+    if (!((n0)localObject1).o())
+    {
+      int i = 0;
+      int j = getChildCount();
+      while (i < j)
+      {
+        f0.h(getChildAt(i), (n0)localObject1);
+        i += 1;
+      }
+    }
+    return paramWindowInsets;
+  }
+  
+  protected void dispatchDraw(Canvas paramCanvas)
+  {
+    i.e(paramCanvas, "canvas");
+    if (e)
+    {
+      Iterator localIterator = b.iterator();
+      while (localIterator.hasNext()) {
+        super.drawChild(paramCanvas, (View)localIterator.next(), getDrawingTime());
+      }
+    }
+    super.dispatchDraw(paramCanvas);
+  }
+  
+  protected boolean drawChild(Canvas paramCanvas, View paramView, long paramLong)
+  {
+    i.e(paramCanvas, "canvas");
+    i.e(paramView, "child");
+    if ((e) && ((b.isEmpty() ^ true)) && (b.contains(paramView))) {
+      return false;
+    }
+    return super.drawChild(paramCanvas, paramView, paramLong);
+  }
+  
+  public void endViewTransition(View paramView)
+  {
+    i.e(paramView, "view");
+    c.remove(paramView);
+    if (b.remove(paramView)) {
+      e = true;
+    }
+    super.endViewTransition(paramView);
+  }
+  
+  public final <F extends Fragment> F getFragment()
+  {
+    return FragmentManager.g0(this).d0(getId());
+  }
+  
+  public WindowInsets onApplyWindowInsets(WindowInsets paramWindowInsets)
+  {
+    i.e(paramWindowInsets, "insets");
+    return paramWindowInsets;
+  }
+  
+  public void removeAllViewsInLayout()
+  {
+    int i = getChildCount() - 1;
+    while (-1 < i)
+    {
+      View localView = getChildAt(i);
+      i.d(localView, "view");
+      a(localView);
+      i -= 1;
+    }
+    super.removeAllViewsInLayout();
+  }
+  
+  public void removeView(View paramView)
+  {
+    i.e(paramView, "view");
+    a(paramView);
+    super.removeView(paramView);
+  }
+  
+  public void removeViewAt(int paramInt)
+  {
+    View localView = getChildAt(paramInt);
+    i.d(localView, "view");
+    a(localView);
+    super.removeViewAt(paramInt);
+  }
+  
+  public void removeViewInLayout(View paramView)
+  {
+    i.e(paramView, "view");
+    a(paramView);
+    super.removeViewInLayout(paramView);
+  }
+  
+  public void removeViews(int paramInt1, int paramInt2)
+  {
+    int i = paramInt1;
+    while (i < paramInt1 + paramInt2)
+    {
+      View localView = getChildAt(i);
+      i.d(localView, "view");
+      a(localView);
+      i += 1;
+    }
+    super.removeViews(paramInt1, paramInt2);
+  }
+  
+  public void removeViewsInLayout(int paramInt1, int paramInt2)
+  {
+    int i = paramInt1;
+    while (i < paramInt1 + paramInt2)
+    {
+      View localView = getChildAt(i);
+      i.d(localView, "view");
+      a(localView);
+      i += 1;
+    }
+    super.removeViewsInLayout(paramInt1, paramInt2);
+  }
+  
+  public final void setDrawDisappearingViewsLast(boolean paramBoolean)
+  {
+    e = paramBoolean;
+  }
+  
+  public void setLayoutTransition(LayoutTransition paramLayoutTransition)
+  {
+    if (Build.VERSION.SDK_INT < 18)
+    {
+      super.setLayoutTransition(paramLayoutTransition);
+      return;
+    }
+    throw new UnsupportedOperationException("FragmentContainerView does not support Layout Transitions or animateLayoutChanges=\"true\".");
+  }
+  
+  public void setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener paramOnApplyWindowInsetsListener)
+  {
+    i.e(paramOnApplyWindowInsetsListener, "listener");
+    d = paramOnApplyWindowInsetsListener;
+  }
+  
+  public void startViewTransition(View paramView)
+  {
+    i.e(paramView, "view");
+    if (paramView.getParent() == this) {
+      c.add(paramView);
+    }
+    super.startViewTransition(paramView);
+  }
+  
+  public static final class a
+  {
+    public static final a a = new a();
+    
+    private a() {}
+    
+    public final WindowInsets a(View.OnApplyWindowInsetsListener paramOnApplyWindowInsetsListener, View paramView, WindowInsets paramWindowInsets)
+    {
+      i.e(paramOnApplyWindowInsetsListener, "onApplyWindowInsetsListener");
+      i.e(paramView, "v");
+      i.e(paramWindowInsets, "insets");
+      paramOnApplyWindowInsetsListener = paramOnApplyWindowInsetsListener.onApplyWindowInsets(paramView, paramWindowInsets);
+      i.d(paramOnApplyWindowInsetsListener, "onApplyWindowInsetsListe?lyWindowInsets(v, insets)");
+      return paramOnApplyWindowInsetsListener;
+    }
+  }
+}

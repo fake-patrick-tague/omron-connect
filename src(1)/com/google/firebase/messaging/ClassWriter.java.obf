@@ -1,0 +1,316 @@
+package com.google.firebase.messaging;
+
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.util.Log;
+import c.e.a;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+class f1
+{
+  private static final long a = TimeUnit.HOURS.toSeconds(8L);
+  private final Context b;
+  private final r0 c;
+  private final o0 d;
+  private final FirebaseMessaging e;
+  private final Map<String, ArrayDeque<TaskCompletionSource<Void>>> f = new a();
+  private final ScheduledExecutorService g;
+  private boolean h = false;
+  private final e1 i;
+  
+  private f1(FirebaseMessaging paramFirebaseMessaging, r0 paramR0, e1 paramE1, o0 paramO0, Context paramContext, ScheduledExecutorService paramScheduledExecutorService)
+  {
+    e = paramFirebaseMessaging;
+    c = paramR0;
+    i = paramE1;
+    d = paramO0;
+    b = paramContext;
+    g = paramScheduledExecutorService;
+  }
+  
+  private void a(d1 paramD1, TaskCompletionSource<Void> paramTaskCompletionSource)
+  {
+    synchronized (f)
+    {
+      String str = paramD1.e();
+      if (f.containsKey(str))
+      {
+        paramD1 = (ArrayDeque)f.get(str);
+      }
+      else
+      {
+        paramD1 = new ArrayDeque();
+        f.put(str, paramD1);
+      }
+      paramD1.add(paramTaskCompletionSource);
+      return;
+    }
+  }
+  
+  private static <T> void b(Task<T> paramTask)
+    throws IOException
+  {
+    try
+    {
+      try
+      {
+        Tasks.await(paramTask, 30L, TimeUnit.SECONDS);
+        return;
+      }
+      catch (TimeoutException paramTask) {}catch (InterruptedException paramTask) {}
+      throw new IOException("SERVICE_NOT_AVAILABLE", paramTask);
+    }
+    catch (ExecutionException paramTask)
+    {
+      Throwable localThrowable = paramTask.getCause();
+      if (!(localThrowable instanceof IOException))
+      {
+        if ((localThrowable instanceof RuntimeException)) {
+          throw ((RuntimeException)localThrowable);
+        }
+        throw new IOException(paramTask);
+      }
+      throw ((IOException)localThrowable);
+    }
+  }
+  
+  private void c(String paramString)
+    throws IOException
+  {
+    b(d.l(e.blockingGetToken(), paramString));
+  }
+  
+  private void d(String paramString)
+    throws IOException
+  {
+    b(d.m(e.blockingGetToken(), paramString));
+  }
+  
+  static Task<f1> e(FirebaseMessaging paramFirebaseMessaging, r0 paramR0, o0 paramO0, Context paramContext, ScheduledExecutorService paramScheduledExecutorService)
+  {
+    return Tasks.call(paramScheduledExecutorService, new a0(paramContext, paramScheduledExecutorService, paramFirebaseMessaging, paramR0, paramO0));
+  }
+  
+  static boolean g()
+  {
+    return (Log.isLoggable("FirebaseMessaging", 3)) || ((Build.VERSION.SDK_INT == 23) && (Log.isLoggable("FirebaseMessaging", 3)));
+  }
+  
+  private void j(d1 paramD1)
+  {
+    synchronized (f)
+    {
+      paramD1 = paramD1.e();
+      if (!f.containsKey(paramD1)) {
+        return;
+      }
+      ArrayDeque localArrayDeque = (ArrayDeque)f.get(paramD1);
+      TaskCompletionSource localTaskCompletionSource = (TaskCompletionSource)localArrayDeque.poll();
+      if (localTaskCompletionSource != null) {
+        localTaskCompletionSource.setResult(null);
+      }
+      if (localArrayDeque.isEmpty()) {
+        f.remove(paramD1);
+      }
+      return;
+    }
+  }
+  
+  private void o()
+  {
+    if (!h()) {
+      s(0L);
+    }
+  }
+  
+  boolean f()
+  {
+    return i.c() != null;
+  }
+  
+  boolean h()
+  {
+    try
+    {
+      boolean bool = h;
+      return bool;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  boolean k(d1 paramD1)
+    throws IOException
+  {
+    try
+    {
+      localObject = paramD1.b();
+      int j = -1;
+      int k = ((String)localObject).hashCode();
+      if (k != 83)
+      {
+        if ((k == 85) && (((String)localObject).equals("U"))) {
+          j = 1;
+        }
+      }
+      else
+      {
+        boolean bool = ((String)localObject).equals("S");
+        if (bool) {
+          j = 0;
+        }
+      }
+      if (j != 0)
+      {
+        if (j != 1)
+        {
+          if (g())
+          {
+            localObject = new StringBuilder();
+            ((StringBuilder)localObject).append("Unknown topic operation");
+            ((StringBuilder)localObject).append(paramD1);
+            ((StringBuilder)localObject).append(".");
+            Log.d("FirebaseMessaging", ((StringBuilder)localObject).toString());
+            return true;
+          }
+        }
+        else
+        {
+          d(paramD1.c());
+          if (g())
+          {
+            localObject = new StringBuilder();
+            ((StringBuilder)localObject).append("Unsubscribe from topic: ");
+            ((StringBuilder)localObject).append(paramD1.c());
+            ((StringBuilder)localObject).append(" succeeded.");
+            Log.d("FirebaseMessaging", ((StringBuilder)localObject).toString());
+            return true;
+          }
+        }
+      }
+      else
+      {
+        c(paramD1.c());
+        if (g())
+        {
+          localObject = new StringBuilder();
+          ((StringBuilder)localObject).append("Subscribe to topic: ");
+          ((StringBuilder)localObject).append(paramD1.c());
+          ((StringBuilder)localObject).append(" succeeded.");
+          Log.d("FirebaseMessaging", ((StringBuilder)localObject).toString());
+        }
+      }
+      return true;
+    }
+    catch (IOException paramD1)
+    {
+      if ((!"SERVICE_NOT_AVAILABLE".equals(paramD1.getMessage())) && (!"INTERNAL_SERVER_ERROR".equals(paramD1.getMessage())))
+      {
+        if (paramD1.getMessage() == null)
+        {
+          Log.e("FirebaseMessaging", "Topic operation failed without exception message. Will retry Topic operation.");
+          return false;
+        }
+        throw paramD1;
+      }
+      Object localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Topic operation failed: ");
+      ((StringBuilder)localObject).append(paramD1.getMessage());
+      ((StringBuilder)localObject).append(". Will retry Topic operation.");
+      Log.e("FirebaseMessaging", ((StringBuilder)localObject).toString());
+    }
+    return false;
+  }
+  
+  void l(Runnable paramRunnable, long paramLong)
+  {
+    g.schedule(paramRunnable, paramLong, TimeUnit.SECONDS);
+  }
+  
+  Task<Void> m(d1 paramD1)
+  {
+    i.a(paramD1);
+    TaskCompletionSource localTaskCompletionSource = new TaskCompletionSource();
+    a(paramD1, localTaskCompletionSource);
+    return localTaskCompletionSource.getTask();
+  }
+  
+  void n(boolean paramBoolean)
+  {
+    try
+    {
+      h = paramBoolean;
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  void p()
+  {
+    if (f()) {
+      o();
+    }
+  }
+  
+  Task<Void> q(String paramString)
+  {
+    paramString = m(d1.f(paramString));
+    p();
+    return paramString;
+  }
+  
+  boolean r()
+    throws IOException
+  {
+    for (;;)
+    {
+      try
+      {
+        d1 localD1 = i.c();
+        if (localD1 == null)
+        {
+          if (g()) {
+            Log.d("FirebaseMessaging", "topic sync succeeded");
+          }
+          return true;
+        }
+        if (!k(localD1)) {
+          return false;
+        }
+        i.e(localD1);
+        j(localD1);
+      }
+      finally {}
+    }
+  }
+  
+  void s(long paramLong)
+  {
+    long l = Math.min(Math.max(30L, 2L * paramLong), a);
+    l(new g1(this, b, c, l), paramLong);
+    n(true);
+  }
+  
+  Task<Void> t(String paramString)
+  {
+    paramString = m(d1.g(paramString));
+    p();
+    return paramString;
+  }
+}

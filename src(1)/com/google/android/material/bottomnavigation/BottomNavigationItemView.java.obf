@@ -1,0 +1,584 @@
+package com.google.android.material.bottomnavigation;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.appcompat.view.menu.n.a;
+import androidx.appcompat.widget.p0;
+import c.h.q.d0;
+import c.h.q.f0;
+import c.h.q.p0.c;
+import c.h.q.p0.c.a;
+import c.h.q.p0.c.c;
+import com.google.android.material.badge.BadgeDrawable;
+import d.c.a.a.d;
+import d.c.a.a.e;
+import d.c.a.a.f;
+import d.c.a.a.h;
+import d.c.a.a.j;
+
+public class BottomNavigationItemView
+  extends FrameLayout
+  implements n.a
+{
+  private static final int[] b = { 16842912 };
+  private final int c;
+  private float d;
+  private float e;
+  private float f;
+  private int g;
+  private boolean h;
+  private ImageView i;
+  private final ViewGroup j;
+  private final TextView k;
+  private final TextView l;
+  private int m = -1;
+  private androidx.appcompat.view.menu.i n;
+  private ColorStateList o;
+  private Drawable p;
+  private Drawable q;
+  private BadgeDrawable r;
+  
+  public BottomNavigationItemView(Context paramContext)
+  {
+    this(paramContext, null);
+  }
+  
+  public BottomNavigationItemView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, 0);
+  }
+  
+  public BottomNavigationItemView(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(paramContext, paramAttributeSet, paramInt);
+    paramAttributeSet = getResources();
+    LayoutInflater.from(paramContext).inflate(h.a, this, true);
+    setBackgroundResource(e.a);
+    c = paramAttributeSet.getDimensionPixelSize(d.h);
+    i = ((ImageView)findViewById(f.f));
+    paramContext = (ViewGroup)findViewById(f.g);
+    j = paramContext;
+    paramAttributeSet = (TextView)findViewById(f.L);
+    k = paramAttributeSet;
+    TextView localTextView = (TextView)findViewById(f.h);
+    l = localTextView;
+    paramContext.setTag(f.I, Integer.valueOf(paramContext.getPaddingBottom()));
+    f0.A0(paramAttributeSet, 2);
+    f0.A0(localTextView, 2);
+    setFocusable(true);
+    c(paramAttributeSet.getTextSize(), localTextView.getTextSize());
+    paramContext = i;
+    if (paramContext != null) {
+      paramContext.addOnLayoutChangeListener(new a());
+    }
+  }
+  
+  private void c(float paramFloat1, float paramFloat2)
+  {
+    d = (paramFloat1 - paramFloat2);
+    e = (paramFloat2 * 1.0F / paramFloat1);
+    f = (paramFloat1 * 1.0F / paramFloat2);
+  }
+  
+  private FrameLayout f(View paramView)
+  {
+    ImageView localImageView = i;
+    Object localObject2 = null;
+    Object localObject1 = localObject2;
+    if (paramView == localImageView)
+    {
+      localObject1 = localObject2;
+      if (com.google.android.material.badge.a.a) {
+        localObject1 = (FrameLayout)localImageView.getParent();
+      }
+    }
+    return localObject1;
+  }
+  
+  private boolean g()
+  {
+    return r != null;
+  }
+  
+  private int getItemVisiblePosition()
+  {
+    ViewGroup localViewGroup = (ViewGroup)getParent();
+    int i4 = localViewGroup.indexOfChild(this);
+    int i1 = 0;
+    int i3;
+    for (int i2 = 0; i1 < i4; i2 = i3)
+    {
+      View localView = localViewGroup.getChildAt(i1);
+      i3 = i2;
+      if ((localView instanceof BottomNavigationItemView))
+      {
+        i3 = i2;
+        if (localView.getVisibility() == 0) {
+          i3 = i2 + 1;
+        }
+      }
+      i1 += 1;
+    }
+    return i2;
+  }
+  
+  private static void i(View paramView, int paramInt1, int paramInt2)
+  {
+    FrameLayout.LayoutParams localLayoutParams = (FrameLayout.LayoutParams)paramView.getLayoutParams();
+    topMargin = paramInt1;
+    gravity = paramInt2;
+    paramView.setLayoutParams(localLayoutParams);
+  }
+  
+  private static void j(View paramView, float paramFloat1, float paramFloat2, int paramInt)
+  {
+    paramView.setScaleX(paramFloat1);
+    paramView.setScaleY(paramFloat2);
+    paramView.setVisibility(paramInt);
+  }
+  
+  private void k(View paramView)
+  {
+    if (!g()) {
+      return;
+    }
+    if (paramView != null)
+    {
+      setClipChildren(false);
+      setClipToPadding(false);
+      com.google.android.material.badge.a.a(r, paramView, f(paramView));
+    }
+  }
+  
+  private void l(View paramView)
+  {
+    if (!g()) {
+      return;
+    }
+    if (paramView != null)
+    {
+      setClipChildren(true);
+      setClipToPadding(true);
+      com.google.android.material.badge.a.d(r, paramView);
+    }
+    r = null;
+  }
+  
+  private void m(View paramView)
+  {
+    if (!g()) {
+      return;
+    }
+    com.google.android.material.badge.a.e(r, paramView, f(paramView));
+  }
+  
+  private static void n(View paramView, int paramInt)
+  {
+    paramView.setPadding(paramView.getPaddingLeft(), paramView.getPaddingTop(), paramView.getPaddingRight(), paramInt);
+  }
+  
+  public boolean d()
+  {
+    return false;
+  }
+  
+  public void e(androidx.appcompat.view.menu.i paramI, int paramInt)
+  {
+    n = paramI;
+    setCheckable(paramI.isCheckable());
+    setChecked(paramI.isChecked());
+    setEnabled(paramI.isEnabled());
+    setIcon(paramI.getIcon());
+    setTitle(paramI.getTitle());
+    setId(paramI.getItemId());
+    if (!TextUtils.isEmpty(paramI.getContentDescription())) {
+      setContentDescription(paramI.getContentDescription());
+    }
+    CharSequence localCharSequence;
+    if (!TextUtils.isEmpty(paramI.getTooltipText())) {
+      localCharSequence = paramI.getTooltipText();
+    } else {
+      localCharSequence = paramI.getTitle();
+    }
+    p0.a(this, localCharSequence);
+    if (paramI.isVisible()) {
+      paramInt = 0;
+    } else {
+      paramInt = 8;
+    }
+    setVisibility(paramInt);
+  }
+  
+  BadgeDrawable getBadge()
+  {
+    return r;
+  }
+  
+  public androidx.appcompat.view.menu.i getItemData()
+  {
+    return n;
+  }
+  
+  public int getItemPosition()
+  {
+    return m;
+  }
+  
+  void h()
+  {
+    l(i);
+  }
+  
+  public int[] onCreateDrawableState(int paramInt)
+  {
+    int[] arrayOfInt = super.onCreateDrawableState(paramInt + 1);
+    androidx.appcompat.view.menu.i localI = n;
+    if ((localI != null) && (localI.isCheckable()) && (n.isChecked())) {
+      FrameLayout.mergeDrawableStates(arrayOfInt, b);
+    }
+    return arrayOfInt;
+  }
+  
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+  {
+    super.onInitializeAccessibilityNodeInfo(paramAccessibilityNodeInfo);
+    Object localObject = r;
+    if ((localObject != null) && (((Drawable)localObject).isVisible()))
+    {
+      localObject = n.getTitle();
+      if (!TextUtils.isEmpty(n.getContentDescription())) {
+        localObject = n.getContentDescription();
+      }
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append(localObject);
+      localStringBuilder.append(", ");
+      localStringBuilder.append(r.h());
+      paramAccessibilityNodeInfo.setContentDescription(localStringBuilder.toString());
+    }
+    paramAccessibilityNodeInfo = c.y0(paramAccessibilityNodeInfo);
+    paramAccessibilityNodeInfo.b0(c.c.a(0, 1, getItemVisiblePosition(), 1, false, isSelected()));
+    if (isSelected())
+    {
+      paramAccessibilityNodeInfo.Z(false);
+      paramAccessibilityNodeInfo.Q(c.a.e);
+    }
+    paramAccessibilityNodeInfo.o0(getResources().getString(j.h));
+  }
+  
+  void setBadge(BadgeDrawable paramBadgeDrawable)
+  {
+    r = paramBadgeDrawable;
+    paramBadgeDrawable = i;
+    if (paramBadgeDrawable != null) {
+      k(paramBadgeDrawable);
+    }
+  }
+  
+  public void setCheckable(boolean paramBoolean)
+  {
+    refreshDrawableState();
+  }
+  
+  public void setChecked(boolean paramBoolean)
+  {
+    Object localObject = l;
+    ((TextView)localObject).setPivotX(((TextView)localObject).getWidth() / 2);
+    localObject = l;
+    ((TextView)localObject).setPivotY(((TextView)localObject).getBaseline());
+    localObject = k;
+    ((TextView)localObject).setPivotX(((TextView)localObject).getWidth() / 2);
+    localObject = k;
+    ((TextView)localObject).setPivotY(((TextView)localObject).getBaseline());
+    int i1 = g;
+    float f1;
+    if (i1 != -1)
+    {
+      if (i1 != 0)
+      {
+        if (i1 != 1)
+        {
+          if (i1 == 2)
+          {
+            i(i, c, 17);
+            l.setVisibility(8);
+            k.setVisibility(8);
+          }
+        }
+        else
+        {
+          localObject = j;
+          n((View)localObject, ((Integer)((ViewGroup)localObject).getTag(f.I)).intValue());
+          if (paramBoolean)
+          {
+            i(i, (int)(c + d), 49);
+            j(l, 1.0F, 1.0F, 0);
+            localObject = k;
+            f1 = e;
+            j((View)localObject, f1, f1, 4);
+          }
+          else
+          {
+            i(i, c, 49);
+            localObject = l;
+            f1 = f;
+            j((View)localObject, f1, f1, 4);
+            j(k, 1.0F, 1.0F, 0);
+          }
+        }
+      }
+      else
+      {
+        if (paramBoolean)
+        {
+          i(i, c, 49);
+          localObject = j;
+          n((View)localObject, ((Integer)((ViewGroup)localObject).getTag(f.I)).intValue());
+          l.setVisibility(0);
+        }
+        else
+        {
+          i(i, c, 17);
+          n(j, 0);
+          l.setVisibility(4);
+        }
+        k.setVisibility(4);
+      }
+    }
+    else if (h)
+    {
+      if (paramBoolean)
+      {
+        i(i, c, 49);
+        localObject = j;
+        n((View)localObject, ((Integer)((ViewGroup)localObject).getTag(f.I)).intValue());
+        l.setVisibility(0);
+      }
+      else
+      {
+        i(i, c, 17);
+        n(j, 0);
+        l.setVisibility(4);
+      }
+      k.setVisibility(4);
+    }
+    else
+    {
+      localObject = j;
+      n((View)localObject, ((Integer)((ViewGroup)localObject).getTag(f.I)).intValue());
+      if (paramBoolean)
+      {
+        i(i, (int)(c + d), 49);
+        j(l, 1.0F, 1.0F, 0);
+        localObject = k;
+        f1 = e;
+        j((View)localObject, f1, f1, 4);
+      }
+      else
+      {
+        i(i, c, 49);
+        localObject = l;
+        f1 = f;
+        j((View)localObject, f1, f1, 4);
+        j(k, 1.0F, 1.0F, 0);
+      }
+    }
+    refreshDrawableState();
+    setSelected(paramBoolean);
+  }
+  
+  public void setEnabled(boolean paramBoolean)
+  {
+    super.setEnabled(paramBoolean);
+    k.setEnabled(paramBoolean);
+    l.setEnabled(paramBoolean);
+    i.setEnabled(paramBoolean);
+    if (paramBoolean)
+    {
+      f0.E0(this, d0.b(getContext(), 1002));
+      return;
+    }
+    f0.E0(this, null);
+  }
+  
+  public void setIcon(Drawable paramDrawable)
+  {
+    if (paramDrawable == p) {
+      return;
+    }
+    p = paramDrawable;
+    Object localObject = paramDrawable;
+    if (paramDrawable != null)
+    {
+      localObject = paramDrawable.getConstantState();
+      if (localObject != null) {
+        paramDrawable = ((Drawable.ConstantState)localObject).newDrawable();
+      }
+      paramDrawable = androidx.core.graphics.drawable.a.r(paramDrawable).mutate();
+      q = paramDrawable;
+      ColorStateList localColorStateList = o;
+      localObject = paramDrawable;
+      if (localColorStateList != null)
+      {
+        androidx.core.graphics.drawable.a.o(paramDrawable, localColorStateList);
+        localObject = paramDrawable;
+      }
+    }
+    i.setImageDrawable((Drawable)localObject);
+  }
+  
+  public void setIconSize(int paramInt)
+  {
+    FrameLayout.LayoutParams localLayoutParams = (FrameLayout.LayoutParams)i.getLayoutParams();
+    width = paramInt;
+    height = paramInt;
+    i.setLayoutParams(localLayoutParams);
+  }
+  
+  public void setIconTintList(ColorStateList paramColorStateList)
+  {
+    o = paramColorStateList;
+    if (n != null)
+    {
+      Drawable localDrawable = q;
+      if (localDrawable != null)
+      {
+        androidx.core.graphics.drawable.a.o(localDrawable, paramColorStateList);
+        q.invalidateSelf();
+      }
+    }
+  }
+  
+  public void setItemBackground(int paramInt)
+  {
+    Drawable localDrawable;
+    if (paramInt == 0) {
+      localDrawable = null;
+    } else {
+      localDrawable = androidx.core.content.a.f(getContext(), paramInt);
+    }
+    setItemBackground(localDrawable);
+  }
+  
+  public void setItemBackground(Drawable paramDrawable)
+  {
+    Drawable localDrawable = paramDrawable;
+    if (paramDrawable != null)
+    {
+      localDrawable = paramDrawable;
+      if (paramDrawable.getConstantState() != null) {
+        localDrawable = paramDrawable.getConstantState().newDrawable().mutate();
+      }
+    }
+    f0.t0(this, localDrawable);
+  }
+  
+  public void setItemPosition(int paramInt)
+  {
+    m = paramInt;
+  }
+  
+  public void setLabelVisibilityMode(int paramInt)
+  {
+    if (g != paramInt)
+    {
+      g = paramInt;
+      androidx.appcompat.view.menu.i localI = n;
+      if (localI != null) {
+        paramInt = 1;
+      } else {
+        paramInt = 0;
+      }
+      if (paramInt != 0) {
+        setChecked(localI.isChecked());
+      }
+    }
+  }
+  
+  public void setShifting(boolean paramBoolean)
+  {
+    if (h != paramBoolean)
+    {
+      h = paramBoolean;
+      androidx.appcompat.view.menu.i localI = n;
+      int i1;
+      if (localI != null) {
+        i1 = 1;
+      } else {
+        i1 = 0;
+      }
+      if (i1 != 0) {
+        setChecked(localI.isChecked());
+      }
+    }
+  }
+  
+  public void setTextAppearanceActive(int paramInt)
+  {
+    androidx.core.widget.i.q(l, paramInt);
+    c(k.getTextSize(), l.getTextSize());
+  }
+  
+  public void setTextAppearanceInactive(int paramInt)
+  {
+    androidx.core.widget.i.q(k, paramInt);
+    c(k.getTextSize(), l.getTextSize());
+  }
+  
+  public void setTextColor(ColorStateList paramColorStateList)
+  {
+    if (paramColorStateList != null)
+    {
+      k.setTextColor(paramColorStateList);
+      l.setTextColor(paramColorStateList);
+    }
+  }
+  
+  public void setTitle(CharSequence paramCharSequence)
+  {
+    k.setText(paramCharSequence);
+    l.setText(paramCharSequence);
+    Object localObject = n;
+    if ((localObject == null) || (TextUtils.isEmpty(((androidx.appcompat.view.menu.i)localObject).getContentDescription()))) {
+      setContentDescription(paramCharSequence);
+    }
+    androidx.appcompat.view.menu.i localI = n;
+    localObject = paramCharSequence;
+    if (localI != null) {
+      if (TextUtils.isEmpty(localI.getTooltipText())) {
+        localObject = paramCharSequence;
+      } else {
+        localObject = n.getTooltipText();
+      }
+    }
+    p0.a(this, (CharSequence)localObject);
+  }
+  
+  class a
+    implements View.OnLayoutChangeListener
+  {
+    a() {}
+    
+    public void onLayoutChange(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8)
+    {
+      if (BottomNavigationItemView.a(BottomNavigationItemView.this).getVisibility() == 0)
+      {
+        paramView = BottomNavigationItemView.this;
+        BottomNavigationItemView.b(paramView, BottomNavigationItemView.a(paramView));
+      }
+    }
+  }
+}

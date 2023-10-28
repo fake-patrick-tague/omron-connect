@@ -1,0 +1,634 @@
+package com.google.android.gms.fitness.request;
+
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.Bucket;
+import com.google.android.gms.fitness.data.DataSource;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.internal.fitness.zzbc;
+import com.google.android.gms.internal.fitness.zzbf;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+@SafeParcelable.Class(creator="DataReadRequestCreator")
+@SafeParcelable.Reserved({11, 15, 16, 17, 1000})
+public class DataReadRequest
+  extends AbstractSafeParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<DataReadRequest> CREATOR = new AddressAndLabel.1();
+  public static final int NO_LIMIT = 0;
+  @SafeParcelable.Field(getter="getLimit", id=10)
+  private final int limit;
+  @SafeParcelable.Field(getter="getStartTimeMillis", id=3)
+  private final long zzkr;
+  @SafeParcelable.Field(getter="getEndTimeMillis", id=4)
+  private final long zzks;
+  @SafeParcelable.Field(getter="getDataTypes", id=1)
+  private final List<DataType> zzlf;
+  @SafeParcelable.Field(getter="getBucketType", id=7)
+  private final int zzli;
+  @SafeParcelable.Field(getter="getDataSources", id=2)
+  private final List<DataSource> zzqq;
+  @SafeParcelable.Field(getter="getAggregatedDataTypes", id=5)
+  private final List<DataType> zzqx;
+  @SafeParcelable.Field(getter="getAggregatedDataSources", id=6)
+  private final List<DataSource> zzqy;
+  @SafeParcelable.Field(getter="getBucketDurationMillis", id=8)
+  private final long zzqz;
+  @SafeParcelable.Field(getter="getActivityDataSource", id=9)
+  private final DataSource zzra;
+  @SafeParcelable.Field(getter="flushBufferBeforeRead", id=12)
+  private final boolean zzrb;
+  @SafeParcelable.Field(getter="areServerQueriesEnabled", id=13)
+  private final boolean zzrc;
+  @SafeParcelable.Field(getter="getCallbackBinder", id=14, type="android.os.IBinder")
+  private final zzbc zzrd;
+  @SafeParcelable.Field(getter="getIntervalStartTimesNanos", id=18)
+  private final List<Long> zzre;
+  @SafeParcelable.Field(getter="getIntervalEndTimesNanos", id=19)
+  private final List<Long> zzrf;
+  
+  private DataReadRequest(Builder paramBuilder)
+  {
+    this(Builder.getInstance(paramBuilder), Builder.getDbFilename(paramBuilder), Builder.fromField(paramBuilder), Builder.addPosition(paramBuilder), Builder.log1p(paramBuilder), Builder.getEWAHIterator(paramBuilder), Builder.access$getMinimum(paramBuilder), Builder.getSoundPath(paramBuilder), Builder.getPicture(paramBuilder), Builder.readBits(paramBuilder), false, Builder.isInheritable(paramBuilder), null, Builder.getArticleUrl(paramBuilder), Builder.access$getGetNestedSourceLocationOnUnix(paramBuilder));
+  }
+  
+  public DataReadRequest(DataReadRequest paramDataReadRequest, zzbc paramZzbc)
+  {
+    this(zzlf, zzqq, zzkr, zzks, zzqx, zzqy, zzli, zzqz, zzra, limit, zzrb, zzrc, paramZzbc, zzre, zzrf);
+  }
+  
+  DataReadRequest(List paramList1, List paramList2, long paramLong1, long paramLong2, List paramList3, List paramList4, int paramInt1, long paramLong3, DataSource paramDataSource, int paramInt2, boolean paramBoolean1, boolean paramBoolean2, IBinder paramIBinder, List paramList5, List paramList6)
+  {
+    zzlf = paramList1;
+    zzqq = paramList2;
+    zzkr = paramLong1;
+    zzks = paramLong2;
+    zzqx = paramList3;
+    zzqy = paramList4;
+    zzli = paramInt1;
+    zzqz = paramLong3;
+    zzra = paramDataSource;
+    limit = paramInt2;
+    zzrb = paramBoolean1;
+    zzrc = paramBoolean2;
+    if (paramIBinder == null) {
+      paramList1 = null;
+    } else {
+      paramList1 = zzbf.asInterface(paramIBinder);
+    }
+    zzrd = paramList1;
+    if (paramList5 == null) {
+      paramList1 = Collections.emptyList();
+    } else {
+      paramList1 = paramList5;
+    }
+    zzre = paramList1;
+    if (paramList6 == null) {
+      paramList6 = Collections.emptyList();
+    }
+    zzrf = paramList6;
+    if (paramList1.size() == paramList6.size()) {
+      paramBoolean1 = true;
+    } else {
+      paramBoolean1 = false;
+    }
+    Preconditions.checkArgument(paramBoolean1, "Unequal number of interval start and end times.");
+  }
+  
+  private DataReadRequest(List paramList1, List paramList2, long paramLong1, long paramLong2, List paramList3, List paramList4, int paramInt1, long paramLong3, DataSource paramDataSource, int paramInt2, boolean paramBoolean1, boolean paramBoolean2, zzbc paramZzbc, List paramList5, List paramList6)
+  {
+    this(paramList1, paramList2, paramLong1, paramLong2, paramList3, paramList4, paramInt1, paramLong3, paramDataSource, paramInt2, paramBoolean1, paramBoolean2, paramZzbc, paramList5, paramList6);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this != paramObject)
+    {
+      if ((paramObject instanceof DataReadRequest))
+      {
+        paramObject = (DataReadRequest)paramObject;
+        int i;
+        if ((zzlf.equals(zzlf)) && (zzqq.equals(zzqq)) && (zzkr == zzkr) && (zzks == zzks) && (zzli == zzli) && (zzqy.equals(zzqy)) && (zzqx.equals(zzqx)) && (Objects.equal(zzra, zzra)) && (zzqz == zzqz) && (zzrc == zzrc) && (limit == limit) && (zzrb == zzrb) && (Objects.equal(zzrd, zzrd))) {
+          i = 1;
+        } else {
+          i = 0;
+        }
+        if (i != 0) {
+          return true;
+        }
+      }
+      else
+      {
+        return false;
+      }
+    }
+    else {
+      return true;
+    }
+    return false;
+  }
+  
+  public DataSource getActivityDataSource()
+  {
+    return zzra;
+  }
+  
+  public List getAggregatedDataSources()
+  {
+    return zzqy;
+  }
+  
+  public List getAggregatedDataTypes()
+  {
+    return zzqx;
+  }
+  
+  public long getBucketDuration(TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzqz, TimeUnit.MILLISECONDS);
+  }
+  
+  public int getBucketType()
+  {
+    return zzli;
+  }
+  
+  public List getDataSources()
+  {
+    return zzqq;
+  }
+  
+  public List getDataTypes()
+  {
+    return zzlf;
+  }
+  
+  public long getEndTime(TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzks, TimeUnit.MILLISECONDS);
+  }
+  
+  public int getLimit()
+  {
+    return limit;
+  }
+  
+  public long getStartTime(TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzkr, TimeUnit.MILLISECONDS);
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { Integer.valueOf(zzli), Long.valueOf(zzkr), Long.valueOf(zzks) });
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("DataReadRequest{");
+    Iterator localIterator;
+    if (!zzlf.isEmpty())
+    {
+      localIterator = zzlf.iterator();
+      while (localIterator.hasNext())
+      {
+        localStringBuilder.append(((DataType)localIterator.next()).get());
+        localStringBuilder.append(" ");
+      }
+    }
+    if (!zzqq.isEmpty())
+    {
+      localIterator = zzqq.iterator();
+      while (localIterator.hasNext())
+      {
+        localStringBuilder.append(((DataSource)localIterator.next()).toDebugString());
+        localStringBuilder.append(" ");
+      }
+    }
+    if (zzli != 0)
+    {
+      localStringBuilder.append("bucket by ");
+      localStringBuilder.append(Bucket.getName(zzli));
+      if (zzqz > 0L)
+      {
+        localStringBuilder.append(" >");
+        localStringBuilder.append(zzqz);
+        localStringBuilder.append("ms");
+      }
+      localStringBuilder.append(": ");
+    }
+    if (!zzqx.isEmpty())
+    {
+      localIterator = zzqx.iterator();
+      while (localIterator.hasNext())
+      {
+        localStringBuilder.append(((DataType)localIterator.next()).get());
+        localStringBuilder.append(" ");
+      }
+    }
+    if (!zzqy.isEmpty())
+    {
+      localIterator = zzqy.iterator();
+      while (localIterator.hasNext())
+      {
+        localStringBuilder.append(((DataSource)localIterator.next()).toDebugString());
+        localStringBuilder.append(" ");
+      }
+    }
+    localStringBuilder.append(String.format(Locale.US, "(%tF %tT - %tF %tT)", new Object[] { Long.valueOf(zzkr), Long.valueOf(zzkr), Long.valueOf(zzks), Long.valueOf(zzks) }));
+    if (zzra != null)
+    {
+      localStringBuilder.append("activities: ");
+      localStringBuilder.append(zzra.toDebugString());
+    }
+    if (zzrc) {
+      localStringBuilder.append(" +server");
+    }
+    localStringBuilder.append("}");
+    return localStringBuilder.toString();
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeTypedList(paramParcel, 1, getDataTypes(), false);
+    SafeParcelWriter.writeTypedList(paramParcel, 2, getDataSources(), false);
+    SafeParcelWriter.writeLong(paramParcel, 3, zzkr);
+    SafeParcelWriter.writeLong(paramParcel, 4, zzks);
+    SafeParcelWriter.writeTypedList(paramParcel, 5, getAggregatedDataTypes(), false);
+    SafeParcelWriter.writeTypedList(paramParcel, 6, getAggregatedDataSources(), false);
+    SafeParcelWriter.writeInt(paramParcel, 7, getBucketType());
+    SafeParcelWriter.writeLong(paramParcel, 8, zzqz);
+    SafeParcelWriter.writeParcelable(paramParcel, 9, getActivityDataSource(), paramInt, false);
+    SafeParcelWriter.writeInt(paramParcel, 10, getLimit());
+    SafeParcelWriter.writeBoolean(paramParcel, 12, zzrb);
+    SafeParcelWriter.writeBoolean(paramParcel, 13, zzrc);
+    Object localObject = zzrd;
+    if (localObject == null) {
+      localObject = null;
+    } else {
+      localObject = ((IInterface)localObject).asBinder();
+    }
+    SafeParcelWriter.writeIBinder(paramParcel, 14, (IBinder)localObject, false);
+    SafeParcelWriter.writeLongList(paramParcel, 18, zzre, false);
+    SafeParcelWriter.writeLongList(paramParcel, 19, zzrf, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  public static class Builder
+  {
+    private int limit = 0;
+    private long zzkr;
+    private long zzks;
+    private final List<DataType> zzlf = new ArrayList();
+    private int zzli = 0;
+    private final List<DataSource> zzqq = new ArrayList();
+    private final List<DataType> zzqx = new ArrayList();
+    private final List<DataSource> zzqy = new ArrayList();
+    private long zzqz = 0L;
+    private DataSource zzra;
+    private boolean zzrb = false;
+    private boolean zzrc = false;
+    private final List<Long> zzre = new ArrayList();
+    private final List<Long> zzrf = new ArrayList();
+    
+    public Builder() {}
+    
+    public Builder aggregate(DataSource paramDataSource)
+    {
+      Preconditions.checkNotNull(paramDataSource, "Attempting to add a null data source");
+      Preconditions.checkState(zzqq.contains(paramDataSource) ^ true, "Cannot add the same data source for aggregated and detailed");
+      DataType localDataType = paramDataSource.getDataType();
+      boolean bool;
+      if (localDataType.getAggregateType() != null) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Unsupported input data type specified for aggregation: %s", new Object[] { localDataType });
+      if (!zzqy.contains(paramDataSource)) {
+        zzqy.add(paramDataSource);
+      }
+      return this;
+    }
+    
+    public Builder aggregate(DataSource paramDataSource, DataType paramDataType)
+    {
+      Preconditions.checkNotNull(paramDataSource, "Attempting to add a null data source");
+      Preconditions.checkState(zzqq.contains(paramDataSource) ^ true, "Cannot add the same data source for aggregated and detailed");
+      DataType localDataType1 = paramDataSource.getDataType();
+      DataType localDataType2 = localDataType1.getAggregateType();
+      if (localDataType2 != null)
+      {
+        Preconditions.checkArgument(localDataType2.equals(paramDataType), "Invalid output aggregate data type specified: %s -> %s", new Object[] { localDataType1, paramDataType });
+        if (!zzqy.contains(paramDataSource))
+        {
+          zzqy.add(paramDataSource);
+          return this;
+        }
+      }
+      else
+      {
+        paramDataSource = String.valueOf(localDataType1);
+        paramDataType = new StringBuilder(paramDataSource.length() + 55);
+        paramDataType.append("Unsupported input data type specified for aggregation: ");
+        paramDataType.append(paramDataSource);
+        throw new IllegalArgumentException(paramDataType.toString());
+      }
+      return this;
+    }
+    
+    public Builder aggregate(DataType paramDataType)
+    {
+      Preconditions.checkNotNull(paramDataType, "Attempting to use a null data type");
+      Preconditions.checkState(zzlf.contains(paramDataType) ^ true, "Cannot add the same data type as aggregated and detailed");
+      boolean bool;
+      if (paramDataType.getAggregateType() != null) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Unsupported input data type specified for aggregation: %s", new Object[] { paramDataType });
+      if (!zzqx.contains(paramDataType)) {
+        zzqx.add(paramDataType);
+      }
+      return this;
+    }
+    
+    public Builder aggregate(DataType paramDataType1, DataType paramDataType2)
+    {
+      Preconditions.checkNotNull(paramDataType1, "Attempting to use a null data type");
+      Preconditions.checkState(zzlf.contains(paramDataType1) ^ true, "Cannot add the same data type as aggregated and detailed");
+      DataType localDataType = paramDataType1.getAggregateType();
+      if (localDataType != null)
+      {
+        Preconditions.checkArgument(localDataType.equals(paramDataType2), "Invalid output aggregate data type specified: %s -> %s", new Object[] { paramDataType1, paramDataType2 });
+        if (!zzqx.contains(paramDataType1))
+        {
+          zzqx.add(paramDataType1);
+          return this;
+        }
+      }
+      else
+      {
+        paramDataType1 = String.valueOf(paramDataType1);
+        paramDataType2 = new StringBuilder(paramDataType1.length() + 55);
+        paramDataType2.append("Unsupported input data type specified for aggregation: ");
+        paramDataType2.append(paramDataType1);
+        throw new IllegalArgumentException(paramDataType2.toString());
+      }
+      return this;
+    }
+    
+    public Builder bucketByActivitySegment(int paramInt, TimeUnit paramTimeUnit)
+    {
+      int i = zzli;
+      boolean bool;
+      if (i == 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Bucketing strategy already set to %s", new Object[] { Integer.valueOf(i) });
+      if (paramInt > 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Must specify a valid minimum duration for an activity segment: %d", new Object[] { Integer.valueOf(paramInt) });
+      zzli = 4;
+      zzqz = paramTimeUnit.toMillis(paramInt);
+      return this;
+    }
+    
+    public Builder bucketByActivitySegment(int paramInt, TimeUnit paramTimeUnit, DataSource paramDataSource)
+    {
+      int i = zzli;
+      boolean bool;
+      if (i == 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Bucketing strategy already set to %s", new Object[] { Integer.valueOf(i) });
+      if (paramInt > 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Must specify a valid minimum duration for an activity segment: %d", new Object[] { Integer.valueOf(paramInt) });
+      if (paramDataSource != null) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Invalid activity data source specified");
+      Preconditions.checkArgument(paramDataSource.getDataType().equals(DataType.TYPE_ACTIVITY_SEGMENT), "Invalid activity data source specified: %s", new Object[] { paramDataSource });
+      zzra = paramDataSource;
+      zzli = 4;
+      zzqz = paramTimeUnit.toMillis(paramInt);
+      return this;
+    }
+    
+    public Builder bucketByActivityType(int paramInt, TimeUnit paramTimeUnit)
+    {
+      int i = zzli;
+      boolean bool;
+      if (i == 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Bucketing strategy already set to %s", new Object[] { Integer.valueOf(i) });
+      if (paramInt > 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Must specify a valid minimum duration for an activity segment: %d", new Object[] { Integer.valueOf(paramInt) });
+      zzli = 3;
+      zzqz = paramTimeUnit.toMillis(paramInt);
+      return this;
+    }
+    
+    public Builder bucketByActivityType(int paramInt, TimeUnit paramTimeUnit, DataSource paramDataSource)
+    {
+      int i = zzli;
+      boolean bool;
+      if (i == 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Bucketing strategy already set to %s", new Object[] { Integer.valueOf(i) });
+      if (paramInt > 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Must specify a valid minimum duration for an activity segment: %d", new Object[] { Integer.valueOf(paramInt) });
+      if (paramDataSource != null) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Invalid activity data source specified");
+      Preconditions.checkArgument(paramDataSource.getDataType().equals(DataType.TYPE_ACTIVITY_SEGMENT), "Invalid activity data source specified: %s", new Object[] { paramDataSource });
+      zzra = paramDataSource;
+      zzli = 3;
+      zzqz = paramTimeUnit.toMillis(paramInt);
+      return this;
+    }
+    
+    public Builder bucketBySession(int paramInt, TimeUnit paramTimeUnit)
+    {
+      int i = zzli;
+      boolean bool;
+      if (i == 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Bucketing strategy already set to %s", new Object[] { Integer.valueOf(i) });
+      if (paramInt > 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Must specify a valid minimum duration for a session: %d", new Object[] { Integer.valueOf(paramInt) });
+      zzli = 2;
+      zzqz = paramTimeUnit.toMillis(paramInt);
+      return this;
+    }
+    
+    public Builder bucketByTime(int paramInt, TimeUnit paramTimeUnit)
+    {
+      int i = zzli;
+      boolean bool;
+      if (i == 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Bucketing strategy already set to %s", new Object[] { Integer.valueOf(i) });
+      if (paramInt > 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Must specify a valid minimum duration: %d", new Object[] { Integer.valueOf(paramInt) });
+      zzli = 1;
+      zzqz = paramTimeUnit.toMillis(paramInt);
+      return this;
+    }
+    
+    public DataReadRequest build()
+    {
+      boolean bool1 = zzqq.isEmpty();
+      boolean bool2 = false;
+      if ((bool1) && (zzlf.isEmpty()) && (zzqy.isEmpty()) && (zzqx.isEmpty())) {
+        bool1 = false;
+      } else {
+        bool1 = true;
+      }
+      Preconditions.checkState(bool1, "Must add at least one data source (aggregated or detailed)");
+      if (zzli != 5)
+      {
+        long l = zzkr;
+        if (l > 0L) {
+          bool1 = true;
+        } else {
+          bool1 = false;
+        }
+        Preconditions.checkState(bool1, "Invalid start time: %s", new Object[] { Long.valueOf(l) });
+        l = zzks;
+        if ((l > 0L) && (l > zzkr)) {
+          bool1 = true;
+        } else {
+          bool1 = false;
+        }
+        Preconditions.checkState(bool1, "Invalid end time: %s", new Object[] { Long.valueOf(l) });
+      }
+      if ((zzqy.isEmpty()) && (zzqx.isEmpty())) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      if (zzli == 0) {
+        Preconditions.checkState(bool1, "Must specify a valid bucketing strategy while requesting aggregation");
+      }
+      if (!bool1)
+      {
+        bool1 = bool2;
+        if (zzli != 0) {
+          bool1 = true;
+        }
+        Preconditions.checkState(bool1, "Must specify a valid bucketing strategy while requesting aggregation");
+      }
+      return new DataReadRequest(this, null);
+    }
+    
+    public Builder enableServerQueries()
+    {
+      zzrc = true;
+      return this;
+    }
+    
+    public Builder read(DataSource paramDataSource)
+    {
+      Preconditions.checkNotNull(paramDataSource, "Attempting to add a null data source");
+      Preconditions.checkArgument(zzqy.contains(paramDataSource) ^ true, "Cannot add the same data source as aggregated and detailed");
+      if (!zzqq.contains(paramDataSource)) {
+        zzqq.add(paramDataSource);
+      }
+      return this;
+    }
+    
+    public Builder read(DataType paramDataType)
+    {
+      Preconditions.checkNotNull(paramDataType, "Attempting to use a null data type");
+      Preconditions.checkState(zzqx.contains(paramDataType) ^ true, "Cannot add the same data type as aggregated and detailed");
+      if (!zzlf.contains(paramDataType)) {
+        zzlf.add(paramDataType);
+      }
+      return this;
+    }
+    
+    public Builder setLimit(int paramInt)
+    {
+      boolean bool;
+      if (paramInt > 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Invalid limit %d is specified", new Object[] { Integer.valueOf(paramInt) });
+      limit = paramInt;
+      return this;
+    }
+    
+    public Builder setTimeRange(long paramLong1, long paramLong2, TimeUnit paramTimeUnit)
+    {
+      zzkr = paramTimeUnit.toMillis(paramLong1);
+      zzks = paramTimeUnit.toMillis(paramLong2);
+      return this;
+    }
+  }
+}

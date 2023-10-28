@@ -1,0 +1,129 @@
+package com.google.android.gms.fitness;
+
+import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataSource;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.request.DataDeleteRequest;
+import com.google.android.gms.fitness.request.DataReadRequest;
+import com.google.android.gms.fitness.request.DataUpdateListenerRegistrationRequest;
+import com.google.android.gms.fitness.request.DataUpdateRequest;
+import com.google.android.gms.fitness.result.DailyTotalResult;
+import com.google.android.gms.fitness.result.DataReadResult;
+import java.util.concurrent.TimeUnit;
+
+@Deprecated
+public abstract interface HistoryApi
+{
+  @RecentlyNonNull
+  public abstract PendingResult<Status> deleteData(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull DataDeleteRequest paramDataDeleteRequest);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<Status> insertData(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull DataSet paramDataSet);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<DailyTotalResult> readDailyTotal(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull DataType paramDataType);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<DailyTotalResult> readDailyTotalFromLocalDevice(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull DataType paramDataType);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<DataReadResult> readData(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull DataReadRequest paramDataReadRequest);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<Status> registerDataUpdateListener(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull DataUpdateListenerRegistrationRequest paramDataUpdateListenerRegistrationRequest);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<Status> unregisterDataUpdateListener(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull PendingIntent paramPendingIntent);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<Status> updateData(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull DataUpdateRequest paramDataUpdateRequest);
+  
+  public static class ViewIntentBuilder
+  {
+    private final Context zzko;
+    private final DataType zzkp;
+    private DataSource zzkq;
+    private long zzkr;
+    private long zzks;
+    private String zzkt;
+    
+    public ViewIntentBuilder(@RecentlyNonNull Context paramContext, @RecentlyNonNull DataType paramDataType)
+    {
+      zzko = paramContext;
+      zzkp = paramDataType;
+    }
+    
+    @RecentlyNonNull
+    public Intent build()
+    {
+      long l = zzkr;
+      boolean bool2 = true;
+      boolean bool1;
+      if (l > 0L) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      Preconditions.checkState(bool1, "Start time must be set");
+      if (zzks > zzkr) {
+        bool1 = bool2;
+      } else {
+        bool1 = false;
+      }
+      Preconditions.checkState(bool1, "End time must be set and after start time");
+      Object localObject = new Intent("vnd.google.fitness.VIEW");
+      ((Intent)localObject).setType(DataType.getMimeType(zzkq.getDataType()));
+      ((Intent)localObject).putExtra("vnd.google.fitness.start_time", zzkr);
+      ((Intent)localObject).putExtra("vnd.google.fitness.end_time", zzks);
+      SafeParcelableSerializer.serializeToIntentExtra(zzkq, (Intent)localObject, "vnd.google.fitness.data_source");
+      if (zzkt != null)
+      {
+        Intent localIntent = new Intent((Intent)localObject).setPackage(zzkt);
+        ResolveInfo localResolveInfo = zzko.getPackageManager().resolveActivity(localIntent, 0);
+        if (localResolveInfo != null)
+        {
+          localObject = activityInfo.name;
+          localIntent.setComponent(new ComponentName(zzkt, (String)localObject));
+          return localIntent;
+        }
+      }
+      return localObject;
+    }
+    
+    @RecentlyNonNull
+    public ViewIntentBuilder setDataSource(@RecentlyNonNull DataSource paramDataSource)
+    {
+      Preconditions.checkArgument(paramDataSource.getDataType().equals(zzkp), "Data source %s is not for the data type %s", new Object[] { paramDataSource, zzkp });
+      zzkq = paramDataSource;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public ViewIntentBuilder setPreferredApplication(@RecentlyNonNull String paramString)
+    {
+      zzkt = paramString;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public ViewIntentBuilder setTimeInterval(long paramLong1, long paramLong2, @RecentlyNonNull TimeUnit paramTimeUnit)
+    {
+      zzkr = paramTimeUnit.toMillis(paramLong1);
+      zzks = paramTimeUnit.toMillis(paramLong2);
+      return this;
+    }
+  }
+}

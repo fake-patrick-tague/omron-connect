@@ -1,0 +1,403 @@
+package d.c.a.a.x;
+
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Path;
+import android.graphics.RectF;
+import d.c.a.a.w.a;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class m
+{
+  @Deprecated
+  public float a;
+  @Deprecated
+  public float b;
+  @Deprecated
+  public float c;
+  @Deprecated
+  public float d;
+  @Deprecated
+  public float e;
+  @Deprecated
+  public float f;
+  private final List<f> g = new ArrayList();
+  private final List<g> h = new ArrayList();
+  private boolean i;
+  
+  public m()
+  {
+    n(0.0F, 0.0F);
+  }
+  
+  private void b(float paramFloat)
+  {
+    if (g() == paramFloat) {
+      return;
+    }
+    float f1 = (paramFloat - g() + 360.0F) % 360.0F;
+    if (f1 > 180.0F) {
+      return;
+    }
+    d localD = new d(i(), j(), i(), j());
+    d.f(localD, g());
+    d.g(localD, f1);
+    h.add(new b(localD));
+    p(paramFloat);
+  }
+  
+  private void c(g paramG, float paramFloat1, float paramFloat2)
+  {
+    b(paramFloat1);
+    h.add(paramG);
+    p(paramFloat2);
+  }
+  
+  private float g()
+  {
+    return e;
+  }
+  
+  private float h()
+  {
+    return f;
+  }
+  
+  private void p(float paramFloat)
+  {
+    e = paramFloat;
+  }
+  
+  private void q(float paramFloat)
+  {
+    f = paramFloat;
+  }
+  
+  private void r(float paramFloat)
+  {
+    c = paramFloat;
+  }
+  
+  private void s(float paramFloat)
+  {
+    d = paramFloat;
+  }
+  
+  private void t(float paramFloat)
+  {
+    a = paramFloat;
+  }
+  
+  private void u(float paramFloat)
+  {
+    b = paramFloat;
+  }
+  
+  public void a(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6)
+  {
+    Object localObject = new d(paramFloat1, paramFloat2, paramFloat3, paramFloat4);
+    d.f((d)localObject, paramFloat5);
+    d.g((d)localObject, paramFloat6);
+    g.add(localObject);
+    localObject = new b((d)localObject);
+    float f1 = paramFloat5 + paramFloat6;
+    int j;
+    if (paramFloat6 < 0.0F) {
+      j = 1;
+    } else {
+      j = 0;
+    }
+    paramFloat6 = paramFloat5;
+    if (j != 0) {
+      paramFloat6 = (paramFloat5 + 180.0F) % 360.0F;
+    }
+    if (j != 0) {
+      paramFloat5 = (180.0F + f1) % 360.0F;
+    } else {
+      paramFloat5 = f1;
+    }
+    c((g)localObject, paramFloat6, paramFloat5);
+    paramFloat5 = (paramFloat3 - paramFloat1) / 2.0F;
+    double d1 = f1;
+    r((paramFloat1 + paramFloat3) * 0.5F + paramFloat5 * (float)Math.cos(Math.toRadians(d1)));
+    s((paramFloat2 + paramFloat4) * 0.5F + (paramFloat4 - paramFloat2) / 2.0F * (float)Math.sin(Math.toRadians(d1)));
+  }
+  
+  public void d(Matrix paramMatrix, Path paramPath)
+  {
+    int k = g.size();
+    int j = 0;
+    while (j < k)
+    {
+      ((f)g.get(j)).a(paramMatrix, paramPath);
+      j += 1;
+    }
+  }
+  
+  boolean e()
+  {
+    return i;
+  }
+  
+  g f(final Matrix paramMatrix)
+  {
+    b(h());
+    paramMatrix = new Matrix(paramMatrix);
+    return new a(new ArrayList(h), paramMatrix);
+  }
+  
+  float i()
+  {
+    return c;
+  }
+  
+  float j()
+  {
+    return d;
+  }
+  
+  float k()
+  {
+    return a;
+  }
+  
+  float l()
+  {
+    return b;
+  }
+  
+  public void m(float paramFloat1, float paramFloat2)
+  {
+    Object localObject = new e();
+    e.c((e)localObject, paramFloat1);
+    e.e((e)localObject, paramFloat2);
+    g.add(localObject);
+    localObject = new c((e)localObject, i(), j());
+    c((g)localObject, ((c)localObject).c() + 270.0F, ((c)localObject).c() + 270.0F);
+    r(paramFloat1);
+    s(paramFloat2);
+  }
+  
+  public void n(float paramFloat1, float paramFloat2)
+  {
+    o(paramFloat1, paramFloat2, 270.0F, 0.0F);
+  }
+  
+  public void o(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
+  {
+    t(paramFloat1);
+    u(paramFloat2);
+    r(paramFloat1);
+    s(paramFloat2);
+    p(paramFloat3);
+    q((paramFloat3 + paramFloat4) % 360.0F);
+    g.clear();
+    h.clear();
+    i = false;
+  }
+  
+  class a
+    extends m.g
+  {
+    a(List paramList, Matrix paramMatrix) {}
+    
+    public void a(Matrix paramMatrix, a paramA, int paramInt, Canvas paramCanvas)
+    {
+      paramMatrix = b.iterator();
+      while (paramMatrix.hasNext()) {
+        ((m.g)paramMatrix.next()).a(paramMatrix, paramA, paramInt, paramCanvas);
+      }
+    }
+  }
+  
+  static class b
+    extends m.g
+  {
+    private final m.d b;
+    
+    public b(m.d paramD)
+    {
+      b = paramD;
+    }
+    
+    public void a(Matrix paramMatrix, a paramA, int paramInt, Canvas paramCanvas)
+    {
+      float f1 = m.d.h(b);
+      float f2 = m.d.i(b);
+      paramA.a(paramCanvas, paramMatrix, new RectF(m.d.b(b), m.d.c(b), m.d.d(b), m.d.e(b)), paramInt, f1, f2);
+    }
+  }
+  
+  static class c
+    extends m.g
+  {
+    private final m.e b;
+    private final float c;
+    private final float d;
+    
+    public c(m.e paramE, float paramFloat1, float paramFloat2)
+    {
+      b = paramE;
+      c = paramFloat1;
+      d = paramFloat2;
+    }
+    
+    public void a(Matrix paramMatrix, a paramA, int paramInt, Canvas paramCanvas)
+    {
+      float f1 = m.e.d(b);
+      float f2 = d;
+      float f3 = m.e.b(b);
+      float f4 = c;
+      RectF localRectF = new RectF(0.0F, 0.0F, (float)Math.hypot(f1 - f2, f3 - f4), 0.0F);
+      paramMatrix = new Matrix(paramMatrix);
+      paramMatrix.preTranslate(c, d);
+      paramMatrix.preRotate(c());
+      paramA.b(paramCanvas, paramMatrix, localRectF, paramInt);
+    }
+    
+    float c()
+    {
+      return (float)Math.toDegrees(Math.atan((m.e.d(b) - d) / (m.e.b(b) - c)));
+    }
+  }
+  
+  public static class d
+    extends m.f
+  {
+    private static final RectF b = new RectF();
+    @Deprecated
+    public float c;
+    @Deprecated
+    public float d;
+    @Deprecated
+    public float e;
+    @Deprecated
+    public float f;
+    @Deprecated
+    public float g;
+    @Deprecated
+    public float h;
+    
+    public d(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
+    {
+      q(paramFloat1);
+      u(paramFloat2);
+      r(paramFloat3);
+      p(paramFloat4);
+    }
+    
+    private float j()
+    {
+      return f;
+    }
+    
+    private float k()
+    {
+      return c;
+    }
+    
+    private float l()
+    {
+      return e;
+    }
+    
+    private float m()
+    {
+      return g;
+    }
+    
+    private float n()
+    {
+      return h;
+    }
+    
+    private float o()
+    {
+      return d;
+    }
+    
+    private void p(float paramFloat)
+    {
+      f = paramFloat;
+    }
+    
+    private void q(float paramFloat)
+    {
+      c = paramFloat;
+    }
+    
+    private void r(float paramFloat)
+    {
+      e = paramFloat;
+    }
+    
+    private void s(float paramFloat)
+    {
+      g = paramFloat;
+    }
+    
+    private void t(float paramFloat)
+    {
+      h = paramFloat;
+    }
+    
+    private void u(float paramFloat)
+    {
+      d = paramFloat;
+    }
+    
+    public void a(Matrix paramMatrix, Path paramPath)
+    {
+      Object localObject = a;
+      paramMatrix.invert((Matrix)localObject);
+      paramPath.transform((Matrix)localObject);
+      localObject = b;
+      ((RectF)localObject).set(k(), o(), l(), j());
+      paramPath.arcTo((RectF)localObject, m(), n(), false);
+      paramPath.transform(paramMatrix);
+    }
+  }
+  
+  public static class e
+    extends m.f
+  {
+    private float b;
+    private float c;
+    
+    public e() {}
+    
+    public void a(Matrix paramMatrix, Path paramPath)
+    {
+      Matrix localMatrix = a;
+      paramMatrix.invert(localMatrix);
+      paramPath.transform(localMatrix);
+      paramPath.lineTo(b, c);
+      paramPath.transform(paramMatrix);
+    }
+  }
+  
+  public static abstract class f
+  {
+    protected final Matrix a = new Matrix();
+    
+    public f() {}
+    
+    public abstract void a(Matrix paramMatrix, Path paramPath);
+  }
+  
+  static abstract class g
+  {
+    static final Matrix a = new Matrix();
+    
+    g() {}
+    
+    public abstract void a(Matrix paramMatrix, a paramA, int paramInt, Canvas paramCanvas);
+    
+    public final void b(a paramA, int paramInt, Canvas paramCanvas)
+    {
+      a(a, paramA, paramInt, paramCanvas);
+    }
+  }
+}

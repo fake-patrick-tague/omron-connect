@@ -1,0 +1,1893 @@
+package androidx.appcompat.widget;
+
+import android.app.PendingIntent;
+import android.app.SearchableInfo;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.ClassLoaderCreator;
+import android.os.Parcelable.Creator;
+import android.text.Editable;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.style.ImageSpan;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.KeyEvent;
+import android.view.KeyEvent.DispatcherState;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.TouchDelegate;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnKeyListener;
+import android.view.View.OnLayoutChangeListener;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+import androidx.customview.view.AbsSavedState;
+import c.a.d;
+import c.a.f;
+import c.a.g;
+import c.a.h;
+import c.a.j;
+import c.a.n.c;
+import c.h.q.f0;
+import java.lang.reflect.Method;
+import java.util.WeakHashMap;
+
+public class SearchView
+  extends LinearLayoutCompat
+  implements c
+{
+  static final o q;
+  private p A;
+  private Rect B = new Rect();
+  private Rect C = new Rect();
+  private int[] D = new int[2];
+  private int[] E = new int[2];
+  private final ImageView F;
+  private final Drawable G;
+  private final int H;
+  private final int I;
+  private final Intent J;
+  private final Intent K;
+  private final CharSequence L;
+  private m P;
+  private l Q;
+  View.OnFocusChangeListener R;
+  private n S;
+  private View.OnClickListener T;
+  private boolean U;
+  private boolean V;
+  c.i.a.a W;
+  private boolean a0;
+  private CharSequence b0;
+  private boolean c0;
+  private boolean d0;
+  private int e0;
+  private boolean f0;
+  private CharSequence g0;
+  private CharSequence h0;
+  private boolean i0;
+  private int j0;
+  SearchableInfo k0;
+  private Bundle l0;
+  private final Runnable m0 = new b();
+  private Runnable n0 = new c();
+  private final WeakHashMap<String, Drawable.ConstantState> o0 = new WeakHashMap();
+  private final View.OnClickListener p0;
+  View.OnKeyListener q0;
+  final SearchAutoComplete r;
+  private final TextView.OnEditorActionListener r0;
+  private final View s;
+  private final AdapterView.OnItemClickListener s0;
+  private final View t;
+  private final AdapterView.OnItemSelectedListener t0;
+  private final View u;
+  private TextWatcher u0;
+  final ImageView v;
+  final ImageView w;
+  final ImageView x;
+  final ImageView y;
+  private final View z;
+  
+  static
+  {
+    o localO;
+    if (Build.VERSION.SDK_INT < 29) {
+      localO = new o();
+    } else {
+      localO = null;
+    }
+    q = localO;
+  }
+  
+  public SearchView(Context paramContext)
+  {
+    this(paramContext, null);
+  }
+  
+  public SearchView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, c.a.a.J);
+  }
+  
+  public SearchView(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(paramContext, paramAttributeSet, paramInt);
+    f localF = new f();
+    p0 = localF;
+    q0 = new g();
+    h localH = new h();
+    r0 = localH;
+    i localI = new i();
+    s0 = localI;
+    j localJ = new j();
+    t0 = localJ;
+    u0 = new a();
+    Object localObject = j.f2;
+    n0 localN0 = n0.v(paramContext, paramAttributeSet, (int[])localObject, paramInt, 0);
+    f0.n0(this, paramContext, (int[])localObject, paramAttributeSet, localN0.r(), paramInt, 0);
+    LayoutInflater.from(paramContext).inflate(localN0.n(j.p2, g.r), this, true);
+    paramContext = (SearchAutoComplete)findViewById(f.D);
+    r = paramContext;
+    paramContext.setSearchView(this);
+    s = findViewById(f.z);
+    paramAttributeSet = findViewById(f.C);
+    t = paramAttributeSet;
+    localObject = findViewById(f.J);
+    u = ((View)localObject);
+    ImageView localImageView1 = (ImageView)findViewById(f.x);
+    v = localImageView1;
+    ImageView localImageView2 = (ImageView)findViewById(f.A);
+    w = localImageView2;
+    ImageView localImageView3 = (ImageView)findViewById(f.y);
+    x = localImageView3;
+    ImageView localImageView4 = (ImageView)findViewById(f.E);
+    y = localImageView4;
+    ImageView localImageView5 = (ImageView)findViewById(f.B);
+    F = localImageView5;
+    f0.t0(paramAttributeSet, localN0.g(j.q2));
+    f0.t0((View)localObject, localN0.g(j.u2));
+    paramInt = j.t2;
+    localImageView1.setImageDrawable(localN0.g(paramInt));
+    localImageView2.setImageDrawable(localN0.g(j.n2));
+    localImageView3.setImageDrawable(localN0.g(j.k2));
+    localImageView4.setImageDrawable(localN0.g(j.w2));
+    localImageView5.setImageDrawable(localN0.g(paramInt));
+    G = localN0.g(j.s2);
+    p0.a(localImageView1, getResources().getString(h.l));
+    H = localN0.n(j.v2, g.q);
+    I = localN0.n(j.l2, 0);
+    localImageView1.setOnClickListener(localF);
+    localImageView3.setOnClickListener(localF);
+    localImageView2.setOnClickListener(localF);
+    localImageView4.setOnClickListener(localF);
+    paramContext.setOnClickListener(localF);
+    paramContext.addTextChangedListener(u0);
+    paramContext.setOnEditorActionListener(localH);
+    paramContext.setOnItemClickListener(localI);
+    paramContext.setOnItemSelectedListener(localJ);
+    paramContext.setOnKeyListener(q0);
+    paramContext.setOnFocusChangeListener(new d());
+    setIconifiedByDefault(localN0.a(j.o2, true));
+    paramInt = localN0.f(j.h2, -1);
+    if (paramInt != -1) {
+      setMaxWidth(paramInt);
+    }
+    L = localN0.p(j.m2);
+    b0 = localN0.p(j.r2);
+    paramInt = localN0.k(j.j2, -1);
+    if (paramInt != -1) {
+      setImeOptions(paramInt);
+    }
+    paramInt = localN0.k(j.i2, -1);
+    if (paramInt != -1) {
+      setInputType(paramInt);
+    }
+    setFocusable(localN0.a(j.g2, true));
+    localN0.w();
+    paramAttributeSet = new Intent("android.speech.action.WEB_SEARCH");
+    J = paramAttributeSet;
+    paramAttributeSet.addFlags(268435456);
+    paramAttributeSet.putExtra("android.speech.extra.LANGUAGE_MODEL", "web_search");
+    paramAttributeSet = new Intent("android.speech.action.RECOGNIZE_SPEECH");
+    K = paramAttributeSet;
+    paramAttributeSet.addFlags(268435456);
+    paramContext = findViewById(paramContext.getDropDownAnchor());
+    z = paramContext;
+    if (paramContext != null) {
+      paramContext.addOnLayoutChangeListener(new e());
+    }
+    k0(U);
+    g0();
+  }
+  
+  private Intent C(String paramString1, Uri paramUri, String paramString2, String paramString3, int paramInt, String paramString4)
+  {
+    paramString1 = new Intent(paramString1);
+    paramString1.addFlags(268435456);
+    if (paramUri != null) {
+      paramString1.setData(paramUri);
+    }
+    paramString1.putExtra("user_query", h0);
+    if (paramString3 != null) {
+      paramString1.putExtra("query", paramString3);
+    }
+    if (paramString2 != null) {
+      paramString1.putExtra("intent_extra_data_key", paramString2);
+    }
+    paramUri = l0;
+    if (paramUri != null) {
+      paramString1.putExtra("app_data", paramUri);
+    }
+    if (paramInt != 0)
+    {
+      paramString1.putExtra("action_key", paramInt);
+      paramString1.putExtra("action_msg", paramString4);
+    }
+    paramString1.setComponent(k0.getSearchActivity());
+    return paramString1;
+  }
+  
+  private Intent D(Cursor paramCursor, int paramInt, String paramString)
+  {
+    try
+    {
+      localObject2 = h0.o(paramCursor, "suggest_intent_action");
+      localObject1 = localObject2;
+      if (localObject2 != null) {
+        break label230;
+      }
+      localObject1 = k0.getSuggestIntentAction();
+    }
+    catch (RuntimeException paramString)
+    {
+      for (;;)
+      {
+        Object localObject1;
+        Object localObject3;
+        try
+        {
+          String str;
+          paramInt = paramCursor.getPosition();
+        }
+        catch (RuntimeException paramCursor)
+        {
+          continue;
+        }
+        paramInt = -1;
+        paramCursor = new StringBuilder();
+        paramCursor.append("Search suggestions cursor at row ");
+        paramCursor.append(paramInt);
+        paramCursor.append(" returned exception.");
+        Log.w("SearchView", paramCursor.toString(), paramString);
+        return null;
+        label230:
+        Object localObject2 = localObject1;
+        if (localObject1 == null)
+        {
+          localObject2 = "android.intent.action.SEARCH";
+          continue;
+          label247:
+          if (localObject3 == null) {
+            localObject1 = null;
+          }
+        }
+      }
+    }
+    localObject3 = h0.o(paramCursor, "suggest_intent_data");
+    localObject1 = localObject3;
+    if (localObject3 == null) {
+      localObject1 = k0.getSuggestIntentData();
+    }
+    localObject3 = localObject1;
+    if (localObject1 != null)
+    {
+      str = h0.o(paramCursor, "suggest_intent_data_id");
+      localObject3 = localObject1;
+      if (str != null)
+      {
+        localObject3 = new StringBuilder();
+        ((StringBuilder)localObject3).append((String)localObject1);
+        ((StringBuilder)localObject3).append("/");
+        ((StringBuilder)localObject3).append(Uri.encode(str));
+        localObject3 = ((StringBuilder)localObject3).toString();
+        break label247;
+        localObject1 = Uri.parse((String)localObject3);
+        localObject3 = h0.o(paramCursor, "suggest_intent_query");
+        paramString = C((String)localObject2, (Uri)localObject1, h0.o(paramCursor, "suggest_intent_extra_data"), (String)localObject3, paramInt, paramString);
+        return paramString;
+      }
+    }
+  }
+  
+  private Intent E(Intent paramIntent, SearchableInfo paramSearchableInfo)
+  {
+    ComponentName localComponentName = paramSearchableInfo.getSearchActivity();
+    Object localObject1 = new Intent("android.intent.action.SEARCH");
+    ((Intent)localObject1).setComponent(localComponentName);
+    PendingIntent localPendingIntent = PendingIntent.getActivity(getContext(), 0, (Intent)localObject1, 1107296256);
+    Bundle localBundle = new Bundle();
+    localObject1 = l0;
+    if (localObject1 != null) {
+      localBundle.putParcelable("app_data", (Parcelable)localObject1);
+    }
+    Intent localIntent = new Intent(paramIntent);
+    int i = 1;
+    Object localObject2 = getResources();
+    if (paramSearchableInfo.getVoiceLanguageModeId() != 0) {
+      paramIntent = ((Resources)localObject2).getString(paramSearchableInfo.getVoiceLanguageModeId());
+    } else {
+      paramIntent = "free_form";
+    }
+    int j = paramSearchableInfo.getVoicePromptTextId();
+    Object localObject3 = null;
+    if (j != 0) {
+      localObject1 = ((Resources)localObject2).getString(paramSearchableInfo.getVoicePromptTextId());
+    } else {
+      localObject1 = null;
+    }
+    if (paramSearchableInfo.getVoiceLanguageId() != 0) {
+      localObject2 = ((Resources)localObject2).getString(paramSearchableInfo.getVoiceLanguageId());
+    } else {
+      localObject2 = null;
+    }
+    if (paramSearchableInfo.getVoiceMaxResults() != 0) {
+      i = paramSearchableInfo.getVoiceMaxResults();
+    }
+    localIntent.putExtra("android.speech.extra.LANGUAGE_MODEL", paramIntent);
+    localIntent.putExtra("android.speech.extra.PROMPT", (String)localObject1);
+    localIntent.putExtra("android.speech.extra.LANGUAGE", (String)localObject2);
+    localIntent.putExtra("android.speech.extra.MAX_RESULTS", i);
+    if (localComponentName == null) {
+      paramIntent = localObject3;
+    } else {
+      paramIntent = localComponentName.flattenToShortString();
+    }
+    localIntent.putExtra("calling_package", paramIntent);
+    localIntent.putExtra("android.speech.extra.RESULTS_PENDINGINTENT", localPendingIntent);
+    localIntent.putExtra("android.speech.extra.RESULTS_PENDINGINTENT_BUNDLE", localBundle);
+    return localIntent;
+  }
+  
+  private Intent F(Intent paramIntent, SearchableInfo paramSearchableInfo)
+  {
+    Intent localIntent = new Intent(paramIntent);
+    paramIntent = paramSearchableInfo.getSearchActivity();
+    if (paramIntent == null) {
+      paramIntent = null;
+    } else {
+      paramIntent = paramIntent.flattenToShortString();
+    }
+    localIntent.putExtra("calling_package", paramIntent);
+    return localIntent;
+  }
+  
+  private void G()
+  {
+    r.dismissDropDown();
+  }
+  
+  private void I(View paramView, Rect paramRect)
+  {
+    paramView.getLocationInWindow(D);
+    getLocationInWindow(E);
+    int[] arrayOfInt1 = D;
+    int i = arrayOfInt1[1];
+    int[] arrayOfInt2 = E;
+    i -= arrayOfInt2[1];
+    int j = arrayOfInt1[0] - arrayOfInt2[0];
+    paramRect.set(j, i, paramView.getWidth() + j, paramView.getHeight() + i);
+  }
+  
+  private CharSequence J(CharSequence paramCharSequence)
+  {
+    if (U)
+    {
+      if (G == null) {
+        return paramCharSequence;
+      }
+      int i = (int)(r.getTextSize() * 1.25D);
+      G.setBounds(0, 0, i, i);
+      SpannableStringBuilder localSpannableStringBuilder = new SpannableStringBuilder("   ");
+      localSpannableStringBuilder.setSpan(new ImageSpan(G), 1, 2, 33);
+      localSpannableStringBuilder.append(paramCharSequence);
+      return localSpannableStringBuilder;
+    }
+    return paramCharSequence;
+  }
+  
+  private boolean K()
+  {
+    Object localObject = k0;
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (localObject != null)
+    {
+      bool1 = bool2;
+      if (((SearchableInfo)localObject).getVoiceSearchEnabled())
+      {
+        localObject = null;
+        if (k0.getVoiceSearchLaunchWebSearch()) {
+          localObject = J;
+        } else if (k0.getVoiceSearchLaunchRecognizer()) {
+          localObject = K;
+        }
+        bool1 = bool2;
+        if (localObject != null)
+        {
+          bool1 = bool2;
+          if (getContext().getPackageManager().resolveActivity((Intent)localObject, 65536) != null) {
+            bool1 = true;
+          }
+        }
+      }
+    }
+    return bool1;
+  }
+  
+  static boolean M(Context paramContext)
+  {
+    return getResourcesgetConfigurationorientation == 2;
+  }
+  
+  private boolean N()
+  {
+    return ((a0) || (f0)) && (!L());
+  }
+  
+  private void O(Intent paramIntent)
+  {
+    if (paramIntent == null) {
+      return;
+    }
+    try
+    {
+      getContext().startActivity(paramIntent);
+      return;
+    }
+    catch (RuntimeException localRuntimeException)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed launch activity: ");
+      localStringBuilder.append(paramIntent);
+      Log.e("SearchView", localStringBuilder.toString(), localRuntimeException);
+    }
+  }
+  
+  private boolean Q(int paramInt1, int paramInt2, String paramString)
+  {
+    Cursor localCursor = W.b();
+    if ((localCursor != null) && (localCursor.moveToPosition(paramInt1)))
+    {
+      O(D(localCursor, paramInt2, paramString));
+      return true;
+    }
+    return false;
+  }
+  
+  private void b0()
+  {
+    post(m0);
+  }
+  
+  private void c0(int paramInt)
+  {
+    Editable localEditable = r.getText();
+    Object localObject = W.b();
+    if (localObject == null) {
+      return;
+    }
+    if (((Cursor)localObject).moveToPosition(paramInt))
+    {
+      localObject = W.c((Cursor)localObject);
+      if (localObject != null)
+      {
+        setQuery((CharSequence)localObject);
+        return;
+      }
+      setQuery(localEditable);
+      return;
+    }
+    setQuery(localEditable);
+  }
+  
+  private void e0()
+  {
+    boolean bool = TextUtils.isEmpty(r.getText());
+    int k = 1;
+    int m = bool ^ true;
+    int j = 0;
+    int i = k;
+    if (m == 0) {
+      if ((U) && (!i0)) {
+        i = k;
+      } else {
+        i = 0;
+      }
+    }
+    Object localObject = x;
+    if (i != 0) {
+      i = j;
+    } else {
+      i = 8;
+    }
+    ((ImageView)localObject).setVisibility(i);
+    Drawable localDrawable = x.getDrawable();
+    if (localDrawable != null)
+    {
+      if (m != 0) {
+        localObject = ViewGroup.ENABLED_STATE_SET;
+      } else {
+        localObject = ViewGroup.EMPTY_STATE_SET;
+      }
+      localDrawable.setState((int[])localObject);
+    }
+  }
+  
+  private void g0()
+  {
+    CharSequence localCharSequence = getQueryHint();
+    SearchAutoComplete localSearchAutoComplete = r;
+    Object localObject = localCharSequence;
+    if (localCharSequence == null) {
+      localObject = "";
+    }
+    localSearchAutoComplete.setHint(J((CharSequence)localObject));
+  }
+  
+  private int getPreferredHeight()
+  {
+    return getContext().getResources().getDimensionPixelSize(d.g);
+  }
+  
+  private int getPreferredWidth()
+  {
+    return getContext().getResources().getDimensionPixelSize(d.h);
+  }
+  
+  private void h0()
+  {
+    r.setThreshold(k0.getSuggestThreshold());
+    r.setImeOptions(k0.getImeOptions());
+    int k = k0.getInputType();
+    int j = 1;
+    int i = k;
+    if ((k & 0xF) == 1)
+    {
+      k &= 0xFFFEFFFF;
+      i = k;
+      if (k0.getSuggestAuthority() != null) {
+        i = k | 0x10000 | 0x80000;
+      }
+    }
+    r.setInputType(i);
+    Object localObject = W;
+    if (localObject != null) {
+      ((c.i.a.a)localObject).a(null);
+    }
+    if (k0.getSuggestAuthority() != null)
+    {
+      localObject = new h0(getContext(), this, k0, o0);
+      W = ((c.i.a.a)localObject);
+      r.setAdapter((ListAdapter)localObject);
+      localObject = (h0)W;
+      i = j;
+      if (c0) {
+        i = 2;
+      }
+      ((h0)localObject).x(i);
+    }
+  }
+  
+  private void i0()
+  {
+    int i;
+    if ((N()) && ((w.getVisibility() == 0) || (y.getVisibility() == 0))) {
+      i = 0;
+    } else {
+      i = 8;
+    }
+    u.setVisibility(i);
+  }
+  
+  private void j0(boolean paramBoolean)
+  {
+    int i;
+    if ((a0) && (N()) && (hasFocus()) && ((paramBoolean) || (!f0))) {
+      i = 0;
+    } else {
+      i = 8;
+    }
+    w.setVisibility(i);
+  }
+  
+  private void k0(boolean paramBoolean)
+  {
+    V = paramBoolean;
+    int j = 0;
+    int i;
+    if (paramBoolean) {
+      i = 0;
+    } else {
+      i = 8;
+    }
+    boolean bool = TextUtils.isEmpty(r.getText()) ^ true;
+    v.setVisibility(i);
+    j0(bool);
+    View localView = s;
+    if (paramBoolean) {
+      i = 8;
+    } else {
+      i = 0;
+    }
+    localView.setVisibility(i);
+    if (F.getDrawable() != null)
+    {
+      i = j;
+      if (!U) {}
+    }
+    else
+    {
+      i = 8;
+    }
+    F.setVisibility(i);
+    e0();
+    l0(bool ^ true);
+    i0();
+  }
+  
+  private void l0(boolean paramBoolean)
+  {
+    boolean bool = f0;
+    int j = 8;
+    int i = j;
+    if (bool)
+    {
+      i = j;
+      if (!L())
+      {
+        i = j;
+        if (paramBoolean)
+        {
+          w.setVisibility(8);
+          i = 0;
+        }
+      }
+    }
+    y.setVisibility(i);
+  }
+  
+  private void setQuery(CharSequence paramCharSequence)
+  {
+    r.setText(paramCharSequence);
+    SearchAutoComplete localSearchAutoComplete = r;
+    int i;
+    if (TextUtils.isEmpty(paramCharSequence)) {
+      i = 0;
+    } else {
+      i = paramCharSequence.length();
+    }
+    localSearchAutoComplete.setSelection(i);
+  }
+  
+  void B()
+  {
+    if (z.getWidth() > 1)
+    {
+      Resources localResources = getContext().getResources();
+      int k = t.getPaddingLeft();
+      Rect localRect = new Rect();
+      boolean bool = t0.b(this);
+      int i;
+      if (U) {
+        i = localResources.getDimensionPixelSize(d.e) + localResources.getDimensionPixelSize(d.f);
+      } else {
+        i = 0;
+      }
+      r.getDropDownBackground().getPadding(localRect);
+      if (bool) {
+        j = -left;
+      } else {
+        j = k - (left + i);
+      }
+      r.setDropDownHorizontalOffset(j);
+      int j = z.getWidth();
+      int m = left;
+      int n = right;
+      r.setDropDownWidth(j + m + n + i - k);
+    }
+  }
+  
+  void H()
+  {
+    if (Build.VERSION.SDK_INT >= 29)
+    {
+      k.a(r);
+      return;
+    }
+    o localO = q;
+    localO.b(r);
+    localO.a(r);
+  }
+  
+  public boolean L()
+  {
+    return V;
+  }
+  
+  void P(int paramInt, String paramString1, String paramString2)
+  {
+    paramString1 = C("android.intent.action.SEARCH", null, null, paramString2, paramInt, paramString1);
+    getContext().startActivity(paramString1);
+  }
+  
+  void R()
+  {
+    if (TextUtils.isEmpty(r.getText()))
+    {
+      if (U)
+      {
+        l localL = Q;
+        if ((localL == null) || (!localL.a()))
+        {
+          clearFocus();
+          k0(true);
+        }
+      }
+    }
+    else
+    {
+      r.setText("");
+      r.requestFocus();
+      r.setImeVisibility(true);
+    }
+  }
+  
+  boolean S(int paramInt1, int paramInt2, String paramString)
+  {
+    paramString = S;
+    if ((paramString != null) && (paramString.b(paramInt1))) {
+      return false;
+    }
+    Q(paramInt1, 0, null);
+    r.setImeVisibility(false);
+    G();
+    return true;
+  }
+  
+  boolean T(int paramInt)
+  {
+    n localN = S;
+    if ((localN != null) && (localN.a(paramInt))) {
+      return false;
+    }
+    c0(paramInt);
+    return true;
+  }
+  
+  protected void U(CharSequence paramCharSequence)
+  {
+    setQuery(paramCharSequence);
+  }
+  
+  void V()
+  {
+    k0(false);
+    r.requestFocus();
+    r.setImeVisibility(true);
+    View.OnClickListener localOnClickListener = T;
+    if (localOnClickListener != null) {
+      localOnClickListener.onClick(this);
+    }
+  }
+  
+  void W()
+  {
+    Editable localEditable = r.getText();
+    if ((localEditable != null) && (TextUtils.getTrimmedLength(localEditable) > 0))
+    {
+      m localM = P;
+      if ((localM == null) || (!localM.b(localEditable.toString())))
+      {
+        if (k0 != null) {
+          P(0, null, localEditable.toString());
+        }
+        r.setImeVisibility(false);
+        G();
+      }
+    }
+  }
+  
+  boolean X(View paramView, int paramInt, KeyEvent paramKeyEvent)
+  {
+    if (k0 == null) {
+      return false;
+    }
+    if (W == null) {
+      return false;
+    }
+    if ((paramKeyEvent.getAction() == 0) && (paramKeyEvent.hasNoModifiers())) {
+      if ((paramInt != 66) && (paramInt != 84) && (paramInt != 61))
+      {
+        if ((paramInt != 21) && (paramInt != 22))
+        {
+          if ((paramInt == 19) && (r.getListSelection() == 0)) {
+            return false;
+          }
+        }
+        else
+        {
+          if (paramInt == 21) {
+            paramInt = 0;
+          } else {
+            paramInt = r.length();
+          }
+          r.setSelection(paramInt);
+          r.setListSelection(0);
+          r.clearListSelection();
+          r.b();
+          return true;
+        }
+      }
+      else {
+        return S(r.getListSelection(), 0, null);
+      }
+    }
+    return false;
+  }
+  
+  void Y(CharSequence paramCharSequence)
+  {
+    Editable localEditable = r.getText();
+    h0 = localEditable;
+    boolean bool = TextUtils.isEmpty(localEditable) ^ true;
+    j0(bool);
+    l0(bool ^ true);
+    e0();
+    i0();
+    if ((P != null) && (!TextUtils.equals(paramCharSequence, g0))) {
+      P.a(paramCharSequence.toString());
+    }
+    g0 = paramCharSequence.toString();
+  }
+  
+  void Z()
+  {
+    k0(L());
+    b0();
+    if (r.hasFocus()) {
+      H();
+    }
+  }
+  
+  void a0()
+  {
+    Object localObject = k0;
+    if (localObject == null) {
+      return;
+    }
+    try
+    {
+      if (((SearchableInfo)localObject).getVoiceSearchLaunchWebSearch())
+      {
+        localObject = F(J, (SearchableInfo)localObject);
+        getContext().startActivity((Intent)localObject);
+        return;
+      }
+      if (!((SearchableInfo)localObject).getVoiceSearchLaunchRecognizer()) {
+        break label72;
+      }
+      localObject = E(K, (SearchableInfo)localObject);
+      getContext().startActivity((Intent)localObject);
+      return;
+    }
+    catch (ActivityNotFoundException localActivityNotFoundException)
+    {
+      label72:
+      for (;;) {}
+    }
+    Log.w("SearchView", "Could not find voice search activity");
+  }
+  
+  public void c()
+  {
+    if (i0) {
+      return;
+    }
+    i0 = true;
+    int i = r.getImeOptions();
+    j0 = i;
+    r.setImeOptions(i | 0x2000000);
+    r.setText("");
+    setIconified(false);
+  }
+  
+  public void clearFocus()
+  {
+    d0 = true;
+    super.clearFocus();
+    r.clearFocus();
+    r.setImeVisibility(false);
+    d0 = false;
+  }
+  
+  public void d0(CharSequence paramCharSequence, boolean paramBoolean)
+  {
+    r.setText(paramCharSequence);
+    if (paramCharSequence != null)
+    {
+      SearchAutoComplete localSearchAutoComplete = r;
+      localSearchAutoComplete.setSelection(localSearchAutoComplete.length());
+      h0 = paramCharSequence;
+    }
+    if ((paramBoolean) && (!TextUtils.isEmpty(paramCharSequence))) {
+      W();
+    }
+  }
+  
+  public void f()
+  {
+    d0("", false);
+    clearFocus();
+    k0(true);
+    r.setImeOptions(j0);
+    i0 = false;
+  }
+  
+  void f0()
+  {
+    int[] arrayOfInt;
+    if (r.hasFocus()) {
+      arrayOfInt = ViewGroup.FOCUSED_STATE_SET;
+    } else {
+      arrayOfInt = ViewGroup.EMPTY_STATE_SET;
+    }
+    Drawable localDrawable = t.getBackground();
+    if (localDrawable != null) {
+      localDrawable.setState(arrayOfInt);
+    }
+    localDrawable = u.getBackground();
+    if (localDrawable != null) {
+      localDrawable.setState(arrayOfInt);
+    }
+    invalidate();
+  }
+  
+  public int getImeOptions()
+  {
+    return r.getImeOptions();
+  }
+  
+  public int getInputType()
+  {
+    return r.getInputType();
+  }
+  
+  public int getMaxWidth()
+  {
+    return e0;
+  }
+  
+  public CharSequence getQuery()
+  {
+    return r.getText();
+  }
+  
+  public CharSequence getQueryHint()
+  {
+    Object localObject = b0;
+    if (localObject != null) {
+      return localObject;
+    }
+    localObject = k0;
+    if ((localObject != null) && (((SearchableInfo)localObject).getHintId() != 0)) {
+      return getContext().getText(k0.getHintId());
+    }
+    return L;
+  }
+  
+  int getSuggestionCommitIconResId()
+  {
+    return I;
+  }
+  
+  int getSuggestionRowLayout()
+  {
+    return H;
+  }
+  
+  public c.i.a.a getSuggestionsAdapter()
+  {
+    return W;
+  }
+  
+  protected void onDetachedFromWindow()
+  {
+    removeCallbacks(m0);
+    post(n0);
+    super.onDetachedFromWindow();
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onLayout(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    if (paramBoolean)
+    {
+      I(r, B);
+      Object localObject = C;
+      Rect localRect = B;
+      ((Rect)localObject).set(left, 0, right, paramInt4 - paramInt2);
+      localObject = A;
+      if (localObject == null)
+      {
+        localObject = new p(C, B, r);
+        A = ((p)localObject);
+        setTouchDelegate((TouchDelegate)localObject);
+        return;
+      }
+      ((p)localObject).a(C, B);
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    if (L())
+    {
+      super.onMeasure(paramInt1, paramInt2);
+      return;
+    }
+    int j = View.MeasureSpec.getMode(paramInt1);
+    int i = View.MeasureSpec.getSize(paramInt1);
+    if (j != Integer.MIN_VALUE)
+    {
+      if (j != 0)
+      {
+        if (j != 1073741824)
+        {
+          paramInt1 = i;
+        }
+        else
+        {
+          j = e0;
+          paramInt1 = i;
+          if (j > 0) {
+            paramInt1 = Math.min(j, i);
+          }
+        }
+      }
+      else
+      {
+        paramInt1 = e0;
+        if (paramInt1 <= 0) {
+          paramInt1 = getPreferredWidth();
+        }
+      }
+    }
+    else
+    {
+      paramInt1 = e0;
+      if (paramInt1 > 0) {
+        paramInt1 = Math.min(paramInt1, i);
+      } else {
+        paramInt1 = Math.min(getPreferredWidth(), i);
+      }
+    }
+    i = View.MeasureSpec.getMode(paramInt2);
+    paramInt2 = View.MeasureSpec.getSize(paramInt2);
+    if (i != Integer.MIN_VALUE)
+    {
+      if (i == 0) {
+        paramInt2 = getPreferredHeight();
+      }
+    }
+    else {
+      paramInt2 = Math.min(getPreferredHeight(), paramInt2);
+    }
+    super.onMeasure(View.MeasureSpec.makeMeasureSpec(paramInt1, 1073741824), View.MeasureSpec.makeMeasureSpec(paramInt2, 1073741824));
+  }
+  
+  protected void onRestoreInstanceState(Parcelable paramParcelable)
+  {
+    if (!(paramParcelable instanceof SavedState))
+    {
+      super.onRestoreInstanceState(paramParcelable);
+      return;
+    }
+    paramParcelable = (SavedState)paramParcelable;
+    super.onRestoreInstanceState(paramParcelable.a());
+    k0(d);
+    requestLayout();
+  }
+  
+  protected Parcelable onSaveInstanceState()
+  {
+    SavedState localSavedState = new SavedState(super.onSaveInstanceState());
+    d = L();
+    return localSavedState;
+  }
+  
+  public void onWindowFocusChanged(boolean paramBoolean)
+  {
+    super.onWindowFocusChanged(paramBoolean);
+    b0();
+  }
+  
+  public boolean requestFocus(int paramInt, Rect paramRect)
+  {
+    if (d0) {
+      return false;
+    }
+    if (!isFocusable()) {
+      return false;
+    }
+    if (!L())
+    {
+      boolean bool = r.requestFocus(paramInt, paramRect);
+      if (bool) {
+        k0(false);
+      }
+      return bool;
+    }
+    return super.requestFocus(paramInt, paramRect);
+  }
+  
+  public void setAppSearchData(Bundle paramBundle)
+  {
+    l0 = paramBundle;
+  }
+  
+  public void setIconified(boolean paramBoolean)
+  {
+    if (paramBoolean)
+    {
+      R();
+      return;
+    }
+    V();
+  }
+  
+  public void setIconifiedByDefault(boolean paramBoolean)
+  {
+    if (U == paramBoolean) {
+      return;
+    }
+    U = paramBoolean;
+    k0(paramBoolean);
+    g0();
+  }
+  
+  public void setImeOptions(int paramInt)
+  {
+    r.setImeOptions(paramInt);
+  }
+  
+  public void setInputType(int paramInt)
+  {
+    r.setInputType(paramInt);
+  }
+  
+  public void setMaxWidth(int paramInt)
+  {
+    e0 = paramInt;
+    requestLayout();
+  }
+  
+  public void setOnCloseListener(l paramL)
+  {
+    Q = paramL;
+  }
+  
+  public void setOnQueryTextFocusChangeListener(View.OnFocusChangeListener paramOnFocusChangeListener)
+  {
+    R = paramOnFocusChangeListener;
+  }
+  
+  public void setOnQueryTextListener(m paramM)
+  {
+    P = paramM;
+  }
+  
+  public void setOnSearchClickListener(View.OnClickListener paramOnClickListener)
+  {
+    T = paramOnClickListener;
+  }
+  
+  public void setOnSuggestionListener(n paramN)
+  {
+    S = paramN;
+  }
+  
+  public void setQueryHint(CharSequence paramCharSequence)
+  {
+    b0 = paramCharSequence;
+    g0();
+  }
+  
+  public void setQueryRefinementEnabled(boolean paramBoolean)
+  {
+    c0 = paramBoolean;
+    Object localObject = W;
+    if ((localObject instanceof h0))
+    {
+      localObject = (h0)localObject;
+      int i;
+      if (paramBoolean) {
+        i = 2;
+      } else {
+        i = 1;
+      }
+      ((h0)localObject).x(i);
+    }
+  }
+  
+  public void setSearchableInfo(SearchableInfo paramSearchableInfo)
+  {
+    k0 = paramSearchableInfo;
+    if (paramSearchableInfo != null)
+    {
+      h0();
+      g0();
+    }
+    boolean bool = K();
+    f0 = bool;
+    if (bool) {
+      r.setPrivateImeOptions("nm");
+    }
+    k0(L());
+  }
+  
+  public void setSubmitButtonEnabled(boolean paramBoolean)
+  {
+    a0 = paramBoolean;
+    k0(L());
+  }
+  
+  public void setSuggestionsAdapter(c.i.a.a paramA)
+  {
+    W = paramA;
+    r.setAdapter(paramA);
+  }
+  
+  static class SavedState
+    extends AbsSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    boolean d;
+    
+    public SavedState(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      super(paramClassLoader);
+      d = ((Boolean)paramParcel.readValue(null)).booleanValue();
+    }
+    
+    SavedState(Parcelable paramParcelable)
+    {
+      super();
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SearchView.SavedState{");
+      localStringBuilder.append(Integer.toHexString(System.identityHashCode(this)));
+      localStringBuilder.append(" isIconified=");
+      localStringBuilder.append(d);
+      localStringBuilder.append("}");
+      return localStringBuilder.toString();
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      super.writeToParcel(paramParcel, paramInt);
+      paramParcel.writeValue(Boolean.valueOf(d));
+    }
+    
+    class a
+      implements Parcelable.ClassLoaderCreator<SearchView.SavedState>
+    {
+      a() {}
+      
+      public SearchView.SavedState a(Parcel paramParcel)
+      {
+        return new SearchView.SavedState(paramParcel, null);
+      }
+      
+      public SearchView.SavedState b(Parcel paramParcel, ClassLoader paramClassLoader)
+      {
+        return new SearchView.SavedState(paramParcel, paramClassLoader);
+      }
+      
+      public SearchView.SavedState[] c(int paramInt)
+      {
+        return new SearchView.SavedState[paramInt];
+      }
+    }
+  }
+  
+  public static class SearchAutoComplete
+    extends AppCompatAutoCompleteTextView
+  {
+    private int f = getThreshold();
+    private SearchView g;
+    private boolean h;
+    final Runnable i = new a();
+    
+    public SearchAutoComplete(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      this(paramContext, paramAttributeSet, c.a.a.p);
+    }
+    
+    public SearchAutoComplete(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+    {
+      super(paramAttributeSet, paramInt);
+    }
+    
+    private int getSearchViewTextMinWidthDp()
+    {
+      Configuration localConfiguration = getResources().getConfiguration();
+      int j = screenWidthDp;
+      int k = screenHeightDp;
+      if ((j >= 960) && (k >= 720) && (orientation == 2)) {
+        return 256;
+      }
+      if ((j < 600) && ((j < 640) || (k < 480))) {
+        return 160;
+      }
+      return 192;
+    }
+    
+    void b()
+    {
+      if (Build.VERSION.SDK_INT >= 29)
+      {
+        SearchView.k.b(this, 1);
+        if (enoughToFilter()) {
+          showDropDown();
+        }
+      }
+      else
+      {
+        SearchView.q.c(this);
+      }
+    }
+    
+    boolean c()
+    {
+      return TextUtils.getTrimmedLength(getText()) == 0;
+    }
+    
+    void d()
+    {
+      if (h)
+      {
+        ((InputMethodManager)getContext().getSystemService("input_method")).showSoftInput(this, 0);
+        h = false;
+      }
+    }
+    
+    public boolean enoughToFilter()
+    {
+      return (f <= 0) || (super.enoughToFilter());
+    }
+    
+    public InputConnection onCreateInputConnection(EditorInfo paramEditorInfo)
+    {
+      paramEditorInfo = super.onCreateInputConnection(paramEditorInfo);
+      if (h)
+      {
+        removeCallbacks(i);
+        post(i);
+      }
+      return paramEditorInfo;
+    }
+    
+    protected void onFinishInflate()
+    {
+      super.onFinishInflate();
+      DisplayMetrics localDisplayMetrics = getResources().getDisplayMetrics();
+      setMinWidth((int)TypedValue.applyDimension(1, getSearchViewTextMinWidthDp(), localDisplayMetrics));
+    }
+    
+    protected void onFocusChanged(boolean paramBoolean, int paramInt, Rect paramRect)
+    {
+      super.onFocusChanged(paramBoolean, paramInt, paramRect);
+      g.Z();
+    }
+    
+    public boolean onKeyPreIme(int paramInt, KeyEvent paramKeyEvent)
+    {
+      if (paramInt == 4)
+      {
+        KeyEvent.DispatcherState localDispatcherState;
+        if ((paramKeyEvent.getAction() == 0) && (paramKeyEvent.getRepeatCount() == 0))
+        {
+          localDispatcherState = getKeyDispatcherState();
+          if (localDispatcherState != null) {
+            localDispatcherState.startTracking(paramKeyEvent, this);
+          }
+          return true;
+        }
+        if (paramKeyEvent.getAction() == 1)
+        {
+          localDispatcherState = getKeyDispatcherState();
+          if (localDispatcherState != null) {
+            localDispatcherState.handleUpEvent(paramKeyEvent);
+          }
+          if ((paramKeyEvent.isTracking()) && (!paramKeyEvent.isCanceled()))
+          {
+            g.clearFocus();
+            setImeVisibility(false);
+            return true;
+          }
+        }
+      }
+      return super.onKeyPreIme(paramInt, paramKeyEvent);
+    }
+    
+    public void onWindowFocusChanged(boolean paramBoolean)
+    {
+      super.onWindowFocusChanged(paramBoolean);
+      if ((paramBoolean) && (g.hasFocus()) && (getVisibility() == 0))
+      {
+        h = true;
+        if (SearchView.M(getContext())) {
+          b();
+        }
+      }
+    }
+    
+    public void performCompletion() {}
+    
+    protected void replaceText(CharSequence paramCharSequence) {}
+    
+    void setImeVisibility(boolean paramBoolean)
+    {
+      InputMethodManager localInputMethodManager = (InputMethodManager)getContext().getSystemService("input_method");
+      if (!paramBoolean)
+      {
+        h = false;
+        removeCallbacks(i);
+        localInputMethodManager.hideSoftInputFromWindow(getWindowToken(), 0);
+        return;
+      }
+      if (localInputMethodManager.isActive(this))
+      {
+        h = false;
+        removeCallbacks(i);
+        localInputMethodManager.showSoftInput(this, 0);
+        return;
+      }
+      h = true;
+    }
+    
+    void setSearchView(SearchView paramSearchView)
+    {
+      g = paramSearchView;
+    }
+    
+    public void setThreshold(int paramInt)
+    {
+      super.setThreshold(paramInt);
+      f = paramInt;
+    }
+    
+    class a
+      implements Runnable
+    {
+      a() {}
+      
+      public void run()
+      {
+        d();
+      }
+    }
+  }
+  
+  class a
+    implements TextWatcher
+  {
+    a() {}
+    
+    public void afterTextChanged(Editable paramEditable) {}
+    
+    public void beforeTextChanged(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3) {}
+    
+    public void onTextChanged(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3)
+    {
+      Y(paramCharSequence);
+    }
+  }
+  
+  class b
+    implements Runnable
+  {
+    b() {}
+    
+    public void run()
+    {
+      f0();
+    }
+  }
+  
+  class c
+    implements Runnable
+  {
+    c() {}
+    
+    public void run()
+    {
+      c.i.a.a localA = W;
+      if ((localA instanceof h0)) {
+        localA.a(null);
+      }
+    }
+  }
+  
+  class d
+    implements View.OnFocusChangeListener
+  {
+    d() {}
+    
+    public void onFocusChange(View paramView, boolean paramBoolean)
+    {
+      paramView = SearchView.this;
+      View.OnFocusChangeListener localOnFocusChangeListener = R;
+      if (localOnFocusChangeListener != null) {
+        localOnFocusChangeListener.onFocusChange(paramView, paramBoolean);
+      }
+    }
+  }
+  
+  class e
+    implements View.OnLayoutChangeListener
+  {
+    e() {}
+    
+    public void onLayoutChange(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8)
+    {
+      B();
+    }
+  }
+  
+  class f
+    implements View.OnClickListener
+  {
+    f() {}
+    
+    public void onClick(View paramView)
+    {
+      SearchView localSearchView = SearchView.this;
+      if (paramView == v)
+      {
+        localSearchView.V();
+        return;
+      }
+      if (paramView == x)
+      {
+        localSearchView.R();
+        return;
+      }
+      if (paramView == w)
+      {
+        localSearchView.W();
+        return;
+      }
+      if (paramView == y)
+      {
+        localSearchView.a0();
+        return;
+      }
+      if (paramView == r) {
+        localSearchView.H();
+      }
+    }
+  }
+  
+  class g
+    implements View.OnKeyListener
+  {
+    g() {}
+    
+    public boolean onKey(View paramView, int paramInt, KeyEvent paramKeyEvent)
+    {
+      SearchView localSearchView = SearchView.this;
+      if (k0 == null) {
+        return false;
+      }
+      if ((r.isPopupShowing()) && (r.getListSelection() != -1)) {
+        return X(paramView, paramInt, paramKeyEvent);
+      }
+      if ((!r.c()) && (paramKeyEvent.hasNoModifiers()) && (paramKeyEvent.getAction() == 1) && (paramInt == 66))
+      {
+        paramView.cancelLongPress();
+        paramView = SearchView.this;
+        paramView.P(0, null, r.getText().toString());
+        return true;
+      }
+      return false;
+    }
+  }
+  
+  class h
+    implements TextView.OnEditorActionListener
+  {
+    h() {}
+    
+    public boolean onEditorAction(TextView paramTextView, int paramInt, KeyEvent paramKeyEvent)
+    {
+      W();
+      return true;
+    }
+  }
+  
+  class i
+    implements AdapterView.OnItemClickListener
+  {
+    i() {}
+    
+    public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong)
+    {
+      S(paramInt, 0, null);
+    }
+  }
+  
+  class j
+    implements AdapterView.OnItemSelectedListener
+  {
+    j() {}
+    
+    public void onItemSelected(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong)
+    {
+      T(paramInt);
+    }
+    
+    public void onNothingSelected(AdapterView<?> paramAdapterView) {}
+  }
+  
+  static class k
+  {
+    static void a(AutoCompleteTextView paramAutoCompleteTextView)
+    {
+      paramAutoCompleteTextView.refreshAutoCompleteResults();
+    }
+    
+    static void b(SearchView.SearchAutoComplete paramSearchAutoComplete, int paramInt)
+    {
+      paramSearchAutoComplete.setInputMethodMode(paramInt);
+    }
+  }
+  
+  public static abstract interface l
+  {
+    public abstract boolean a();
+  }
+  
+  public static abstract interface m
+  {
+    public abstract boolean a(String paramString);
+    
+    public abstract boolean b(String paramString);
+  }
+  
+  public static abstract interface n
+  {
+    public abstract boolean a(int paramInt);
+    
+    public abstract boolean b(int paramInt);
+  }
+  
+  private static class o
+  {
+    private Method a = null;
+    private Method b = null;
+    private Method c = null;
+    
+    o()
+    {
+      d();
+      try
+      {
+        localMethod = AutoCompleteTextView.class.getDeclaredMethod("doBeforeTextChanged", new Class[0]);
+        a = localMethod;
+        localMethod.setAccessible(true);
+      }
+      catch (NoSuchMethodException localNoSuchMethodException1)
+      {
+        try
+        {
+          for (;;)
+          {
+            Method localMethod = AutoCompleteTextView.class.getDeclaredMethod("doAfterTextChanged", new Class[0]);
+            b = localMethod;
+            localMethod.setAccessible(true);
+            try
+            {
+              localMethod = AutoCompleteTextView.class.getMethod("ensureImeVisible", new Class[] { Boolean.TYPE });
+              c = localMethod;
+              localMethod.setAccessible(true);
+              return;
+            }
+            catch (NoSuchMethodException localNoSuchMethodException3) {}
+            localNoSuchMethodException1 = localNoSuchMethodException1;
+          }
+        }
+        catch (NoSuchMethodException localNoSuchMethodException2)
+        {
+          for (;;) {}
+        }
+      }
+    }
+    
+    private static void d()
+    {
+      if (Build.VERSION.SDK_INT < 29) {
+        return;
+      }
+      throw new UnsupportedClassVersionError("This function can only be used for API Level < 29.");
+    }
+    
+    void a(AutoCompleteTextView paramAutoCompleteTextView)
+    {
+      d();
+      Method localMethod = b;
+      if (localMethod != null) {}
+      try
+      {
+        localMethod.invoke(paramAutoCompleteTextView, new Object[0]);
+        return;
+      }
+      catch (Exception paramAutoCompleteTextView) {}
+    }
+    
+    void b(AutoCompleteTextView paramAutoCompleteTextView)
+    {
+      d();
+      Method localMethod = a;
+      if (localMethod != null) {}
+      try
+      {
+        localMethod.invoke(paramAutoCompleteTextView, new Object[0]);
+        return;
+      }
+      catch (Exception paramAutoCompleteTextView) {}
+    }
+    
+    void c(AutoCompleteTextView paramAutoCompleteTextView)
+    {
+      d();
+      Method localMethod = c;
+      if (localMethod != null) {}
+      try
+      {
+        localMethod.invoke(paramAutoCompleteTextView, new Object[] { Boolean.TRUE });
+        return;
+      }
+      catch (Exception paramAutoCompleteTextView) {}
+    }
+  }
+  
+  private static class p
+    extends TouchDelegate
+  {
+    private final View a;
+    private final Rect b;
+    private final Rect c;
+    private final Rect d;
+    private final int e;
+    private boolean f;
+    
+    public p(Rect paramRect1, Rect paramRect2, View paramView)
+    {
+      super(paramView);
+      e = ViewConfiguration.get(paramView.getContext()).getScaledTouchSlop();
+      b = new Rect();
+      d = new Rect();
+      c = new Rect();
+      a(paramRect1, paramRect2);
+      a = paramView;
+    }
+    
+    public void a(Rect paramRect1, Rect paramRect2)
+    {
+      b.set(paramRect1);
+      d.set(paramRect1);
+      paramRect1 = d;
+      int i = e;
+      paramRect1.inset(-i, -i);
+      c.set(paramRect2);
+    }
+    
+    public boolean onTouchEvent(MotionEvent paramMotionEvent)
+    {
+      int j = (int)paramMotionEvent.getX();
+      int k = (int)paramMotionEvent.getY();
+      int i = paramMotionEvent.getAction();
+      boolean bool1 = true;
+      boolean bool3 = false;
+      if (i != 0)
+      {
+        if ((i != 1) && (i != 2))
+        {
+          if (i != 3) {
+            break label129;
+          }
+          bool1 = f;
+          f = false;
+        }
+        else
+        {
+          bool2 = f;
+          bool1 = bool2;
+          if (bool2)
+          {
+            bool1 = bool2;
+            if (!d.contains(j, k))
+            {
+              bool1 = bool2;
+              i = 0;
+              break label134;
+            }
+          }
+        }
+        i = 1;
+        break label134;
+      }
+      else if (b.contains(j, k))
+      {
+        f = true;
+        i = 1;
+        break label134;
+      }
+      label129:
+      i = 1;
+      bool1 = false;
+      label134:
+      boolean bool2 = bool3;
+      if (bool1)
+      {
+        if ((i != 0) && (!c.contains(j, k)))
+        {
+          paramMotionEvent.setLocation(a.getWidth() / 2, a.getHeight() / 2);
+        }
+        else
+        {
+          Rect localRect = c;
+          paramMotionEvent.setLocation(j - left, k - top);
+        }
+        bool2 = a.dispatchTouchEvent(paramMotionEvent);
+      }
+      return bool2;
+    }
+  }
+}

@@ -1,0 +1,562 @@
+package com.google.android.gms.common.api.internal;
+
+import android.app.Application;
+import android.content.Context;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
+import c.e.b;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Api.AnyClient;
+import com.google.android.gms.common.api.Api.ApiOptions;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.HasApiKey;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.GmsClientSupervisor;
+import com.google.android.gms.common.internal.MethodInvocation;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.RootTelemetryConfigManager;
+import com.google.android.gms.common.internal.RootTelemetryConfiguration;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.TelemetryData;
+import com.google.android.gms.common.internal.TelemetryLogging;
+import com.google.android.gms.common.internal.TelemetryLoggingClient;
+import com.google.android.gms.common.util.DeviceProperties;
+import com.google.android.gms.internal.base.zaq;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.checkerframework.checker.initialization.qual.NotOnlyInitialized;
+
+@KeepForSdk
+@ShowFirstParty
+public class GoogleApiManager
+  implements Handler.Callback
+{
+  public static final Status zaa = new Status(4, "Sign-out occurred while this API call was in progress.");
+  private static final Status zab = new Status(4, "The user must be signed in to make this API call.");
+  private static final Object zac = new Object();
+  private static GoogleApiManager zad;
+  private long zae = 5000L;
+  private long zaf = 120000L;
+  private long zag = 10000L;
+  private boolean zah = false;
+  private TelemetryData zai;
+  private TelemetryLoggingClient zaj;
+  private final Context zak;
+  private final GoogleApiAvailability zal;
+  private final com.google.android.gms.common.internal.zal zam;
+  private final AtomicInteger zan = new AtomicInteger(1);
+  private final AtomicInteger zao = new AtomicInteger(0);
+  private final Map<ApiKey<?>, zabq<?>> zap = new ConcurrentHashMap(5, 0.75F, 1);
+  private zaae zaq = null;
+  private final Set<ApiKey<?>> zar = new b();
+  private final Set<ApiKey<?>> zas = new b();
+  @NotOnlyInitialized
+  private final Handler zat;
+  private volatile boolean zau = true;
+  
+  @KeepForSdk
+  private GoogleApiManager(Context paramContext, Looper paramLooper, GoogleApiAvailability paramGoogleApiAvailability)
+  {
+    zak = paramContext;
+    paramLooper = new zaq(paramLooper, this);
+    zat = paramLooper;
+    zal = paramGoogleApiAvailability;
+    zam = new com.google.android.gms.common.internal.zal(paramGoogleApiAvailability);
+    if (DeviceProperties.isAuto(paramContext)) {
+      zau = false;
+    }
+    paramLooper.sendMessage(paramLooper.obtainMessage(6));
+  }
+  
+  @KeepForSdk
+  public static void reportSignOut()
+  {
+    synchronized (zac)
+    {
+      Object localObject2 = zad;
+      if (localObject2 != null)
+      {
+        zao.incrementAndGet();
+        localObject2 = zat;
+        ((Handler)localObject2).sendMessageAtFrontOfQueue(((Handler)localObject2).obtainMessage(10));
+      }
+      return;
+    }
+  }
+  
+  private static Status zaH(ApiKey<?> paramApiKey, ConnectionResult paramConnectionResult)
+  {
+    paramApiKey = paramApiKey.zab();
+    String str = String.valueOf(paramConnectionResult);
+    StringBuilder localStringBuilder = new StringBuilder(String.valueOf(paramApiKey).length() + 63 + str.length());
+    localStringBuilder.append("API: ");
+    localStringBuilder.append(paramApiKey);
+    localStringBuilder.append(" is not available on this device. Connection failed with: ");
+    localStringBuilder.append(str);
+    return new Status(paramConnectionResult, localStringBuilder.toString());
+  }
+  
+  private final zabq<?> zaI(GoogleApi<?> paramGoogleApi)
+  {
+    ApiKey localApiKey = paramGoogleApi.getApiKey();
+    zabq localZabq2 = (zabq)zap.get(localApiKey);
+    zabq localZabq1 = localZabq2;
+    if (localZabq2 == null)
+    {
+      localZabq1 = new zabq(this, paramGoogleApi);
+      zap.put(localApiKey, localZabq1);
+    }
+    if (localZabq1.zaz()) {
+      zas.add(localApiKey);
+    }
+    localZabq1.zao();
+    return localZabq1;
+  }
+  
+  private final TelemetryLoggingClient zaJ()
+  {
+    if (zaj == null) {
+      zaj = TelemetryLogging.getClient(zak);
+    }
+    return zaj;
+  }
+  
+  private final void zaK()
+  {
+    TelemetryData localTelemetryData = zai;
+    if (localTelemetryData != null)
+    {
+      if ((localTelemetryData.zaa() > 0) || (zaF())) {
+        zaJ().log(localTelemetryData);
+      }
+      zai = null;
+    }
+  }
+  
+  private final <T> void zaL(TaskCompletionSource<T> paramTaskCompletionSource, int paramInt, GoogleApi paramGoogleApi)
+  {
+    if (paramInt != 0)
+    {
+      paramGoogleApi = zacd.zaa(this, paramInt, paramGoogleApi.getApiKey());
+      if (paramGoogleApi != null)
+      {
+        paramTaskCompletionSource = paramTaskCompletionSource.getTask();
+        Handler localHandler = zat;
+        localHandler.getClass();
+        paramTaskCompletionSource.addOnCompleteListener(new zabk(localHandler), paramGoogleApi);
+      }
+    }
+  }
+  
+  public static GoogleApiManager zal()
+  {
+    synchronized (zac)
+    {
+      Preconditions.checkNotNull(zad, "Must guarantee manager is non-null before using getInstance");
+      GoogleApiManager localGoogleApiManager = zad;
+      return localGoogleApiManager;
+    }
+  }
+  
+  public static GoogleApiManager zam(Context paramContext)
+  {
+    synchronized (zac)
+    {
+      if (zad == null)
+      {
+        Looper localLooper = GmsClientSupervisor.getOrStartHandlerThread().getLooper();
+        zad = new GoogleApiManager(paramContext.getApplicationContext(), localLooper, GoogleApiAvailability.getInstance());
+      }
+      paramContext = zad;
+      return paramContext;
+    }
+  }
+  
+  public final boolean handleMessage(Message paramMessage)
+  {
+    int i = what;
+    long l = 300000L;
+    Object localObject1 = null;
+    Object localObject2;
+    Object localObject3;
+    switch (i)
+    {
+    default: 
+      paramMessage = new StringBuilder(31);
+      paramMessage.append("Unknown message id: ");
+      paramMessage.append(i);
+      Log.w("GoogleApiManager", paramMessage.toString());
+      return false;
+    case 19: 
+      zah = false;
+      return true;
+    case 18: 
+      paramMessage = (zace)obj;
+      if (zac == 0L)
+      {
+        paramMessage = new TelemetryData(zab, Arrays.asList(new MethodInvocation[] { zaa }));
+        zaJ().log(paramMessage);
+        return true;
+      }
+      localObject1 = zai;
+      if (localObject1 != null)
+      {
+        localObject2 = ((TelemetryData)localObject1).zab();
+        if ((((TelemetryData)localObject1).zaa() == zab) && ((localObject2 == null) || (((List)localObject2).size() < zad)))
+        {
+          zai.zac(zaa);
+        }
+        else
+        {
+          zat.removeMessages(17);
+          zaK();
+        }
+      }
+      if (zai == null)
+      {
+        localObject1 = new ArrayList();
+        ((ArrayList)localObject1).add(zaa);
+        zai = new TelemetryData(zab, (List)localObject1);
+        localObject1 = zat;
+        ((Handler)localObject1).sendMessageDelayed(((Handler)localObject1).obtainMessage(17), zac);
+        return true;
+      }
+      break;
+    case 17: 
+      zaK();
+      return true;
+    case 16: 
+      paramMessage = (zabs)obj;
+      if (zap.containsKey(zabs.zab(paramMessage)))
+      {
+        zabq.zam((zabq)zap.get(zabs.zab(paramMessage)), paramMessage);
+        return true;
+      }
+      break;
+    case 15: 
+      paramMessage = (zabs)obj;
+      if (zap.containsKey(zabs.zab(paramMessage)))
+      {
+        zabq.zal((zabq)zap.get(zabs.zab(paramMessage)), paramMessage);
+        return true;
+      }
+      break;
+    case 14: 
+      paramMessage = (zaaf)obj;
+      localObject1 = paramMessage.zaa();
+      if (!zap.containsKey(localObject1))
+      {
+        paramMessage.zab().setResult(Boolean.FALSE);
+        return true;
+      }
+      boolean bool = zabq.zax((zabq)zap.get(localObject1), false);
+      paramMessage.zab().setResult(Boolean.valueOf(bool));
+      return true;
+    case 12: 
+      if (zap.containsKey(obj))
+      {
+        ((zabq)zap.get(obj)).zaA();
+        return true;
+      }
+      break;
+    case 11: 
+      if (zap.containsKey(obj))
+      {
+        ((zabq)zap.get(obj)).zaw();
+        return true;
+      }
+      break;
+    case 10: 
+      paramMessage = zas.iterator();
+      while (paramMessage.hasNext())
+      {
+        localObject1 = (ApiKey)paramMessage.next();
+        localObject1 = (zabq)zap.remove(localObject1);
+        if (localObject1 != null) {
+          ((zabq)localObject1).zav();
+        }
+      }
+      zas.clear();
+      return true;
+    case 9: 
+      if (zap.containsKey(obj))
+      {
+        ((zabq)zap.get(obj)).zau();
+        return true;
+      }
+      break;
+    case 7: 
+      zaI((GoogleApi)obj);
+      return true;
+    case 6: 
+      if ((zak.getApplicationContext() instanceof Application))
+      {
+        BackgroundDetector.initialize((Application)zak.getApplicationContext());
+        BackgroundDetector.getInstance().addListener(new zabl(this));
+        if (!BackgroundDetector.getInstance().readCurrentStateIfPossible(true))
+        {
+          zag = 300000L;
+          return true;
+        }
+      }
+      break;
+    case 5: 
+      i = arg1;
+      localObject2 = (ConnectionResult)obj;
+      localObject3 = zap.values().iterator();
+      do
+      {
+        paramMessage = (Message)localObject1;
+        if (!((Iterator)localObject3).hasNext()) {
+          break;
+        }
+        paramMessage = (zabq)((Iterator)localObject3).next();
+      } while (paramMessage.zab() != i);
+      if (paramMessage != null)
+      {
+        if (((ConnectionResult)localObject2).getErrorCode() == 13)
+        {
+          localObject1 = zal.getErrorString(((ConnectionResult)localObject2).getErrorCode());
+          localObject2 = ((ConnectionResult)localObject2).getErrorMessage();
+          localObject3 = new StringBuilder(String.valueOf(localObject1).length() + 69 + String.valueOf(localObject2).length());
+          ((StringBuilder)localObject3).append("Error resolution was canceled by the user, original error message: ");
+          ((StringBuilder)localObject3).append((String)localObject1);
+          ((StringBuilder)localObject3).append(": ");
+          ((StringBuilder)localObject3).append((String)localObject2);
+          zabq.zai(paramMessage, new Status(17, ((StringBuilder)localObject3).toString()));
+          return true;
+        }
+        zabq.zai(paramMessage, zaH(zabq.zag(paramMessage), (ConnectionResult)localObject2));
+        return true;
+      }
+      paramMessage = new StringBuilder(76);
+      paramMessage.append("Could not find API instance ");
+      paramMessage.append(i);
+      paramMessage.append(" while trying to fail enqueued calls.");
+      localObject1 = new Exception();
+      Log.wtf("GoogleApiManager", paramMessage.toString(), (Throwable)localObject1);
+      return true;
+    case 4: 
+    case 8: 
+    case 13: 
+      localObject2 = (zach)obj;
+      localObject1 = (zabq)zap.get(zac.getApiKey());
+      paramMessage = (Message)localObject1;
+      if (localObject1 == null) {
+        paramMessage = zaI(zac);
+      }
+      if ((paramMessage.zaz()) && (zao.get() != zab))
+      {
+        zaa.zad(zaa);
+        paramMessage.zav();
+        return true;
+      }
+      paramMessage.zap(zaa);
+      return true;
+    case 3: 
+      paramMessage = zap.values().iterator();
+    case 2: 
+    case 1: 
+      while (paramMessage.hasNext())
+      {
+        localObject1 = (zabq)paramMessage.next();
+        ((zabq)localObject1).zan();
+        ((zabq)localObject1).zao();
+        continue;
+        paramMessage = (zal)obj;
+        localObject1 = paramMessage.zab().iterator();
+        while (((Iterator)localObject1).hasNext())
+        {
+          localObject2 = (ApiKey)((Iterator)localObject1).next();
+          localObject3 = (zabq)zap.get(localObject2);
+          if (localObject3 == null)
+          {
+            paramMessage.zac((ApiKey)localObject2, new ConnectionResult(13), null);
+            return true;
+          }
+          if (((zabq)localObject3).zay())
+          {
+            paramMessage.zac((ApiKey)localObject2, ConnectionResult.RESULT_SUCCESS, ((zabq)localObject3).zaf().getEndpointPackageName());
+          }
+          else
+          {
+            ConnectionResult localConnectionResult = ((zabq)localObject3).zad();
+            if (localConnectionResult != null)
+            {
+              paramMessage.zac((ApiKey)localObject2, localConnectionResult, null);
+            }
+            else
+            {
+              ((zabq)localObject3).zat(paramMessage);
+              ((zabq)localObject3).zao();
+              continue;
+              if (true == ((Boolean)obj).booleanValue()) {
+                l = 10000L;
+              }
+              zag = l;
+              zat.removeMessages(12);
+              paramMessage = zap.keySet().iterator();
+              while (paramMessage.hasNext())
+              {
+                localObject1 = (ApiKey)paramMessage.next();
+                localObject2 = zat;
+                ((Handler)localObject2).sendMessageDelayed(((Handler)localObject2).obtainMessage(12, localObject1), zag);
+              }
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+  
+  public final void zaA()
+  {
+    Handler localHandler = zat;
+    localHandler.sendMessage(localHandler.obtainMessage(3));
+  }
+  
+  public final void zaB(GoogleApi<?> paramGoogleApi)
+  {
+    Handler localHandler = zat;
+    localHandler.sendMessage(localHandler.obtainMessage(7, paramGoogleApi));
+  }
+  
+  public final void zaC(zaae paramZaae)
+  {
+    synchronized (zac)
+    {
+      if (zaq != paramZaae)
+      {
+        zaq = paramZaae;
+        zar.clear();
+      }
+      zar.addAll(paramZaae.zaa());
+      return;
+    }
+  }
+  
+  final void zaD(zaae paramZaae)
+  {
+    synchronized (zac)
+    {
+      if (zaq == paramZaae)
+      {
+        zaq = null;
+        zar.clear();
+      }
+      return;
+    }
+  }
+  
+  final boolean zaF()
+  {
+    if (zah) {
+      return false;
+    }
+    RootTelemetryConfiguration localRootTelemetryConfiguration = RootTelemetryConfigManager.getInstance().getConfig();
+    if ((localRootTelemetryConfiguration != null) && (!localRootTelemetryConfiguration.getMethodInvocationTelemetryEnabled())) {
+      return false;
+    }
+    int i = zam.zaa(zak, 203400000);
+    return (i == -1) || (i == 0);
+  }
+  
+  final boolean zaG(ConnectionResult paramConnectionResult, int paramInt)
+  {
+    return zal.zah(zak, paramConnectionResult, paramInt);
+  }
+  
+  public final int zaa()
+  {
+    return zan.getAndIncrement();
+  }
+  
+  final zabq zak(ApiKey<?> paramApiKey)
+  {
+    return (zabq)zap.get(paramApiKey);
+  }
+  
+  public final Task<Map<ApiKey<?>, String>> zao(Iterable<? extends HasApiKey<?>> paramIterable)
+  {
+    paramIterable = new zal(paramIterable);
+    Handler localHandler = zat;
+    localHandler.sendMessage(localHandler.obtainMessage(2, paramIterable));
+    return paramIterable.zaa();
+  }
+  
+  public final Task<Boolean> zap(GoogleApi<?> paramGoogleApi)
+  {
+    paramGoogleApi = new zaaf(paramGoogleApi.getApiKey());
+    Handler localHandler = zat;
+    localHandler.sendMessage(localHandler.obtainMessage(14, paramGoogleApi));
+    return paramGoogleApi.zab().getTask();
+  }
+  
+  public final <O extends Api.ApiOptions> Task<Void> zaq(GoogleApi<O> paramGoogleApi, RegisterListenerMethod<Api.AnyClient, ?> paramRegisterListenerMethod, UnregisterListenerMethod<Api.AnyClient, ?> paramUnregisterListenerMethod, Runnable paramRunnable)
+  {
+    TaskCompletionSource localTaskCompletionSource = new TaskCompletionSource();
+    zaL(localTaskCompletionSource, paramRegisterListenerMethod.zaa(), paramGoogleApi);
+    paramRegisterListenerMethod = new zaf(new zaci(paramRegisterListenerMethod, paramUnregisterListenerMethod, paramRunnable), localTaskCompletionSource);
+    paramUnregisterListenerMethod = zat;
+    paramUnregisterListenerMethod.sendMessage(paramUnregisterListenerMethod.obtainMessage(8, new zach(paramRegisterListenerMethod, zao.get(), paramGoogleApi)));
+    return localTaskCompletionSource.getTask();
+  }
+  
+  public final <O extends Api.ApiOptions> Task<Boolean> zar(GoogleApi<O> paramGoogleApi, ListenerHolder.ListenerKey paramListenerKey, int paramInt)
+  {
+    TaskCompletionSource localTaskCompletionSource = new TaskCompletionSource();
+    zaL(localTaskCompletionSource, paramInt, paramGoogleApi);
+    paramListenerKey = new zah(paramListenerKey, localTaskCompletionSource);
+    Handler localHandler = zat;
+    localHandler.sendMessage(localHandler.obtainMessage(13, new zach(paramListenerKey, zao.get(), paramGoogleApi)));
+    return localTaskCompletionSource.getTask();
+  }
+  
+  public final <O extends Api.ApiOptions> void zaw(GoogleApi<O> paramGoogleApi, int paramInt, BaseImplementation.ApiMethodImpl<? extends Result, Api.AnyClient> paramApiMethodImpl)
+  {
+    paramApiMethodImpl = new zae(paramInt, paramApiMethodImpl);
+    Handler localHandler = zat;
+    localHandler.sendMessage(localHandler.obtainMessage(4, new zach(paramApiMethodImpl, zao.get(), paramGoogleApi)));
+  }
+  
+  public final <O extends Api.ApiOptions, ResultT> void zax(GoogleApi<O> paramGoogleApi, int paramInt, TaskApiCall<Api.AnyClient, ResultT> paramTaskApiCall, TaskCompletionSource<ResultT> paramTaskCompletionSource, StatusExceptionMapper paramStatusExceptionMapper)
+  {
+    zaL(paramTaskCompletionSource, paramTaskApiCall.zaa(), paramGoogleApi);
+    paramTaskApiCall = new zag(paramInt, paramTaskApiCall, paramTaskCompletionSource, paramStatusExceptionMapper);
+    paramTaskCompletionSource = zat;
+    paramTaskCompletionSource.sendMessage(paramTaskCompletionSource.obtainMessage(4, new zach(paramTaskApiCall, zao.get(), paramGoogleApi)));
+  }
+  
+  final void zay(MethodInvocation paramMethodInvocation, int paramInt1, long paramLong, int paramInt2)
+  {
+    Handler localHandler = zat;
+    localHandler.sendMessage(localHandler.obtainMessage(18, new zace(paramMethodInvocation, paramInt1, paramLong, paramInt2)));
+  }
+  
+  public final void zaz(ConnectionResult paramConnectionResult, int paramInt)
+  {
+    if (!zaG(paramConnectionResult, paramInt))
+    {
+      Handler localHandler = zat;
+      localHandler.sendMessage(localHandler.obtainMessage(5, paramInt, 0, paramConnectionResult));
+    }
+  }
+}

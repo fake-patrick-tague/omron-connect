@@ -1,0 +1,96 @@
+package androidx.work.impl.n;
+
+import android.database.Cursor;
+import androidx.room.RoomDatabase;
+import androidx.room.b;
+import androidx.room.k;
+import androidx.room.q.c;
+import c.t.a.d;
+import c.t.a.f;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class u
+  implements t
+{
+  private final RoomDatabase a;
+  private final b<s> b;
+  
+  public u(RoomDatabase paramRoomDatabase)
+  {
+    a = paramRoomDatabase;
+    b = new a(paramRoomDatabase);
+  }
+  
+  public void a(s paramS)
+  {
+    a.b();
+    a.c();
+    try
+    {
+      b.h(paramS);
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+    }
+  }
+  
+  public List<String> b(String paramString)
+  {
+    k localK = k.n("SELECT DISTINCT tag FROM worktag WHERE work_spec_id=?", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = c.b(a, localK, false, null);
+    try
+    {
+      ArrayList localArrayList = new ArrayList(paramString.getCount());
+      while (paramString.moveToNext()) {
+        localArrayList.add(paramString.getString(0));
+      }
+      return localArrayList;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  class a
+    extends b<s>
+  {
+    a(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "INSERT OR IGNORE INTO `WorkTag` (`tag`,`work_spec_id`) VALUES (?,?)";
+    }
+    
+    public void i(f paramF, s paramS)
+    {
+      String str = a;
+      if (str == null) {
+        paramF.bindNull(1);
+      } else {
+        paramF.bindString(1, str);
+      }
+      paramS = b;
+      if (paramS == null)
+      {
+        paramF.bindNull(2);
+        return;
+      }
+      paramF.bindString(2, paramS);
+    }
+  }
+}

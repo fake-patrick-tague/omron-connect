@@ -1,0 +1,936 @@
+package com.google.android.gms.internal.fitness;
+
+import java.io.IOException;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public abstract class zzgk
+  extends zzfu
+{
+  private static final Logger logger = Logger.getLogger(zzgk.class.getName());
+  private static final boolean zzum = zzjy.zzdr();
+  zzgn zzun;
+  
+  private zzgk() {}
+  
+  public static int zza(int paramInt, zzhp paramZzhp)
+  {
+    paramInt = zzt(paramInt << 3);
+    int i = paramZzhp.zzbp();
+    return paramInt + (zzt(i) + i);
+  }
+  
+  public static int zza(zzhp paramZzhp)
+  {
+    int i = paramZzhp.zzbp();
+    return zzt(i) + i;
+  }
+  
+  static int zza(zzik paramZzik, zzja paramZzja)
+  {
+    paramZzik = (zzfo)paramZzik;
+    int j = paramZzik.zzan();
+    int i = j;
+    if (j == -1)
+    {
+      i = paramZzja.zzm(paramZzik);
+      paramZzik.zzi(i);
+    }
+    return zzt(i) + i;
+  }
+  
+  public static zzgk zza(byte[] paramArrayOfByte)
+  {
+    return new zza(paramArrayOfByte, 0, paramArrayOfByte.length);
+  }
+  
+  public static int zzb(int paramInt, double paramDouble)
+  {
+    return zzt(paramInt << 3) + 8;
+  }
+  
+  public static int zzb(int paramInt, float paramFloat)
+  {
+    return zzt(paramInt << 3) + 4;
+  }
+  
+  public static int zzb(int paramInt, zzhp paramZzhp)
+  {
+    return (zzt(8) << 1) + zzj(2, paramInt) + zza(3, paramZzhp);
+  }
+  
+  public static int zzb(int paramInt, zzik paramZzik)
+  {
+    return (zzt(8) << 1) + zzj(2, paramInt) + (zzt(24) + zzc(paramZzik));
+  }
+  
+  static int zzb(int paramInt, zzik paramZzik, zzja paramZzja)
+  {
+    return zzt(paramInt << 3) + zza(paramZzik, paramZzja);
+  }
+  
+  public static int zzb(int paramInt, String paramString)
+  {
+    return zzt(paramInt << 3) + zzm(paramString);
+  }
+  
+  public static int zzb(int paramInt, boolean paramBoolean)
+  {
+    return zzt(paramInt << 3) + 1;
+  }
+  
+  public static int zzb(zzfx paramZzfx)
+  {
+    int i = paramZzfx.size();
+    return zzt(i) + i;
+  }
+  
+  public static int zzb(boolean paramBoolean)
+  {
+    return 1;
+  }
+  
+  public static int zzb(byte[] paramArrayOfByte)
+  {
+    int i = paramArrayOfByte.length;
+    return zzt(i) + i;
+  }
+  
+  public static int zzc(double paramDouble)
+  {
+    return 8;
+  }
+  
+  public static int zzc(float paramFloat)
+  {
+    return 4;
+  }
+  
+  public static int zzc(int paramInt, zzfx paramZzfx)
+  {
+    paramInt = zzt(paramInt << 3);
+    int i = paramZzfx.size();
+    return paramInt + (zzt(i) + i);
+  }
+  
+  @Deprecated
+  static int zzc(int paramInt, zzik paramZzik, zzja paramZzja)
+  {
+    int j = zzt(paramInt << 3);
+    paramZzik = (zzfo)paramZzik;
+    int i = paramZzik.zzan();
+    paramInt = i;
+    if (i == -1)
+    {
+      paramInt = paramZzja.zzm(paramZzik);
+      paramZzik.zzi(paramInt);
+    }
+    return (j << 1) + paramInt;
+  }
+  
+  public static int zzc(zzik paramZzik)
+  {
+    int i = paramZzik.zzbp();
+    return zzt(i) + i;
+  }
+  
+  public static int zzd(int paramInt, long paramLong)
+  {
+    return zzt(paramInt << 3) + zze(paramLong);
+  }
+  
+  public static int zzd(int paramInt, zzfx paramZzfx)
+  {
+    return (zzt(8) << 1) + zzj(2, paramInt) + zzc(3, paramZzfx);
+  }
+  
+  public static int zzd(long paramLong)
+  {
+    return zze(paramLong);
+  }
+  
+  @Deprecated
+  public static int zzd(zzik paramZzik)
+  {
+    return paramZzik.zzbp();
+  }
+  
+  public static int zze(int paramInt, long paramLong)
+  {
+    return zzt(paramInt << 3) + zze(paramLong);
+  }
+  
+  public static int zze(long paramLong)
+  {
+    if ((0xFFFFFFFFFFFFFF80 & paramLong) == 0L) {
+      return 1;
+    }
+    if (paramLong < 0L) {
+      return 10;
+    }
+    if ((0xFFFFFFF800000000 & paramLong) != 0L)
+    {
+      j = 6;
+      paramLong >>>= 28;
+    }
+    else
+    {
+      j = 2;
+    }
+    int i = j;
+    long l = paramLong;
+    if ((0xFFFFFFFFFFE00000 & paramLong) != 0L)
+    {
+      i = j + 2;
+      l = paramLong >>> 14;
+    }
+    int j = i;
+    if ((l & 0xFFFFFFFFFFFFC000) != 0L) {
+      j = i + 1;
+    }
+    return j;
+  }
+  
+  public static int zzf(int paramInt, long paramLong)
+  {
+    return zzt(paramInt << 3) + zze(zzi(paramLong));
+  }
+  
+  public static int zzf(long paramLong)
+  {
+    return zze(zzi(paramLong));
+  }
+  
+  public static int zzg(int paramInt, long paramLong)
+  {
+    return zzt(paramInt << 3) + 8;
+  }
+  
+  public static int zzg(long paramLong)
+  {
+    return 8;
+  }
+  
+  public static int zzh(int paramInt, long paramLong)
+  {
+    return zzt(paramInt << 3) + 8;
+  }
+  
+  public static int zzh(long paramLong)
+  {
+    return 8;
+  }
+  
+  public static int zzi(int paramInt1, int paramInt2)
+  {
+    return zzt(paramInt1 << 3) + zzs(paramInt2);
+  }
+  
+  private static long zzi(long paramLong)
+  {
+    return paramLong >> 63 ^ paramLong << 1;
+  }
+  
+  public static int zzj(int paramInt1, int paramInt2)
+  {
+    return zzt(paramInt1 << 3) + zzt(paramInt2);
+  }
+  
+  public static int zzk(int paramInt1, int paramInt2)
+  {
+    return zzt(paramInt1 << 3) + zzt(zzy(paramInt2));
+  }
+  
+  public static int zzl(int paramInt1, int paramInt2)
+  {
+    return zzt(paramInt1 << 3) + 4;
+  }
+  
+  public static int zzm(int paramInt1, int paramInt2)
+  {
+    return zzt(paramInt1 << 3) + 4;
+  }
+  
+  public static int zzm(String paramString)
+  {
+    try
+    {
+      i = zzka.zza(paramString);
+    }
+    catch (zzkb localZzkb)
+    {
+      int i;
+      for (;;) {}
+    }
+    i = paramString.getBytes(zzhc.UTF_8).length;
+    return zzt(i) + i;
+  }
+  
+  public static int zzn(int paramInt1, int paramInt2)
+  {
+    return zzt(paramInt1 << 3) + zzs(paramInt2);
+  }
+  
+  public static int zzr(int paramInt)
+  {
+    return zzt(paramInt << 3);
+  }
+  
+  public static int zzs(int paramInt)
+  {
+    if (paramInt >= 0) {
+      return zzt(paramInt);
+    }
+    return 10;
+  }
+  
+  public static int zzt(int paramInt)
+  {
+    if ((paramInt & 0xFFFFFF80) == 0) {
+      return 1;
+    }
+    if ((paramInt & 0xC000) == 0) {
+      return 2;
+    }
+    if ((0xFFE00000 & paramInt) == 0) {
+      return 3;
+    }
+    if ((paramInt & 0xF0000000) == 0) {
+      return 4;
+    }
+    return 5;
+  }
+  
+  public static int zzu(int paramInt)
+  {
+    return zzt(zzy(paramInt));
+  }
+  
+  public static int zzv(int paramInt)
+  {
+    return 4;
+  }
+  
+  public static int zzw(int paramInt)
+  {
+    return 4;
+  }
+  
+  public static int zzx(int paramInt)
+  {
+    return zzs(paramInt);
+  }
+  
+  private static int zzy(int paramInt)
+  {
+    return paramInt >> 31 ^ paramInt << 1;
+  }
+  
+  @Deprecated
+  public static int zzz(int paramInt)
+  {
+    return zzt(paramInt);
+  }
+  
+  public abstract void writeTag(int paramInt1, int paramInt2)
+    throws IOException;
+  
+  public final void zza(int paramInt, double paramDouble)
+    throws IOException
+  {
+    zzc(paramInt, Double.doubleToRawLongBits(paramDouble));
+  }
+  
+  public final void zza(int paramInt, float paramFloat)
+    throws IOException
+  {
+    zzh(paramInt, Float.floatToRawIntBits(paramFloat));
+  }
+  
+  public abstract void zza(int paramInt, long paramLong)
+    throws IOException;
+  
+  public abstract void zza(int paramInt, zzfx paramZzfx)
+    throws IOException;
+  
+  public abstract void zza(int paramInt, zzik paramZzik)
+    throws IOException;
+  
+  abstract void zza(int paramInt, zzik paramZzik, zzja paramZzja)
+    throws IOException;
+  
+  public abstract void zza(int paramInt, String paramString)
+    throws IOException;
+  
+  public abstract void zza(int paramInt, boolean paramBoolean)
+    throws IOException;
+  
+  public abstract void zza(long paramLong)
+    throws IOException;
+  
+  public abstract void zza(zzfx paramZzfx)
+    throws IOException;
+  
+  final void zza(String paramString, zzkb paramZzkb)
+    throws IOException
+  {
+    logger.logp(Level.WARNING, "com.google.protobuf.CodedOutputStream", "inefficientWriteStringNoTag", "Converting ill-formed UTF-16. Your Protocol Buffer will not round trip correctly!", paramZzkb);
+    paramString = paramString.getBytes(zzhc.UTF_8);
+    try
+    {
+      zzo(paramString.length);
+      zza(paramString, 0, paramString.length);
+      return;
+    }
+    catch (zzb paramString)
+    {
+      throw paramString;
+    }
+    catch (IndexOutOfBoundsException paramString)
+    {
+      throw new zzb(paramString);
+    }
+  }
+  
+  public final void zza(boolean paramBoolean)
+    throws IOException
+  {
+    zzc((byte)paramBoolean);
+  }
+  
+  public final void zzb(double paramDouble)
+    throws IOException
+  {
+    zzc(Double.doubleToRawLongBits(paramDouble));
+  }
+  
+  public final void zzb(float paramFloat)
+    throws IOException
+  {
+    zzq(Float.floatToRawIntBits(paramFloat));
+  }
+  
+  public final void zzb(int paramInt, long paramLong)
+    throws IOException
+  {
+    zza(paramInt, zzi(paramLong));
+  }
+  
+  public abstract void zzb(int paramInt, zzfx paramZzfx)
+    throws IOException;
+  
+  public final void zzb(long paramLong)
+    throws IOException
+  {
+    zza(zzi(paramLong));
+  }
+  
+  public abstract void zzb(zzik paramZzik)
+    throws IOException;
+  
+  abstract void zzb(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+    throws IOException;
+  
+  public abstract int zzbc();
+  
+  public abstract void zzc(byte paramByte)
+    throws IOException;
+  
+  public abstract void zzc(int paramInt, long paramLong)
+    throws IOException;
+  
+  public abstract void zzc(long paramLong)
+    throws IOException;
+  
+  public abstract void zze(int paramInt1, int paramInt2)
+    throws IOException;
+  
+  public abstract void zzf(int paramInt1, int paramInt2)
+    throws IOException;
+  
+  public final void zzg(int paramInt1, int paramInt2)
+    throws IOException
+  {
+    zzf(paramInt1, zzy(paramInt2));
+  }
+  
+  public abstract void zzh(int paramInt1, int paramInt2)
+    throws IOException;
+  
+  public abstract void zzl(String paramString)
+    throws IOException;
+  
+  public abstract void zzn(int paramInt)
+    throws IOException;
+  
+  public abstract void zzo(int paramInt)
+    throws IOException;
+  
+  public final void zzp(int paramInt)
+    throws IOException
+  {
+    zzo(zzy(paramInt));
+  }
+  
+  public abstract void zzq(int paramInt)
+    throws IOException;
+  
+  private static final class zza
+    extends zzgk
+  {
+    private final byte[] buffer;
+    private final int limit;
+    private final int offset;
+    private int position;
+    
+    zza(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+    {
+      super();
+      Objects.requireNonNull(paramArrayOfByte, "buffer");
+      if ((paramInt2 | 0x0 | paramArrayOfByte.length - paramInt2) >= 0)
+      {
+        buffer = paramArrayOfByte;
+        offset = 0;
+        position = 0;
+        limit = paramInt2;
+        return;
+      }
+      throw new IllegalArgumentException(String.format("Array range is invalid. Buffer.length=%d, offset=%d, length=%d", new Object[] { Integer.valueOf(paramArrayOfByte.length), Integer.valueOf(0), Integer.valueOf(paramInt2) }));
+    }
+    
+    private final void write(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+      throws IOException
+    {
+      try
+      {
+        System.arraycopy(paramArrayOfByte, paramInt1, buffer, position, paramInt2);
+        position += paramInt2;
+        return;
+      }
+      catch (IndexOutOfBoundsException paramArrayOfByte)
+      {
+        throw new zzgk.zzb(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(position), Integer.valueOf(limit), Integer.valueOf(paramInt2) }), paramArrayOfByte);
+      }
+    }
+    
+    public final void writeTag(int paramInt1, int paramInt2)
+      throws IOException
+    {
+      zzo(paramInt1 << 3 | paramInt2);
+    }
+    
+    public final void zza(int paramInt, long paramLong)
+      throws IOException
+    {
+      writeTag(paramInt, 0);
+      zza(paramLong);
+    }
+    
+    public final void zza(int paramInt, zzfx paramZzfx)
+      throws IOException
+    {
+      writeTag(paramInt, 2);
+      zza(paramZzfx);
+    }
+    
+    public final void zza(int paramInt, zzik paramZzik)
+      throws IOException
+    {
+      writeTag(1, 3);
+      zzf(2, paramInt);
+      writeTag(3, 2);
+      zzb(paramZzik);
+      writeTag(1, 4);
+    }
+    
+    final void zza(int paramInt, zzik paramZzik, zzja paramZzja)
+      throws IOException
+    {
+      writeTag(paramInt, 2);
+      zzfo localZzfo = (zzfo)paramZzik;
+      int i = localZzfo.zzan();
+      paramInt = i;
+      if (i == -1)
+      {
+        paramInt = paramZzja.zzm(localZzfo);
+        localZzfo.zzi(paramInt);
+      }
+      zzo(paramInt);
+      paramZzja.zza(paramZzik, zzun);
+    }
+    
+    public final void zza(int paramInt, String paramString)
+      throws IOException
+    {
+      writeTag(paramInt, 2);
+      zzl(paramString);
+    }
+    
+    public final void zza(int paramInt, boolean paramBoolean)
+      throws IOException
+    {
+      writeTag(paramInt, 0);
+      zzc((byte)paramBoolean);
+    }
+    
+    public final void zza(long paramLong)
+      throws IOException
+    {
+      long l = paramLong;
+      byte[] arrayOfByte;
+      int i;
+      if (zzgk.zzbd())
+      {
+        l = paramLong;
+        if (zzbc() >= 10) {
+          for (;;)
+          {
+            if ((paramLong & 0xFFFFFFFFFFFFFF80) == 0L)
+            {
+              arrayOfByte = buffer;
+              i = position;
+              position = (i + 1);
+              zzjy.zza(arrayOfByte, i, (byte)(int)paramLong);
+              return;
+            }
+            arrayOfByte = buffer;
+            i = position;
+            position = (i + 1);
+            zzjy.zza(arrayOfByte, i, (byte)((int)paramLong & 0x7F | 0x80));
+            paramLong >>>= 7;
+          }
+        }
+      }
+      for (;;)
+      {
+        if ((l & 0xFFFFFFFFFFFFFF80) == 0L) {}
+        try
+        {
+          arrayOfByte = buffer;
+          i = position;
+          position = (i + 1);
+          arrayOfByte[i] = ((byte)(int)l);
+          return;
+        }
+        catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+        {
+          throw new zzgk.zzb(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(position), Integer.valueOf(limit), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+        }
+        arrayOfByte = buffer;
+        i = position;
+        position = (i + 1);
+        arrayOfByte[i] = ((byte)((int)l & 0x7F | 0x80));
+        l >>>= 7;
+      }
+    }
+    
+    public final void zza(zzfx paramZzfx)
+      throws IOException
+    {
+      zzo(paramZzfx.size());
+      paramZzfx.zza(this);
+    }
+    
+    public final void zza(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+      throws IOException
+    {
+      write(paramArrayOfByte, paramInt1, paramInt2);
+    }
+    
+    public final void zzb(int paramInt, zzfx paramZzfx)
+      throws IOException
+    {
+      writeTag(1, 3);
+      zzf(2, paramInt);
+      zza(3, paramZzfx);
+      writeTag(1, 4);
+    }
+    
+    public final void zzb(zzik paramZzik)
+      throws IOException
+    {
+      zzo(paramZzik.zzbp());
+      paramZzik.zzb(this);
+    }
+    
+    public final void zzb(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+      throws IOException
+    {
+      zzo(paramInt2);
+      write(paramArrayOfByte, 0, paramInt2);
+    }
+    
+    public final int zzbc()
+    {
+      return limit - position;
+    }
+    
+    public final void zzc(byte paramByte)
+      throws IOException
+    {
+      try
+      {
+        byte[] arrayOfByte = buffer;
+        int i = position;
+        position = (i + 1);
+        arrayOfByte[i] = paramByte;
+        return;
+      }
+      catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+      {
+        throw new zzgk.zzb(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(position), Integer.valueOf(limit), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+      }
+    }
+    
+    public final void zzc(int paramInt, long paramLong)
+      throws IOException
+    {
+      writeTag(paramInt, 1);
+      zzc(paramLong);
+    }
+    
+    public final void zzc(long paramLong)
+      throws IOException
+    {
+      try
+      {
+        byte[] arrayOfByte = buffer;
+        int j = position;
+        int i = j + 1;
+        position = i;
+        arrayOfByte[j] = ((byte)(int)paramLong);
+        j = i + 1;
+        position = j;
+        arrayOfByte[i] = ((byte)(int)(paramLong >> 8));
+        i = j + 1;
+        position = i;
+        arrayOfByte[j] = ((byte)(int)(paramLong >> 16));
+        j = i + 1;
+        position = j;
+        arrayOfByte[i] = ((byte)(int)(paramLong >> 24));
+        i = j + 1;
+        position = i;
+        arrayOfByte[j] = ((byte)(int)(paramLong >> 32));
+        j = i + 1;
+        position = j;
+        arrayOfByte[i] = ((byte)(int)(paramLong >> 40));
+        i = j + 1;
+        position = i;
+        arrayOfByte[j] = ((byte)(int)(paramLong >> 48));
+        position = (i + 1);
+        arrayOfByte[i] = ((byte)(int)(paramLong >> 56));
+        return;
+      }
+      catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+      {
+        throw new zzgk.zzb(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(position), Integer.valueOf(limit), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+      }
+    }
+    
+    public final void zze(int paramInt1, int paramInt2)
+      throws IOException
+    {
+      writeTag(paramInt1, 0);
+      zzn(paramInt2);
+    }
+    
+    public final void zzf(int paramInt1, int paramInt2)
+      throws IOException
+    {
+      writeTag(paramInt1, 0);
+      zzo(paramInt2);
+    }
+    
+    public final void zzh(int paramInt1, int paramInt2)
+      throws IOException
+    {
+      writeTag(paramInt1, 5);
+      zzq(paramInt2);
+    }
+    
+    public final void zzl(String paramString)
+      throws IOException
+    {
+      int i = position;
+      try
+      {
+        int k = zzgk.zzt(paramString.length() * 3);
+        int j = zzgk.zzt(paramString.length());
+        if (j == k)
+        {
+          k = i + j;
+          position = k;
+          k = zzka.zzb(paramString, buffer, k, zzbc());
+          position = i;
+          zzo(k - i - j);
+          position = k;
+          return;
+        }
+        zzo(zzka.zza(paramString));
+        position = zzka.zzb(paramString, buffer, position, zzbc());
+        return;
+      }
+      catch (IndexOutOfBoundsException paramString)
+      {
+        throw new zzgk.zzb(paramString);
+      }
+      catch (zzkb localZzkb)
+      {
+        position = i;
+        zza(paramString, localZzkb);
+      }
+    }
+    
+    public final void zzn(int paramInt)
+      throws IOException
+    {
+      if (paramInt >= 0)
+      {
+        zzo(paramInt);
+        return;
+      }
+      zza(paramInt);
+    }
+    
+    public final void zzo(int paramInt)
+      throws IOException
+    {
+      int i = paramInt;
+      byte[] arrayOfByte;
+      if (zzgk.zzbd())
+      {
+        i = paramInt;
+        if (!zzfv.zzat())
+        {
+          i = paramInt;
+          if (zzbc() >= 5)
+          {
+            if ((paramInt & 0xFFFFFF80) == 0)
+            {
+              arrayOfByte = buffer;
+              i = position;
+              position = (i + 1);
+              zzjy.zza(arrayOfByte, i, (byte)paramInt);
+              return;
+            }
+            arrayOfByte = buffer;
+            i = position;
+            position = (i + 1);
+            zzjy.zza(arrayOfByte, i, (byte)(paramInt | 0x80));
+            paramInt >>>= 7;
+            if ((paramInt & 0xFFFFFF80) == 0)
+            {
+              arrayOfByte = buffer;
+              i = position;
+              position = (i + 1);
+              zzjy.zza(arrayOfByte, i, (byte)paramInt);
+              return;
+            }
+            arrayOfByte = buffer;
+            i = position;
+            position = (i + 1);
+            zzjy.zza(arrayOfByte, i, (byte)(paramInt | 0x80));
+            paramInt >>>= 7;
+            if ((paramInt & 0xFFFFFF80) == 0)
+            {
+              arrayOfByte = buffer;
+              i = position;
+              position = (i + 1);
+              zzjy.zza(arrayOfByte, i, (byte)paramInt);
+              return;
+            }
+            arrayOfByte = buffer;
+            i = position;
+            position = (i + 1);
+            zzjy.zza(arrayOfByte, i, (byte)(paramInt | 0x80));
+            paramInt >>>= 7;
+            if ((paramInt & 0xFFFFFF80) == 0)
+            {
+              arrayOfByte = buffer;
+              i = position;
+              position = (i + 1);
+              zzjy.zza(arrayOfByte, i, (byte)paramInt);
+              return;
+            }
+            arrayOfByte = buffer;
+            i = position;
+            position = (i + 1);
+            zzjy.zza(arrayOfByte, i, (byte)(paramInt | 0x80));
+            arrayOfByte = buffer;
+            i = position;
+            position = (i + 1);
+            zzjy.zza(arrayOfByte, i, (byte)(paramInt >>> 7));
+            return;
+          }
+        }
+      }
+      for (;;)
+      {
+        if ((i & 0xFFFFFF80) == 0) {}
+        try
+        {
+          arrayOfByte = buffer;
+          paramInt = position;
+          position = (paramInt + 1);
+          arrayOfByte[paramInt] = ((byte)i);
+          return;
+        }
+        catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+        {
+          throw new zzgk.zzb(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(position), Integer.valueOf(limit), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+        }
+        arrayOfByte = buffer;
+        paramInt = position;
+        position = (paramInt + 1);
+        arrayOfByte[paramInt] = ((byte)(i & 0x7F | 0x80));
+        i >>>= 7;
+      }
+    }
+    
+    public final void zzq(int paramInt)
+      throws IOException
+    {
+      try
+      {
+        byte[] arrayOfByte = buffer;
+        int j = position;
+        int i = j + 1;
+        position = i;
+        arrayOfByte[j] = ((byte)paramInt);
+        j = i + 1;
+        position = j;
+        arrayOfByte[i] = ((byte)(paramInt >> 8));
+        i = j + 1;
+        position = i;
+        arrayOfByte[j] = ((byte)(paramInt >> 16));
+        position = (i + 1);
+        arrayOfByte[i] = ((byte)(paramInt >>> 24));
+        return;
+      }
+      catch (IndexOutOfBoundsException localIndexOutOfBoundsException)
+      {
+        throw new zzgk.zzb(String.format("Pos: %d, limit: %d, len: %d", new Object[] { Integer.valueOf(position), Integer.valueOf(limit), Integer.valueOf(1) }), localIndexOutOfBoundsException);
+      }
+    }
+  }
+  
+  public static final class zzb
+    extends IOException
+  {
+    zzb()
+    {
+      super();
+    }
+    
+    zzb(String paramString, Throwable paramThrowable)
+    {
+      super(paramThrowable);
+    }
+    
+    zzb(Throwable paramThrowable)
+    {
+      super(paramThrowable);
+    }
+  }
+}

@@ -1,0 +1,162 @@
+package androidx.core.app;
+
+import android.app.Activity;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.m;
+import androidx.lifecycle.n;
+import androidx.lifecycle.w;
+import c.h.m.a;
+import c.h.q.l;
+import c.h.q.l.a;
+
+public class g
+  extends Activity
+  implements m, l.a
+{
+  private c.e.g<Class<? extends a>, a> mExtraDataMap = new c.e.g();
+  private n mLifecycleRegistry = new n(this);
+  
+  public g() {}
+  
+  private static boolean shouldSkipDump(String[] paramArrayOfString)
+  {
+    boolean bool3 = false;
+    boolean bool4 = false;
+    boolean bool2 = false;
+    boolean bool1 = bool4;
+    if (paramArrayOfString != null)
+    {
+      bool1 = bool4;
+      if (paramArrayOfString.length > 0)
+      {
+        paramArrayOfString = paramArrayOfString[0];
+        paramArrayOfString.hashCode();
+        int i = -1;
+        switch (paramArrayOfString.hashCode())
+        {
+        default: 
+          break;
+        case 1455016274: 
+          if (paramArrayOfString.equals("--autofill")) {
+            i = 4;
+          }
+          break;
+        case 1159329357: 
+          if (paramArrayOfString.equals("--contentcapture")) {
+            i = 3;
+          }
+          break;
+        case 472614934: 
+          if (paramArrayOfString.equals("--list-dumpables")) {
+            i = 2;
+          }
+          break;
+        case 100470631: 
+          if (paramArrayOfString.equals("--dump-dumpable")) {
+            i = 1;
+          }
+          break;
+        case -645125871: 
+          if (paramArrayOfString.equals("--translation")) {
+            i = 0;
+          }
+          break;
+        }
+        switch (i)
+        {
+        default: 
+          return false;
+        case 4: 
+          bool1 = bool2;
+          if (Build.VERSION.SDK_INT >= 26) {
+            bool1 = true;
+          }
+          return bool1;
+        case 3: 
+          bool1 = bool3;
+          if (Build.VERSION.SDK_INT >= 29) {
+            bool1 = true;
+          }
+          return bool1;
+        case 1: 
+        case 2: 
+          return a.d();
+        }
+        bool1 = bool4;
+        if (Build.VERSION.SDK_INT >= 31) {
+          bool1 = true;
+        }
+      }
+    }
+    return bool1;
+  }
+  
+  public boolean dispatchKeyEvent(KeyEvent paramKeyEvent)
+  {
+    View localView = getWindow().getDecorView();
+    if ((localView != null) && (l.d(localView, paramKeyEvent))) {
+      return true;
+    }
+    return l.e(this, localView, this, paramKeyEvent);
+  }
+  
+  public boolean dispatchKeyShortcutEvent(KeyEvent paramKeyEvent)
+  {
+    View localView = getWindow().getDecorView();
+    if ((localView != null) && (l.d(localView, paramKeyEvent))) {
+      return true;
+    }
+    return super.dispatchKeyShortcutEvent(paramKeyEvent);
+  }
+  
+  @Deprecated
+  public <T extends a> T getExtraData(Class<T> paramClass)
+  {
+    return (a)mExtraDataMap.get(paramClass);
+  }
+  
+  public Lifecycle getLifecycle()
+  {
+    return mLifecycleRegistry;
+  }
+  
+  protected void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    w.g(this);
+  }
+  
+  protected void onSaveInstanceState(Bundle paramBundle)
+  {
+    mLifecycleRegistry.j(Lifecycle.State.d);
+    super.onSaveInstanceState(paramBundle);
+  }
+  
+  @Deprecated
+  public void putExtraData(a paramA)
+  {
+    mExtraDataMap.put(paramA.getClass(), paramA);
+  }
+  
+  protected final boolean shouldDumpInternalState(String[] paramArrayOfString)
+  {
+    return shouldSkipDump(paramArrayOfString) ^ true;
+  }
+  
+  public boolean superDispatchKeyEvent(KeyEvent paramKeyEvent)
+  {
+    return super.dispatchKeyEvent(paramKeyEvent);
+  }
+  
+  @Deprecated
+  public static class a
+  {
+    public a() {}
+  }
+}

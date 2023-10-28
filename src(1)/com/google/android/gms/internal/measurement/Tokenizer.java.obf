@@ -1,0 +1,45 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.List;
+
+public final class zzv
+  extends zzai
+{
+  private final zzz zza;
+  
+  public zzv(zzz paramZzz)
+  {
+    super("internal.registerCallback");
+    zza = paramZzz;
+  }
+  
+  public final zzap zza(zzg paramZzg, List paramList)
+  {
+    zzh.zzh(zzd, 3, paramList);
+    String str = paramZzg.zzb((zzap)paramList.get(0)).zzi();
+    zzap localZzap = paramZzg.zzb((zzap)paramList.get(1));
+    if ((localZzap instanceof zzao))
+    {
+      paramZzg = paramZzg.zzb((zzap)paramList.get(2));
+      if ((paramZzg instanceof zzam))
+      {
+        paramZzg = (zzam)paramZzg;
+        if (paramZzg.zzt("type"))
+        {
+          paramList = paramZzg.zzf("type").zzi();
+          int i;
+          if (paramZzg.zzt("priority")) {
+            i = zzh.zzb(paramZzg.zzf("priority").zzh().doubleValue());
+          } else {
+            i = 1000;
+          }
+          zza.zza(str, i, (zzao)localZzap, paramList);
+          return zzap.zzf;
+        }
+        throw new IllegalArgumentException("Undefined rule type");
+      }
+      throw new IllegalArgumentException("Invalid callback params");
+    }
+    throw new IllegalArgumentException("Invalid callback type");
+  }
+}

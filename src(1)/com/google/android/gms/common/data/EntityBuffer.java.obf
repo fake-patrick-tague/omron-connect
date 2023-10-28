@@ -1,0 +1,150 @@
+package com.google.android.gms.common.data;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.ArrayList;
+
+@KeepForSdk
+public abstract class EntityBuffer<T>
+  extends AbstractDataBuffer<T>
+{
+  private boolean zaa = false;
+  private ArrayList<Integer> zab;
+  
+  @KeepForSdk
+  protected EntityBuffer(DataHolder paramDataHolder)
+  {
+    super(paramDataHolder);
+  }
+  
+  private final void zab()
+  {
+    for (;;)
+    {
+      int i;
+      Object localObject4;
+      try
+      {
+        if (!zaa)
+        {
+          int j = ((DataHolder)Preconditions.checkNotNull(mDataHolder)).getCount();
+          Object localObject1 = new ArrayList();
+          zab = ((ArrayList)localObject1);
+          if (j > 0)
+          {
+            ((ArrayList)localObject1).add(Integer.valueOf(0));
+            String str2 = getPrimaryDataMarkerColumn();
+            i = mDataHolder.getWindowIndex(0);
+            localObject1 = mDataHolder.getString(str2, 0, i);
+            i = 1;
+            if (i < j)
+            {
+              int k = mDataHolder.getWindowIndex(i);
+              String str1 = mDataHolder.getString(str2, i, k);
+              if (str1 != null)
+              {
+                localObject4 = localObject1;
+                if (str1.equals(localObject1)) {
+                  break label241;
+                }
+                zab.add(Integer.valueOf(i));
+                localObject4 = str1;
+                break label241;
+              }
+              localObject1 = new StringBuilder(String.valueOf(str2).length() + 78);
+              ((StringBuilder)localObject1).append("Missing value for markerColumn: ");
+              ((StringBuilder)localObject1).append(str2);
+              ((StringBuilder)localObject1).append(", at row: ");
+              ((StringBuilder)localObject1).append(i);
+              ((StringBuilder)localObject1).append(", for window: ");
+              ((StringBuilder)localObject1).append(k);
+              throw new NullPointerException(((StringBuilder)localObject1).toString());
+            }
+          }
+          zaa = true;
+        }
+        else
+        {
+          return;
+        }
+      }
+      finally {}
+      label241:
+      i += 1;
+      Object localObject3 = localObject4;
+    }
+  }
+  
+  @KeepForSdk
+  public final T get(int paramInt)
+  {
+    zab();
+    int m = zaa(paramInt);
+    int k = 0;
+    int i = k;
+    if (paramInt >= 0) {
+      if (paramInt == zab.size())
+      {
+        i = k;
+      }
+      else
+      {
+        int j;
+        if (paramInt == zab.size() - 1)
+        {
+          i = ((DataHolder)Preconditions.checkNotNull(mDataHolder)).getCount();
+          j = ((Integer)zab.get(paramInt)).intValue();
+        }
+        else
+        {
+          i = ((Integer)zab.get(paramInt + 1)).intValue();
+          j = ((Integer)zab.get(paramInt)).intValue();
+        }
+        i -= j;
+        if (i == 1)
+        {
+          paramInt = zaa(paramInt);
+          i = ((DataHolder)Preconditions.checkNotNull(mDataHolder)).getWindowIndex(paramInt);
+          String str = getChildDataMarkerColumn();
+          if ((str != null) && (mDataHolder.getString(str, paramInt, i) == null)) {
+            i = k;
+          } else {
+            i = 1;
+          }
+        }
+      }
+    }
+    return getEntry(m, i);
+  }
+  
+  @KeepForSdk
+  protected String getChildDataMarkerColumn()
+  {
+    return null;
+  }
+  
+  @KeepForSdk
+  public int getCount()
+  {
+    zab();
+    return zab.size();
+  }
+  
+  @KeepForSdk
+  protected abstract T getEntry(int paramInt1, int paramInt2);
+  
+  @KeepForSdk
+  protected abstract String getPrimaryDataMarkerColumn();
+  
+  final int zaa(int paramInt)
+  {
+    if ((paramInt >= 0) && (paramInt < zab.size())) {
+      return ((Integer)zab.get(paramInt)).intValue();
+    }
+    StringBuilder localStringBuilder = new StringBuilder(53);
+    localStringBuilder.append("Position ");
+    localStringBuilder.append(paramInt);
+    localStringBuilder.append(" is out of bounds for this buffer");
+    throw new IllegalArgumentException(localStringBuilder.toString());
+  }
+}

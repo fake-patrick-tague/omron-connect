@@ -1,0 +1,337 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import org.checkerframework.checker.nullness.qual.RequiresNonNull;
+
+public final class zzae
+  implements Iterable, zzap, zzal
+{
+  final SortedMap zza = new TreeMap();
+  final Map zzb = new TreeMap();
+  
+  public zzae() {}
+  
+  public zzae(List paramList)
+  {
+    this();
+    if (paramList != null)
+    {
+      int i = 0;
+      while (i < paramList.size())
+      {
+        zzq(i, (zzap)paramList.get(i));
+        i += 1;
+      }
+    }
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (!(paramObject instanceof zzae)) {
+      return false;
+    }
+    paramObject = (zzae)paramObject;
+    if (zzc() != paramObject.zzc()) {
+      return false;
+    }
+    if (zza.isEmpty()) {
+      return zza.isEmpty();
+    }
+    int i = ((Integer)zza.firstKey()).intValue();
+    while (i <= ((Integer)zza.lastKey()).intValue())
+    {
+      if (!zze(i).equals(paramObject.zze(i))) {
+        return false;
+      }
+      i += 1;
+    }
+    return true;
+  }
+  
+  public final int hashCode()
+  {
+    return zza.hashCode() * 31;
+  }
+  
+  public final Iterator iterator()
+  {
+    return new zzad(this);
+  }
+  
+  public final String toString()
+  {
+    return zzj(",");
+  }
+  
+  public final int zzb()
+  {
+    return zza.size();
+  }
+  
+  public final zzap zzbN(String paramString, zzg paramZzg, List paramList)
+  {
+    if ((!"concat".equals(paramString)) && (!"every".equals(paramString)) && (!"filter".equals(paramString)) && (!"forEach".equals(paramString)) && (!"indexOf".equals(paramString)) && (!"join".equals(paramString)) && (!"lastIndexOf".equals(paramString)) && (!"map".equals(paramString)) && (!"pop".equals(paramString)) && (!"push".equals(paramString)) && (!"reduce".equals(paramString)) && (!"reduceRight".equals(paramString)) && (!"reverse".equals(paramString)) && (!"shift".equals(paramString)) && (!"slice".equals(paramString)) && (!"some".equals(paramString)) && (!"sort".equals(paramString)) && (!"splice".equals(paramString)) && (!"toString".equals(paramString)) && (!"unshift".equals(paramString))) {
+      return zzaj.zza(this, new zzat(paramString), paramZzg, paramList);
+    }
+    return zzbb.zza(paramString, this, paramZzg, paramList);
+  }
+  
+  public final int zzc()
+  {
+    if (zza.isEmpty()) {
+      return 0;
+    }
+    return ((Integer)zza.lastKey()).intValue() + 1;
+  }
+  
+  public final zzap zzd()
+  {
+    zzae localZzae = new zzae();
+    Iterator localIterator = zza.entrySet().iterator();
+    while (localIterator.hasNext())
+    {
+      Map.Entry localEntry = (Map.Entry)localIterator.next();
+      if ((localEntry.getValue() instanceof zzal)) {
+        zza.put((Integer)localEntry.getKey(), (zzap)localEntry.getValue());
+      } else {
+        zza.put((Integer)localEntry.getKey(), ((zzap)localEntry.getValue()).zzd());
+      }
+    }
+    return localZzae;
+  }
+  
+  public final zzap zze(int paramInt)
+  {
+    if (paramInt < zzc())
+    {
+      if (zzs(paramInt))
+      {
+        zzap localZzap = (zzap)zza.get(Integer.valueOf(paramInt));
+        if (localZzap != null) {
+          return localZzap;
+        }
+      }
+      return zzap.zzf;
+    }
+    throw new IndexOutOfBoundsException("Attempting to get element outside of current array");
+  }
+  
+  public final zzap zzf(String paramString)
+  {
+    if ("length".equals(paramString)) {
+      return new zzah(Double.valueOf(zzc()));
+    }
+    if (zzt(paramString))
+    {
+      paramString = (zzap)zzb.get(paramString);
+      if (paramString != null) {
+        return paramString;
+      }
+    }
+    return zzap.zzf;
+  }
+  
+  public final Boolean zzg()
+  {
+    return Boolean.TRUE;
+  }
+  
+  public final Double zzh()
+  {
+    if (zza.size() == 1) {
+      return zze(0).zzh();
+    }
+    if (zza.size() <= 0) {
+      return Double.valueOf(0.0D);
+    }
+    return Double.valueOf(NaN.0D);
+  }
+  
+  public final String zzi()
+  {
+    return zzj(",");
+  }
+  
+  public final String zzj(String paramString)
+  {
+    String str = paramString;
+    if (paramString == null) {
+      str = "";
+    }
+    paramString = new StringBuilder();
+    if (!zza.isEmpty())
+    {
+      int i = 0;
+      while (i < zzc())
+      {
+        zzap localZzap = zze(i);
+        paramString.append(str);
+        if ((!(localZzap instanceof zzau)) && (!(localZzap instanceof zzan))) {
+          paramString.append(localZzap.zzi());
+        }
+        i += 1;
+      }
+      paramString.delete(0, str.length());
+    }
+    return paramString.toString();
+  }
+  
+  public final Iterator zzk()
+  {
+    return zza.keySet().iterator();
+  }
+  
+  public final Iterator zzl()
+  {
+    return new zzac(this, zza.keySet().iterator(), zzb.keySet().iterator());
+  }
+  
+  public final List zzm()
+  {
+    ArrayList localArrayList = new ArrayList(zzc());
+    int i = 0;
+    while (i < zzc())
+    {
+      localArrayList.add(zze(i));
+      i += 1;
+    }
+    return localArrayList;
+  }
+  
+  public final void zzn()
+  {
+    zza.clear();
+  }
+  
+  public final void zzo(int paramInt, zzap paramZzap)
+  {
+    if (paramInt >= 0)
+    {
+      if (paramInt >= zzc())
+      {
+        zzq(paramInt, paramZzap);
+        return;
+      }
+      int i = ((Integer)zza.lastKey()).intValue();
+      while (i >= paramInt)
+      {
+        Object localObject = zza;
+        Integer localInteger = Integer.valueOf(i);
+        localObject = (zzap)((SortedMap)localObject).get(localInteger);
+        if (localObject != null)
+        {
+          zzq(i + 1, (zzap)localObject);
+          zza.remove(localInteger);
+        }
+        i -= 1;
+      }
+      zzq(paramInt, paramZzap);
+      return;
+    }
+    paramZzap = new StringBuilder();
+    paramZzap.append("Invalid value index: ");
+    paramZzap.append(paramInt);
+    throw new IllegalArgumentException(paramZzap.toString());
+  }
+  
+  public final void zzp(int paramInt)
+  {
+    int j = ((Integer)zza.lastKey()).intValue();
+    if (paramInt <= j)
+    {
+      if (paramInt < 0) {
+        return;
+      }
+      zza.remove(Integer.valueOf(paramInt));
+      int i = paramInt;
+      Object localObject1;
+      Object localObject2;
+      if (paramInt == j)
+      {
+        localObject1 = zza;
+        paramInt -= 1;
+        localObject2 = Integer.valueOf(paramInt);
+        if ((!((SortedMap)localObject1).containsKey(localObject2)) && (paramInt >= 0)) {
+          zza.put(localObject2, zzap.zzf);
+        }
+        return;
+      }
+      for (;;)
+      {
+        paramInt = i + 1;
+        if (paramInt > ((Integer)zza.lastKey()).intValue()) {
+          break;
+        }
+        localObject2 = zza;
+        localObject1 = Integer.valueOf(paramInt);
+        localObject2 = (zzap)((SortedMap)localObject2).get(localObject1);
+        i = paramInt;
+        if (localObject2 != null)
+        {
+          zza.put(Integer.valueOf(paramInt - 1), localObject2);
+          zza.remove(localObject1);
+          i = paramInt;
+        }
+      }
+    }
+  }
+  
+  @RequiresNonNull({"elements"})
+  public final void zzq(int paramInt, zzap paramZzap)
+  {
+    if (paramInt <= 32468)
+    {
+      if (paramInt >= 0)
+      {
+        if (paramZzap == null)
+        {
+          zza.remove(Integer.valueOf(paramInt));
+          return;
+        }
+        zza.put(Integer.valueOf(paramInt), paramZzap);
+        return;
+      }
+      paramZzap = new StringBuilder();
+      paramZzap.append("Out of bounds index: ");
+      paramZzap.append(paramInt);
+      throw new IndexOutOfBoundsException(paramZzap.toString());
+    }
+    throw new IllegalStateException("Array too large");
+  }
+  
+  public final void zzr(String paramString, zzap paramZzap)
+  {
+    if (paramZzap == null)
+    {
+      zzb.remove(paramString);
+      return;
+    }
+    zzb.put(paramString, paramZzap);
+  }
+  
+  public final boolean zzs(int paramInt)
+  {
+    if ((paramInt >= 0) && (paramInt <= ((Integer)zza.lastKey()).intValue())) {
+      return zza.containsKey(Integer.valueOf(paramInt));
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Out of bounds index: ");
+    localStringBuilder.append(paramInt);
+    throw new IndexOutOfBoundsException(localStringBuilder.toString());
+  }
+  
+  public final boolean zzt(String paramString)
+  {
+    return ("length".equals(paramString)) || (zzb.containsKey(paramString));
+  }
+}

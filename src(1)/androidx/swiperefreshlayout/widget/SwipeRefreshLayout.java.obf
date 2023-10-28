@@ -1,0 +1,1153 @@
+package androidx.swiperefreshlayout.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.BaseSavedState;
+import android.view.View.MeasureSpec;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Transformation;
+import android.widget.AbsListView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import androidx.core.widget.g;
+import c.h.q.f0;
+import c.h.q.t;
+import c.h.q.u;
+import c.h.q.v;
+import c.h.q.w;
+import c.h.q.x;
+import c.h.q.y;
+
+public class SwipeRefreshLayout
+  extends ViewGroup
+  implements w, v, t, x
+{
+  private static final String b = SwipeRefreshLayout.class.getSimpleName();
+  private static final int[] c = { 16842766 };
+  protected int A;
+  float B;
+  protected int C;
+  int D;
+  int E;
+  b F;
+  private Animation G;
+  private Animation H;
+  private Animation I;
+  private Animation J;
+  private Animation K;
+  boolean L;
+  private int P;
+  boolean Q;
+  private i R;
+  private boolean S;
+  private Animation.AnimationListener T = new a();
+  private final Animation U = new f();
+  private final Animation V = new g();
+  private View d;
+  j e;
+  boolean f = false;
+  private int g;
+  private float h = -1.0F;
+  private float i;
+  private final y j;
+  private final u k;
+  private final int[] l = new int[2];
+  private final int[] m = new int[2];
+  private final int[] n = new int[2];
+  private boolean o;
+  private int p;
+  int q;
+  private float r;
+  private float s;
+  private boolean t;
+  private int u = -1;
+  boolean v;
+  private boolean w;
+  private final DecelerateInterpolator x;
+  a y;
+  private int z = -1;
+  
+  public SwipeRefreshLayout(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+    g = ViewConfiguration.get(paramContext).getScaledTouchSlop();
+    p = getResources().getInteger(17694721);
+    setWillNotDraw(false);
+    x = new DecelerateInterpolator(2.0F);
+    DisplayMetrics localDisplayMetrics = getResources().getDisplayMetrics();
+    P = ((int)(density * 40.0F));
+    e();
+    setChildrenDrawingOrderEnabled(true);
+    int i1 = (int)(density * 64.0F);
+    D = i1;
+    h = i1;
+    j = new y(this);
+    k = new u(this);
+    setNestedScrollingEnabled(true);
+    i1 = -P;
+    q = i1;
+    C = i1;
+    p(1.0F);
+    paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, c);
+    setEnabled(paramContext.getBoolean(0, true));
+    paramContext.recycle();
+  }
+  
+  private void b(int paramInt, Animation.AnimationListener paramAnimationListener)
+  {
+    A = paramInt;
+    U.reset();
+    U.setDuration(200L);
+    U.setInterpolator(x);
+    if (paramAnimationListener != null) {
+      y.b(paramAnimationListener);
+    }
+    y.clearAnimation();
+    y.startAnimation(U);
+  }
+  
+  private void c(int paramInt, Animation.AnimationListener paramAnimationListener)
+  {
+    if (v)
+    {
+      y(paramInt, paramAnimationListener);
+      return;
+    }
+    A = paramInt;
+    V.reset();
+    V.setDuration(200L);
+    V.setInterpolator(x);
+    if (paramAnimationListener != null) {
+      y.b(paramAnimationListener);
+    }
+    y.clearAnimation();
+    y.startAnimation(V);
+  }
+  
+  private void e()
+  {
+    y = new a(getContext());
+    b localB = new b(getContext());
+    F = localB;
+    localB.l(1);
+    y.setImageDrawable(F);
+    y.setVisibility(8);
+    addView(y);
+  }
+  
+  private void g()
+  {
+    if (d == null)
+    {
+      int i1 = 0;
+      while (i1 < getChildCount())
+      {
+        View localView = getChildAt(i1);
+        if (!localView.equals(y))
+        {
+          d = localView;
+          return;
+        }
+        i1 += 1;
+      }
+    }
+  }
+  
+  private void h(float paramFloat)
+  {
+    if (paramFloat > h)
+    {
+      s(true, true);
+      return;
+    }
+    f = false;
+    F.j(0.0F, 0.0F);
+    e localE = null;
+    if (!v) {
+      localE = new e();
+    }
+    c(q, localE);
+    F.d(false);
+  }
+  
+  private boolean i(Animation paramAnimation)
+  {
+    return (paramAnimation != null) && (paramAnimation.hasStarted()) && (!paramAnimation.hasEnded());
+  }
+  
+  private void j(float paramFloat)
+  {
+    F.d(true);
+    float f1 = Math.min(1.0F, Math.abs(paramFloat / h));
+    float f2 = (float)Math.max(f1 - 0.4D, 0.0D) * 5.0F / 3.0F;
+    float f4 = Math.abs(paramFloat);
+    float f5 = h;
+    int i1 = E;
+    if (i1 > 0) {}
+    float f3;
+    for (;;)
+    {
+      f3 = i1;
+      break;
+      if (Q) {
+        i1 = D - C;
+      } else {
+        i1 = D;
+      }
+    }
+    double d1 = Math.max(0.0F, Math.min(f4 - f5, f3 * 2.0F) / f3) / 4.0F;
+    f4 = (float)(d1 - Math.pow(d1, 2.0D)) * 2.0F;
+    i1 = C;
+    int i2 = (int)(f3 * f1 + f3 * f4 * 2.0F);
+    if (y.getVisibility() != 0) {
+      y.setVisibility(0);
+    }
+    if (!v)
+    {
+      y.setScaleX(1.0F);
+      y.setScaleY(1.0F);
+    }
+    if (v) {
+      setAnimationProgress(Math.min(1.0F, paramFloat / h));
+    }
+    if (paramFloat < h)
+    {
+      if ((F.getAlpha() > 76) && (!i(I))) {
+        w();
+      }
+    }
+    else if ((F.getAlpha() < 255) && (!i(J))) {
+      v();
+    }
+    F.j(0.0F, Math.min(0.8F, f2 * 0.8F));
+    F.e(Math.min(1.0F, f2));
+    F.g((f2 * 0.4F - 0.25F + f4 * 2.0F) * 0.5F);
+    setTargetOffsetTopAndBottom(i1 + i2 - q);
+  }
+  
+  private void q(MotionEvent paramMotionEvent)
+  {
+    int i1 = paramMotionEvent.getActionIndex();
+    if (paramMotionEvent.getPointerId(i1) == u)
+    {
+      if (i1 == 0) {
+        i1 = 1;
+      } else {
+        i1 = 0;
+      }
+      u = paramMotionEvent.getPointerId(i1);
+    }
+  }
+  
+  private void s(boolean paramBoolean1, boolean paramBoolean2)
+  {
+    if (f != paramBoolean1)
+    {
+      L = paramBoolean2;
+      g();
+      f = paramBoolean1;
+      if (paramBoolean1)
+      {
+        b(q, T);
+        return;
+      }
+      x(T);
+    }
+  }
+  
+  private void setColorViewAlpha(int paramInt)
+  {
+    y.getBackground().setAlpha(paramInt);
+    F.setAlpha(paramInt);
+  }
+  
+  private Animation t(final int paramInt1, final int paramInt2)
+  {
+    d localD = new d(paramInt1, paramInt2);
+    localD.setDuration(300L);
+    y.b(null);
+    y.clearAnimation();
+    y.startAnimation(localD);
+    return localD;
+  }
+  
+  private void u(float paramFloat)
+  {
+    float f1 = s;
+    int i1 = g;
+    if ((paramFloat - f1 > i1) && (!t))
+    {
+      r = (f1 + i1);
+      t = true;
+      F.setAlpha(76);
+    }
+  }
+  
+  private void v()
+  {
+    J = t(F.getAlpha(), 255);
+  }
+  
+  private void w()
+  {
+    I = t(F.getAlpha(), 76);
+  }
+  
+  private void y(int paramInt, Animation.AnimationListener paramAnimationListener)
+  {
+    A = paramInt;
+    B = y.getScaleX();
+    h localH = new h();
+    K = localH;
+    localH.setDuration(150L);
+    if (paramAnimationListener != null) {
+      y.b(paramAnimationListener);
+    }
+    y.clearAnimation();
+    y.startAnimation(K);
+  }
+  
+  private void z(Animation.AnimationListener paramAnimationListener)
+  {
+    y.setVisibility(0);
+    F.setAlpha(255);
+    b localB = new b();
+    G = localB;
+    localB.setDuration(p);
+    if (paramAnimationListener != null) {
+      y.b(paramAnimationListener);
+    }
+    y.clearAnimation();
+    y.startAnimation(G);
+  }
+  
+  public void a(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int[] paramArrayOfInt)
+  {
+    if (paramInt5 != 0) {
+      return;
+    }
+    int i1 = paramArrayOfInt[1];
+    f(paramInt1, paramInt2, paramInt3, paramInt4, m, paramInt5, paramArrayOfInt);
+    paramInt2 = paramInt4 - (paramArrayOfInt[1] - i1);
+    if (paramInt2 == 0) {
+      paramInt1 = paramInt4 + m[1];
+    } else {
+      paramInt1 = paramInt2;
+    }
+    if ((paramInt1 < 0) && (!d()))
+    {
+      float f1 = i + Math.abs(paramInt1);
+      i = f1;
+      j(f1);
+      paramArrayOfInt[1] += paramInt2;
+    }
+  }
+  
+  public boolean d()
+  {
+    Object localObject = R;
+    if (localObject != null) {
+      return ((i)localObject).a(this, d);
+    }
+    localObject = d;
+    if ((localObject instanceof ListView)) {
+      return g.a((ListView)localObject, -1);
+    }
+    return ((View)localObject).canScrollVertically(-1);
+  }
+  
+  public boolean dispatchNestedFling(float paramFloat1, float paramFloat2, boolean paramBoolean)
+  {
+    return k.a(paramFloat1, paramFloat2, paramBoolean);
+  }
+  
+  public boolean dispatchNestedPreFling(float paramFloat1, float paramFloat2)
+  {
+    return k.b(paramFloat1, paramFloat2);
+  }
+  
+  public boolean dispatchNestedPreScroll(int paramInt1, int paramInt2, int[] paramArrayOfInt1, int[] paramArrayOfInt2)
+  {
+    return k.c(paramInt1, paramInt2, paramArrayOfInt1, paramArrayOfInt2);
+  }
+  
+  public boolean dispatchNestedScroll(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int[] paramArrayOfInt)
+  {
+    return k.f(paramInt1, paramInt2, paramInt3, paramInt4, paramArrayOfInt);
+  }
+  
+  public void f(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int[] paramArrayOfInt1, int paramInt5, int[] paramArrayOfInt2)
+  {
+    if (paramInt5 == 0) {
+      k.e(paramInt1, paramInt2, paramInt3, paramInt4, paramArrayOfInt1, paramInt5, paramArrayOfInt2);
+    }
+  }
+  
+  protected int getChildDrawingOrder(int paramInt1, int paramInt2)
+  {
+    int i1 = z;
+    if (i1 < 0) {
+      return paramInt2;
+    }
+    if (paramInt2 == paramInt1 - 1) {
+      return i1;
+    }
+    paramInt1 = paramInt2;
+    if (paramInt2 >= i1) {
+      paramInt1 = paramInt2 + 1;
+    }
+    return paramInt1;
+  }
+  
+  public int getNestedScrollAxes()
+  {
+    return j.a();
+  }
+  
+  public int getProgressCircleDiameter()
+  {
+    return P;
+  }
+  
+  public int getProgressViewEndOffset()
+  {
+    return D;
+  }
+  
+  public int getProgressViewStartOffset()
+  {
+    return C;
+  }
+  
+  public boolean hasNestedScrollingParent()
+  {
+    return k.j();
+  }
+  
+  public boolean isNestedScrollingEnabled()
+  {
+    return k.l();
+  }
+  
+  public void k(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5)
+  {
+    a(paramView, paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, n);
+  }
+  
+  public boolean l(View paramView1, View paramView2, int paramInt1, int paramInt2)
+  {
+    if (paramInt2 == 0) {
+      return onStartNestedScroll(paramView1, paramView2, paramInt1);
+    }
+    return false;
+  }
+  
+  public void m(View paramView1, View paramView2, int paramInt1, int paramInt2)
+  {
+    if (paramInt2 == 0) {
+      onNestedScrollAccepted(paramView1, paramView2, paramInt1);
+    }
+  }
+  
+  public void n(View paramView, int paramInt)
+  {
+    if (paramInt == 0) {
+      onStopNestedScroll(paramView);
+    }
+  }
+  
+  public void o(View paramView, int paramInt1, int paramInt2, int[] paramArrayOfInt, int paramInt3)
+  {
+    if (paramInt3 == 0) {
+      onNestedPreScroll(paramView, paramInt1, paramInt2, paramArrayOfInt);
+    }
+  }
+  
+  protected void onDetachedFromWindow()
+  {
+    super.onDetachedFromWindow();
+    r();
+  }
+  
+  public boolean onInterceptTouchEvent(MotionEvent paramMotionEvent)
+  {
+    g();
+    int i1 = paramMotionEvent.getActionMasked();
+    if ((w) && (i1 == 0)) {
+      w = false;
+    }
+    if ((isEnabled()) && (!w) && (!d()) && (!f))
+    {
+      if (o) {
+        return false;
+      }
+      if (i1 != 0)
+      {
+        if (i1 != 1) {
+          if (i1 != 2)
+          {
+            if (i1 != 3)
+            {
+              if (i1 != 6) {
+                break label210;
+              }
+              q(paramMotionEvent);
+              break label210;
+            }
+          }
+          else
+          {
+            i1 = u;
+            if (i1 == -1)
+            {
+              Log.e(b, "Got ACTION_MOVE event but don't have an active pointer id.");
+              return false;
+            }
+            i1 = paramMotionEvent.findPointerIndex(i1);
+            if (i1 < 0) {
+              return false;
+            }
+            u(paramMotionEvent.getY(i1));
+            break label210;
+          }
+        }
+        t = false;
+        u = -1;
+      }
+      else
+      {
+        setTargetOffsetTopAndBottom(C - y.getTop());
+        i1 = paramMotionEvent.getPointerId(0);
+        u = i1;
+        t = false;
+        i1 = paramMotionEvent.findPointerIndex(i1);
+        if (i1 < 0) {
+          return false;
+        }
+        s = paramMotionEvent.getY(i1);
+      }
+      label210:
+      return t;
+    }
+    return false;
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    paramInt1 = getMeasuredWidth();
+    paramInt2 = getMeasuredHeight();
+    if (getChildCount() == 0) {
+      return;
+    }
+    if (d == null) {
+      g();
+    }
+    Object localObject = d;
+    if (localObject == null) {
+      return;
+    }
+    paramInt3 = getPaddingLeft();
+    paramInt4 = getPaddingTop();
+    ((View)localObject).layout(paramInt3, paramInt4, paramInt1 - getPaddingLeft() - getPaddingRight() + paramInt3, paramInt2 - getPaddingTop() - getPaddingBottom() + paramInt4);
+    paramInt3 = y.getMeasuredWidth();
+    paramInt2 = y.getMeasuredHeight();
+    localObject = y;
+    paramInt1 /= 2;
+    paramInt3 /= 2;
+    paramInt4 = q;
+    ((ImageView)localObject).layout(paramInt1 - paramInt3, paramInt4, paramInt1 + paramInt3, paramInt2 + paramInt4);
+  }
+  
+  public void onMeasure(int paramInt1, int paramInt2)
+  {
+    super.onMeasure(paramInt1, paramInt2);
+    if (d == null) {
+      g();
+    }
+    View localView = d;
+    if (localView == null) {
+      return;
+    }
+    localView.measure(View.MeasureSpec.makeMeasureSpec(getMeasuredWidth() - getPaddingLeft() - getPaddingRight(), 1073741824), View.MeasureSpec.makeMeasureSpec(getMeasuredHeight() - getPaddingTop() - getPaddingBottom(), 1073741824));
+    y.measure(View.MeasureSpec.makeMeasureSpec(P, 1073741824), View.MeasureSpec.makeMeasureSpec(P, 1073741824));
+    z = -1;
+    paramInt1 = 0;
+    while (paramInt1 < getChildCount())
+    {
+      if (getChildAt(paramInt1) == y)
+      {
+        z = paramInt1;
+        return;
+      }
+      paramInt1 += 1;
+    }
+  }
+  
+  public boolean onNestedFling(View paramView, float paramFloat1, float paramFloat2, boolean paramBoolean)
+  {
+    return dispatchNestedFling(paramFloat1, paramFloat2, paramBoolean);
+  }
+  
+  public boolean onNestedPreFling(View paramView, float paramFloat1, float paramFloat2)
+  {
+    return dispatchNestedPreFling(paramFloat1, paramFloat2);
+  }
+  
+  public void onNestedPreScroll(View paramView, int paramInt1, int paramInt2, int[] paramArrayOfInt)
+  {
+    if (paramInt2 > 0)
+    {
+      float f1 = i;
+      if (f1 > 0.0F)
+      {
+        float f2 = paramInt2;
+        if (f2 > f1)
+        {
+          paramArrayOfInt[1] = ((int)f1);
+          i = 0.0F;
+        }
+        else
+        {
+          i = (f1 - f2);
+          paramArrayOfInt[1] = paramInt2;
+        }
+        j(i);
+      }
+    }
+    if ((Q) && (paramInt2 > 0) && (i == 0.0F) && (Math.abs(paramInt2 - paramArrayOfInt[1]) > 0)) {
+      y.setVisibility(8);
+    }
+    paramView = l;
+    if (dispatchNestedPreScroll(paramInt1 - paramArrayOfInt[0], paramInt2 - paramArrayOfInt[1], paramView, null))
+    {
+      paramArrayOfInt[0] += paramView[0];
+      paramArrayOfInt[1] += paramView[1];
+    }
+  }
+  
+  public void onNestedScroll(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    a(paramView, paramInt1, paramInt2, paramInt3, paramInt4, 0, n);
+  }
+  
+  public void onNestedScrollAccepted(View paramView1, View paramView2, int paramInt)
+  {
+    j.b(paramView1, paramView2, paramInt);
+    startNestedScroll(paramInt & 0x2);
+    i = 0.0F;
+    o = true;
+  }
+  
+  protected void onRestoreInstanceState(Parcelable paramParcelable)
+  {
+    paramParcelable = (SavedState)paramParcelable;
+    super.onRestoreInstanceState(paramParcelable.getSuperState());
+    setRefreshing(b);
+  }
+  
+  protected Parcelable onSaveInstanceState()
+  {
+    return new SavedState(super.onSaveInstanceState(), f);
+  }
+  
+  public boolean onStartNestedScroll(View paramView1, View paramView2, int paramInt)
+  {
+    return (isEnabled()) && (!w) && (!f) && ((paramInt & 0x2) != 0);
+  }
+  
+  public void onStopNestedScroll(View paramView)
+  {
+    j.d(paramView);
+    o = false;
+    float f1 = i;
+    if (f1 > 0.0F)
+    {
+      h(f1);
+      i = 0.0F;
+    }
+    stopNestedScroll();
+  }
+  
+  public boolean onTouchEvent(MotionEvent paramMotionEvent)
+  {
+    int i1 = paramMotionEvent.getActionMasked();
+    if ((w) && (i1 == 0)) {
+      w = false;
+    }
+    if ((isEnabled()) && (!w) && (!d()) && (!f))
+    {
+      if (o) {
+        return false;
+      }
+      if (i1 != 0)
+      {
+        float f1;
+        if (i1 != 1)
+        {
+          if (i1 != 2)
+          {
+            if (i1 != 3)
+            {
+              if (i1 != 5)
+              {
+                if (i1 != 6) {
+                  return true;
+                }
+                q(paramMotionEvent);
+                return true;
+              }
+              i1 = paramMotionEvent.getActionIndex();
+              if (i1 < 0)
+              {
+                Log.e(b, "Got ACTION_POINTER_DOWN event but have an invalid action index.");
+                return false;
+              }
+              u = paramMotionEvent.getPointerId(i1);
+              return true;
+            }
+            return false;
+          }
+          i1 = paramMotionEvent.findPointerIndex(u);
+          if (i1 < 0)
+          {
+            Log.e(b, "Got ACTION_MOVE event but have an invalid active pointer id.");
+            return false;
+          }
+          f1 = paramMotionEvent.getY(i1);
+          u(f1);
+          if (t)
+          {
+            f1 = (f1 - r) * 0.5F;
+            if (f1 > 0.0F)
+            {
+              getParent().requestDisallowInterceptTouchEvent(true);
+              j(f1);
+              return true;
+            }
+            return false;
+          }
+        }
+        else
+        {
+          i1 = paramMotionEvent.findPointerIndex(u);
+          if (i1 < 0)
+          {
+            Log.e(b, "Got ACTION_UP event but don't have an active pointer id.");
+            return false;
+          }
+          if (t)
+          {
+            f1 = paramMotionEvent.getY(i1);
+            float f2 = r;
+            t = false;
+            h((f1 - f2) * 0.5F);
+          }
+          u = -1;
+          return false;
+        }
+      }
+      else
+      {
+        u = paramMotionEvent.getPointerId(0);
+        t = false;
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  void p(float paramFloat)
+  {
+    int i1 = A;
+    setTargetOffsetTopAndBottom(i1 + (int)((C - i1) * paramFloat) - y.getTop());
+  }
+  
+  void r()
+  {
+    y.clearAnimation();
+    F.stop();
+    y.setVisibility(8);
+    setColorViewAlpha(255);
+    if (v) {
+      setAnimationProgress(0.0F);
+    } else {
+      setTargetOffsetTopAndBottom(C - q);
+    }
+    q = y.getTop();
+  }
+  
+  public void requestDisallowInterceptTouchEvent(boolean paramBoolean)
+  {
+    Object localObject;
+    if ((Build.VERSION.SDK_INT >= 21) || (!(d instanceof AbsListView)))
+    {
+      localObject = d;
+      if ((localObject == null) || (f0.U((View)localObject))) {}
+    }
+    else
+    {
+      if (S) {
+        return;
+      }
+      localObject = getParent();
+      if (localObject == null) {
+        return;
+      }
+      ((ViewParent)localObject).requestDisallowInterceptTouchEvent(paramBoolean);
+      return;
+    }
+    super.requestDisallowInterceptTouchEvent(paramBoolean);
+  }
+  
+  void setAnimationProgress(float paramFloat)
+  {
+    y.setScaleX(paramFloat);
+    y.setScaleY(paramFloat);
+  }
+  
+  @Deprecated
+  public void setColorScheme(int... paramVarArgs)
+  {
+    setColorSchemeResources(paramVarArgs);
+  }
+  
+  public void setColorSchemeColors(int... paramVarArgs)
+  {
+    g();
+    F.f(paramVarArgs);
+  }
+  
+  public void setColorSchemeResources(int... paramVarArgs)
+  {
+    Context localContext = getContext();
+    int[] arrayOfInt = new int[paramVarArgs.length];
+    int i1 = 0;
+    while (i1 < paramVarArgs.length)
+    {
+      arrayOfInt[i1] = androidx.core.content.a.d(localContext, paramVarArgs[i1]);
+      i1 += 1;
+    }
+    setColorSchemeColors(arrayOfInt);
+  }
+  
+  public void setDistanceToTriggerSync(int paramInt)
+  {
+    h = paramInt;
+  }
+  
+  public void setEnabled(boolean paramBoolean)
+  {
+    super.setEnabled(paramBoolean);
+    if (!paramBoolean) {
+      r();
+    }
+  }
+  
+  @Deprecated
+  public void setLegacyRequestDisallowInterceptTouchEventEnabled(boolean paramBoolean)
+  {
+    S = paramBoolean;
+  }
+  
+  public void setNestedScrollingEnabled(boolean paramBoolean)
+  {
+    k.m(paramBoolean);
+  }
+  
+  public void setOnChildScrollUpCallback(i paramI)
+  {
+    R = paramI;
+  }
+  
+  public void setOnRefreshListener(j paramJ)
+  {
+    e = paramJ;
+  }
+  
+  @Deprecated
+  public void setProgressBackgroundColor(int paramInt)
+  {
+    setProgressBackgroundColorSchemeResource(paramInt);
+  }
+  
+  public void setProgressBackgroundColorSchemeColor(int paramInt)
+  {
+    y.setBackgroundColor(paramInt);
+  }
+  
+  public void setProgressBackgroundColorSchemeResource(int paramInt)
+  {
+    setProgressBackgroundColorSchemeColor(androidx.core.content.a.d(getContext(), paramInt));
+  }
+  
+  public void setRefreshing(boolean paramBoolean)
+  {
+    if ((paramBoolean) && (f != paramBoolean))
+    {
+      f = paramBoolean;
+      int i1;
+      if (!Q) {
+        i1 = D + C;
+      } else {
+        i1 = D;
+      }
+      setTargetOffsetTopAndBottom(i1 - q);
+      L = false;
+      z(T);
+      return;
+    }
+    s(paramBoolean, false);
+  }
+  
+  public void setSize(int paramInt)
+  {
+    if ((paramInt != 0) && (paramInt != 1)) {
+      return;
+    }
+    DisplayMetrics localDisplayMetrics = getResources().getDisplayMetrics();
+    if (paramInt == 0) {
+      P = ((int)(density * 56.0F));
+    } else {
+      P = ((int)(density * 40.0F));
+    }
+    y.setImageDrawable(null);
+    F.l(paramInt);
+    y.setImageDrawable(F);
+  }
+  
+  public void setSlingshotDistance(int paramInt)
+  {
+    E = paramInt;
+  }
+  
+  void setTargetOffsetTopAndBottom(int paramInt)
+  {
+    y.bringToFront();
+    f0.a0(y, paramInt);
+    q = y.getTop();
+  }
+  
+  public boolean startNestedScroll(int paramInt)
+  {
+    return k.o(paramInt);
+  }
+  
+  public void stopNestedScroll()
+  {
+    k.q();
+  }
+  
+  void x(Animation.AnimationListener paramAnimationListener)
+  {
+    c localC = new c();
+    H = localC;
+    localC.setDuration(150L);
+    y.b(paramAnimationListener);
+    y.clearAnimation();
+    y.startAnimation(H);
+  }
+  
+  static class SavedState
+    extends View.BaseSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    final boolean b;
+    
+    SavedState(Parcel paramParcel)
+    {
+      super();
+      boolean bool;
+      if (paramParcel.readByte() != 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      b = bool;
+    }
+    
+    SavedState(Parcelable paramParcelable, boolean paramBoolean)
+    {
+      super();
+      b = paramBoolean;
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    class a
+      implements Parcelable.Creator<SwipeRefreshLayout.SavedState>
+    {
+      a() {}
+      
+      public SwipeRefreshLayout.SavedState a(Parcel paramParcel)
+      {
+        return new SwipeRefreshLayout.SavedState(paramParcel);
+      }
+      
+      public SwipeRefreshLayout.SavedState[] b(int paramInt)
+      {
+        return new SwipeRefreshLayout.SavedState[paramInt];
+      }
+    }
+  }
+  
+  class a
+    implements Animation.AnimationListener
+  {
+    a() {}
+    
+    public void onAnimationEnd(Animation paramAnimation)
+    {
+      paramAnimation = SwipeRefreshLayout.this;
+      if (f)
+      {
+        F.setAlpha(255);
+        F.start();
+        paramAnimation = SwipeRefreshLayout.this;
+        if (L)
+        {
+          paramAnimation = e;
+          if (paramAnimation != null) {
+            paramAnimation.onRefresh();
+          }
+        }
+        paramAnimation = SwipeRefreshLayout.this;
+        q = y.getTop();
+        return;
+      }
+      paramAnimation.r();
+    }
+    
+    public void onAnimationRepeat(Animation paramAnimation) {}
+    
+    public void onAnimationStart(Animation paramAnimation) {}
+  }
+  
+  class b
+    extends Animation
+  {
+    b() {}
+    
+    public void applyTransformation(float paramFloat, Transformation paramTransformation)
+    {
+      setAnimationProgress(paramFloat);
+    }
+  }
+  
+  class c
+    extends Animation
+  {
+    c() {}
+    
+    public void applyTransformation(float paramFloat, Transformation paramTransformation)
+    {
+      setAnimationProgress(1.0F - paramFloat);
+    }
+  }
+  
+  class d
+    extends Animation
+  {
+    d(int paramInt1, int paramInt2) {}
+    
+    public void applyTransformation(float paramFloat, Transformation paramTransformation)
+    {
+      paramTransformation = F;
+      int i = paramInt1;
+      paramTransformation.setAlpha((int)(i + (paramInt2 - i) * paramFloat));
+    }
+  }
+  
+  class e
+    implements Animation.AnimationListener
+  {
+    e() {}
+    
+    public void onAnimationEnd(Animation paramAnimation)
+    {
+      paramAnimation = SwipeRefreshLayout.this;
+      if (!v) {
+        paramAnimation.x(null);
+      }
+    }
+    
+    public void onAnimationRepeat(Animation paramAnimation) {}
+    
+    public void onAnimationStart(Animation paramAnimation) {}
+  }
+  
+  class f
+    extends Animation
+  {
+    f() {}
+    
+    public void applyTransformation(float paramFloat, Transformation paramTransformation)
+    {
+      paramTransformation = SwipeRefreshLayout.this;
+      if (!Q) {
+        i = D - Math.abs(C);
+      } else {
+        i = D;
+      }
+      paramTransformation = SwipeRefreshLayout.this;
+      int j = A;
+      int i = (int)((i - j) * paramFloat);
+      int k = y.getTop();
+      setTargetOffsetTopAndBottom(j + i - k);
+      F.e(1.0F - paramFloat);
+    }
+  }
+  
+  class g
+    extends Animation
+  {
+    g() {}
+    
+    public void applyTransformation(float paramFloat, Transformation paramTransformation)
+    {
+      p(paramFloat);
+    }
+  }
+  
+  class h
+    extends Animation
+  {
+    h() {}
+    
+    public void applyTransformation(float paramFloat, Transformation paramTransformation)
+    {
+      paramTransformation = SwipeRefreshLayout.this;
+      float f = B;
+      paramTransformation.setAnimationProgress(f + -f * paramFloat);
+      p(paramFloat);
+    }
+  }
+  
+  public static abstract interface i
+  {
+    public abstract boolean a(SwipeRefreshLayout paramSwipeRefreshLayout, View paramView);
+  }
+  
+  public static abstract interface j
+  {
+    public abstract void onRefresh();
+  }
+}

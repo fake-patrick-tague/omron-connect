@@ -1,0 +1,161 @@
+package androidx.room;
+
+import c.t.a.d;
+import c.t.a.e;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.NavigableSet;
+import java.util.TreeMap;
+
+public class k
+  implements e, d
+{
+  static final TreeMap<Integer, k> b = new TreeMap();
+  private volatile String c;
+  final long[] d;
+  final double[] e;
+  final String[] f;
+  final byte[][] g;
+  private final int[] h;
+  final int i;
+  int j;
+  
+  private k(int paramInt)
+  {
+    i = paramInt;
+    paramInt += 1;
+    h = new int[paramInt];
+    d = new long[paramInt];
+    e = new double[paramInt];
+    f = new String[paramInt];
+    g = new byte[paramInt][];
+  }
+  
+  public static k n(String paramString, int paramInt)
+  {
+    synchronized (b)
+    {
+      Object localObject2 = ((TreeMap)???).ceilingEntry(Integer.valueOf(paramInt));
+      if (localObject2 != null)
+      {
+        ((TreeMap)???).remove(((Map.Entry)localObject2).getKey());
+        localObject2 = (k)((Map.Entry)localObject2).getValue();
+        ((k)localObject2).p(paramString, paramInt);
+        return localObject2;
+      }
+      ??? = new k(paramInt);
+      ((k)???).p(paramString, paramInt);
+      return ???;
+    }
+  }
+  
+  private static void t()
+  {
+    Object localObject = b;
+    if (((TreeMap)localObject).size() > 15)
+    {
+      int k = ((TreeMap)localObject).size() - 10;
+      localObject = ((TreeMap)localObject).descendingKeySet().iterator();
+      while (k > 0)
+      {
+        ((Iterator)localObject).next();
+        ((Iterator)localObject).remove();
+        k -= 1;
+      }
+    }
+  }
+  
+  public int a()
+  {
+    return j;
+  }
+  
+  public void bindBlob(int paramInt, byte[] paramArrayOfByte)
+  {
+    h[paramInt] = 5;
+    g[paramInt] = paramArrayOfByte;
+  }
+  
+  public void bindDouble(int paramInt, double paramDouble)
+  {
+    h[paramInt] = 3;
+    e[paramInt] = paramDouble;
+  }
+  
+  public void bindLong(int paramInt, long paramLong)
+  {
+    h[paramInt] = 2;
+    d[paramInt] = paramLong;
+  }
+  
+  public void bindNull(int paramInt)
+  {
+    h[paramInt] = 1;
+  }
+  
+  public void bindString(int paramInt, String paramString)
+  {
+    h[paramInt] = 4;
+    f[paramInt] = paramString;
+  }
+  
+  public void close() {}
+  
+  public String h()
+  {
+    return c;
+  }
+  
+  public void i(d paramD)
+  {
+    int k = 1;
+    while (k <= j)
+    {
+      int m = h[k];
+      if (m != 1)
+      {
+        if (m != 2)
+        {
+          if (m != 3)
+          {
+            if (m != 4)
+            {
+              if (m == 5) {
+                paramD.bindBlob(k, g[k]);
+              }
+            }
+            else {
+              paramD.bindString(k, f[k]);
+            }
+          }
+          else {
+            paramD.bindDouble(k, e[k]);
+          }
+        }
+        else {
+          paramD.bindLong(k, d[k]);
+        }
+      }
+      else {
+        paramD.bindNull(k);
+      }
+      k += 1;
+    }
+  }
+  
+  void p(String paramString, int paramInt)
+  {
+    c = paramString;
+    j = paramInt;
+  }
+  
+  public void release()
+  {
+    synchronized (b)
+    {
+      ???.put(Integer.valueOf(i), this);
+      t();
+      return;
+    }
+  }
+}

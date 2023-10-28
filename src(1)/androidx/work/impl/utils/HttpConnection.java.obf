@@ -1,0 +1,87 @@
+package androidx.work.impl.utils;
+
+import java.util.ArrayDeque;
+import java.util.concurrent.Executor;
+
+public class g
+  implements Executor
+{
+  private final ArrayDeque<a> b;
+  private final Executor c;
+  private final Object d;
+  private volatile Runnable e;
+  
+  public g(Executor paramExecutor)
+  {
+    c = paramExecutor;
+    b = new ArrayDeque();
+    d = new Object();
+  }
+  
+  public boolean a()
+  {
+    for (;;)
+    {
+      synchronized (d)
+      {
+        if (!b.isEmpty())
+        {
+          bool = true;
+          return bool;
+        }
+      }
+      boolean bool = false;
+    }
+  }
+  
+  void b()
+  {
+    synchronized (d)
+    {
+      Runnable localRunnable = (Runnable)b.poll();
+      e = localRunnable;
+      if (localRunnable != null) {
+        c.execute(e);
+      }
+      return;
+    }
+  }
+  
+  public void execute(Runnable paramRunnable)
+  {
+    synchronized (d)
+    {
+      b.add(new a(this, paramRunnable));
+      if (e == null) {
+        b();
+      }
+      return;
+    }
+  }
+  
+  static class a
+    implements Runnable
+  {
+    final g b;
+    final Runnable c;
+    
+    a(g paramG, Runnable paramRunnable)
+    {
+      b = paramG;
+      c = paramRunnable;
+    }
+    
+    public void run()
+    {
+      try
+      {
+        c.run();
+        return;
+      }
+      finally
+      {
+        b.b();
+      }
+    }
+  }
+}

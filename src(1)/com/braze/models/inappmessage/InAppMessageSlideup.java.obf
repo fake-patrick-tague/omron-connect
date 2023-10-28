@@ -1,0 +1,135 @@
+package com.braze.models.inappmessage;
+
+import android.graphics.Color;
+import bo.app.e3;
+import bo.app.z1;
+import com.braze.enums.inappmessage.CropType;
+import com.braze.enums.inappmessage.MessageType;
+import com.braze.enums.inappmessage.SlideFrom;
+import com.braze.enums.inappmessage.TextAlign;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.JsonUtils;
+import kotlin.x.c.a;
+import kotlin.x.d.j;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public final class InAppMessageSlideup
+  extends InAppMessageWithImageBase
+{
+  public static final Companion Companion = new Companion(null);
+  private int chevronColor = Color.parseColor("#9B9B9B");
+  private SlideFrom slideFrom = SlideFrom.BOTTOM;
+  
+  public InAppMessageSlideup()
+  {
+    setMessageTextAlign(TextAlign.START);
+  }
+  
+  public InAppMessageSlideup(JSONObject paramJSONObject, z1 paramZ1)
+  {
+    this(paramJSONObject, paramZ1, (SlideFrom)JsonUtils.optEnum(paramJSONObject, "slide_from", SlideFrom.class, SlideFrom.BOTTOM), paramJSONObject.optInt("close_btn_color"));
+  }
+  
+  private InAppMessageSlideup(JSONObject paramJSONObject, z1 paramZ1, SlideFrom paramSlideFrom, int paramInt)
+  {
+    super(paramJSONObject, paramZ1);
+    if (paramSlideFrom != null) {
+      slideFrom = paramSlideFrom;
+    }
+    chevronColor = paramInt;
+    setCropType((CropType)JsonUtils.optEnum(paramJSONObject, "crop_type", CropType.class, CropType.FIT_CENTER));
+    setMessageTextAlign((TextAlign)JsonUtils.optEnum(paramJSONObject, "text_align_message", TextAlign.class, TextAlign.START));
+  }
+  
+  public void enableDarkTheme()
+  {
+    super.enableDarkTheme();
+    e3 localE3 = getInAppMessageDarkThemeWrapper();
+    if (localE3 == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.D, null, a.b, 2, null);
+      return;
+    }
+    Integer localInteger = localE3.b();
+    if (((localInteger == null) || (localInteger.intValue() != -1)) && (localE3.b() != null)) {
+      chevronColor = localE3.b().intValue();
+    }
+  }
+  
+  public JSONObject forJsonPut()
+  {
+    JSONObject localJSONObject = getJsonObject();
+    if (localJSONObject != null) {
+      return localJSONObject;
+    }
+    localJSONObject = super.forJsonPut();
+    try
+    {
+      localJSONObject.put("slide_from", slideFrom.toString());
+      localJSONObject.put("close_btn_color", chevronColor);
+      localJSONObject.put("type", getMessageType().name());
+      return localJSONObject;
+    }
+    catch (JSONException localJSONException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, localJSONException, b.b);
+    }
+    return localJSONObject;
+  }
+  
+  public final int getChevronColor()
+  {
+    return chevronColor;
+  }
+  
+  public MessageType getMessageType()
+  {
+    return MessageType.SLIDEUP;
+  }
+  
+  public final SlideFrom getSlideFrom()
+  {
+    return slideFrom;
+  }
+  
+  public static final class Companion
+  {
+    private Companion() {}
+  }
+  
+  static final class a
+    extends j
+    implements a<String>
+  {
+    public static final a b = new a();
+    
+    a()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Cannot apply dark theme with a null themes wrapper";
+    }
+  }
+  
+  static final class b
+    extends j
+    implements a<String>
+  {
+    public static final b b = new b();
+    
+    b()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Error creating JSON.";
+    }
+  }
+}

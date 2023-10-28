@@ -1,0 +1,220 @@
+package com.google.android.material.floatingactionbutton;
+
+import android.content.res.ColorStateList;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.LinearGradient;
+import android.graphics.Outline;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.Shader.TileMode;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import d.c.a.a.x.c;
+import d.c.a.a.x.k;
+import d.c.a.a.x.l;
+
+class a
+  extends Drawable
+{
+  private final l a = l.k();
+  private final Paint b;
+  private final Path c = new Path();
+  private final Rect d = new Rect();
+  private final RectF e = new RectF();
+  private final RectF f = new RectF();
+  private final b g = new b(null);
+  float h;
+  private int i;
+  private int j;
+  private int k;
+  private int l;
+  private int m;
+  private boolean n = true;
+  private k o;
+  private ColorStateList p;
+  
+  a(k paramK)
+  {
+    o = paramK;
+    paramK = new Paint(1);
+    b = paramK;
+    paramK.setStyle(Paint.Style.STROKE);
+  }
+  
+  private Shader a()
+  {
+    Object localObject = d;
+    copyBounds((Rect)localObject);
+    float f1 = h / ((Rect)localObject).height();
+    int i1 = androidx.core.graphics.a.c(i, m);
+    int i2 = androidx.core.graphics.a.c(j, m);
+    int i3 = androidx.core.graphics.a.c(androidx.core.graphics.a.f(j, 0), m);
+    int i4 = androidx.core.graphics.a.c(androidx.core.graphics.a.f(l, 0), m);
+    int i5 = androidx.core.graphics.a.c(l, m);
+    int i6 = androidx.core.graphics.a.c(k, m);
+    float f2 = top;
+    float f3 = bottom;
+    localObject = Shader.TileMode.CLAMP;
+    return new LinearGradient(0.0F, f2, 0.0F, f3, new int[] { i1, i2, i3, i4, i5, i6 }, new float[] { 0.0F, f1, 0.5F, 0.5F, 1.0F - f1, 1.0F }, (Shader.TileMode)localObject);
+  }
+  
+  protected RectF b()
+  {
+    f.set(getBounds());
+    return f;
+  }
+  
+  void c(ColorStateList paramColorStateList)
+  {
+    if (paramColorStateList != null) {
+      m = paramColorStateList.getColorForState(getState(), m);
+    }
+    p = paramColorStateList;
+    n = true;
+    invalidateSelf();
+  }
+  
+  public void d(float paramFloat)
+  {
+    if (h != paramFloat)
+    {
+      h = paramFloat;
+      b.setStrokeWidth(paramFloat * 1.3333F);
+      n = true;
+      invalidateSelf();
+    }
+  }
+  
+  public void draw(Canvas paramCanvas)
+  {
+    if (n)
+    {
+      b.setShader(a());
+      n = false;
+    }
+    float f1 = b.getStrokeWidth() / 2.0F;
+    copyBounds(d);
+    e.set(d);
+    float f2 = Math.min(o.r().a(b()), e.width() / 2.0F);
+    if (o.u(b()))
+    {
+      e.inset(f1, f1);
+      paramCanvas.drawRoundRect(e, f2, f2, b);
+    }
+  }
+  
+  void e(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    i = paramInt1;
+    j = paramInt2;
+    k = paramInt3;
+    l = paramInt4;
+  }
+  
+  public void f(k paramK)
+  {
+    o = paramK;
+    invalidateSelf();
+  }
+  
+  public Drawable.ConstantState getConstantState()
+  {
+    return g;
+  }
+  
+  public int getOpacity()
+  {
+    if (h > 0.0F) {
+      return -3;
+    }
+    return -2;
+  }
+  
+  public void getOutline(Outline paramOutline)
+  {
+    if (o.u(b()))
+    {
+      float f1 = o.r().a(b());
+      paramOutline.setRoundRect(getBounds(), f1);
+      return;
+    }
+    copyBounds(d);
+    e.set(d);
+    a.d(o, 1.0F, e, c);
+    if (c.isConvex()) {
+      paramOutline.setConvexPath(c);
+    }
+  }
+  
+  public boolean getPadding(Rect paramRect)
+  {
+    if (o.u(b()))
+    {
+      int i1 = Math.round(h);
+      paramRect.set(i1, i1, i1, i1);
+    }
+    return true;
+  }
+  
+  public boolean isStateful()
+  {
+    ColorStateList localColorStateList = p;
+    return ((localColorStateList != null) && (localColorStateList.isStateful())) || (super.isStateful());
+  }
+  
+  protected void onBoundsChange(Rect paramRect)
+  {
+    n = true;
+  }
+  
+  protected boolean onStateChange(int[] paramArrayOfInt)
+  {
+    ColorStateList localColorStateList = p;
+    if (localColorStateList != null)
+    {
+      int i1 = localColorStateList.getColorForState(paramArrayOfInt, m);
+      if (i1 != m)
+      {
+        n = true;
+        m = i1;
+      }
+    }
+    if (n) {
+      invalidateSelf();
+    }
+    return n;
+  }
+  
+  public void setAlpha(int paramInt)
+  {
+    b.setAlpha(paramInt);
+    invalidateSelf();
+  }
+  
+  public void setColorFilter(ColorFilter paramColorFilter)
+  {
+    b.setColorFilter(paramColorFilter);
+    invalidateSelf();
+  }
+  
+  private class b
+    extends Drawable.ConstantState
+  {
+    private b() {}
+    
+    public int getChangingConfigurations()
+    {
+      return 0;
+    }
+    
+    public Drawable newDrawable()
+    {
+      return a.this;
+    }
+  }
+}

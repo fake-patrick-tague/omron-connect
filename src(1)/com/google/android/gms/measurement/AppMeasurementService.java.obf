@@ -1,0 +1,75 @@
+package com.google.android.gms.measurement;
+
+import android.app.Service;
+import android.app.job.JobParameters;
+import android.content.Intent;
+import android.os.IBinder;
+import c.o.a.a;
+import com.google.android.gms.measurement.internal.zzjy;
+import com.google.android.gms.measurement.internal.zzjz;
+
+public final class AppMeasurementService
+  extends Service
+  implements zzjy
+{
+  private zzjz zza;
+  
+  public AppMeasurementService() {}
+  
+  private final zzjz zzd()
+  {
+    if (zza == null) {
+      zza = new zzjz(this);
+    }
+    return zza;
+  }
+  
+  public IBinder onBind(Intent paramIntent)
+  {
+    return zzd().zzb(paramIntent);
+  }
+  
+  public void onCreate()
+  {
+    super.onCreate();
+    zzd().zze();
+  }
+  
+  public void onDestroy()
+  {
+    zzd().zzf();
+    super.onDestroy();
+  }
+  
+  public void onRebind(Intent paramIntent)
+  {
+    zzd().zzg(paramIntent);
+  }
+  
+  public int onStartCommand(Intent paramIntent, int paramInt1, int paramInt2)
+  {
+    zzd().zza(paramIntent, paramInt1, paramInt2);
+    return 2;
+  }
+  
+  public boolean onUnbind(Intent paramIntent)
+  {
+    zzd().zzj(paramIntent);
+    return true;
+  }
+  
+  public final void zza(Intent paramIntent)
+  {
+    a.completeWakefulIntent(paramIntent);
+  }
+  
+  public final void zzb(JobParameters paramJobParameters, boolean paramBoolean)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public final boolean zzc(int paramInt)
+  {
+    return stopSelfResult(paramInt);
+  }
+}

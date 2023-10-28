@@ -1,0 +1,105 @@
+package androidx.fragment.app;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.IntentSender.SendIntentException;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import androidx.core.app.b;
+import androidx.core.content.a;
+import c.h.p.h;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+
+public abstract class r<E>
+  extends o
+{
+  private final Activity b;
+  private final Context c;
+  private final Handler d;
+  private final int e;
+  final FragmentManager f = new u();
+  
+  r(Activity paramActivity, Context paramContext, Handler paramHandler, int paramInt)
+  {
+    b = paramActivity;
+    c = ((Context)h.h(paramContext, "context == null"));
+    d = ((Handler)h.h(paramHandler, "handler == null"));
+    e = paramInt;
+  }
+  
+  r(m paramM)
+  {
+    this(paramM, paramM, new Handler(), 0);
+  }
+  
+  public View c(int paramInt)
+  {
+    return null;
+  }
+  
+  public boolean d()
+  {
+    return true;
+  }
+  
+  Activity e()
+  {
+    return b;
+  }
+  
+  Context f()
+  {
+    return c;
+  }
+  
+  public Handler g()
+  {
+    return d;
+  }
+  
+  public void h(String paramString, FileDescriptor paramFileDescriptor, PrintWriter paramPrintWriter, String[] paramArrayOfString) {}
+  
+  public abstract E i();
+  
+  public LayoutInflater j()
+  {
+    return LayoutInflater.from(c);
+  }
+  
+  @Deprecated
+  public void k(Fragment paramFragment, String[] paramArrayOfString, int paramInt) {}
+  
+  public boolean l(String paramString)
+  {
+    return false;
+  }
+  
+  public void m(Fragment paramFragment, Intent paramIntent, int paramInt, Bundle paramBundle)
+  {
+    if (paramInt == -1)
+    {
+      a.l(c, paramIntent, paramBundle);
+      return;
+    }
+    throw new IllegalStateException("Starting activity with a requestCode requires a FragmentActivity host");
+  }
+  
+  @Deprecated
+  public void n(Fragment paramFragment, IntentSender paramIntentSender, int paramInt1, Intent paramIntent, int paramInt2, int paramInt3, int paramInt4, Bundle paramBundle)
+    throws IntentSender.SendIntentException
+  {
+    if (paramInt1 == -1)
+    {
+      b.x(b, paramIntentSender, paramInt1, paramIntent, paramInt2, paramInt3, paramInt4, paramBundle);
+      return;
+    }
+    throw new IllegalStateException("Starting intent sender with a requestCode requires a FragmentActivity host");
+  }
+  
+  public void o() {}
+}

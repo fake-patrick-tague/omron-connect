@@ -1,0 +1,61 @@
+package com.google.android.gms.internal.fitness;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.fitness.RecordingApi;
+import com.google.android.gms.fitness.data.DataSource;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Subscription;
+import com.google.android.gms.fitness.data.Subscription.zza;
+import com.google.android.gms.fitness.result.ListSubscriptionsResult;
+
+public final class zzdo
+  implements RecordingApi
+{
+  public zzdo() {}
+  
+  private final PendingResult<Status> zza(GoogleApiClient paramGoogleApiClient, Subscription paramSubscription)
+  {
+    return paramGoogleApiClient.enqueue(new zzdt(this, paramGoogleApiClient, paramSubscription));
+  }
+  
+  public final PendingResult<ListSubscriptionsResult> listSubscriptions(GoogleApiClient paramGoogleApiClient)
+  {
+    return paramGoogleApiClient.enqueue(new zzdr(this, paramGoogleApiClient));
+  }
+  
+  public final PendingResult<ListSubscriptionsResult> listSubscriptions(GoogleApiClient paramGoogleApiClient, DataType paramDataType)
+  {
+    return paramGoogleApiClient.enqueue(new zzdq(this, paramGoogleApiClient, paramDataType));
+  }
+  
+  public final PendingResult<Status> subscribe(GoogleApiClient paramGoogleApiClient, DataSource paramDataSource)
+  {
+    return zza(paramGoogleApiClient, new Subscription.zza().zza(paramDataSource).zzr());
+  }
+  
+  public final PendingResult<Status> subscribe(GoogleApiClient paramGoogleApiClient, DataType paramDataType)
+  {
+    return zza(paramGoogleApiClient, new Subscription.zza().zza(paramDataType).zzr());
+  }
+  
+  public final PendingResult<Status> unsubscribe(GoogleApiClient paramGoogleApiClient, DataSource paramDataSource)
+  {
+    return paramGoogleApiClient.execute(new zzdv(this, paramGoogleApiClient, paramDataSource));
+  }
+  
+  public final PendingResult<Status> unsubscribe(GoogleApiClient paramGoogleApiClient, DataType paramDataType)
+  {
+    return paramGoogleApiClient.execute(new zzds(this, paramGoogleApiClient, paramDataType));
+  }
+  
+  public final PendingResult<Status> unsubscribe(GoogleApiClient paramGoogleApiClient, Subscription paramSubscription)
+  {
+    if (paramSubscription.getDataType() == null) {
+      return unsubscribe(paramGoogleApiClient, (DataSource)Preconditions.checkNotNull(paramSubscription.getDataSource()));
+    }
+    return unsubscribe(paramGoogleApiClient, (DataType)Preconditions.checkNotNull(paramSubscription.getDataType()));
+  }
+}

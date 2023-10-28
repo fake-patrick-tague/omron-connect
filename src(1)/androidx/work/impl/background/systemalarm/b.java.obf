@@ -1,0 +1,270 @@
+package androidx.work.impl.background.systemalarm;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import androidx.room.RoomDatabase;
+import androidx.work.WorkInfo.State;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.q;
+import java.util.HashMap;
+import java.util.Map;
+
+public class b
+  implements androidx.work.impl.b
+{
+  private static final String b = androidx.work.j.f("CommandHandler");
+  private final Context c;
+  private final Map<String, androidx.work.impl.b> d;
+  private final Object e;
+  
+  b(Context paramContext)
+  {
+    c = paramContext;
+    d = new HashMap();
+    e = new Object();
+  }
+  
+  static Intent a(Context paramContext)
+  {
+    paramContext = new Intent(paramContext, SystemAlarmService.class);
+    paramContext.setAction("ACTION_CONSTRAINTS_CHANGED");
+    return paramContext;
+  }
+  
+  static Intent b(Context paramContext, String paramString)
+  {
+    paramContext = new Intent(paramContext, SystemAlarmService.class);
+    paramContext.setAction("ACTION_DELAY_MET");
+    paramContext.putExtra("KEY_WORKSPEC_ID", paramString);
+    return paramContext;
+  }
+  
+  static Intent c(Context paramContext, String paramString, boolean paramBoolean)
+  {
+    paramContext = new Intent(paramContext, SystemAlarmService.class);
+    paramContext.setAction("ACTION_EXECUTION_COMPLETED");
+    paramContext.putExtra("KEY_WORKSPEC_ID", paramString);
+    paramContext.putExtra("KEY_NEEDS_RESCHEDULE", paramBoolean);
+    return paramContext;
+  }
+  
+  static Intent e(Context paramContext)
+  {
+    paramContext = new Intent(paramContext, SystemAlarmService.class);
+    paramContext.setAction("ACTION_RESCHEDULE");
+    return paramContext;
+  }
+  
+  static Intent f(Context paramContext, String paramString)
+  {
+    paramContext = new Intent(paramContext, SystemAlarmService.class);
+    paramContext.setAction("ACTION_SCHEDULE_WORK");
+    paramContext.putExtra("KEY_WORKSPEC_ID", paramString);
+    return paramContext;
+  }
+  
+  static Intent g(Context paramContext, String paramString)
+  {
+    paramContext = new Intent(paramContext, SystemAlarmService.class);
+    paramContext.setAction("ACTION_STOP_WORK");
+    paramContext.putExtra("KEY_WORKSPEC_ID", paramString);
+    return paramContext;
+  }
+  
+  private void h(Intent paramIntent, int paramInt, e paramE)
+  {
+    androidx.work.j.c().a(b, String.format("Handling constraints changed %s", new Object[] { paramIntent }), new Throwable[0]);
+    new c(c, paramInt, paramE).a();
+  }
+  
+  private void i(Intent arg1, int paramInt, e paramE)
+  {
+    Object localObject = ???.getExtras();
+    synchronized (e)
+    {
+      localObject = ((Bundle)localObject).getString("KEY_WORKSPEC_ID");
+      androidx.work.j localJ = androidx.work.j.c();
+      String str = b;
+      localJ.a(str, String.format("Handing delay met for %s", new Object[] { localObject }), new Throwable[0]);
+      if (!d.containsKey(localObject))
+      {
+        paramE = new d(c, paramInt, (String)localObject, paramE);
+        d.put(localObject, paramE);
+        paramE.e();
+      }
+      else
+      {
+        androidx.work.j.c().a(str, String.format("WorkSpec %s is already being handled for ACTION_DELAY_MET", new Object[] { localObject }), new Throwable[0]);
+      }
+      return;
+    }
+  }
+  
+  private void j(Intent paramIntent, int paramInt)
+  {
+    Bundle localBundle = paramIntent.getExtras();
+    String str = localBundle.getString("KEY_WORKSPEC_ID");
+    boolean bool = localBundle.getBoolean("KEY_NEEDS_RESCHEDULE");
+    androidx.work.j.c().a(b, String.format("Handling onExecutionCompleted %s, %s", new Object[] { paramIntent, Integer.valueOf(paramInt) }), new Throwable[0]);
+    d(str, bool);
+  }
+  
+  private void k(Intent paramIntent, int paramInt, e paramE)
+  {
+    androidx.work.j.c().a(b, String.format("Handling reschedule %s, %s", new Object[] { paramIntent, Integer.valueOf(paramInt) }), new Throwable[0]);
+    paramE.g().t();
+  }
+  
+  private void l(Intent paramIntent, int paramInt, e paramE)
+  {
+    paramIntent = paramIntent.getExtras().getString("KEY_WORKSPEC_ID");
+    Object localObject1 = androidx.work.j.c();
+    String str = b;
+    ((androidx.work.j)localObject1).a(str, String.format("Handling schedule work for %s", new Object[] { paramIntent }), new Throwable[0]);
+    localObject1 = paramE.g().p();
+    ((RoomDatabase)localObject1).c();
+    try
+    {
+      Object localObject2 = ((WorkDatabase)localObject1).B().n(paramIntent);
+      if (localObject2 == null)
+      {
+        paramE = androidx.work.j.c();
+        localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append("Skipping scheduling ");
+        ((StringBuilder)localObject2).append(paramIntent);
+        ((StringBuilder)localObject2).append(" because it's no longer in the DB");
+        paramE.h(str, ((StringBuilder)localObject2).toString(), new Throwable[0]);
+        return;
+      }
+      if (d.a())
+      {
+        paramE = androidx.work.j.c();
+        localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append("Skipping scheduling ");
+        ((StringBuilder)localObject2).append(paramIntent);
+        ((StringBuilder)localObject2).append("because it is finished.");
+        paramE.h(str, ((StringBuilder)localObject2).toString(), new Throwable[0]);
+        return;
+      }
+      long l = ((p)localObject2).a();
+      if (!((p)localObject2).b())
+      {
+        androidx.work.j.c().a(str, String.format("Setting up Alarms for %s at %s", new Object[] { paramIntent, Long.valueOf(l) }), new Throwable[0]);
+        a.c(c, paramE.g(), paramIntent, l);
+      }
+      else
+      {
+        androidx.work.j.c().a(str, String.format("Opportunistically setting an alarm for %s at %s", new Object[] { paramIntent, Long.valueOf(l) }), new Throwable[0]);
+        a.c(c, paramE.g(), paramIntent, l);
+        paramE.k(new e.b(paramE, a(c), paramInt));
+      }
+      ((RoomDatabase)localObject1).r();
+      return;
+    }
+    finally
+    {
+      ((RoomDatabase)localObject1).g();
+    }
+  }
+  
+  private void m(Intent paramIntent, e paramE)
+  {
+    paramIntent = paramIntent.getExtras().getString("KEY_WORKSPEC_ID");
+    androidx.work.j.c().a(b, String.format("Handing stopWork work for %s", new Object[] { paramIntent }), new Throwable[0]);
+    paramE.g().y(paramIntent);
+    a.a(c, paramE.g(), paramIntent);
+    paramE.d(paramIntent, false);
+  }
+  
+  private static boolean n(Bundle paramBundle, String... paramVarArgs)
+  {
+    if (paramBundle != null)
+    {
+      if (paramBundle.isEmpty()) {
+        return false;
+      }
+      int j = paramVarArgs.length;
+      int i = 0;
+      while (i < j)
+      {
+        if (paramBundle.get(paramVarArgs[i]) == null) {
+          return false;
+        }
+        i += 1;
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  public void d(String paramString, boolean paramBoolean)
+  {
+    synchronized (e)
+    {
+      androidx.work.impl.b localB = (androidx.work.impl.b)d.remove(paramString);
+      if (localB != null) {
+        localB.d(paramString, paramBoolean);
+      }
+      return;
+    }
+  }
+  
+  boolean o()
+  {
+    for (;;)
+    {
+      synchronized (e)
+      {
+        if (!d.isEmpty())
+        {
+          bool = true;
+          return bool;
+        }
+      }
+      boolean bool = false;
+    }
+  }
+  
+  void p(Intent paramIntent, int paramInt, e paramE)
+  {
+    String str = paramIntent.getAction();
+    if ("ACTION_CONSTRAINTS_CHANGED".equals(str))
+    {
+      h(paramIntent, paramInt, paramE);
+      return;
+    }
+    if ("ACTION_RESCHEDULE".equals(str))
+    {
+      k(paramIntent, paramInt, paramE);
+      return;
+    }
+    if (!n(paramIntent.getExtras(), new String[] { "KEY_WORKSPEC_ID" }))
+    {
+      androidx.work.j.c().b(b, String.format("Invalid request for %s, requires %s.", new Object[] { str, "KEY_WORKSPEC_ID" }), new Throwable[0]);
+      return;
+    }
+    if ("ACTION_SCHEDULE_WORK".equals(str))
+    {
+      l(paramIntent, paramInt, paramE);
+      return;
+    }
+    if ("ACTION_DELAY_MET".equals(str))
+    {
+      i(paramIntent, paramInt, paramE);
+      return;
+    }
+    if ("ACTION_STOP_WORK".equals(str))
+    {
+      m(paramIntent, paramE);
+      return;
+    }
+    if ("ACTION_EXECUTION_COMPLETED".equals(str))
+    {
+      j(paramIntent, paramInt);
+      return;
+    }
+    androidx.work.j.c().h(b, String.format("Ignoring intent %s", new Object[] { paramIntent }), new Throwable[0]);
+  }
+}

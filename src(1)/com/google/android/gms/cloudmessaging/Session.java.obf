@@ -1,0 +1,219 @@
+package com.google.android.gms.cloudmessaging;
+
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.os.Messenger;
+import android.util.Log;
+import android.util.SparseArray;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.stats.ConnectionTracker;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+final class zzm
+  implements ServiceConnection
+{
+  int zza;
+  final Messenger zzb;
+  zzn zzc;
+  final Queue<zzp<?>> zzd;
+  final SparseArray<zzp<?>> zze;
+  
+  public final void onServiceConnected(ComponentName paramComponentName, IBinder paramIBinder)
+  {
+    if (Log.isLoggable("MessengerIpcClient", 2)) {
+      Log.v("MessengerIpcClient", "Service connected");
+    }
+    zzs.zze(zzf).execute(new zzj(this, paramIBinder));
+  }
+  
+  public final void onServiceDisconnected(ComponentName paramComponentName)
+  {
+    if (Log.isLoggable("MessengerIpcClient", 2)) {
+      Log.v("MessengerIpcClient", "Service disconnected");
+    }
+    zzs.zze(zzf).execute(new zzg(this));
+  }
+  
+  final void zza(int paramInt, String paramString)
+  {
+    try
+    {
+      zzb(paramInt, paramString, null);
+      return;
+    }
+    finally
+    {
+      paramString = finally;
+      throw paramString;
+    }
+  }
+  
+  final void zzb(int paramInt, String paramString, Throwable paramThrowable)
+  {
+    try
+    {
+      if (Log.isLoggable("MessengerIpcClient", 3))
+      {
+        String str = String.valueOf(paramString);
+        if (str.length() != 0) {
+          str = "Disconnected: ".concat(str);
+        } else {
+          str = new String("Disconnected: ");
+        }
+        Log.d("MessengerIpcClient", str);
+      }
+      int i = zza;
+      if (i != 0)
+      {
+        if ((i != 1) && (i != 2))
+        {
+          if (i != 3) {
+            return;
+          }
+          zza = 4;
+          return;
+        }
+        if (Log.isLoggable("MessengerIpcClient", 2)) {
+          Log.v("MessengerIpcClient", "Unbinding service");
+        }
+        zza = 4;
+        ConnectionTracker.getInstance().unbindService(zzs.zza(zzf), this);
+        paramString = new zzq(paramInt, paramString, paramThrowable);
+        paramThrowable = zzd.iterator();
+        while (paramThrowable.hasNext()) {
+          ((zzp)paramThrowable.next()).zzc(paramString);
+        }
+        zzd.clear();
+        paramInt = 0;
+        while (paramInt < zze.size())
+        {
+          ((zzp)zze.valueAt(paramInt)).zzc(paramString);
+          paramInt += 1;
+        }
+        zze.clear();
+        return;
+      }
+      throw new IllegalStateException();
+    }
+    finally {}
+  }
+  
+  final void zzc()
+  {
+    zzs.zze(zzf).execute(new zzh(this));
+  }
+  
+  final void zzd()
+  {
+    try
+    {
+      if (zza == 1)
+      {
+        zza(1, "Timed out while binding");
+        return;
+      }
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  final void zze(int paramInt)
+  {
+    try
+    {
+      zzp localZzp = (zzp)zze.get(paramInt);
+      if (localZzp != null)
+      {
+        StringBuilder localStringBuilder = new StringBuilder(31);
+        localStringBuilder.append("Timing out request: ");
+        localStringBuilder.append(paramInt);
+        Log.w("MessengerIpcClient", localStringBuilder.toString());
+        zze.remove(paramInt);
+        localZzp.zzc(new zzq(3, "Timed out waiting for response", null));
+        zzf();
+        return;
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  final void zzf()
+  {
+    try
+    {
+      if ((zza == 2) && (zzd.isEmpty()) && (zze.size() == 0))
+      {
+        if (Log.isLoggable("MessengerIpcClient", 2)) {
+          Log.v("MessengerIpcClient", "Finished handling requests, unbinding");
+        }
+        zza = 3;
+        ConnectionTracker.getInstance().unbindService(zzs.zza(zzf), this);
+        return;
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  final boolean zzg(zzp<?> paramZzp)
+  {
+    for (;;)
+    {
+      try
+      {
+        int i = zza;
+        if (i != 0)
+        {
+          if (i != 1)
+          {
+            if (i != 2) {
+              return false;
+            }
+            zzd.add(paramZzp);
+            zzc();
+            return true;
+          }
+          zzd.add(paramZzp);
+          return true;
+        }
+        zzd.add(paramZzp);
+        if (zza == 0)
+        {
+          bool = true;
+          Preconditions.checkState(bool);
+          if (Log.isLoggable("MessengerIpcClient", 2)) {
+            Log.v("MessengerIpcClient", "Starting bind to GmsCore");
+          }
+          zza = 1;
+          paramZzp = new Intent("com.google.android.c2dm.intent.REGISTER");
+          paramZzp.setPackage("com.google.android.gms");
+          try
+          {
+            if (!ConnectionTracker.getInstance().bindService(zzs.zza(zzf), paramZzp, this, 1)) {
+              zza(0, "Unable to bind to service");
+            } else {
+              zzs.zze(zzf).schedule(new zzi(this), 30L, TimeUnit.SECONDS);
+            }
+          }
+          catch (SecurityException paramZzp)
+          {
+            zzb(0, "Unable to bind to service", paramZzp);
+          }
+          return true;
+        }
+      }
+      finally {}
+      boolean bool = false;
+    }
+  }
+}

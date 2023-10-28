@@ -1,0 +1,1899 @@
+package com.alivecor.ecg.record;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.Cap;
+import android.graphics.Paint.Join;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.text.TextPaint;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.Display;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.ScaleGestureDetector.OnScaleGestureListener;
+import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.OverScroller;
+import android.widget.TextView;
+import androidx.core.widget.d;
+import c.h.q.f0;
+import c.h.q.j;
+import com.alivecor.alivecorkitlite.R.color;
+import com.alivecor.alivecorkitlite.R.id;
+import com.alivecor.alivecorkitlite.R.string;
+import com.alivecor.alivecorkitlite.R.styleable;
+import com.alivecor.ecg.core.a.b;
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.Executor;
+
+public class EcgStripView
+  extends View
+{
+  public static final boolean BUILD_GALAXY_GEAR = false;
+  private static final float DEFAULT_AMPLITUDE_RESOLUTION_cm = 2000.0F;
+  private static final float DEFAULT_TIME_RESOLUTION_sec = 300.0F;
+  private static final float DEFAULT_TRACE_THICKNESS_DP = 1.0F;
+  private static final float DUAL_LEAD_OFFSET_DP = 30.0F;
+  public static final float GALAXY_GEAR_SCALE_FACTOR = 4.0F;
+  private static final float LEAD_CONTENT_SIZE_DP = 140.0F;
+  private static final int LEAD_LABEL_COLOR_RESID = R.color.medium_jungle_green;
+  private static final float LEAD_LABEL_HORIZ_OFFSET_DP = 8.0F;
+  private static final float LEAD_LABEL_TEXT_SIZE_DP = 14.0F;
+  private static final float LEAD_LABEL_VERT_OFFSET_DP = 8.0F;
+  private static final float SCALE_MAX = 4.0F;
+  private static final String TAG = EcgStripView.class.getSimpleName();
+  private static final float ZOOM_AMOUNT = 0.5F;
+  private static final boolean debug = false;
+  private int contentWidthPx;
+  private boolean drawEdgeGlowEffect = true;
+  private Activity mActivity;
+  private int[] mAnnArray;
+  private Paint mAnnPaint;
+  private final Path mAnnPath = new Path();
+  private float mAnnotationMarkerHeightPixels;
+  private float mAtcUnitsPerCm = 2000.0F;
+  private final Rect mContentRect = new Rect();
+  private final RectF mCurrentViewport = new RectF();
+  private boolean mDirty;
+  private boolean mDrawEnabled;
+  private boolean mDrawReady = false;
+  private float mDualLeadOffset;
+  private Paint mECGTracePaint;
+  private File mEcgDir;
+  private final Path mEcgPath = new Path();
+  private ReadEcgFileTask mEcgReadTask;
+  private final d mEdgeEffectBottom;
+  private boolean mEdgeEffectBottomActive;
+  private final d mEdgeEffectLeft;
+  private boolean mEdgeEffectLeftActive;
+  private final d mEdgeEffectRight;
+  private boolean mEdgeEffectRightActive;
+  private final d mEdgeEffectTop;
+  private boolean mEdgeEffectTopActive;
+  private boolean mForceSingleLead;
+  private final j mGestureDetector;
+  private final GestureDetector.SimpleOnGestureListener mGestureListener;
+  private boolean mInitialized;
+  private boolean mInvertedECG = false;
+  private boolean mIsEnhancedFilter = true;
+  private boolean mIsMuscleFilter = true;
+  private float mLabelHorizOffsetPx;
+  private TextPaint mLabelPaint;
+  private float mLabelVertOffsetPx;
+  private short[] mLead1;
+  private CharSequence mLead1Label;
+  private short[] mLead2;
+  private CharSequence mLead2Label;
+  private short[] mLead3;
+  private CharSequence mLead3Label;
+  private short[] mLead4;
+  private CharSequence mLead4Label;
+  private short[] mLead5;
+  private CharSequence mLead5Label;
+  private short[] mLead6;
+  private CharSequence mLead6Label;
+  private final Object mLock = new Object();
+  private int mMajorGridColor;
+  private final Path mMajorGridLinesPath = new Path();
+  private Paint mMajorGridPaint;
+  private float mMaxX;
+  private float mMaxY;
+  private float mMinX;
+  private float mMinY;
+  private int mMinorGridColor;
+  private final Path mMinorGridLinesPath = new Path();
+  private Paint mMinorGridPaint;
+  private boolean mNeedDrawAnnotations = true;
+  private boolean mNeedToBeInCenter;
+  private final Path mOneSecGridLinesPath = new Path();
+  @Deprecated
+  private boolean mPreview = false;
+  private float mScale = 1.0F;
+  private final ScaleGestureDetector mScaleGestureDetector;
+  private final ScaleGestureDetector.OnScaleGestureListener mScaleGestureListener;
+  private final OverScroller mScroller;
+  private final RectF mScrollerStartViewport = new RectF();
+  private final Point mSurfaceSizeBuffer = new Point();
+  private float mTimeUnitsPerSec = 300.0F;
+  private int mTotalEcgSamples = 0;
+  private boolean mTouchEnabled = true;
+  private int mTraceColor;
+  private float mTraceThicknessPixels;
+  private String mUUID;
+  private float mXppcm;
+  private float mYppcm;
+  private final PointF mZoomFocalPoint = new PointF();
+  private final Zoomer mZoomer;
+  private int traceHeightPx;
+  
+  public EcgStripView(Context paramContext)
+  {
+    this(paramContext, null, 0);
+  }
+  
+  public EcgStripView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, 0);
+  }
+  
+  public EcgStripView(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(paramContext, paramAttributeSet, paramInt);
+    Object localObject = new ScaleGestureDetector.SimpleOnScaleGestureListener()
+    {
+      private float lastSpanX;
+      private float lastSpanY;
+      private final PointF viewportFocus = new PointF();
+      
+      public boolean onScale(ScaleGestureDetector paramAnonymousScaleGestureDetector)
+      {
+        float f1 = paramAnonymousScaleGestureDetector.getCurrentSpanX();
+        float f2 = paramAnonymousScaleGestureDetector.getCurrentSpanY();
+        float f3 = lastSpanX;
+        float f4 = lastSpanY;
+        f4 = (float)Math.sqrt(f3 * f3 + f4 * f4) / (float)Math.sqrt(f1 * f1 + f2 * f2);
+        f3 = mCurrentViewport.width() * f4;
+        f4 *= mCurrentViewport.height();
+        float f5 = paramAnonymousScaleGestureDetector.getFocusX();
+        float f6 = paramAnonymousScaleGestureDetector.getFocusY();
+        EcgStripView.this.hitTest(f5, f6, viewportFocus);
+        mCurrentViewport.set(viewportFocus.x - (f5 - mContentRect.left) * f3 / mContentRect.width(), viewportFocus.y - (mContentRect.bottom - f6) * f4 / mContentRect.height(), 0.0F, 0.0F);
+        mCurrentViewport.right = (mCurrentViewport.left + f3);
+        mCurrentViewport.bottom = (mCurrentViewport.top + f4);
+        EcgStripView.this.constrainViewport();
+        f0.g0(EcgStripView.this);
+        lastSpanX = f1;
+        lastSpanY = f2;
+        return true;
+      }
+      
+      public boolean onScaleBegin(ScaleGestureDetector paramAnonymousScaleGestureDetector)
+      {
+        lastSpanX = paramAnonymousScaleGestureDetector.getCurrentSpanX();
+        lastSpanY = paramAnonymousScaleGestureDetector.getCurrentSpanY();
+        return true;
+      }
+    };
+    mScaleGestureListener = ((ScaleGestureDetector.OnScaleGestureListener)localObject);
+    GestureDetector.SimpleOnGestureListener local2 = new GestureDetector.SimpleOnGestureListener()
+    {
+      public boolean onDoubleTap(MotionEvent paramAnonymousMotionEvent)
+      {
+        mZoomer.forceFinished(true);
+        if (EcgStripView.this.hitTest(paramAnonymousMotionEvent.getX(), paramAnonymousMotionEvent.getY(), mZoomFocalPoint)) {
+          mZoomer.startZoom(0.5F);
+        }
+        f0.g0(EcgStripView.this);
+        return true;
+      }
+      
+      public boolean onDown(MotionEvent paramAnonymousMotionEvent)
+      {
+        EcgStripView.this.releaseEdgeEffects();
+        mScrollerStartViewport.set(mCurrentViewport);
+        mScroller.forceFinished(true);
+        f0.g0(EcgStripView.this);
+        return true;
+      }
+      
+      public boolean onFling(MotionEvent paramAnonymousMotionEvent1, MotionEvent paramAnonymousMotionEvent2, float paramAnonymousFloat1, float paramAnonymousFloat2)
+      {
+        EcgStripView.this.fling((int)-paramAnonymousFloat1, (int)-paramAnonymousFloat2);
+        return true;
+      }
+      
+      public boolean onScroll(MotionEvent paramAnonymousMotionEvent1, MotionEvent paramAnonymousMotionEvent2, float paramAnonymousFloat1, float paramAnonymousFloat2)
+      {
+        paramAnonymousFloat1 = paramAnonymousFloat1 * mCurrentViewport.width() / mContentRect.width();
+        paramAnonymousFloat2 = -paramAnonymousFloat2 * mCurrentViewport.height() / mContentRect.height();
+        paramAnonymousMotionEvent1 = EcgStripView.this;
+        paramAnonymousMotionEvent1.computeScrollSurfaceSize(mSurfaceSizeBuffer);
+        int j = (int)(mSurfaceSizeBuffer.x * (mCurrentViewport.left + paramAnonymousFloat1 - mMinX) / (mMaxX - mMinX));
+        int i = mSurfaceSizeBuffer.y;
+        float f = mCurrentViewport.bottom;
+        if ((mCurrentViewport.left <= mMinX) && (mCurrentViewport.right >= mMaxX)) {
+          i = 0;
+        } else {
+          i = 1;
+        }
+        paramAnonymousMotionEvent1 = EcgStripView.this;
+        paramAnonymousMotionEvent1.setViewportBottomLeft(mCurrentViewport.left + paramAnonymousFloat1, mCurrentViewport.bottom + paramAnonymousFloat2);
+        if ((i != 0) && (j < 0))
+        {
+          mEdgeEffectLeft.g(j / mContentRect.width());
+          EcgStripView.access$1702(EcgStripView.this, true);
+        }
+        if ((i != 0) && (j > mSurfaceSizeBuffer.x - mContentRect.width()))
+        {
+          mEdgeEffectRight.g((j - mSurfaceSizeBuffer.x + mContentRect.width()) / mContentRect.width());
+          EcgStripView.access$2102(EcgStripView.this, true);
+        }
+        return true;
+      }
+    };
+    mGestureListener = local2;
+    if ((paramContext instanceof Activity)) {
+      mActivity = ((Activity)paramContext);
+    }
+    traceHeightPx = ((int)Util.dp2px(140.0F, paramContext));
+    contentWidthPx = ((int)Util.dp2px(140.0F, paramContext));
+    paramInt = R.color.ecg_grid_color;
+    mMajorGridColor = androidx.core.content.a.d(paramContext, paramInt);
+    mMinorGridColor = androidx.core.content.a.d(paramContext, paramInt);
+    mTraceColor = androidx.core.content.a.d(paramContext, R.color.ecg_trace_color);
+    mTraceThicknessPixels = TypedValue.applyDimension(1, 1.0F, getResources().getDisplayMetrics());
+    mAnnotationMarkerHeightPixels = TypedValue.applyDimension(1, 5.0F, getResources().getDisplayMetrics());
+    mScaleGestureDetector = new ScaleGestureDetector(paramContext, (ScaleGestureDetector.OnScaleGestureListener)localObject);
+    mGestureDetector = new j(paramContext, local2);
+    mScroller = new OverScroller(paramContext);
+    mZoomer = new Zoomer(paramContext);
+    mEdgeEffectLeft = new d(paramContext);
+    mEdgeEffectTop = new d(paramContext);
+    mEdgeEffectRight = new d(paramContext);
+    mEdgeEffectBottom = new d(paramContext);
+    localObject = new TextPaint();
+    mLabelPaint = ((TextPaint)localObject);
+    ((TextPaint)localObject).setTextSize(Util.dp2px(14.0F, paramContext));
+    mLabelPaint.setColor(paramContext.getResources().getColor(LEAD_LABEL_COLOR_RESID));
+    mLabelPaint.setFakeBoldText(true);
+    mLabelPaint.setTypeface(Typeface.MONOSPACE);
+    mLead1Label = paramContext.getString(R.string.ecg_realtime_lead_i);
+    mLead2Label = paramContext.getString(R.string.ecg_realtime_lead_ii);
+    mLead3Label = paramContext.getString(R.string.ecg_realtime_lead_iii);
+    mLead4Label = paramContext.getString(R.string.ecg_realtime_lead_avr);
+    mLead5Label = paramContext.getString(R.string.ecg_realtime_lead_avl);
+    mLead6Label = paramContext.getString(R.string.ecg_realtime_lead_avf);
+    mLabelHorizOffsetPx = Util.dp2px(8.0F, paramContext);
+    mLabelVertOffsetPx = Util.dp2px(8.0F, paramContext);
+    mDualLeadOffset = Util.dp2px(30.0F, paramContext);
+    setHorizontalScrollBarEnabled(true);
+    if (!isInEditMode()) {
+      paramContext = paramContext.getTheme().obtainStyledAttributes(paramAttributeSet, R.styleable.EcgStripView, 0, 0);
+    }
+    try
+    {
+      mForceSingleLead = paramContext.getBoolean(R.styleable.EcgStripView_onlySingleLead, false);
+      paramInt = R.styleable.EcgStripView_majorGridColor;
+      mMajorGridColor = paramContext.getColor(paramInt, mMajorGridColor);
+      mMinorGridColor = paramContext.getColor(paramInt, mMinorGridColor);
+      mTraceColor = paramContext.getColor(R.styleable.EcgStripView_traceColor, mTraceColor);
+      mTraceThicknessPixels = paramContext.getDimension(R.styleable.EcgStripView_traceThickness, mTraceThicknessPixels);
+      paramContext.recycle();
+    }
+    finally
+    {
+      paramContext.recycle();
+    }
+    mInitialized = true;
+    mDirty = false;
+  }
+  
+  private void computeScrollSurfaceSize(Point paramPoint)
+  {
+    paramPoint.set((int)(mContentRect.width() * (mMaxX - mMinX) / mCurrentViewport.width()), (int)(mContentRect.height() * (mMaxY - mMinY) / mCurrentViewport.height()));
+  }
+  
+  private void constrainViewport()
+  {
+    if (Float.isNaN(mCurrentViewport.left))
+    {
+      mScale = 1.0F;
+      localRectF = mCurrentViewport;
+      left = 0.0F;
+      right = (getWidth() * 400 / mXppcm / mScale);
+    }
+    else
+    {
+      mScale = ((mMaxY - mMinY) / mCurrentViewport.height());
+    }
+    RectF localRectF = mCurrentViewport;
+    left = Math.max(mMinX, left);
+    localRectF = mCurrentViewport;
+    right = Math.max(Math.nextUp(left), Math.min(mMaxX, mCurrentViewport.right));
+    if (mScale < 1.0F) {
+      mScale = 1.0F;
+    }
+    if (mScale > 4.0F) {
+      mScale = 4.0F;
+    }
+    localRectF = mCurrentViewport;
+    float f1 = (mMaxY - mMinY) / 2.0F;
+    float f2 = f1 / mScale;
+    top = (f1 - f2);
+    bottom = (f1 + f2);
+    f1 = getWidth() * 400 / mXppcm / mScale;
+    localRectF = mCurrentViewport;
+    left = Math.max(mMinX, left + localRectF.width() / 2.0F - f1 / 2.0F);
+    localRectF = mCurrentViewport;
+    right = (left + f1);
+  }
+  
+  private void drawECG(Canvas paramCanvas, short[] paramArrayOfShort, int paramInt, CharSequence paramCharSequence, float paramFloat)
+  {
+    if (!mDrawReady) {
+      return;
+    }
+    int k = (int)(Math.floor(mCurrentViewport.left) / 1000.0D * 300.0D);
+    long l1 = (mContentRect.width() * mMaxX / mCurrentViewport.width());
+    float f2 = k * 1000 / 300.0F;
+    int m = 0;
+    mEcgPath.rewind();
+    int j = k;
+    float f1 = f2;
+    int i = m;
+    if (paramCharSequence != null)
+    {
+      paramCanvas.drawText(paramCharSequence, 0, paramCharSequence.length(), mLabelHorizOffsetPx + getScrollX(), mLabelVertOffsetPx + paramFloat, mLabelPaint);
+      i = m;
+      f1 = f2;
+      j = k;
+    }
+    while ((j < paramArrayOfShort.length) && (f1 < mCurrentViewport.right))
+    {
+      f2 = (float)l1 * f1 / mMaxX;
+      f1 = paramArrayOfShort[j] * mContentRect.height() / mCurrentViewport.height() + paramInt;
+      paramFloat = f1;
+      if (mInvertedECG) {
+        paramFloat = -f1;
+      }
+      paramCharSequence = mEcgPath;
+      Rect localRect = mContentRect;
+      f1 = top + localRect.height() / 2 - paramFloat;
+      if (i == 0) {
+        paramCharSequence.moveTo(f2, f1);
+      } else {
+        paramCharSequence.lineTo(f2, f1);
+      }
+      k = i + 1;
+      i = k;
+      if (k == 200)
+      {
+        paramCanvas.drawPath(mEcgPath, mECGTracePaint);
+        mEcgPath.rewind();
+        paramCharSequence = mEcgPath;
+        localRect = mContentRect;
+        paramCharSequence.moveTo(f2, top + localRect.height() / 2 - paramFloat);
+        i = 1;
+      }
+      j += 1;
+      f1 = j * 1000 / 300.0F;
+    }
+    if (i > 1) {
+      paramCanvas.drawPath(mEcgPath, mECGTracePaint);
+    }
+    if (mNeedDrawAnnotations)
+    {
+      paramArrayOfShort = mAnnArray;
+      if ((paramArrayOfShort != null) && (paramArrayOfShort.length > 0))
+      {
+        mAnnPath.rewind();
+        paramInt = mAnnArray.length;
+        while (paramInt > 0)
+        {
+          i = paramInt - 1;
+          long l2 = mAnnArray[i] * 1000L / 300L;
+          paramFloat = (float)l2;
+          paramArrayOfShort = mCurrentViewport;
+          paramInt = i;
+          if (paramFloat <= right)
+          {
+            if (paramFloat < left) {
+              break;
+            }
+            paramFloat = (float)(l2 * l1) / mMaxX;
+            mAnnPath.moveTo(paramFloat, mContentRect.bottom);
+            mAnnPath.lineTo(paramFloat, mContentRect.bottom - mAnnotationMarkerHeightPixels);
+            paramInt = i;
+          }
+        }
+        if (!mAnnPath.isEmpty()) {
+          paramCanvas.drawPath(mAnnPath, mAnnPaint);
+        }
+      }
+    }
+  }
+  
+  private void drawEdgeEffectsUnclipped(Canvas paramCanvas)
+  {
+    int i;
+    Rect localRect;
+    if (!mEdgeEffectTop.d())
+    {
+      i = paramCanvas.save();
+      localRect = mContentRect;
+      paramCanvas.translate(left, top);
+      mEdgeEffectTop.j(mContentRect.width(), mContentRect.height());
+      bool2 = mEdgeEffectTop.b(paramCanvas);
+      paramCanvas.restoreToCount(i);
+    }
+    else
+    {
+      bool2 = false;
+    }
+    boolean bool4 = mEdgeEffectBottom.d();
+    boolean bool3 = true;
+    boolean bool1 = bool2;
+    if (!bool4)
+    {
+      i = paramCanvas.save();
+      localRect = mContentRect;
+      paramCanvas.translate(left * 2 - right, bottom);
+      paramCanvas.rotate(180.0F, mContentRect.width(), 0.0F);
+      mEdgeEffectBottom.j(mContentRect.width(), mContentRect.height());
+      bool1 = bool2;
+      if (mEdgeEffectBottom.b(paramCanvas)) {
+        bool1 = true;
+      }
+      paramCanvas.restoreToCount(i);
+    }
+    boolean bool2 = bool1;
+    if (!mEdgeEffectLeft.d())
+    {
+      i = paramCanvas.save();
+      localRect = mContentRect;
+      paramCanvas.translate(left, bottom);
+      paramCanvas.rotate(-90.0F, 0.0F, 0.0F);
+      mEdgeEffectLeft.j(mContentRect.height(), mContentRect.width());
+      if (mEdgeEffectLeft.b(paramCanvas)) {
+        bool1 = true;
+      }
+      paramCanvas.restoreToCount(i);
+      bool2 = bool1;
+    }
+    bool1 = bool2;
+    if (!mEdgeEffectRight.d())
+    {
+      i = paramCanvas.save();
+      int j = getScrollX();
+      localRect = mContentRect;
+      paramCanvas.translate(j + right, top);
+      paramCanvas.rotate(90.0F, 0.0F, 0.0F);
+      mEdgeEffectRight.j(mContentRect.height(), mContentRect.width());
+      if (mEdgeEffectRight.b(paramCanvas)) {
+        bool1 = bool3;
+      } else {
+        bool1 = bool2;
+      }
+      paramCanvas.restoreToCount(i);
+    }
+    if (bool1) {
+      f0.g0(this);
+    }
+  }
+  
+  private void drawGridlinesUnclipped(Canvas paramCanvas)
+  {
+    if ((int)mCurrentViewport.width() != 0)
+    {
+      if ((int)mCurrentViewport.height() == 0) {
+        return;
+      }
+      mMinorGridLinesPath.rewind();
+      mMajorGridLinesPath.rewind();
+      long l1 = 0L;
+      long l2 = l1;
+      float f;
+      Path localPath;
+      while ((float)l1 <= mCurrentViewport.height() / 2.0F)
+      {
+        f = (float)(mContentRect.height() * l1) / mCurrentViewport.height();
+        if (l1 == l2)
+        {
+          l2 += 1000L;
+          localPath = mMajorGridLinesPath;
+          i = getScrollX();
+          localRect = mContentRect;
+          localPath.moveTo(i + left, top + localRect.height() / 2 + f);
+          localPath = mMajorGridLinesPath;
+          i = getScrollX();
+          localRect = mContentRect;
+          localPath.lineTo(i + right, top + localRect.height() / 2 + f);
+          localPath = mMajorGridLinesPath;
+          i = getScrollX();
+          localRect = mContentRect;
+          localPath.moveTo(i + left, top + localRect.height() / 2 - f);
+          localPath = mMajorGridLinesPath;
+        }
+        else
+        {
+          localPath = mMinorGridLinesPath;
+          i = getScrollX();
+          localRect = mContentRect;
+          localPath.moveTo(i + left, top + localRect.height() / 2 + f);
+          localPath = mMinorGridLinesPath;
+          i = getScrollX();
+          localRect = mContentRect;
+          localPath.lineTo(i + right, top + localRect.height() / 2 + f);
+          localPath = mMinorGridLinesPath;
+          i = getScrollX();
+          localRect = mContentRect;
+          localPath.moveTo(i + left, top + localRect.height() / 2 - f);
+          localPath = mMinorGridLinesPath;
+        }
+        int i = getScrollX();
+        Rect localRect = mContentRect;
+        localPath.lineTo(i + right, top + localRect.height() / 2 - f);
+        l1 += 200L;
+      }
+      paramCanvas.drawPath(mMinorGridLinesPath, mMinorGridPaint);
+      paramCanvas.drawPath(mMajorGridLinesPath, mMajorGridPaint);
+      mMinorGridLinesPath.rewind();
+      mMajorGridLinesPath.rewind();
+      mOneSecGridLinesPath.rewind();
+      l1 = Math.floor(mCurrentViewport.left) * 40L / 40L;
+      l1 -= l1 % 40L;
+      l2 = (mContentRect.width() * mMaxX / mCurrentViewport.width());
+      while ((float)l1 < mCurrentViewport.right)
+      {
+        f = (float)(l2 * l1) / mMaxX;
+        if (f >= 0.0F)
+        {
+          if (l1 % 1000L == 0L)
+          {
+            mOneSecGridLinesPath.moveTo(f, mContentRect.top);
+            localPath = mOneSecGridLinesPath;
+          }
+          for (;;)
+          {
+            localPath.lineTo(f, mContentRect.bottom);
+            break;
+            if (l1 % 200L == 0L)
+            {
+              mMajorGridLinesPath.moveTo(f, mContentRect.top);
+              localPath = mMajorGridLinesPath;
+            }
+            else
+            {
+              if (l1 % 40L != 0L) {
+                break;
+              }
+              mMinorGridLinesPath.moveTo(f, mContentRect.top);
+              localPath = mMinorGridLinesPath;
+            }
+          }
+        }
+        l1 += 40L;
+      }
+      paramCanvas.drawPath(mOneSecGridLinesPath, mMajorGridPaint);
+      paramCanvas.drawPath(mMinorGridLinesPath, mMinorGridPaint);
+      paramCanvas.drawPath(mMajorGridLinesPath, mMajorGridPaint);
+    }
+  }
+  
+  private void fling(int paramInt1, int paramInt2)
+  {
+    releaseEdgeEffects();
+    computeScrollSurfaceSize(mSurfaceSizeBuffer);
+    mScrollerStartViewport.set(mCurrentViewport);
+    Point localPoint = mSurfaceSizeBuffer;
+    float f1 = x;
+    RectF localRectF = mScrollerStartViewport;
+    float f2 = left;
+    float f3 = mMinX;
+    int i = (int)(f1 * (f2 - f3) / (mMaxX - f3));
+    f1 = y;
+    f2 = mMaxY;
+    int j = (int)(f1 * (f2 - bottom) / (f2 - mMinY));
+    mScroller.forceFinished(true);
+    mScroller.fling(i, j, paramInt1, paramInt2, 0, mSurfaceSizeBuffer.x - mContentRect.width(), 0, mSurfaceSizeBuffer.y - mContentRect.height(), mContentRect.width() / 2, mContentRect.height() / 2);
+    f0.g0(this);
+  }
+  
+  private boolean hitTest(float paramFloat1, float paramFloat2, PointF paramPointF)
+  {
+    if (!mContentRect.contains((int)paramFloat1, (int)paramFloat2)) {
+      return false;
+    }
+    Object localObject = mCurrentViewport;
+    float f1 = left;
+    float f2 = ((RectF)localObject).width();
+    localObject = mContentRect;
+    paramFloat1 = f2 * (paramFloat1 - left) / ((Rect)localObject).width();
+    localObject = mCurrentViewport;
+    f2 = top;
+    float f3 = ((RectF)localObject).height();
+    localObject = mContentRect;
+    paramPointF.set(f1 + paramFloat1, f2 + f3 * (paramFloat2 - bottom) / -((Rect)localObject).height());
+    return true;
+  }
+  
+  private void initPaints()
+  {
+    Paint localPaint = new Paint();
+    mECGTracePaint = localPaint;
+    localPaint.setAntiAlias(true);
+    mECGTracePaint.setStrokeWidth(mTraceThicknessPixels);
+    mECGTracePaint.setColor(mTraceColor);
+    mECGTracePaint.setStrokeCap(Paint.Cap.ROUND);
+    mECGTracePaint.setStrokeJoin(Paint.Join.ROUND);
+    mECGTracePaint.setStyle(Paint.Style.STROKE);
+    localPaint = new Paint();
+    mAnnPaint = localPaint;
+    localPaint.setColor(mTraceColor);
+    mAnnPaint.setStrokeWidth(mTraceThicknessPixels);
+    mAnnPaint.setAntiAlias(true);
+    mAnnPaint.setStrokeCap(Paint.Cap.ROUND);
+    mAnnPaint.setStrokeJoin(Paint.Join.ROUND);
+    mAnnPaint.setStyle(Paint.Style.STROKE);
+    localPaint = new Paint();
+    mMinorGridPaint = localPaint;
+    localPaint.setAntiAlias(true);
+    mMinorGridPaint.setStrokeWidth(mTraceThicknessPixels * 0.5F);
+    mMinorGridPaint.setColor(mMinorGridColor);
+    mMinorGridPaint.setStyle(Paint.Style.STROKE);
+    localPaint = new Paint();
+    mMajorGridPaint = localPaint;
+    localPaint.setAntiAlias(true);
+    mMajorGridPaint.setStrokeWidth(mTraceThicknessPixels);
+    mMajorGridPaint.setColor(mMajorGridColor);
+    mMajorGridPaint.setStyle(Paint.Style.STROKE);
+  }
+  
+  private int labelPos(int paramInt)
+  {
+    int i = mContentRect.height() / 6;
+    return paramInt * i - i / 2;
+  }
+  
+  private int leadPos(int paramInt)
+  {
+    paramInt = -paramInt;
+    int i = mContentRect.height() / 7;
+    return (paramInt + 3) * i + i / 3;
+  }
+  
+  private void moveToCenter()
+  {
+    float f = (int)(mMaxX / 2.0F) * mCurrentViewport.width() / mContentRect.width();
+    if (mCurrentViewport.left != f)
+    {
+      computeScrollSurfaceSize(mSurfaceSizeBuffer);
+      RectF localRectF = mCurrentViewport;
+      setViewportBottomLeft(left + f, bottom + 0.0F);
+    }
+  }
+  
+  private void recomputeScroll()
+  {
+    scrollTo(0, 0);
+    setEcgViewLimits();
+    float f1 = mCurrentViewport.width();
+    RectF localRectF = mCurrentViewport;
+    float f2 = left;
+    float f3 = mMaxX - f1;
+    if (f2 > f3)
+    {
+      left = f3;
+      right = (f3 + f1);
+    }
+    constrainViewport();
+    invalidate();
+  }
+  
+  private void releaseEdgeEffects()
+  {
+    mEdgeEffectBottomActive = false;
+    mEdgeEffectRightActive = false;
+    mEdgeEffectTopActive = false;
+    mEdgeEffectLeftActive = false;
+    mEdgeEffectLeft.i();
+    mEdgeEffectTop.i();
+    mEdgeEffectRight.i();
+    mEdgeEffectBottom.i();
+  }
+  
+  private void setEcgViewLimits()
+  {
+    float f = mAtcUnitsPerCm * (getHeight() / mXppcm) / 2.0F;
+    mMaxY = f;
+    mMinY = (-f);
+    mMinX = 0.0F;
+    int i = mTotalEcgSamples;
+    if (i == 0) {
+      f = 100000.0F;
+    } else {
+      f = i * 1000.0F / mTimeUnitsPerSec;
+    }
+    mMaxX = f;
+  }
+  
+  private void setViewportBottomLeft(float paramFloat1, float paramFloat2)
+  {
+    float f1 = mCurrentViewport.width();
+    float f2 = mCurrentViewport.height();
+    paramFloat1 = Math.max(mMinX, Math.min(paramFloat1, mMaxX - f1));
+    paramFloat2 = Math.max(mMinY + f2, Math.min(paramFloat2, mMaxY));
+    mCurrentViewport.set(paramFloat1, paramFloat2 - f2, f1 + paramFloat1, paramFloat2);
+    f0.g0(this);
+  }
+  
+  public boolean canScrollHorizontally(int paramInt)
+  {
+    return super.canScrollHorizontally(paramInt);
+  }
+  
+  protected int computeHorizontalScrollExtent()
+  {
+    return super.computeHorizontalScrollExtent();
+  }
+  
+  protected int computeHorizontalScrollOffset()
+  {
+    return super.computeHorizontalScrollOffset();
+  }
+  
+  protected int computeHorizontalScrollRange()
+  {
+    if (mCurrentViewport.width() == 0.0F) {
+      return 0;
+    }
+    return (int)(mContentRect.width() * (mMaxX - mMinX) / mCurrentViewport.width());
+  }
+  
+  public void computeScroll()
+  {
+    super.computeScroll();
+    if (!mDrawReady) {
+      return;
+    }
+    boolean bool = mScroller.computeScrollOffset();
+    int j = 1;
+    Object localObject;
+    int i;
+    label222:
+    float f1;
+    float f2;
+    float f3;
+    if (bool)
+    {
+      computeScrollSurfaceSize(mSurfaceSizeBuffer);
+      int k = mScroller.getCurrX();
+      int m = mScroller.getCurrY();
+      localObject = mCurrentViewport;
+      if ((left <= mMinX) && (right >= mMaxX)) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if ((i != 0) && (k < 0) && (mEdgeEffectLeft.d()) && (!mEdgeEffectLeftActive))
+      {
+        mEdgeEffectLeft.e((int)mScroller.getCurrVelocity());
+        mEdgeEffectLeftActive = true;
+      }
+      for (;;)
+      {
+        i = 1;
+        break label222;
+        if ((i == 0) || (k <= mSurfaceSizeBuffer.x - mContentRect.width()) || (!mEdgeEffectRight.d()) || (mEdgeEffectRightActive)) {
+          break;
+        }
+        mEdgeEffectRight.e((int)mScroller.getCurrVelocity());
+        mEdgeEffectRightActive = true;
+      }
+      i = 0;
+      f1 = mMinX;
+      f2 = mMaxX;
+      f3 = k;
+      localObject = mSurfaceSizeBuffer;
+      f2 = (f2 - f1) * f3 / x;
+      f3 = mMaxY;
+      setViewportBottomLeft(f1 + f2, f3 - (f3 - mMinY) * m / y);
+    }
+    else
+    {
+      i = 0;
+    }
+    if (mZoomer.computeZoom())
+    {
+      f1 = (1.0F - mZoomer.getCurrZoom()) * mScrollerStartViewport.width();
+      f2 = (1.0F - mZoomer.getCurrZoom()) * mScrollerStartViewport.height();
+      f3 = mZoomFocalPoint.x;
+      localObject = mScrollerStartViewport;
+      f3 = (f3 - left) / ((RectF)localObject).width();
+      float f4 = mZoomFocalPoint.y;
+      localObject = mScrollerStartViewport;
+      f4 = (f4 - top) / ((RectF)localObject).height();
+      localObject = mCurrentViewport;
+      PointF localPointF = mZoomFocalPoint;
+      float f5 = x;
+      float f6 = y;
+      ((RectF)localObject).set(f5 - f1 * f3, f6 - f2 * f4, f5 + f1 * (1.0F - f3), f6 + f2 * (1.0F - f4));
+      i = j;
+    }
+    constrainViewport();
+    computeScrollSurfaceSize(mSurfaceSizeBuffer);
+    scrollTo((int)(mSurfaceSizeBuffer.x * mCurrentViewport.left / (mMaxX - mMinX)), 0);
+    if (i != 0) {
+      f0.g0(this);
+    }
+  }
+  
+  public RectF getCurrentViewport()
+  {
+    return new RectF(mCurrentViewport);
+  }
+  
+  protected void onDraw(Canvas paramCanvas)
+  {
+    super.onDraw(paramCanvas);
+    drawGridlinesUnclipped(paramCanvas);
+    if (mDrawReady) {
+      synchronized (mLock)
+      {
+        short[] arrayOfShort = mLead1;
+        if (arrayOfShort == null) {
+          return;
+        }
+        if ((mLead2 != null) && (!mForceSingleLead))
+        {
+          if (mLead3 != null)
+          {
+            drawECG(paramCanvas, arrayOfShort, leadPos(1), mLead1Label, labelPos(1));
+            drawECG(paramCanvas, mLead2, leadPos(2), mLead2Label, labelPos(2));
+            drawECG(paramCanvas, mLead3, leadPos(3), mLead3Label, labelPos(3));
+            drawECG(paramCanvas, mLead4, leadPos(4), mLead4Label, labelPos(4));
+            drawECG(paramCanvas, mLead5, leadPos(5), mLead5Label, labelPos(5));
+            drawECG(paramCanvas, mLead6, leadPos(6), mLead6Label, labelPos(6));
+          }
+          else
+          {
+            drawECG(paramCanvas, arrayOfShort, (int)-mDualLeadOffset, null, 0.0F);
+            drawECG(paramCanvas, mLead2, (int)mDualLeadOffset, null, 0.0F);
+          }
+        }
+        else {
+          drawECG(paramCanvas, arrayOfShort, 0, null, 0.0F);
+        }
+      }
+    }
+    if (drawEdgeGlowEffect) {
+      drawEdgeEffectsUnclipped(paramCanvas);
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    setMeasuredDimension(View.resolveSize(Math.max(getSuggestedMinimumWidth(), contentWidthPx + getPaddingLeft() + getPaddingRight()), paramInt1), View.resolveSize(Math.max(getSuggestedMinimumHeight(), traceHeightPx * 6 + getPaddingTop() + getPaddingBottom()), paramInt2));
+  }
+  
+  protected void onSizeChanged(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onSizeChanged(paramInt1, paramInt2, paramInt3, paramInt4);
+    Object localObject = (WindowManager)getContext().getSystemService("window");
+    DisplayMetrics localDisplayMetrics = new DisplayMetrics();
+    if (!isInEditMode()) {
+      ((WindowManager)localObject).getDefaultDisplay().getMetrics(localDisplayMetrics);
+    }
+    float f1 = xdpi / 2.54F * 1.0F;
+    mXppcm = f1;
+    mYppcm = (ydpi / 2.54F * 1.0F);
+    mYppcm = f1;
+    setEcgViewLimits();
+    mContentRect.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
+    if (mScale < 1.0F) {
+      mScale = 1.0F;
+    }
+    if (mScale > 4.0F) {
+      mScale = 4.0F;
+    }
+    localObject = mCurrentViewport;
+    f1 = (mMaxY - mMinY) / 2.0F;
+    float f2 = f1 / mScale;
+    top = (f1 - f2);
+    bottom = (f1 + f2);
+    f1 = getWidth() * 400 / mXppcm / mScale;
+    localObject = mCurrentViewport;
+    left = Math.max(mMinX, left + ((RectF)localObject).width() / 2.0F - f1 / 2.0F);
+    localObject = mCurrentViewport;
+    right = (left + f1);
+    constrainViewport();
+  }
+  
+  public boolean onTouchEvent(MotionEvent paramMotionEvent)
+  {
+    if (mTouchEnabled)
+    {
+      boolean bool2 = mScaleGestureDetector.onTouchEvent(paramMotionEvent);
+      boolean bool3 = mGestureDetector.a(paramMotionEvent);
+      boolean bool1 = false;
+      int i;
+      if ((!bool3) && (!bool2)) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if ((i != 0) || (super.onTouchEvent(paramMotionEvent))) {
+        bool1 = true;
+      }
+      return bool1;
+    }
+    return super.onTouchEvent(paramMotionEvent);
+  }
+  
+  public void resetEcg()
+  {
+    mTotalEcgSamples = 0;
+    ReadEcgFileTask localReadEcgFileTask = mEcgReadTask;
+    if ((localReadEcgFileTask != null) && (!localReadEcgFileTask.isCancelled()))
+    {
+      mEcgReadTask.cancel(false);
+      l.a.a.h("mEcgReadTask cancelled", new Object[0]);
+      mEcgReadTask = null;
+    }
+    postInvalidate();
+  }
+  
+  public void setActivity(Activity paramActivity)
+  {
+    mActivity = paramActivity;
+  }
+  
+  public void setDrawEdgeEffect(boolean paramBoolean)
+  {
+    drawEdgeGlowEffect = paramBoolean;
+  }
+  
+  public void setDrawEnabled(boolean paramBoolean)
+  {
+    mDrawEnabled = paramBoolean;
+  }
+  
+  public boolean setEcgRecord(String paramString, File paramFile, boolean paramBoolean, Executor paramExecutor)
+  {
+    l.a.a.g("setEcgRecord", new Object[0]);
+    setInvertedECG(paramBoolean);
+    ??? = mUUID;
+    if ((??? != null) && (((String)???).equals(paramString)) && (mTotalEcgSamples > 0) && (!mDirty))
+    {
+      l.a.a.a("setEcg ignored", new Object[0]);
+      return false;
+    }
+    resetEcg();
+    ??? = mEcgReadTask;
+    if ((??? != null) && (!((AsyncTask)???).isCancelled()))
+    {
+      mEcgReadTask.cancel(false);
+      l.a.a.h("mEcgReadTask cancelled", new Object[0]);
+      mEcgReadTask = null;
+    }
+    synchronized (mLock)
+    {
+      l.a.a.d("setEcgRecord file:%s", new Object[] { paramString });
+      mUUID = paramString;
+      mEcgDir = paramFile;
+      mDrawReady = false;
+      if (mInitialized)
+      {
+        mScroller.abortAnimation();
+        paramString = mUUID;
+        if ((paramString != null) && (paramString.length() > 0))
+        {
+          paramString = new ReadEcgFileTask(mActivity, paramFile);
+          mEcgReadTask = paramString;
+          paramString.executeOnExecutor(paramExecutor, new Void[0]);
+          l.a.a.d("mEcgReadTask executed", new Object[0]);
+        }
+        else
+        {
+          postInvalidate();
+        }
+      }
+      return true;
+    }
+  }
+  
+  public boolean setEcgRecord(String paramString, boolean paramBoolean, Executor paramExecutor)
+  {
+    return setEcgRecord(paramString, b.b(), paramBoolean, paramExecutor);
+  }
+  
+  public void setEnhancedFilter(boolean paramBoolean, Executor paramExecutor)
+  {
+    if (mIsEnhancedFilter != paramBoolean)
+    {
+      mIsEnhancedFilter = paramBoolean;
+      mDirty = true;
+    }
+    String str = mUUID;
+    if (str != null) {
+      setEcgRecord(str, mEcgDir, mInvertedECG, paramExecutor);
+    }
+  }
+  
+  public void setForceSingleLead(boolean paramBoolean)
+  {
+    mForceSingleLead = paramBoolean;
+    traceHeightPx = ((int)Util.dp2px(140.0F, getContext()));
+    invalidate();
+  }
+  
+  public void setInvertedECG(boolean paramBoolean)
+  {
+    if (mInvertedECG != paramBoolean)
+    {
+      mInvertedECG = paramBoolean;
+      postInvalidate();
+    }
+  }
+  
+  public void setLead1(short[] paramArrayOfShort)
+  {
+    mLead1 = paramArrayOfShort;
+    mDrawReady = true;
+    mTotalEcgSamples = paramArrayOfShort.length;
+    recomputeScroll();
+  }
+  
+  public void setLead2(short[] paramArrayOfShort)
+  {
+    mLead2 = paramArrayOfShort;
+    mDrawReady = true;
+    if (mTotalEcgSamples <= 0) {
+      mTotalEcgSamples = paramArrayOfShort.length;
+    }
+    recomputeScroll();
+  }
+  
+  public void setMajorGridColor(int paramInt)
+  {
+    mMajorGridColor = paramInt;
+    mMajorGridPaint.setColor(paramInt);
+    invalidate();
+  }
+  
+  public void setMinorGridColor(int paramInt)
+  {
+    mMinorGridColor = paramInt;
+    mMinorGridPaint.setColor(paramInt);
+    invalidate();
+  }
+  
+  public void setMuscleFilter(boolean paramBoolean)
+  {
+    if (mIsMuscleFilter != paramBoolean)
+    {
+      mIsMuscleFilter = paramBoolean;
+      mDirty = true;
+    }
+  }
+  
+  public void setNeedDrawAnnotations(boolean paramBoolean)
+  {
+    mNeedDrawAnnotations = paramBoolean;
+  }
+  
+  public void setNeedToBeInCenter(boolean paramBoolean)
+  {
+    mNeedToBeInCenter = paramBoolean;
+    invalidate();
+  }
+  
+  public void setScale(float paramFloat)
+  {
+    RectF localRectF = mCurrentViewport;
+    bottom = (mMaxY / paramFloat);
+    top = (mMinY / paramFloat);
+    constrainViewport();
+    f0.g0(this);
+  }
+  
+  public void setTimeResolutionSeconds(float paramFloat)
+  {
+    mTimeUnitsPerSec = paramFloat;
+  }
+  
+  public void setTouchEnabled(boolean paramBoolean)
+  {
+    mTouchEnabled = paramBoolean;
+  }
+  
+  public void setTraceColor(int paramInt)
+  {
+    mTraceColor = paramInt;
+    mECGTracePaint.setColor(paramInt);
+    invalidate();
+  }
+  
+  public void setTraceResolutionPerCm(float paramFloat)
+  {
+    mAtcUnitsPerCm = paramFloat;
+  }
+  
+  public void setTraceThickness(float paramFloat)
+  {
+    mTraceThicknessPixels = paramFloat;
+    mECGTracePaint.setStrokeWidth(paramFloat);
+    invalidate();
+  }
+  
+  private class ReadEcgFileTask
+    extends AsyncTask<Void, String, Void>
+  {
+    private final WeakReference<Activity> activityWeakRef;
+    private File ecgDir;
+    private short[] mEnhancedBuffer;
+    
+    public ReadEcgFileTask(Activity paramActivity, File paramFile)
+    {
+      if (paramActivity != null) {
+        this$1 = new WeakReference(paramActivity);
+      } else {
+        this$1 = null;
+      }
+      activityWeakRef = EcgStripView.this;
+      ecgDir = paramFile;
+    }
+    
+    /* Error */
+    protected Void doInBackground(Void... arg1)
+    {
+      // Byte code:
+      //   0: aload_0
+      //   1: invokevirtual 47	android/os/AsyncTask:isCancelled	()Z
+      //   4: ifeq +5 -> 9
+      //   7: aconst_null
+      //   8: areturn
+      //   9: aload_0
+      //   10: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   13: invokestatic 51	com/alivecor/ecg/record/EcgStripView:access$2500	(Lcom/alivecor/ecg/record/EcgStripView;)Ljava/lang/Object;
+      //   16: astore 7
+      //   18: aload 7
+      //   20: monitorenter
+      //   21: aload_0
+      //   22: invokevirtual 47	android/os/AsyncTask:isCancelled	()Z
+      //   25: ifeq +17 -> 42
+      //   28: aload_0
+      //   29: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   32: iconst_0
+      //   33: invokestatic 55	com/alivecor/ecg/record/EcgStripView:access$2602	(Lcom/alivecor/ecg/record/EcgStripView;I)I
+      //   36: pop
+      //   37: aload 7
+      //   39: monitorexit
+      //   40: aconst_null
+      //   41: areturn
+      //   42: aload_0
+      //   43: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   46: invokestatic 59	com/alivecor/ecg/record/EcgStripView:access$2700	(Lcom/alivecor/ecg/record/EcgStripView;)Ljava/lang/String;
+      //   49: astore 6
+      //   51: new 61	java/lang/StringBuilder
+      //   54: dup
+      //   55: invokespecial 62	java/lang/StringBuilder:<init>	()V
+      //   58: astore_1
+      //   59: aload_1
+      //   60: ldc 64
+      //   62: invokevirtual 68	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      //   65: pop
+      //   66: aload_1
+      //   67: aload 6
+      //   69: invokevirtual 68	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      //   72: pop
+      //   73: aload_1
+      //   74: invokevirtual 72	java/lang/StringBuilder:toString	()Ljava/lang/String;
+      //   77: iconst_0
+      //   78: anewarray 74	java/lang/Object
+      //   81: invokestatic 80	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   84: aload_0
+      //   85: getfield 33	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:ecgDir	Ljava/io/File;
+      //   88: aload 6
+      //   90: invokestatic 86	com/alivecor/ecg/core/a/b:b	(Ljava/io/File;Ljava/lang/String;)Ljava/io/File;
+      //   93: astore_1
+      //   94: aload_0
+      //   95: getfield 33	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:ecgDir	Ljava/io/File;
+      //   98: aload 6
+      //   100: invokestatic 89	com/alivecor/ecg/core/a/b:a	(Ljava/io/File;Ljava/lang/String;)Ljava/io/File;
+      //   103: astore 6
+      //   105: aload 7
+      //   107: monitorexit
+      //   108: aload_0
+      //   109: invokevirtual 47	android/os/AsyncTask:isCancelled	()Z
+      //   112: ifeq +5 -> 117
+      //   115: aconst_null
+      //   116: areturn
+      //   117: new 61	java/lang/StringBuilder
+      //   120: dup
+      //   121: invokespecial 62	java/lang/StringBuilder:<init>	()V
+      //   124: astore 7
+      //   126: aload 7
+      //   128: ldc 91
+      //   130: invokevirtual 68	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      //   133: pop
+      //   134: aload 7
+      //   136: aload_1
+      //   137: invokevirtual 94	java/lang/StringBuilder:append	(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      //   140: pop
+      //   141: aload 7
+      //   143: invokevirtual 72	java/lang/StringBuilder:toString	()Ljava/lang/String;
+      //   146: iconst_0
+      //   147: anewarray 74	java/lang/Object
+      //   150: invokestatic 96	l/a/a:a	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   153: aload_0
+      //   154: invokevirtual 47	android/os/AsyncTask:isCancelled	()Z
+      //   157: ifeq +14 -> 171
+      //   160: aload_0
+      //   161: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   164: iconst_0
+      //   165: invokestatic 55	com/alivecor/ecg/record/EcgStripView:access$2602	(Lcom/alivecor/ecg/record/EcgStripView;I)I
+      //   168: pop
+      //   169: aconst_null
+      //   170: areturn
+      //   171: aload_0
+      //   172: invokevirtual 47	android/os/AsyncTask:isCancelled	()Z
+      //   175: ifeq +14 -> 189
+      //   178: aload_0
+      //   179: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   182: iconst_0
+      //   183: invokestatic 55	com/alivecor/ecg/record/EcgStripView:access$2602	(Lcom/alivecor/ecg/record/EcgStripView;I)I
+      //   186: pop
+      //   187: aconst_null
+      //   188: areturn
+      //   189: aload_0
+      //   190: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   193: invokestatic 100	com/alivecor/ecg/record/EcgStripView:access$2800	(Lcom/alivecor/ecg/record/EcgStripView;)Z
+      //   196: ifeq +6 -> 202
+      //   199: aload 6
+      //   201: astore_1
+      //   202: new 102	com/alivecor/ecg/core/EcgFile
+      //   205: dup
+      //   206: invokespecial 103	com/alivecor/ecg/core/EcgFile:<init>	()V
+      //   209: astore 6
+      //   211: ldc 105
+      //   213: iconst_1
+      //   214: anewarray 74	java/lang/Object
+      //   217: dup
+      //   218: iconst_0
+      //   219: aload 6
+      //   221: aastore
+      //   222: invokestatic 96	l/a/a:a	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   225: aload 6
+      //   227: aload_1
+      //   228: invokevirtual 109	com/alivecor/ecg/core/EcgFile:open	(Ljava/io/File;)Z
+      //   231: ifeq +905 -> 1136
+      //   234: aload 6
+      //   236: invokevirtual 113	com/alivecor/ecg/core/EcgFile:getTotalLead1Samples	()I
+      //   239: iconst_2
+      //   240: if_icmpge +6 -> 246
+      //   243: goto +893 -> 1136
+      //   246: aload_0
+      //   247: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   250: invokestatic 51	com/alivecor/ecg/record/EcgStripView:access$2500	(Lcom/alivecor/ecg/record/EcgStripView;)Ljava/lang/Object;
+      //   253: astore_1
+      //   254: aload_1
+      //   255: monitorenter
+      //   256: aload_0
+      //   257: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   260: iconst_0
+      //   261: invokestatic 117	com/alivecor/ecg/record/EcgStripView:access$2902	(Lcom/alivecor/ecg/record/EcgStripView;Z)Z
+      //   264: pop
+      //   265: aload_0
+      //   266: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   269: astore 7
+      //   271: aload 7
+      //   273: invokestatic 120	com/alivecor/ecg/record/EcgStripView:access$3000	(Lcom/alivecor/ecg/record/EcgStripView;)Z
+      //   276: ifeq +21 -> 297
+      //   279: aload_0
+      //   280: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   283: invokestatic 124	com/alivecor/ecg/record/EcgStripView:access$000	(Lcom/alivecor/ecg/record/EcgStripView;)Landroid/graphics/RectF;
+      //   286: invokevirtual 130	android/graphics/RectF:width	()F
+      //   289: ldc -125
+      //   291: fdiv
+      //   292: f2i
+      //   293: istore_2
+      //   294: goto +9 -> 303
+      //   297: aload 6
+      //   299: invokevirtual 113	com/alivecor/ecg/core/EcgFile:getTotalLead1Samples	()I
+      //   302: istore_2
+      //   303: aload 7
+      //   305: iload_2
+      //   306: invokestatic 55	com/alivecor/ecg/record/EcgStripView:access$2602	(Lcom/alivecor/ecg/record/EcgStripView;I)I
+      //   309: pop
+      //   310: aload_0
+      //   311: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   314: invokestatic 135	com/alivecor/ecg/record/EcgStripView:access$3100	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   317: ifnull +30 -> 347
+      //   320: aload_0
+      //   321: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   324: invokestatic 135	com/alivecor/ecg/record/EcgStripView:access$3100	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   327: arraylength
+      //   328: aload_0
+      //   329: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   332: invokestatic 139	com/alivecor/ecg/record/EcgStripView:access$2600	(Lcom/alivecor/ecg/record/EcgStripView;)I
+      //   335: if_icmpeq +12 -> 347
+      //   338: aload_0
+      //   339: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   342: aconst_null
+      //   343: invokestatic 143	com/alivecor/ecg/record/EcgStripView:access$3102	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   346: pop
+      //   347: aload_0
+      //   348: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   351: invokestatic 135	com/alivecor/ecg/record/EcgStripView:access$3100	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   354: ifnonnull +22 -> 376
+      //   357: aload_0
+      //   358: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   361: astore 7
+      //   363: aload 7
+      //   365: aload 7
+      //   367: invokestatic 139	com/alivecor/ecg/record/EcgStripView:access$2600	(Lcom/alivecor/ecg/record/EcgStripView;)I
+      //   370: newarray short
+      //   372: invokestatic 143	com/alivecor/ecg/record/EcgStripView:access$3102	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   375: pop
+      //   376: aload 6
+      //   378: invokevirtual 146	com/alivecor/ecg/core/EcgFile:getAnnotationCount	()I
+      //   381: istore_2
+      //   382: aload_0
+      //   383: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   386: invokestatic 150	com/alivecor/ecg/record/EcgStripView:access$3200	(Lcom/alivecor/ecg/record/EcgStripView;)[I
+      //   389: ifnull +24 -> 413
+      //   392: aload_0
+      //   393: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   396: invokestatic 150	com/alivecor/ecg/record/EcgStripView:access$3200	(Lcom/alivecor/ecg/record/EcgStripView;)[I
+      //   399: arraylength
+      //   400: iload_2
+      //   401: if_icmpeq +12 -> 413
+      //   404: aload_0
+      //   405: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   408: aconst_null
+      //   409: invokestatic 154	com/alivecor/ecg/record/EcgStripView:access$3202	(Lcom/alivecor/ecg/record/EcgStripView;[I)[I
+      //   412: pop
+      //   413: iload_2
+      //   414: ifle +85 -> 499
+      //   417: aload_0
+      //   418: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   421: invokestatic 150	com/alivecor/ecg/record/EcgStripView:access$3200	(Lcom/alivecor/ecg/record/EcgStripView;)[I
+      //   424: ifnonnull +14 -> 438
+      //   427: aload_0
+      //   428: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   431: iload_2
+      //   432: newarray int
+      //   434: invokestatic 154	com/alivecor/ecg/record/EcgStripView:access$3202	(Lcom/alivecor/ecg/record/EcgStripView;[I)[I
+      //   437: pop
+      //   438: aload 6
+      //   440: invokevirtual 158	com/alivecor/ecg/core/EcgFile:getAnnotations	()[I
+      //   443: iconst_0
+      //   444: aload_0
+      //   445: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   448: invokestatic 150	com/alivecor/ecg/record/EcgStripView:access$3200	(Lcom/alivecor/ecg/record/EcgStripView;)[I
+      //   451: iconst_0
+      //   452: iload_2
+      //   453: invokestatic 164	java/lang/System:arraycopy	(Ljava/lang/Object;ILjava/lang/Object;II)V
+      //   456: aload_0
+      //   457: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   460: invokestatic 150	com/alivecor/ecg/record/EcgStripView:access$3200	(Lcom/alivecor/ecg/record/EcgStripView;)[I
+      //   463: invokestatic 170	java/util/Arrays:sort	([I)V
+      //   466: iconst_0
+      //   467: istore_2
+      //   468: iload_2
+      //   469: aload_0
+      //   470: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   473: invokestatic 150	com/alivecor/ecg/record/EcgStripView:access$3200	(Lcom/alivecor/ecg/record/EcgStripView;)[I
+      //   476: arraylength
+      //   477: if_icmpge +22 -> 499
+      //   480: aload_0
+      //   481: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   484: invokestatic 150	com/alivecor/ecg/record/EcgStripView:access$3200	(Lcom/alivecor/ecg/record/EcgStripView;)[I
+      //   487: iload_2
+      //   488: iaload
+      //   489: ifge +10 -> 499
+      //   492: iload_2
+      //   493: iconst_1
+      //   494: iadd
+      //   495: istore_2
+      //   496: goto -28 -> 468
+      //   499: aload_0
+      //   500: invokevirtual 47	android/os/AsyncTask:isCancelled	()Z
+      //   503: ifeq +21 -> 524
+      //   506: aload_0
+      //   507: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   510: iconst_0
+      //   511: invokestatic 55	com/alivecor/ecg/record/EcgStripView:access$2602	(Lcom/alivecor/ecg/record/EcgStripView;I)I
+      //   514: pop
+      //   515: aload_1
+      //   516: monitorexit
+      //   517: aload 6
+      //   519: invokevirtual 173	com/alivecor/ecg/core/EcgFile:close	()V
+      //   522: aconst_null
+      //   523: areturn
+      //   524: getstatic 179	com/alivecor/ecg/core/EcgFile$Lead:LEAD_1	Lcom/alivecor/ecg/core/EcgFile$Lead;
+      //   527: astore 7
+      //   529: aload 6
+      //   531: aload 7
+      //   533: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   536: lconst_0
+      //   537: lcmp
+      //   538: ifle +47 -> 585
+      //   541: aload 6
+      //   543: aload 7
+      //   545: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   548: lstore_3
+      //   549: ldc -71
+      //   551: iconst_2
+      //   552: anewarray 74	java/lang/Object
+      //   555: dup
+      //   556: iconst_0
+      //   557: aload 7
+      //   559: aastore
+      //   560: dup
+      //   561: iconst_1
+      //   562: lload_3
+      //   563: invokestatic 191	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+      //   566: aastore
+      //   567: invokestatic 80	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   570: aload_0
+      //   571: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   574: aload 6
+      //   576: aload 7
+      //   578: invokevirtual 195	com/alivecor/ecg/core/EcgFile:readEcgSamples	(Lcom/alivecor/ecg/core/EcgFile$Lead;)[S
+      //   581: invokestatic 143	com/alivecor/ecg/record/EcgStripView:access$3102	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   584: pop
+      //   585: getstatic 198	com/alivecor/ecg/core/EcgFile$Lead:LEAD_2	Lcom/alivecor/ecg/core/EcgFile$Lead;
+      //   588: astore 7
+      //   590: aload 6
+      //   592: aload 7
+      //   594: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   597: lconst_0
+      //   598: lcmp
+      //   599: ifle +47 -> 646
+      //   602: aload 6
+      //   604: aload 7
+      //   606: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   609: lstore_3
+      //   610: ldc -71
+      //   612: iconst_2
+      //   613: anewarray 74	java/lang/Object
+      //   616: dup
+      //   617: iconst_0
+      //   618: aload 7
+      //   620: aastore
+      //   621: dup
+      //   622: iconst_1
+      //   623: lload_3
+      //   624: invokestatic 191	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+      //   627: aastore
+      //   628: invokestatic 80	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   631: aload_0
+      //   632: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   635: aload 6
+      //   637: aload 7
+      //   639: invokevirtual 195	com/alivecor/ecg/core/EcgFile:readEcgSamples	(Lcom/alivecor/ecg/core/EcgFile$Lead;)[S
+      //   642: invokestatic 201	com/alivecor/ecg/record/EcgStripView:access$3302	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   645: pop
+      //   646: getstatic 204	com/alivecor/ecg/core/EcgFile$Lead:LEAD_3	Lcom/alivecor/ecg/core/EcgFile$Lead;
+      //   649: astore 7
+      //   651: aload 6
+      //   653: aload 7
+      //   655: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   658: lconst_0
+      //   659: lcmp
+      //   660: ifle +47 -> 707
+      //   663: aload 6
+      //   665: aload 7
+      //   667: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   670: lstore_3
+      //   671: ldc -71
+      //   673: iconst_2
+      //   674: anewarray 74	java/lang/Object
+      //   677: dup
+      //   678: iconst_0
+      //   679: aload 7
+      //   681: aastore
+      //   682: dup
+      //   683: iconst_1
+      //   684: lload_3
+      //   685: invokestatic 191	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+      //   688: aastore
+      //   689: invokestatic 80	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   692: aload_0
+      //   693: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   696: aload 6
+      //   698: aload 7
+      //   700: invokevirtual 195	com/alivecor/ecg/core/EcgFile:readEcgSamples	(Lcom/alivecor/ecg/core/EcgFile$Lead;)[S
+      //   703: invokestatic 207	com/alivecor/ecg/record/EcgStripView:access$3402	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   706: pop
+      //   707: getstatic 210	com/alivecor/ecg/core/EcgFile$Lead:LEAD_4	Lcom/alivecor/ecg/core/EcgFile$Lead;
+      //   710: astore 7
+      //   712: aload 6
+      //   714: aload 7
+      //   716: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   719: lconst_0
+      //   720: lcmp
+      //   721: ifle +47 -> 768
+      //   724: aload 6
+      //   726: aload 7
+      //   728: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   731: lstore_3
+      //   732: ldc -71
+      //   734: iconst_2
+      //   735: anewarray 74	java/lang/Object
+      //   738: dup
+      //   739: iconst_0
+      //   740: aload 7
+      //   742: aastore
+      //   743: dup
+      //   744: iconst_1
+      //   745: lload_3
+      //   746: invokestatic 191	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+      //   749: aastore
+      //   750: invokestatic 80	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   753: aload_0
+      //   754: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   757: aload 6
+      //   759: aload 7
+      //   761: invokevirtual 195	com/alivecor/ecg/core/EcgFile:readEcgSamples	(Lcom/alivecor/ecg/core/EcgFile$Lead;)[S
+      //   764: invokestatic 213	com/alivecor/ecg/record/EcgStripView:access$3502	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   767: pop
+      //   768: getstatic 216	com/alivecor/ecg/core/EcgFile$Lead:LEAD_5	Lcom/alivecor/ecg/core/EcgFile$Lead;
+      //   771: astore 7
+      //   773: aload 6
+      //   775: aload 7
+      //   777: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   780: lconst_0
+      //   781: lcmp
+      //   782: ifle +47 -> 829
+      //   785: aload 6
+      //   787: aload 7
+      //   789: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   792: lstore_3
+      //   793: ldc -71
+      //   795: iconst_2
+      //   796: anewarray 74	java/lang/Object
+      //   799: dup
+      //   800: iconst_0
+      //   801: aload 7
+      //   803: aastore
+      //   804: dup
+      //   805: iconst_1
+      //   806: lload_3
+      //   807: invokestatic 191	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+      //   810: aastore
+      //   811: invokestatic 80	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   814: aload_0
+      //   815: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   818: aload 6
+      //   820: aload 7
+      //   822: invokevirtual 195	com/alivecor/ecg/core/EcgFile:readEcgSamples	(Lcom/alivecor/ecg/core/EcgFile$Lead;)[S
+      //   825: invokestatic 219	com/alivecor/ecg/record/EcgStripView:access$3602	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   828: pop
+      //   829: getstatic 222	com/alivecor/ecg/core/EcgFile$Lead:LEAD_6	Lcom/alivecor/ecg/core/EcgFile$Lead;
+      //   832: astore 7
+      //   834: aload 6
+      //   836: aload 7
+      //   838: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   841: lconst_0
+      //   842: lcmp
+      //   843: ifle +47 -> 890
+      //   846: aload 6
+      //   848: aload 7
+      //   850: invokevirtual 183	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+      //   853: lstore_3
+      //   854: ldc -71
+      //   856: iconst_2
+      //   857: anewarray 74	java/lang/Object
+      //   860: dup
+      //   861: iconst_0
+      //   862: aload 7
+      //   864: aastore
+      //   865: dup
+      //   866: iconst_1
+      //   867: lload_3
+      //   868: invokestatic 191	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+      //   871: aastore
+      //   872: invokestatic 80	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   875: aload_0
+      //   876: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   879: aload 6
+      //   881: aload 7
+      //   883: invokevirtual 195	com/alivecor/ecg/core/EcgFile:readEcgSamples	(Lcom/alivecor/ecg/core/EcgFile$Lead;)[S
+      //   886: invokestatic 225	com/alivecor/ecg/record/EcgStripView:access$3702	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   889: pop
+      //   890: aload 6
+      //   892: invokevirtual 228	com/alivecor/ecg/core/EcgFile:getMainsFreq	()I
+      //   895: istore_2
+      //   896: aload_0
+      //   897: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   900: invokestatic 100	com/alivecor/ecg/record/EcgStripView:access$2800	(Lcom/alivecor/ecg/record/EcgStripView;)Z
+      //   903: ifne +189 -> 1092
+      //   906: aload_0
+      //   907: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   910: invokestatic 135	com/alivecor/ecg/record/EcgStripView:access$3100	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   913: ifnull +24 -> 937
+      //   916: aload_0
+      //   917: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   920: astore 7
+      //   922: aload 7
+      //   924: aload 7
+      //   926: invokestatic 135	com/alivecor/ecg/record/EcgStripView:access$3100	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   929: iload_2
+      //   930: invokestatic 233	com/alivecor/ai/d:a	([SI)[S
+      //   933: invokestatic 143	com/alivecor/ecg/record/EcgStripView:access$3102	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   936: pop
+      //   937: aload_0
+      //   938: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   941: invokestatic 236	com/alivecor/ecg/record/EcgStripView:access$3300	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   944: ifnull +24 -> 968
+      //   947: aload_0
+      //   948: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   951: astore 7
+      //   953: aload 7
+      //   955: aload 7
+      //   957: invokestatic 236	com/alivecor/ecg/record/EcgStripView:access$3300	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   960: iload_2
+      //   961: invokestatic 233	com/alivecor/ai/d:a	([SI)[S
+      //   964: invokestatic 201	com/alivecor/ecg/record/EcgStripView:access$3302	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   967: pop
+      //   968: aload_0
+      //   969: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   972: invokestatic 239	com/alivecor/ecg/record/EcgStripView:access$3400	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   975: ifnull +24 -> 999
+      //   978: aload_0
+      //   979: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   982: astore 7
+      //   984: aload 7
+      //   986: aload 7
+      //   988: invokestatic 239	com/alivecor/ecg/record/EcgStripView:access$3400	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   991: iload_2
+      //   992: invokestatic 233	com/alivecor/ai/d:a	([SI)[S
+      //   995: invokestatic 207	com/alivecor/ecg/record/EcgStripView:access$3402	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   998: pop
+      //   999: aload_0
+      //   1000: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   1003: invokestatic 242	com/alivecor/ecg/record/EcgStripView:access$3500	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   1006: ifnull +24 -> 1030
+      //   1009: aload_0
+      //   1010: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   1013: astore 7
+      //   1015: aload 7
+      //   1017: aload 7
+      //   1019: invokestatic 242	com/alivecor/ecg/record/EcgStripView:access$3500	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   1022: iload_2
+      //   1023: invokestatic 233	com/alivecor/ai/d:a	([SI)[S
+      //   1026: invokestatic 213	com/alivecor/ecg/record/EcgStripView:access$3502	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   1029: pop
+      //   1030: aload_0
+      //   1031: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   1034: invokestatic 245	com/alivecor/ecg/record/EcgStripView:access$3600	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   1037: ifnull +24 -> 1061
+      //   1040: aload_0
+      //   1041: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   1044: astore 7
+      //   1046: aload 7
+      //   1048: aload 7
+      //   1050: invokestatic 245	com/alivecor/ecg/record/EcgStripView:access$3600	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   1053: iload_2
+      //   1054: invokestatic 233	com/alivecor/ai/d:a	([SI)[S
+      //   1057: invokestatic 219	com/alivecor/ecg/record/EcgStripView:access$3602	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   1060: pop
+      //   1061: aload_0
+      //   1062: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   1065: invokestatic 248	com/alivecor/ecg/record/EcgStripView:access$3700	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   1068: ifnull +24 -> 1092
+      //   1071: aload_0
+      //   1072: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   1075: astore 7
+      //   1077: aload 7
+      //   1079: aload 7
+      //   1081: invokestatic 248	com/alivecor/ecg/record/EcgStripView:access$3700	(Lcom/alivecor/ecg/record/EcgStripView;)[S
+      //   1084: iload_2
+      //   1085: invokestatic 233	com/alivecor/ai/d:a	([SI)[S
+      //   1088: invokestatic 225	com/alivecor/ecg/record/EcgStripView:access$3702	(Lcom/alivecor/ecg/record/EcgStripView;[S)[S
+      //   1091: pop
+      //   1092: aload_1
+      //   1093: monitorexit
+      //   1094: aload_0
+      //   1095: invokevirtual 47	android/os/AsyncTask:isCancelled	()Z
+      //   1098: istore 5
+      //   1100: iload 5
+      //   1102: ifne +15 -> 1117
+      //   1105: ldc -6
+      //   1107: iconst_0
+      //   1108: anewarray 74	java/lang/Object
+      //   1111: invokestatic 96	l/a/a:a	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   1114: goto +78 -> 1192
+      //   1117: ldc -4
+      //   1119: iconst_0
+      //   1120: anewarray 74	java/lang/Object
+      //   1123: invokestatic 96	l/a/a:a	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   1126: goto +66 -> 1192
+      //   1129: astore 7
+      //   1131: aload_1
+      //   1132: monitorexit
+      //   1133: aload 7
+      //   1135: athrow
+      //   1136: ldc -2
+      //   1138: iconst_2
+      //   1139: anewarray 74	java/lang/Object
+      //   1142: dup
+      //   1143: iconst_0
+      //   1144: aload_1
+      //   1145: aastore
+      //   1146: dup
+      //   1147: iconst_1
+      //   1148: aload 6
+      //   1150: invokevirtual 113	com/alivecor/ecg/core/EcgFile:getTotalLead1Samples	()I
+      //   1153: invokestatic 259	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+      //   1156: aastore
+      //   1157: invokestatic 261	l/a/a:b	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   1160: aload_0
+      //   1161: getfield 21	com/alivecor/ecg/record/EcgStripView$ReadEcgFileTask:this$0	Lcom/alivecor/ecg/record/EcgStripView;
+      //   1164: iconst_0
+      //   1165: invokestatic 55	com/alivecor/ecg/record/EcgStripView:access$2602	(Lcom/alivecor/ecg/record/EcgStripView;I)I
+      //   1168: pop
+      //   1169: aload 6
+      //   1171: invokevirtual 173	com/alivecor/ecg/core/EcgFile:close	()V
+      //   1174: aconst_null
+      //   1175: areturn
+      //   1176: astore_1
+      //   1177: goto +32 -> 1209
+      //   1180: astore_1
+      //   1181: aload_1
+      //   1182: ldc_w 263
+      //   1185: iconst_0
+      //   1186: anewarray 74	java/lang/Object
+      //   1189: invokestatic 267	l/a/a:c	(Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/Object;)V
+      //   1192: aload 6
+      //   1194: invokevirtual 173	com/alivecor/ecg/core/EcgFile:close	()V
+      //   1197: ldc_w 269
+      //   1200: iconst_0
+      //   1201: anewarray 74	java/lang/Object
+      //   1204: invokestatic 80	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+      //   1207: aconst_null
+      //   1208: areturn
+      //   1209: aload 6
+      //   1211: invokevirtual 173	com/alivecor/ecg/core/EcgFile:close	()V
+      //   1214: aload_1
+      //   1215: athrow
+      //   1216: astore_1
+      //   1217: aload 7
+      //   1219: monitorexit
+      //   1220: aload_1
+      //   1221: athrow
+      // Local variable table:
+      //   start	length	slot	name	signature
+      //   0	1222	0	this	ReadEcgFileTask
+      //   293	792	2	i	int
+      //   548	320	3	l	long
+      //   1098	3	5	bool	boolean
+      //   49	1161	6	localObject1	Object
+      //   16	1064	7	localObject2	Object
+      //   1129	89	7	localObject3	Object
+      // Exception table:
+      //   from	to	target	type
+      //   256	294	1129	finally
+      //   297	303	1129	finally
+      //   303	347	1129	finally
+      //   347	376	1129	finally
+      //   376	413	1129	finally
+      //   417	438	1129	finally
+      //   438	466	1129	finally
+      //   468	492	1129	finally
+      //   499	517	1129	finally
+      //   524	549	1129	finally
+      //   549	585	1129	finally
+      //   585	610	1129	finally
+      //   610	646	1129	finally
+      //   646	671	1129	finally
+      //   671	707	1129	finally
+      //   707	732	1129	finally
+      //   732	768	1129	finally
+      //   768	793	1129	finally
+      //   793	829	1129	finally
+      //   829	854	1129	finally
+      //   854	890	1129	finally
+      //   890	937	1129	finally
+      //   937	968	1129	finally
+      //   968	999	1129	finally
+      //   999	1030	1129	finally
+      //   1030	1061	1129	finally
+      //   1061	1092	1129	finally
+      //   1092	1094	1129	finally
+      //   1131	1133	1129	finally
+      //   225	243	1176	finally
+      //   246	256	1176	finally
+      //   1094	1100	1176	finally
+      //   1105	1114	1176	finally
+      //   1117	1126	1176	finally
+      //   1133	1136	1176	finally
+      //   1136	1169	1176	finally
+      //   1181	1192	1176	finally
+      //   225	243	1180	java/io/IOException
+      //   246	256	1180	java/io/IOException
+      //   1094	1100	1180	java/io/IOException
+      //   1105	1114	1180	java/io/IOException
+      //   1117	1126	1180	java/io/IOException
+      //   1133	1136	1180	java/io/IOException
+      //   1136	1169	1180	java/io/IOException
+      //   21	40	1216	finally
+      //   42	108	1216	finally
+      //   1217	1220	1216	finally
+    }
+    
+    protected void onPostExecute(Void paramVoid)
+    {
+      l.a.a.a("onPostExecute", new Object[0]);
+      try
+      {
+        if (!isCancelled())
+        {
+          paramVoid = activityWeakRef;
+          if ((paramVoid != null) && (paramVoid.get() != null))
+          {
+            boolean bool = ((Activity)activityWeakRef.get()).isFinishing();
+            if (!bool)
+            {
+              l.a.a.d("readEcgFileTask onPostExecute", new Object[0]);
+              EcgStripView.access$3802(EcgStripView.this, true);
+              scrollTo(0, 0);
+              EcgStripView.this.setEcgViewLimits();
+              float f = mCurrentViewport.width();
+              if (mCurrentViewport.left > mMaxX - f)
+              {
+                mCurrentViewport.left = (mMaxX - f);
+                mCurrentViewport.right = (mCurrentViewport.left + f);
+              }
+              EcgStripView.this.constrainViewport();
+              f0.g0(EcgStripView.this);
+            }
+          }
+        }
+        paramVoid = (TextView)getRootView().findViewById(R.id.textProgress);
+        if (paramVoid != null) {
+          paramVoid.setVisibility(8);
+        }
+        if (mNeedToBeInCenter)
+        {
+          EcgStripView.this.moveToCenter();
+          return;
+        }
+      }
+      catch (Exception paramVoid)
+      {
+        l.a.a.c(paramVoid, " failed to execute ecg loading task", new Object[0]);
+      }
+    }
+    
+    protected void onProgressUpdate(String... paramVarArgs)
+    {
+      TextView localTextView = (TextView)getRootView().findViewById(R.id.textProgress);
+      if (localTextView != null)
+      {
+        localTextView.setText(paramVarArgs[0]);
+        localTextView.setVisibility(0);
+      }
+    }
+  }
+}

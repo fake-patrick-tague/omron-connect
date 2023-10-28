@@ -1,0 +1,278 @@
+package c.i.a;
+
+import android.content.Context;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.database.DataSetObserver;
+import android.os.Handler;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
+
+public abstract class a
+  extends BaseAdapter
+  implements Filterable, b.a
+{
+  protected boolean b;
+  protected boolean c;
+  protected Cursor d;
+  protected Context e;
+  protected int f;
+  protected a g;
+  protected DataSetObserver h;
+  protected b i;
+  
+  public a(Context paramContext, Cursor paramCursor, boolean paramBoolean)
+  {
+    int j;
+    if (paramBoolean) {
+      j = 1;
+    } else {
+      j = 2;
+    }
+    f(paramContext, paramCursor, j);
+  }
+  
+  public void a(Cursor paramCursor)
+  {
+    paramCursor = j(paramCursor);
+    if (paramCursor != null) {
+      paramCursor.close();
+    }
+  }
+  
+  public Cursor b()
+  {
+    return d;
+  }
+  
+  public abstract CharSequence c(Cursor paramCursor);
+  
+  public abstract void e(View paramView, Context paramContext, Cursor paramCursor);
+  
+  void f(Context paramContext, Cursor paramCursor, int paramInt)
+  {
+    boolean bool = false;
+    if ((paramInt & 0x1) == 1)
+    {
+      paramInt |= 0x2;
+      c = true;
+    }
+    else
+    {
+      c = false;
+    }
+    if (paramCursor != null) {
+      bool = true;
+    }
+    d = paramCursor;
+    b = bool;
+    e = paramContext;
+    int j;
+    if (bool) {
+      j = paramCursor.getColumnIndexOrThrow("_id");
+    } else {
+      j = -1;
+    }
+    f = j;
+    if ((paramInt & 0x2) == 2)
+    {
+      g = new a();
+      h = new b();
+    }
+    else
+    {
+      g = null;
+      h = null;
+    }
+    if (bool)
+    {
+      paramContext = g;
+      if (paramContext != null) {
+        paramCursor.registerContentObserver(paramContext);
+      }
+      paramContext = h;
+      if (paramContext != null) {
+        paramCursor.registerDataSetObserver(paramContext);
+      }
+    }
+  }
+  
+  public abstract View g(Context paramContext, Cursor paramCursor, ViewGroup paramViewGroup);
+  
+  public int getCount()
+  {
+    if (b)
+    {
+      Cursor localCursor = d;
+      if (localCursor != null) {
+        return localCursor.getCount();
+      }
+    }
+    return 0;
+  }
+  
+  public View getDropDownView(int paramInt, View paramView, ViewGroup paramViewGroup)
+  {
+    if (b)
+    {
+      d.moveToPosition(paramInt);
+      View localView = paramView;
+      if (paramView == null) {
+        localView = g(e, d, paramViewGroup);
+      }
+      e(localView, e, d);
+      return localView;
+    }
+    return null;
+  }
+  
+  public Filter getFilter()
+  {
+    if (i == null) {
+      i = new b(this);
+    }
+    return i;
+  }
+  
+  public Object getItem(int paramInt)
+  {
+    if (b)
+    {
+      Cursor localCursor = d;
+      if (localCursor != null)
+      {
+        localCursor.moveToPosition(paramInt);
+        return d;
+      }
+    }
+    return null;
+  }
+  
+  public long getItemId(int paramInt)
+  {
+    if (b)
+    {
+      Cursor localCursor = d;
+      if ((localCursor != null) && (localCursor.moveToPosition(paramInt))) {
+        return d.getLong(f);
+      }
+    }
+    return 0L;
+  }
+  
+  public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
+  {
+    if (b)
+    {
+      if (d.moveToPosition(paramInt))
+      {
+        View localView = paramView;
+        if (paramView == null) {
+          localView = h(e, d, paramViewGroup);
+        }
+        e(localView, e, d);
+        return localView;
+      }
+      paramView = new StringBuilder();
+      paramView.append("couldn't move cursor to position ");
+      paramView.append(paramInt);
+      throw new IllegalStateException(paramView.toString());
+    }
+    throw new IllegalStateException("this should only be called when the cursor is valid");
+  }
+  
+  public abstract View h(Context paramContext, Cursor paramCursor, ViewGroup paramViewGroup);
+  
+  protected void i()
+  {
+    if (c)
+    {
+      Cursor localCursor = d;
+      if ((localCursor != null) && (!localCursor.isClosed())) {
+        b = d.requery();
+      }
+    }
+  }
+  
+  public Cursor j(Cursor paramCursor)
+  {
+    Cursor localCursor = d;
+    if (paramCursor == localCursor) {
+      return null;
+    }
+    Object localObject;
+    if (localCursor != null)
+    {
+      localObject = g;
+      if (localObject != null) {
+        localCursor.unregisterContentObserver((ContentObserver)localObject);
+      }
+      localObject = h;
+      if (localObject != null) {
+        localCursor.unregisterDataSetObserver((DataSetObserver)localObject);
+      }
+    }
+    d = paramCursor;
+    if (paramCursor != null)
+    {
+      localObject = g;
+      if (localObject != null) {
+        paramCursor.registerContentObserver((ContentObserver)localObject);
+      }
+      localObject = h;
+      if (localObject != null) {
+        paramCursor.registerDataSetObserver((DataSetObserver)localObject);
+      }
+      f = paramCursor.getColumnIndexOrThrow("_id");
+      b = true;
+      notifyDataSetChanged();
+      return localCursor;
+    }
+    f = -1;
+    b = false;
+    notifyDataSetInvalidated();
+    return localCursor;
+  }
+  
+  private class a
+    extends ContentObserver
+  {
+    a()
+    {
+      super();
+    }
+    
+    public boolean deliverSelfNotifications()
+    {
+      return true;
+    }
+    
+    public void onChange(boolean paramBoolean)
+    {
+      i();
+    }
+  }
+  
+  private class b
+    extends DataSetObserver
+  {
+    b() {}
+    
+    public void onChanged()
+    {
+      a localA = a.this;
+      b = true;
+      localA.notifyDataSetChanged();
+    }
+    
+    public void onInvalidated()
+    {
+      a localA = a.this;
+      b = false;
+      localA.notifyDataSetInvalidated();
+    }
+  }
+}

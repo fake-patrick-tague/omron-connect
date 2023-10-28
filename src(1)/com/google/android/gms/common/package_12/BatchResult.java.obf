@@ -1,0 +1,34 @@
+package com.google.android.gms.common.api;
+
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.concurrent.TimeUnit;
+
+public final class BatchResult
+  implements Result
+{
+  private final Status zaa;
+  private final PendingResult<?>[] zab;
+  
+  BatchResult(Status paramStatus, PendingResult<?>[] paramArrayOfPendingResult)
+  {
+    zaa = paramStatus;
+    zab = paramArrayOfPendingResult;
+  }
+  
+  public Status getStatus()
+  {
+    return zaa;
+  }
+  
+  public <R extends Result> R take(BatchResultToken<R> paramBatchResultToken)
+  {
+    boolean bool;
+    if (mId < zab.length) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    Preconditions.checkArgument(bool, "The result token does not belong to this batch");
+    return zab[mId].await(0L, TimeUnit.MILLISECONDS);
+  }
+}

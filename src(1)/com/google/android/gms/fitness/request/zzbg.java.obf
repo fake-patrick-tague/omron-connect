@@ -1,0 +1,76 @@
+package com.google.android.gms.fitness.request;
+
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.internal.fitness.zzcm;
+import com.google.android.gms.internal.fitness.zzcn;
+
+@Deprecated
+@ShowFirstParty
+@SafeParcelable.Class(creator="StopBleScanRequestCreator")
+@SafeParcelable.Reserved({3, 1000})
+public final class zzbg
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<zzbg> CREATOR = new zzbj();
+  @SafeParcelable.Field(getter="getCallbackBinder", id=2, type="android.os.IBinder")
+  private final zzcn zzql;
+  @SafeParcelable.Field(getter="getBleScanCallbackBinder", id=1, type="android.os.IBinder")
+  private final zzad zzsn;
+  
+  @SafeParcelable.Constructor
+  zzbg(@SafeParcelable.Param(id=1) IBinder paramIBinder1, @SafeParcelable.Param(id=2) IBinder paramIBinder2)
+  {
+    Object localObject = null;
+    if (paramIBinder1 == null)
+    {
+      paramIBinder1 = null;
+    }
+    else
+    {
+      IInterface localIInterface = paramIBinder1.queryLocalInterface("com.google.android.gms.fitness.request.IBleScanCallback");
+      if ((localIInterface instanceof zzad)) {
+        paramIBinder1 = (zzad)localIInterface;
+      } else {
+        paramIBinder1 = new zzaf(paramIBinder1);
+      }
+    }
+    zzsn = paramIBinder1;
+    if (paramIBinder2 == null) {
+      paramIBinder1 = localObject;
+    } else {
+      paramIBinder1 = zzcm.zzj(paramIBinder2);
+    }
+    zzql = paramIBinder1;
+  }
+  
+  public zzbg(zzad paramZzad, zzcn paramZzcn)
+  {
+    zzsn = paramZzad;
+    zzql = paramZzcn;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeIBinder(paramParcel, 1, zzsn.asBinder(), false);
+    Object localObject = zzql;
+    if (localObject == null) {
+      localObject = null;
+    } else {
+      localObject = ((IInterface)localObject).asBinder();
+    }
+    SafeParcelWriter.writeIBinder(paramParcel, 2, (IBinder)localObject, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+}

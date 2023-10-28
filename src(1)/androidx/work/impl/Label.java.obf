@@ -1,0 +1,160 @@
+package androidx.work.impl;
+
+import android.text.TextUtils;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.impl.utils.b;
+import androidx.work.impl.utils.p.a;
+import androidx.work.l;
+import androidx.work.q;
+import androidx.work.s;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+public class g
+  extends q
+{
+  private static final String a = androidx.work.j.f("WorkContinuationImpl");
+  private final j b;
+  private final String c;
+  private final ExistingWorkPolicy d;
+  private final List<? extends s> e;
+  private final List<String> f;
+  private final List<String> g;
+  private final List<g> h;
+  private boolean i;
+  private l j;
+  
+  public g(j paramJ, String paramString, ExistingWorkPolicy paramExistingWorkPolicy, List<? extends s> paramList, List<g> paramList1)
+  {
+    b = paramJ;
+    c = paramString;
+    d = paramExistingWorkPolicy;
+    e = paramList;
+    h = paramList1;
+    f = new ArrayList(paramList.size());
+    g = new ArrayList();
+    if (paramList1 != null)
+    {
+      paramJ = paramList1.iterator();
+      while (paramJ.hasNext())
+      {
+        paramString = (g)paramJ.next();
+        g.addAll(g);
+      }
+    }
+    int k = 0;
+    while (k < paramList.size())
+    {
+      paramJ = ((s)paramList.get(k)).a();
+      f.add(paramJ);
+      g.add(paramJ);
+      k += 1;
+    }
+  }
+  
+  public g(j paramJ, List<? extends s> paramList)
+  {
+    this(paramJ, null, ExistingWorkPolicy.c, paramList, null);
+  }
+  
+  private static boolean i(g paramG, Set<String> paramSet)
+  {
+    paramSet.addAll(paramG.c());
+    Object localObject = l(paramG);
+    Iterator localIterator = paramSet.iterator();
+    while (localIterator.hasNext()) {
+      if (((Set)localObject).contains((String)localIterator.next())) {
+        return true;
+      }
+    }
+    localObject = paramG.e();
+    if ((localObject != null) && (!((List)localObject).isEmpty()))
+    {
+      localObject = ((List)localObject).iterator();
+      while (((Iterator)localObject).hasNext()) {
+        if (i((g)((Iterator)localObject).next(), paramSet)) {
+          return true;
+        }
+      }
+    }
+    paramSet.removeAll(paramG.c());
+    return false;
+  }
+  
+  public static Set<String> l(g paramG)
+  {
+    HashSet localHashSet = new HashSet();
+    paramG = paramG.e();
+    if ((paramG != null) && (!paramG.isEmpty()))
+    {
+      paramG = paramG.iterator();
+      while (paramG.hasNext()) {
+        localHashSet.addAll(((g)paramG.next()).c());
+      }
+    }
+    return localHashSet;
+  }
+  
+  public l a()
+  {
+    if (!i)
+    {
+      b localB = new b(this);
+      b.q().b(localB);
+      j = localB.d();
+    }
+    else
+    {
+      androidx.work.j.c().h(a, String.format("Already enqueued work ids (%s)", new Object[] { TextUtils.join(", ", f) }), new Throwable[0]);
+    }
+    return j;
+  }
+  
+  public ExistingWorkPolicy b()
+  {
+    return d;
+  }
+  
+  public List<String> c()
+  {
+    return f;
+  }
+  
+  public String d()
+  {
+    return c;
+  }
+  
+  public List<g> e()
+  {
+    return h;
+  }
+  
+  public List<? extends s> f()
+  {
+    return e;
+  }
+  
+  public j g()
+  {
+    return b;
+  }
+  
+  public boolean h()
+  {
+    return i(this, new HashSet());
+  }
+  
+  public boolean j()
+  {
+    return i;
+  }
+  
+  public void k()
+  {
+    i = true;
+  }
+}

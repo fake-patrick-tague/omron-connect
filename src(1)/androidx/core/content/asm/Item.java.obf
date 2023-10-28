@@ -1,0 +1,320 @@
+package androidx.core.content.g;
+
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.os.Build.VERSION;
+import android.util.Base64;
+import android.util.TypedValue;
+import android.util.Xml;
+import c.h.i;
+import c.h.n.e;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+public class g
+{
+  private static int a(TypedArray paramTypedArray, int paramInt)
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      return a.a(paramTypedArray, paramInt);
+    }
+    TypedValue localTypedValue = new TypedValue();
+    paramTypedArray.getValue(paramInt, localTypedValue);
+    return type;
+  }
+  
+  public static b b(XmlPullParser paramXmlPullParser, Resources paramResources)
+    throws XmlPullParserException, IOException
+  {
+    int i;
+    do
+    {
+      i = paramXmlPullParser.next();
+    } while ((i != 2) && (i != 1));
+    if (i == 2) {
+      return d(paramXmlPullParser, paramResources);
+    }
+    throw new XmlPullParserException("No start tag found");
+  }
+  
+  public static List<List<byte[]>> c(Resources paramResources, int paramInt)
+  {
+    if (paramInt == 0) {
+      return Collections.emptyList();
+    }
+    TypedArray localTypedArray = paramResources.obtainTypedArray(paramInt);
+    for (;;)
+    {
+      try
+      {
+        if (localTypedArray.length() == 0)
+        {
+          paramResources = Collections.emptyList();
+          return paramResources;
+        }
+        ArrayList localArrayList = new ArrayList();
+        if (a(localTypedArray, 0) == 1)
+        {
+          paramInt = 0;
+          if (paramInt < localTypedArray.length())
+          {
+            int i = localTypedArray.getResourceId(paramInt, 0);
+            if (i == 0) {
+              break label119;
+            }
+            localArrayList.add(h(paramResources.getStringArray(i)));
+            break label119;
+          }
+        }
+        else
+        {
+          localArrayList.add(h(paramResources.getStringArray(paramInt)));
+        }
+        return localArrayList;
+      }
+      finally
+      {
+        localTypedArray.recycle();
+      }
+      label119:
+      paramInt += 1;
+    }
+  }
+  
+  private static b d(XmlPullParser paramXmlPullParser, Resources paramResources)
+    throws XmlPullParserException, IOException
+  {
+    paramXmlPullParser.require(2, null, "font-family");
+    if (paramXmlPullParser.getName().equals("font-family")) {
+      return e(paramXmlPullParser, paramResources);
+    }
+    g(paramXmlPullParser);
+    return null;
+  }
+  
+  private static b e(XmlPullParser paramXmlPullParser, Resources paramResources)
+    throws XmlPullParserException, IOException
+  {
+    Object localObject = paramResources.obtainAttributes(Xml.asAttributeSet(paramXmlPullParser), i.h);
+    String str1 = ((TypedArray)localObject).getString(i.i);
+    String str2 = ((TypedArray)localObject).getString(i.m);
+    String str3 = ((TypedArray)localObject).getString(i.n);
+    int i = ((TypedArray)localObject).getResourceId(i.j, 0);
+    int j = ((TypedArray)localObject).getInteger(i.k, 1);
+    int k = ((TypedArray)localObject).getInteger(i.l, 500);
+    String str4 = ((TypedArray)localObject).getString(i.o);
+    ((TypedArray)localObject).recycle();
+    if ((str1 != null) && (str2 != null) && (str3 != null))
+    {
+      while (paramXmlPullParser.next() != 3) {
+        g(paramXmlPullParser);
+      }
+      return new e(new e(str1, str2, str3, c(paramResources, i)), j, k, str4);
+    }
+    localObject = new ArrayList();
+    while (paramXmlPullParser.next() != 3) {
+      if (paramXmlPullParser.getEventType() == 2) {
+        if (paramXmlPullParser.getName().equals("font")) {
+          ((List)localObject).add(f(paramXmlPullParser, paramResources));
+        } else {
+          g(paramXmlPullParser);
+        }
+      }
+    }
+    if (((List)localObject).isEmpty()) {
+      return null;
+    }
+    return new c((d[])((List)localObject).toArray(new d[0]));
+  }
+  
+  private static d f(XmlPullParser paramXmlPullParser, Resources paramResources)
+    throws XmlPullParserException, IOException
+  {
+    paramResources = paramResources.obtainAttributes(Xml.asAttributeSet(paramXmlPullParser), i.p);
+    int i = i.y;
+    if (!paramResources.hasValue(i)) {
+      i = i.r;
+    }
+    int k = paramResources.getInt(i, 400);
+    i = i.w;
+    if (!paramResources.hasValue(i)) {
+      i = i.s;
+    }
+    boolean bool;
+    if (1 == paramResources.getInt(i, 0)) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    i = i.z;
+    if (!paramResources.hasValue(i)) {
+      i = i.t;
+    }
+    int j = i.x;
+    if (!paramResources.hasValue(j)) {
+      j = i.u;
+    }
+    String str1 = paramResources.getString(j);
+    j = paramResources.getInt(i, 0);
+    i = i.v;
+    if (!paramResources.hasValue(i)) {
+      i = i.q;
+    }
+    int m = paramResources.getResourceId(i, 0);
+    String str2 = paramResources.getString(i);
+    paramResources.recycle();
+    while (paramXmlPullParser.next() != 3) {
+      g(paramXmlPullParser);
+    }
+    return new d(str2, k, bool, str1, j, m);
+  }
+  
+  private static void g(XmlPullParser paramXmlPullParser)
+    throws XmlPullParserException, IOException
+  {
+    int i = 1;
+    while (i > 0)
+    {
+      int j = paramXmlPullParser.next();
+      if (j != 2)
+      {
+        if (j == 3) {
+          i -= 1;
+        }
+      }
+      else {
+        i += 1;
+      }
+    }
+  }
+  
+  private static List<byte[]> h(String[] paramArrayOfString)
+  {
+    ArrayList localArrayList = new ArrayList();
+    int j = paramArrayOfString.length;
+    int i = 0;
+    while (i < j)
+    {
+      localArrayList.add(Base64.decode(paramArrayOfString[i], 0));
+      i += 1;
+    }
+    return localArrayList;
+  }
+  
+  static class a
+  {
+    static int a(TypedArray paramTypedArray, int paramInt)
+    {
+      return paramTypedArray.getType(paramInt);
+    }
+  }
+  
+  public static abstract interface b {}
+  
+  public static final class c
+    implements g.b
+  {
+    private final g.d[] a;
+    
+    public c(g.d[] paramArrayOfD)
+    {
+      a = paramArrayOfD;
+    }
+    
+    public g.d[] a()
+    {
+      return a;
+    }
+  }
+  
+  public static final class d
+  {
+    private final String a;
+    private final int b;
+    private final boolean c;
+    private final String d;
+    private final int e;
+    private final int f;
+    
+    public d(String paramString1, int paramInt1, boolean paramBoolean, String paramString2, int paramInt2, int paramInt3)
+    {
+      a = paramString1;
+      b = paramInt1;
+      c = paramBoolean;
+      d = paramString2;
+      e = paramInt2;
+      f = paramInt3;
+    }
+    
+    public String a()
+    {
+      return a;
+    }
+    
+    public int b()
+    {
+      return f;
+    }
+    
+    public int c()
+    {
+      return e;
+    }
+    
+    public String d()
+    {
+      return d;
+    }
+    
+    public int e()
+    {
+      return b;
+    }
+    
+    public boolean f()
+    {
+      return c;
+    }
+  }
+  
+  public static final class e
+    implements g.b
+  {
+    private final e a;
+    private final int b;
+    private final int c;
+    private final String d;
+    
+    public e(e paramE, int paramInt1, int paramInt2, String paramString)
+    {
+      a = paramE;
+      c = paramInt1;
+      b = paramInt2;
+      d = paramString;
+    }
+    
+    public int a()
+    {
+      return c;
+    }
+    
+    public e b()
+    {
+      return a;
+    }
+    
+    public String c()
+    {
+      return d;
+    }
+    
+    public int d()
+    {
+      return b;
+    }
+  }
+}

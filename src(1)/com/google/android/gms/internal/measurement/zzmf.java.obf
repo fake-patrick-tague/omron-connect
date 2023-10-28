@@ -1,0 +1,56 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+final class zzmf
+  implements Iterator
+{
+  private int zzb;
+  private boolean zzc;
+  private Iterator zzd;
+  
+  private final Iterator zza()
+  {
+    if (zzd == null) {
+      zzd = zzmj.zzh(zza).entrySet().iterator();
+    }
+    return zzd;
+  }
+  
+  public final boolean hasNext()
+  {
+    int i = zzb;
+    boolean bool = true;
+    if (i + 1 >= zzmj.zzf(zza).size())
+    {
+      if (!zzmj.zzh(zza).isEmpty()) {
+        return zza().hasNext();
+      }
+      bool = false;
+    }
+    return bool;
+  }
+  
+  public final void remove()
+  {
+    if (zzc)
+    {
+      zzc = false;
+      zzmj.zzi(zza);
+      if (zzb < zzmj.zzf(zza).size())
+      {
+        zzmj localZzmj = zza;
+        int i = zzb;
+        zzb = (i - 1);
+        zzmj.zzd(localZzmj, i);
+        return;
+      }
+      zza().remove();
+      return;
+    }
+    throw new IllegalStateException("remove() was called before next()");
+  }
+}

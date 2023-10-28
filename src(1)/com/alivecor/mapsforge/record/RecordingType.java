@@ -1,0 +1,17 @@
+package com.alivecor.mapsforge.record;
+
+public enum RecordingType
+{
+  static
+  {
+    RecordingType localRecordingType1 = new RecordingType("NORMAL", 0);
+    NORMAL = localRecordingType1;
+    RecordingType localRecordingType2 = new RecordingType("RESTING_HEART_RATE", 1);
+    RESTING_HEART_RATE = localRecordingType2;
+    RecordingType localRecordingType3 = new RecordingType("WEIGHT", 2);
+    WEIGHT = localRecordingType3;
+    RecordingType localRecordingType4 = new RecordingType("BLOOD_PRESSURE", 3);
+    BLOOD_PRESSURE = localRecordingType4;
+    $VALUES = new RecordingType[] { localRecordingType1, localRecordingType2, localRecordingType3, localRecordingType4 };
+  }
+}

@@ -1,0 +1,240 @@
+package c.h.q;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.os.Build.VERSION;
+import android.view.View;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.Interpolator;
+import java.lang.ref.WeakReference;
+
+public final class j0
+{
+  private final WeakReference<View> a;
+  Runnable b = null;
+  Runnable c = null;
+  int d = -1;
+  
+  j0(View paramView)
+  {
+    a = new WeakReference(paramView);
+  }
+  
+  private void h(final View paramView, final k0 paramK0)
+  {
+    if (paramK0 != null)
+    {
+      paramView.animate().setListener(new a(paramK0, paramView));
+      return;
+    }
+    paramView.animate().setListener(null);
+  }
+  
+  public j0 a(float paramFloat)
+  {
+    View localView = (View)a.get();
+    if (localView != null) {
+      localView.animate().alpha(paramFloat);
+    }
+    return this;
+  }
+  
+  public void b()
+  {
+    View localView = (View)a.get();
+    if (localView != null) {
+      localView.animate().cancel();
+    }
+  }
+  
+  public long c()
+  {
+    View localView = (View)a.get();
+    if (localView != null) {
+      return localView.animate().getDuration();
+    }
+    return 0L;
+  }
+  
+  public j0 e(long paramLong)
+  {
+    View localView = (View)a.get();
+    if (localView != null) {
+      localView.animate().setDuration(paramLong);
+    }
+    return this;
+  }
+  
+  public j0 f(Interpolator paramInterpolator)
+  {
+    View localView = (View)a.get();
+    if (localView != null) {
+      localView.animate().setInterpolator(paramInterpolator);
+    }
+    return this;
+  }
+  
+  public j0 g(k0 paramK0)
+  {
+    View localView = (View)a.get();
+    if (localView != null)
+    {
+      if (Build.VERSION.SDK_INT >= 16)
+      {
+        h(localView, paramK0);
+        return this;
+      }
+      localView.setTag(2113929216, paramK0);
+      h(localView, new c(this));
+    }
+    return this;
+  }
+  
+  public j0 i(long paramLong)
+  {
+    View localView = (View)a.get();
+    if (localView != null) {
+      localView.animate().setStartDelay(paramLong);
+    }
+    return this;
+  }
+  
+  public j0 j(m0 paramM0)
+  {
+    View localView = (View)a.get();
+    if ((localView != null) && (Build.VERSION.SDK_INT >= 19))
+    {
+      d localD = null;
+      if (paramM0 != null) {
+        localD = new d(paramM0, localView);
+      }
+      b.a(localView.animate(), localD);
+    }
+    return this;
+  }
+  
+  public void k()
+  {
+    View localView = (View)a.get();
+    if (localView != null) {
+      localView.animate().start();
+    }
+  }
+  
+  public j0 l(float paramFloat)
+  {
+    View localView = (View)a.get();
+    if (localView != null) {
+      localView.animate().translationY(paramFloat);
+    }
+    return this;
+  }
+  
+  class a
+    extends AnimatorListenerAdapter
+  {
+    a(k0 paramK0, View paramView) {}
+    
+    public void onAnimationCancel(Animator paramAnimator)
+    {
+      paramK0.a(paramView);
+    }
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      paramK0.b(paramView);
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      paramK0.c(paramView);
+    }
+  }
+  
+  static class b
+  {
+    static ViewPropertyAnimator a(ViewPropertyAnimator paramViewPropertyAnimator, ValueAnimator.AnimatorUpdateListener paramAnimatorUpdateListener)
+    {
+      return paramViewPropertyAnimator.setUpdateListener(paramAnimatorUpdateListener);
+    }
+  }
+  
+  static class c
+    implements k0
+  {
+    j0 a;
+    boolean b;
+    
+    c(j0 paramJ0)
+    {
+      a = paramJ0;
+    }
+    
+    public void a(View paramView)
+    {
+      Object localObject = paramView.getTag(2113929216);
+      if ((localObject instanceof k0)) {
+        localObject = (k0)localObject;
+      } else {
+        localObject = null;
+      }
+      if (localObject != null) {
+        ((k0)localObject).a(paramView);
+      }
+    }
+    
+    public void b(View paramView)
+    {
+      int i = a.d;
+      k0 localK0 = null;
+      if (i > -1)
+      {
+        paramView.setLayerType(i, null);
+        a.d = -1;
+      }
+      if ((Build.VERSION.SDK_INT >= 16) || (!b))
+      {
+        Object localObject = a;
+        Runnable localRunnable = c;
+        if (localRunnable != null)
+        {
+          c = null;
+          localRunnable.run();
+        }
+        localObject = paramView.getTag(2113929216);
+        if ((localObject instanceof k0)) {
+          localK0 = (k0)localObject;
+        }
+        if (localK0 != null) {
+          localK0.b(paramView);
+        }
+        b = true;
+      }
+    }
+    
+    public void c(View paramView)
+    {
+      b = false;
+      int i = a.d;
+      k0 localK0 = null;
+      if (i > -1) {
+        paramView.setLayerType(2, null);
+      }
+      Object localObject = a;
+      Runnable localRunnable = b;
+      if (localRunnable != null)
+      {
+        b = null;
+        localRunnable.run();
+      }
+      localObject = paramView.getTag(2113929216);
+      if ((localObject instanceof k0)) {
+        localK0 = (k0)localObject;
+      }
+      if (localK0 != null) {
+        localK0.c(paramView);
+      }
+    }
+  }
+}

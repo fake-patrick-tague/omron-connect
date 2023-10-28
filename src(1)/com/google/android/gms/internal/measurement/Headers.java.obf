@@ -1,0 +1,110 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+public final class zzg
+{
+  public final zzg zza;
+  final zzax zzb;
+  final Map zzc = new HashMap();
+  final Map zzd = new HashMap();
+  
+  public zzg(zzg paramZzg, zzax paramZzax)
+  {
+    zza = paramZzg;
+    zzb = paramZzax;
+  }
+  
+  public final zzg zza()
+  {
+    return new zzg(this, zzb);
+  }
+  
+  public final zzap zzb(zzap paramZzap)
+  {
+    return zzb.zza(this, paramZzap);
+  }
+  
+  public final zzap zzc(zzae paramZzae)
+  {
+    Object localObject = zzap.zzf;
+    Iterator localIterator = paramZzae.zzk();
+    while (localIterator.hasNext())
+    {
+      int i = ((Integer)localIterator.next()).intValue();
+      zzap localZzap = zzb.zza(this, paramZzae.zze(i));
+      localObject = localZzap;
+      if ((localZzap instanceof zzag)) {
+        localObject = localZzap;
+      }
+    }
+    return localObject;
+  }
+  
+  public final zzap zzd(String paramString)
+  {
+    if (zzc.containsKey(paramString)) {
+      return (zzap)zzc.get(paramString);
+    }
+    zzg localZzg = zza;
+    if (localZzg != null) {
+      return localZzg.zzd(paramString);
+    }
+    throw new IllegalArgumentException(String.format("%s is not defined", new Object[] { paramString }));
+  }
+  
+  public final void zze(String paramString, zzap paramZzap)
+  {
+    if (zzd.containsKey(paramString)) {
+      return;
+    }
+    if (paramZzap == null)
+    {
+      zzc.remove(paramString);
+      return;
+    }
+    zzc.put(paramString, paramZzap);
+  }
+  
+  public final void zzf(String paramString, zzap paramZzap)
+  {
+    zze(paramString, paramZzap);
+    zzd.put(paramString, Boolean.TRUE);
+  }
+  
+  public final void zzg(String paramString, zzap paramZzap)
+  {
+    if (!zzc.containsKey(paramString))
+    {
+      zzg localZzg = zza;
+      if ((localZzg != null) && (localZzg.zzh(paramString)))
+      {
+        zza.zzg(paramString, paramZzap);
+        return;
+      }
+    }
+    if (zzd.containsKey(paramString)) {
+      return;
+    }
+    if (paramZzap == null)
+    {
+      zzc.remove(paramString);
+      return;
+    }
+    zzc.put(paramString, paramZzap);
+  }
+  
+  public final boolean zzh(String paramString)
+  {
+    if (zzc.containsKey(paramString)) {
+      return true;
+    }
+    zzg localZzg = zza;
+    if (localZzg != null) {
+      return localZzg.zzh(paramString);
+    }
+    return false;
+  }
+}

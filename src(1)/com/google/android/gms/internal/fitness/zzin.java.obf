@@ -1,0 +1,102 @@
+package com.google.android.gms.internal.fitness;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
+final class zzin<T>
+  implements zzja<T>
+{
+  private final boolean zzaaa;
+  private final zzgo<?> zzaab;
+  private final zzik zzzy;
+  private final zzjs<?, ?> zzzz;
+  
+  private zzin(zzjs<?, ?> paramZzjs, zzgo<?> paramZzgo, zzik paramZzik)
+  {
+    zzzz = paramZzjs;
+    zzaaa = paramZzgo.zze(paramZzik);
+    zzaab = paramZzgo;
+    zzzy = paramZzik;
+  }
+  
+  static <T> zzin<T> zza(zzjs<?, ?> paramZzjs, zzgo<?> paramZzgo, zzik paramZzik)
+  {
+    return new zzin(paramZzjs, paramZzgo, paramZzik);
+  }
+  
+  public final boolean equals(T paramT1, T paramT2)
+  {
+    if (!zzzz.zzo(paramT1).equals(zzzz.zzo(paramT2))) {
+      return false;
+    }
+    if (zzaaa) {
+      return zzaab.zzc(paramT1).equals(zzaab.zzc(paramT2));
+    }
+    return true;
+  }
+  
+  public final int hashCode(T paramT)
+  {
+    int j = zzzz.zzo(paramT).hashCode();
+    int i = j;
+    if (zzaaa) {
+      i = j * 53 + zzaab.zzc(paramT).hashCode();
+    }
+    return i;
+  }
+  
+  public final void zza(T paramT, zzkm paramZzkm)
+    throws IOException
+  {
+    Object localObject = zzaab.zzc(paramT).iterator();
+    while (((Iterator)localObject).hasNext())
+    {
+      Map.Entry localEntry = (Map.Entry)((Iterator)localObject).next();
+      zzgv localZzgv = (zzgv)localEntry.getKey();
+      if ((localZzgv.zzbm() == zzkj.zzady) && (!localZzgv.zzbn()) && (!localZzgv.zzbo()))
+      {
+        if ((localEntry instanceof zzhn)) {
+          paramZzkm.zza(localZzgv.zzc(), ((zzhn)localEntry).zzcg().zzam());
+        } else {
+          paramZzkm.zza(localZzgv.zzc(), localEntry.getValue());
+        }
+      }
+      else {
+        throw new IllegalStateException("Found invalid MessageSet item.");
+      }
+    }
+    localObject = zzzz;
+    ((zzjs)localObject).zzc(((zzjs)localObject).zzo(paramT), paramZzkm);
+  }
+  
+  public final void zzd(T paramT1, T paramT2)
+  {
+    zzjc.zza(zzzz, paramT1, paramT2);
+    if (zzaaa) {
+      zzjc.zza(zzaab, paramT1, paramT2);
+    }
+  }
+  
+  public final void zze(T paramT)
+  {
+    zzzz.zze(paramT);
+    zzaab.zze(paramT);
+  }
+  
+  public final boolean zzl(T paramT)
+  {
+    return zzaab.zzc(paramT).isInitialized();
+  }
+  
+  public final int zzm(T paramT)
+  {
+    zzjs localZzjs = zzzz;
+    int j = localZzjs.zzp(localZzjs.zzo(paramT)) + 0;
+    int i = j;
+    if (zzaaa) {
+      i = j + zzaab.zzc(paramT).zzbk();
+    }
+    return i;
+  }
+}

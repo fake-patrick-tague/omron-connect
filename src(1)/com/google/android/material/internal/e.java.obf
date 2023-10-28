@@ -1,0 +1,191 @@
+package com.google.android.material.internal;
+
+import android.os.Build.VERSION;
+import android.text.Layout.Alignment;
+import android.text.StaticLayout;
+import android.text.StaticLayout.Builder;
+import android.text.TextDirectionHeuristic;
+import android.text.TextDirectionHeuristics;
+import android.text.TextPaint;
+import android.text.TextUtils;
+import android.text.TextUtils.TruncateAt;
+import c.h.p.h;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+
+final class e
+{
+  private static boolean a;
+  private static Constructor<StaticLayout> b;
+  private static Object c;
+  private CharSequence d;
+  private final TextPaint e;
+  private final int f;
+  private int g;
+  private int h;
+  private Layout.Alignment i;
+  private int j;
+  private boolean k;
+  private boolean l;
+  private TextUtils.TruncateAt m;
+  
+  private e(CharSequence paramCharSequence, TextPaint paramTextPaint, int paramInt)
+  {
+    d = paramCharSequence;
+    e = paramTextPaint;
+    f = paramInt;
+    g = 0;
+    h = paramCharSequence.length();
+    i = Layout.Alignment.ALIGN_NORMAL;
+    j = Integer.MAX_VALUE;
+    k = true;
+    m = null;
+  }
+  
+  private void b()
+    throws e.a
+  {
+    if (a) {
+      return;
+    }
+    for (;;)
+    {
+      try
+      {
+        if ((l) && (Build.VERSION.SDK_INT >= 23))
+        {
+          n = 1;
+          if (Build.VERSION.SDK_INT >= 18)
+          {
+            localObject2 = TextDirectionHeuristic.class;
+            if (n != 0) {
+              localObject1 = TextDirectionHeuristics.RTL;
+            } else {
+              localObject1 = TextDirectionHeuristics.LTR;
+            }
+            c = localObject1;
+            localObject1 = localObject2;
+          }
+          else
+          {
+            localObject3 = e.class.getClassLoader();
+            if (!l) {
+              break label231;
+            }
+            localObject1 = "RTL";
+            localObject2 = ((ClassLoader)localObject3).loadClass("android.text.TextDirectionHeuristic");
+            localObject3 = ((ClassLoader)localObject3).loadClass("android.text.TextDirectionHeuristics");
+            c = ((Class)localObject3).getField((String)localObject1).get(localObject3);
+            localObject1 = localObject2;
+          }
+          Object localObject2 = Integer.TYPE;
+          Object localObject3 = Float.TYPE;
+          Object localObject1 = StaticLayout.class.getDeclaredConstructor(new Class[] { CharSequence.class, localObject2, localObject2, TextPaint.class, localObject2, Layout.Alignment.class, localObject1, localObject3, localObject3, Boolean.TYPE, TextUtils.TruncateAt.class, localObject2, localObject2 });
+          b = (Constructor)localObject1;
+          ((Constructor)localObject1).setAccessible(true);
+          a = true;
+          return;
+        }
+      }
+      catch (Exception localException)
+      {
+        throw new a(localException);
+      }
+      int n = 0;
+      continue;
+      label231:
+      String str = "LTR";
+    }
+  }
+  
+  public static e c(CharSequence paramCharSequence, TextPaint paramTextPaint, int paramInt)
+  {
+    return new e(paramCharSequence, paramTextPaint, paramInt);
+  }
+  
+  public StaticLayout a()
+    throws e.a
+  {
+    if (d == null) {
+      d = "";
+    }
+    int n = Math.max(0, f);
+    Object localObject2 = d;
+    Object localObject1 = localObject2;
+    if (j == 1) {
+      localObject1 = TextUtils.ellipsize((CharSequence)localObject2, e, n, m);
+    }
+    int i1 = Math.min(((CharSequence)localObject1).length(), h);
+    h = i1;
+    if (Build.VERSION.SDK_INT >= 23)
+    {
+      if (l) {
+        i = Layout.Alignment.ALIGN_OPPOSITE;
+      }
+      localObject2 = StaticLayout.Builder.obtain((CharSequence)localObject1, g, i1, e, n);
+      ((StaticLayout.Builder)localObject2).setAlignment(i);
+      ((StaticLayout.Builder)localObject2).setIncludePad(k);
+      if (l) {
+        localObject1 = TextDirectionHeuristics.RTL;
+      } else {
+        localObject1 = TextDirectionHeuristics.LTR;
+      }
+      ((StaticLayout.Builder)localObject2).setTextDirection((TextDirectionHeuristic)localObject1);
+      localObject1 = m;
+      if (localObject1 != null) {
+        ((StaticLayout.Builder)localObject2).setEllipsize((TextUtils.TruncateAt)localObject1);
+      }
+      ((StaticLayout.Builder)localObject2).setMaxLines(j);
+      return ((StaticLayout.Builder)localObject2).build();
+    }
+    b();
+    try
+    {
+      localObject1 = (StaticLayout)((Constructor)h.g(b)).newInstance(new Object[] { localObject1, Integer.valueOf(g), Integer.valueOf(h), e, Integer.valueOf(n), i, h.g(c), Float.valueOf(1.0F), Float.valueOf(0.0F), Boolean.valueOf(k), null, Integer.valueOf(n), Integer.valueOf(j) });
+      return localObject1;
+    }
+    catch (Exception localException)
+    {
+      throw new a(localException);
+    }
+  }
+  
+  public e d(Layout.Alignment paramAlignment)
+  {
+    i = paramAlignment;
+    return this;
+  }
+  
+  public e e(TextUtils.TruncateAt paramTruncateAt)
+  {
+    m = paramTruncateAt;
+    return this;
+  }
+  
+  public e f(boolean paramBoolean)
+  {
+    k = paramBoolean;
+    return this;
+  }
+  
+  public e g(boolean paramBoolean)
+  {
+    l = paramBoolean;
+    return this;
+  }
+  
+  public e h(int paramInt)
+  {
+    j = paramInt;
+    return this;
+  }
+  
+  static class a
+    extends Exception
+  {
+    a(Throwable paramThrowable)
+    {
+      super(paramThrowable);
+    }
+  }
+}

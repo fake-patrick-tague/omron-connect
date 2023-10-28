@@ -1,0 +1,631 @@
+package androidx.room.q;
+
+import android.database.Cursor;
+import android.os.Build.VERSION;
+import c.t.a.b;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+public class f
+{
+  public final String a;
+  public final Map<String, a> b;
+  public final Set<b> c;
+  public final Set<d> d;
+  
+  public f(String paramString, Map<String, a> paramMap, Set<b> paramSet, Set<d> paramSet1)
+  {
+    a = paramString;
+    b = Collections.unmodifiableMap(paramMap);
+    c = Collections.unmodifiableSet(paramSet);
+    if (paramSet1 == null) {
+      paramString = null;
+    } else {
+      paramString = Collections.unmodifiableSet(paramSet1);
+    }
+    d = paramString;
+  }
+  
+  public static f a(b paramB, String paramString)
+  {
+    return new f(paramString, b(paramB, paramString), d(paramB, paramString), f(paramB, paramString));
+  }
+  
+  private static Map<String, a> b(b paramB, String paramString)
+  {
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("PRAGMA table_info(`");
+    ((StringBuilder)localObject).append(paramString);
+    ((StringBuilder)localObject).append("`)");
+    paramB = paramB.query(((StringBuilder)localObject).toString());
+    paramString = new HashMap();
+    for (;;)
+    {
+      try
+      {
+        if (paramB.getColumnCount() > 0)
+        {
+          int i = paramB.getColumnIndex("name");
+          int j = paramB.getColumnIndex("type");
+          int k = paramB.getColumnIndex("notnull");
+          int m = paramB.getColumnIndex("pk");
+          int n = paramB.getColumnIndex("dflt_value");
+          if (paramB.moveToNext())
+          {
+            localObject = paramB.getString(i);
+            String str = paramB.getString(j);
+            if (paramB.getInt(k) == 0) {
+              break label212;
+            }
+            bool = true;
+            paramString.put(localObject, new a((String)localObject, str, bool, paramB.getInt(m), paramB.getString(n), 2));
+            continue;
+          }
+        }
+        return paramString;
+      }
+      finally
+      {
+        paramB.close();
+      }
+      label212:
+      boolean bool = false;
+    }
+  }
+  
+  private static List<c> c(Cursor paramCursor)
+  {
+    int j = paramCursor.getColumnIndex("id");
+    int k = paramCursor.getColumnIndex("seq");
+    int m = paramCursor.getColumnIndex("from");
+    int n = paramCursor.getColumnIndex("to");
+    int i1 = paramCursor.getCount();
+    ArrayList localArrayList = new ArrayList();
+    int i = 0;
+    while (i < i1)
+    {
+      paramCursor.moveToPosition(i);
+      localArrayList.add(new c(paramCursor.getInt(j), paramCursor.getInt(k), paramCursor.getString(m), paramCursor.getString(n)));
+      i += 1;
+    }
+    Collections.sort(localArrayList);
+    return localArrayList;
+  }
+  
+  private static Set<b> d(b paramB, String paramString)
+  {
+    HashSet localHashSet = new HashSet();
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("PRAGMA foreign_key_list(`");
+    ((StringBuilder)localObject).append(paramString);
+    ((StringBuilder)localObject).append("`)");
+    paramB = paramB.query(((StringBuilder)localObject).toString());
+    try
+    {
+      int j = paramB.getColumnIndex("id");
+      int k = paramB.getColumnIndex("seq");
+      int m = paramB.getColumnIndex("table");
+      int n = paramB.getColumnIndex("on_delete");
+      int i1 = paramB.getColumnIndex("on_update");
+      paramString = c(paramB);
+      int i2 = paramB.getCount();
+      int i = 0;
+      while (i < i2)
+      {
+        paramB.moveToPosition(i);
+        if (paramB.getInt(k) == 0)
+        {
+          int i3 = paramB.getInt(j);
+          localObject = new ArrayList();
+          ArrayList localArrayList = new ArrayList();
+          Iterator localIterator = paramString.iterator();
+          while (localIterator.hasNext())
+          {
+            c localC = (c)localIterator.next();
+            if (b == i3)
+            {
+              ((List)localObject).add(d);
+              localArrayList.add(e);
+            }
+          }
+          localHashSet.add(new b(paramB.getString(m), paramB.getString(n), paramB.getString(i1), (List)localObject, localArrayList));
+        }
+        i += 1;
+      }
+      return localHashSet;
+    }
+    finally
+    {
+      paramB.close();
+    }
+  }
+  
+  private static d e(b paramB, String paramString, boolean paramBoolean)
+  {
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("PRAGMA index_xinfo(`");
+    ((StringBuilder)localObject).append(paramString);
+    ((StringBuilder)localObject).append("`)");
+    paramB = paramB.query(((StringBuilder)localObject).toString());
+    try
+    {
+      int i = paramB.getColumnIndex("seqno");
+      int j = paramB.getColumnIndex("cid");
+      int k = paramB.getColumnIndex("name");
+      if ((i != -1) && (j != -1) && (k != -1))
+      {
+        localObject = new TreeMap();
+        while (paramB.moveToNext()) {
+          if (paramB.getInt(j) >= 0) {
+            ((TreeMap)localObject).put(Integer.valueOf(paramB.getInt(i)), paramB.getString(k));
+          }
+        }
+        ArrayList localArrayList = new ArrayList(((TreeMap)localObject).size());
+        localArrayList.addAll(((TreeMap)localObject).values());
+        paramString = new d(paramString, paramBoolean, localArrayList);
+        return paramString;
+      }
+      return null;
+    }
+    finally
+    {
+      paramB.close();
+    }
+  }
+  
+  private static Set<d> f(b paramB, String paramString)
+  {
+    Object localObject1 = new StringBuilder();
+    ((StringBuilder)localObject1).append("PRAGMA index_list(`");
+    ((StringBuilder)localObject1).append(paramString);
+    ((StringBuilder)localObject1).append("`)");
+    paramString = paramB.query(((StringBuilder)localObject1).toString());
+    for (;;)
+    {
+      try
+      {
+        int i = paramString.getColumnIndex("name");
+        int j = paramString.getColumnIndex("origin");
+        int k = paramString.getColumnIndex("unique");
+        if ((i != -1) && (j != -1) && (k != -1))
+        {
+          localObject1 = new HashSet();
+          if (paramString.moveToNext())
+          {
+            if (!"c".equals(paramString.getString(j))) {
+              continue;
+            }
+            Object localObject2 = paramString.getString(i);
+            int m = paramString.getInt(k);
+            bool = true;
+            if (m == 1)
+            {
+              localObject2 = e(paramB, (String)localObject2, bool);
+              if (localObject2 == null) {
+                return null;
+              }
+              ((HashSet)localObject1).add(localObject2);
+            }
+          }
+          else
+          {
+            return localObject1;
+          }
+        }
+        else
+        {
+          return null;
+        }
+      }
+      finally
+      {
+        paramString.close();
+      }
+      boolean bool = false;
+    }
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (paramObject != null)
+    {
+      if (f.class != paramObject.getClass()) {
+        return false;
+      }
+      paramObject = (f)paramObject;
+      Object localObject = a;
+      if (localObject != null)
+      {
+        if (!((String)localObject).equals(a)) {
+          return false;
+        }
+      }
+      else if (a != null) {
+        return false;
+      }
+      localObject = b;
+      if (localObject != null)
+      {
+        if (!((Map)localObject).equals(b)) {
+          return false;
+        }
+      }
+      else if (b != null) {
+        return false;
+      }
+      localObject = c;
+      if (localObject != null)
+      {
+        if (!((Set)localObject).equals(c)) {
+          return false;
+        }
+      }
+      else if (c != null) {
+        return false;
+      }
+      localObject = d;
+      if (localObject != null)
+      {
+        paramObject = d;
+        if (paramObject == null) {
+          return true;
+        }
+        return ((Set)localObject).equals(paramObject);
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  public int hashCode()
+  {
+    Object localObject = a;
+    int k = 0;
+    int i;
+    if (localObject != null) {
+      i = ((String)localObject).hashCode();
+    } else {
+      i = 0;
+    }
+    localObject = b;
+    int j;
+    if (localObject != null) {
+      j = ((Map)localObject).hashCode();
+    } else {
+      j = 0;
+    }
+    localObject = c;
+    if (localObject != null) {
+      k = ((Set)localObject).hashCode();
+    }
+    return (i * 31 + j) * 31 + k;
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("TableInfo{name='");
+    localStringBuilder.append(a);
+    localStringBuilder.append('\'');
+    localStringBuilder.append(", columns=");
+    localStringBuilder.append(b);
+    localStringBuilder.append(", foreignKeys=");
+    localStringBuilder.append(c);
+    localStringBuilder.append(", indices=");
+    localStringBuilder.append(d);
+    localStringBuilder.append('}');
+    return localStringBuilder.toString();
+  }
+  
+  public static class a
+  {
+    public final String a;
+    public final String b;
+    public final int c;
+    public final boolean d;
+    public final int e;
+    public final String f;
+    private final int g;
+    
+    public a(String paramString1, String paramString2, boolean paramBoolean, int paramInt1, String paramString3, int paramInt2)
+    {
+      a = paramString1;
+      b = paramString2;
+      d = paramBoolean;
+      e = paramInt1;
+      c = a(paramString2);
+      f = paramString3;
+      g = paramInt2;
+    }
+    
+    private static int a(String paramString)
+    {
+      if (paramString == null) {
+        return 5;
+      }
+      paramString = paramString.toUpperCase(Locale.US);
+      if (paramString.contains("INT")) {
+        return 3;
+      }
+      if ((!paramString.contains("CHAR")) && (!paramString.contains("CLOB")) && (!paramString.contains("TEXT")))
+      {
+        if (paramString.contains("BLOB")) {
+          return 5;
+        }
+        if ((!paramString.contains("REAL")) && (!paramString.contains("FLOA")) && (!paramString.contains("DOUB"))) {
+          return 1;
+        }
+        return 4;
+      }
+      return 2;
+    }
+    
+    public boolean b()
+    {
+      return e > 0;
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (this == paramObject) {
+        return true;
+      }
+      if (paramObject != null)
+      {
+        if (a.class != paramObject.getClass()) {
+          return false;
+        }
+        paramObject = (a)paramObject;
+        if (Build.VERSION.SDK_INT >= 20)
+        {
+          if (e != e) {
+            return false;
+          }
+        }
+        else if (b() != paramObject.b()) {
+          return false;
+        }
+        if (!a.equals(a)) {
+          return false;
+        }
+        if (d != d) {
+          return false;
+        }
+        String str;
+        if ((g == 1) && (g == 2))
+        {
+          str = f;
+          if ((str != null) && (!str.equals(f))) {
+            return false;
+          }
+        }
+        if ((g == 2) && (g == 1))
+        {
+          str = f;
+          if ((str != null) && (!str.equals(f))) {
+            return false;
+          }
+        }
+        int i = g;
+        if ((i != 0) && (i == g))
+        {
+          str = f;
+          if (str != null)
+          {
+            if (!str.equals(f)) {
+              return false;
+            }
+          }
+          else if (f != null) {
+            return false;
+          }
+        }
+        return c == c;
+      }
+      return false;
+    }
+    
+    public int hashCode()
+    {
+      int j = a.hashCode();
+      int k = c;
+      int i;
+      if (d) {
+        i = 1231;
+      } else {
+        i = 1237;
+      }
+      return ((j * 31 + k) * 31 + i) * 31 + e;
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Column{name='");
+      localStringBuilder.append(a);
+      localStringBuilder.append('\'');
+      localStringBuilder.append(", type='");
+      localStringBuilder.append(b);
+      localStringBuilder.append('\'');
+      localStringBuilder.append(", affinity='");
+      localStringBuilder.append(c);
+      localStringBuilder.append('\'');
+      localStringBuilder.append(", notNull=");
+      localStringBuilder.append(d);
+      localStringBuilder.append(", primaryKeyPosition=");
+      localStringBuilder.append(e);
+      localStringBuilder.append(", defaultValue='");
+      localStringBuilder.append(f);
+      localStringBuilder.append('\'');
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  public static class b
+  {
+    public final String a;
+    public final String b;
+    public final String c;
+    public final List<String> d;
+    public final List<String> e;
+    
+    public b(String paramString1, String paramString2, String paramString3, List<String> paramList1, List<String> paramList2)
+    {
+      a = paramString1;
+      b = paramString2;
+      c = paramString3;
+      d = Collections.unmodifiableList(paramList1);
+      e = Collections.unmodifiableList(paramList2);
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (this == paramObject) {
+        return true;
+      }
+      if (paramObject != null)
+      {
+        if (b.class != paramObject.getClass()) {
+          return false;
+        }
+        paramObject = (b)paramObject;
+        if (!a.equals(a)) {
+          return false;
+        }
+        if (!b.equals(b)) {
+          return false;
+        }
+        if (!c.equals(c)) {
+          return false;
+        }
+        if (!d.equals(d)) {
+          return false;
+        }
+        return e.equals(e);
+      }
+      return false;
+    }
+    
+    public int hashCode()
+    {
+      return (((a.hashCode() * 31 + b.hashCode()) * 31 + c.hashCode()) * 31 + d.hashCode()) * 31 + e.hashCode();
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("ForeignKey{referenceTable='");
+      localStringBuilder.append(a);
+      localStringBuilder.append('\'');
+      localStringBuilder.append(", onDelete='");
+      localStringBuilder.append(b);
+      localStringBuilder.append('\'');
+      localStringBuilder.append(", onUpdate='");
+      localStringBuilder.append(c);
+      localStringBuilder.append('\'');
+      localStringBuilder.append(", columnNames=");
+      localStringBuilder.append(d);
+      localStringBuilder.append(", referenceColumnNames=");
+      localStringBuilder.append(e);
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static class c
+    implements Comparable<c>
+  {
+    final int b;
+    final int c;
+    final String d;
+    final String e;
+    
+    c(int paramInt1, int paramInt2, String paramString1, String paramString2)
+    {
+      b = paramInt1;
+      c = paramInt2;
+      d = paramString1;
+      e = paramString2;
+    }
+    
+    public int a(c paramC)
+    {
+      int j = b - b;
+      int i = j;
+      if (j == 0) {
+        i = c - c;
+      }
+      return i;
+    }
+  }
+  
+  public static class d
+  {
+    public final String a;
+    public final boolean b;
+    public final List<String> c;
+    
+    public d(String paramString, boolean paramBoolean, List<String> paramList)
+    {
+      a = paramString;
+      b = paramBoolean;
+      c = paramList;
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (this == paramObject) {
+        return true;
+      }
+      if (paramObject != null)
+      {
+        if (d.class != paramObject.getClass()) {
+          return false;
+        }
+        paramObject = (d)paramObject;
+        if (b != b) {
+          return false;
+        }
+        if (!c.equals(c)) {
+          return false;
+        }
+        if (a.startsWith("index_")) {
+          return a.startsWith("index_");
+        }
+        return a.equals(a);
+      }
+      return false;
+    }
+    
+    public int hashCode()
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e2expr(TypeTransformer.java:632)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:716)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e2expr(TypeTransformer.java:629)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:716)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e2expr(TypeTransformer.java:629)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:716)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Index{name='");
+      localStringBuilder.append(a);
+      localStringBuilder.append('\'');
+      localStringBuilder.append(", unique=");
+      localStringBuilder.append(b);
+      localStringBuilder.append(", columns=");
+      localStringBuilder.append(c);
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+  }
+}

@@ -1,0 +1,175 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.AbstractList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.RandomAccess;
+
+final class zzjx
+  extends zzio
+  implements RandomAccess, zzkl, zzls
+{
+  private static final zzjx zza;
+  private float[] zzb;
+  private int zzc;
+  
+  static
+  {
+    zzjx localZzjx = new zzjx(new float[0], 0);
+    zza = localZzjx;
+    localZzjx.zzb();
+  }
+  
+  zzjx()
+  {
+    this(new float[10], 0);
+  }
+  
+  private zzjx(float[] paramArrayOfFloat, int paramInt)
+  {
+    zzb = paramArrayOfFloat;
+    zzc = paramInt;
+  }
+  
+  private final String zzf(int paramInt)
+  {
+    int i = zzc;
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Index:");
+    localStringBuilder.append(paramInt);
+    localStringBuilder.append(", Size:");
+    localStringBuilder.append(i);
+    return localStringBuilder.toString();
+  }
+  
+  private final void zzg(int paramInt)
+  {
+    if ((paramInt >= 0) && (paramInt < zzc)) {
+      return;
+    }
+    throw new IndexOutOfBoundsException(zzf(paramInt));
+  }
+  
+  public final boolean addAll(Collection paramCollection)
+  {
+    zzbP();
+    zzkm.zze(paramCollection);
+    if (!(paramCollection instanceof zzjx)) {
+      return super.addAll(paramCollection);
+    }
+    paramCollection = (zzjx)paramCollection;
+    int i = zzc;
+    if (i == 0) {
+      return false;
+    }
+    int j = zzc;
+    if (Integer.MAX_VALUE - j >= i)
+    {
+      i = j + i;
+      float[] arrayOfFloat = zzb;
+      if (i > arrayOfFloat.length) {
+        zzb = Arrays.copyOf(arrayOfFloat, i);
+      }
+      System.arraycopy(zzb, 0, zzb, zzc, zzc);
+      zzc = i;
+      modCount += 1;
+      return true;
+    }
+    throw new OutOfMemoryError();
+  }
+  
+  public final boolean contains(Object paramObject)
+  {
+    return indexOf(paramObject) != -1;
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof zzjx)) {
+      return super.equals(paramObject);
+    }
+    paramObject = (zzjx)paramObject;
+    if (zzc != zzc) {
+      return false;
+    }
+    paramObject = zzb;
+    int i = 0;
+    while (i < zzc)
+    {
+      if (Float.floatToIntBits(zzb[i]) != Float.floatToIntBits(paramObject[i])) {
+        return false;
+      }
+      i += 1;
+    }
+    return true;
+  }
+  
+  public final int hashCode()
+  {
+    int j = 1;
+    int i = 0;
+    while (i < zzc)
+    {
+      j = j * 31 + Float.floatToIntBits(zzb[i]);
+      i += 1;
+    }
+    return j;
+  }
+  
+  public final int indexOf(Object paramObject)
+  {
+    if (!(paramObject instanceof Float)) {
+      return -1;
+    }
+    float f = ((Float)paramObject).floatValue();
+    int j = zzc;
+    int i = 0;
+    while (i < j)
+    {
+      if (zzb[i] == f) {
+        return i;
+      }
+      i += 1;
+    }
+    return -1;
+  }
+  
+  protected final void removeRange(int paramInt1, int paramInt2)
+  {
+    zzbP();
+    if (paramInt2 >= paramInt1)
+    {
+      float[] arrayOfFloat = zzb;
+      System.arraycopy(arrayOfFloat, paramInt2, arrayOfFloat, paramInt1, zzc - paramInt2);
+      zzc -= paramInt2 - paramInt1;
+      modCount += 1;
+      return;
+    }
+    throw new IndexOutOfBoundsException("toIndex < fromIndex");
+  }
+  
+  public final int size()
+  {
+    return zzc;
+  }
+  
+  public final void zze(float paramFloat)
+  {
+    zzbP();
+    int i = zzc;
+    float[] arrayOfFloat1 = zzb;
+    if (i == arrayOfFloat1.length)
+    {
+      float[] arrayOfFloat2 = new float[i * 3 / 2 + 1];
+      System.arraycopy(arrayOfFloat1, 0, arrayOfFloat2, 0, i);
+      zzb = arrayOfFloat2;
+    }
+    arrayOfFloat1 = zzb;
+    i = zzc;
+    zzc = (i + 1);
+    arrayOfFloat1[i] = paramFloat;
+  }
+}

@@ -1,0 +1,374 @@
+package androidx.activity.result;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import androidx.core.app.c;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.k;
+import androidx.lifecycle.m;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
+
+public abstract class ActivityResultRegistry
+{
+  private Random a = new Random();
+  private final Map<Integer, String> b = new HashMap();
+  final Map<String, Integer> c = new HashMap();
+  private final Map<String, d> d = new HashMap();
+  ArrayList<String> e = new ArrayList();
+  final transient Map<String, c<?>> f = new HashMap();
+  final Map<String, Object> g = new HashMap();
+  final Bundle h = new Bundle();
+  
+  public ActivityResultRegistry() {}
+  
+  private void a(int paramInt, String paramString)
+  {
+    b.put(Integer.valueOf(paramInt), paramString);
+    c.put(paramString, Integer.valueOf(paramInt));
+  }
+  
+  private <O> void d(String paramString, int paramInt, Intent paramIntent, c<O> paramC)
+  {
+    if ((paramC != null) && (a != null) && (e.contains(paramString)))
+    {
+      a.onActivityResult(b.c(paramInt, paramIntent));
+      e.remove(paramString);
+      return;
+    }
+    g.remove(paramString);
+    h.putParcelable(paramString, new ActivityResult(paramInt, paramIntent));
+  }
+  
+  private int e()
+  {
+    for (int i = a.nextInt(2147418112);; i = a.nextInt(2147418112))
+    {
+      i += 65536;
+      if (!b.containsKey(Integer.valueOf(i))) {
+        break;
+      }
+    }
+    return i;
+  }
+  
+  private void k(String paramString)
+  {
+    if ((Integer)c.get(paramString) != null) {
+      return;
+    }
+    a(e(), paramString);
+  }
+  
+  public final boolean b(int paramInt1, int paramInt2, Intent paramIntent)
+  {
+    String str = (String)b.get(Integer.valueOf(paramInt1));
+    if (str == null) {
+      return false;
+    }
+    d(str, paramInt2, paramIntent, (c)f.get(str));
+    return true;
+  }
+  
+  public final <O> boolean c(int paramInt, O paramO)
+  {
+    String str = (String)b.get(Integer.valueOf(paramInt));
+    if (str == null) {
+      return false;
+    }
+    Object localObject = (c)f.get(str);
+    if (localObject != null)
+    {
+      localObject = a;
+      if (localObject != null)
+      {
+        if (!e.remove(str)) {
+          break label100;
+        }
+        ((a)localObject).onActivityResult(paramO);
+        break label100;
+      }
+    }
+    h.remove(str);
+    g.put(str, paramO);
+    label100:
+    return true;
+  }
+  
+  public abstract <I, O> void f(int paramInt, androidx.activity.result.d.a<I, O> paramA, I paramI, c paramC);
+  
+  public final void g(Bundle paramBundle)
+  {
+    if (paramBundle == null) {
+      return;
+    }
+    ArrayList localArrayList1 = paramBundle.getIntegerArrayList("KEY_COMPONENT_ACTIVITY_REGISTERED_RCS");
+    ArrayList localArrayList2 = paramBundle.getStringArrayList("KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS");
+    if (localArrayList2 != null)
+    {
+      if (localArrayList1 == null) {
+        return;
+      }
+      e = paramBundle.getStringArrayList("KEY_COMPONENT_ACTIVITY_LAUNCHED_KEYS");
+      a = ((Random)paramBundle.getSerializable("KEY_COMPONENT_ACTIVITY_RANDOM_OBJECT"));
+      h.putAll(paramBundle.getBundle("KEY_COMPONENT_ACTIVITY_PENDING_RESULT"));
+      int i = 0;
+      while (i < localArrayList2.size())
+      {
+        paramBundle = (String)localArrayList2.get(i);
+        if (c.containsKey(paramBundle))
+        {
+          Integer localInteger = (Integer)c.remove(paramBundle);
+          if (!h.containsKey(paramBundle)) {
+            b.remove(localInteger);
+          }
+        }
+        a(((Integer)localArrayList1.get(i)).intValue(), (String)localArrayList2.get(i));
+        i += 1;
+      }
+    }
+  }
+  
+  public final void h(Bundle paramBundle)
+  {
+    paramBundle.putIntegerArrayList("KEY_COMPONENT_ACTIVITY_REGISTERED_RCS", new ArrayList(c.values()));
+    paramBundle.putStringArrayList("KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS", new ArrayList(c.keySet()));
+    paramBundle.putStringArrayList("KEY_COMPONENT_ACTIVITY_LAUNCHED_KEYS", new ArrayList(e));
+    paramBundle.putBundle("KEY_COMPONENT_ACTIVITY_PENDING_RESULT", (Bundle)h.clone());
+    paramBundle.putSerializable("KEY_COMPONENT_ACTIVITY_RANDOM_OBJECT", a);
+  }
+  
+  public final <I, O> b<I> i(final String paramString, final androidx.activity.result.d.a<I, O> paramA, a<O> paramA1)
+  {
+    k(paramString);
+    f.put(paramString, new c(paramA1, paramA));
+    if (g.containsKey(paramString))
+    {
+      localObject = g.get(paramString);
+      g.remove(paramString);
+      paramA1.onActivityResult(localObject);
+    }
+    Object localObject = (ActivityResult)h.getParcelable(paramString);
+    if (localObject != null)
+    {
+      h.remove(paramString);
+      paramA1.onActivityResult(paramA.c(((ActivityResult)localObject).b(), ((ActivityResult)localObject).a()));
+    }
+    return new b(paramString, paramA);
+  }
+  
+  public final <I, O> b<I> j(final String paramString, m paramM, final androidx.activity.result.d.a<I, O> paramA, final a<O> paramA1)
+  {
+    Lifecycle localLifecycle = paramM.getLifecycle();
+    if (!localLifecycle.b().a(Lifecycle.State.e))
+    {
+      k(paramString);
+      d localD = (d)d.get(paramString);
+      paramM = localD;
+      if (localD == null) {
+        paramM = new d(localLifecycle);
+      }
+      paramM.a(new k()
+      {
+        public void c(m paramAnonymousM, Lifecycle.Event paramAnonymousEvent)
+        {
+          if (Lifecycle.Event.ON_START.equals(paramAnonymousEvent))
+          {
+            f.put(paramString, new ActivityResultRegistry.c(paramA1, paramA));
+            if (g.containsKey(paramString))
+            {
+              paramAnonymousM = g.get(paramString);
+              g.remove(paramString);
+              paramA1.onActivityResult(paramAnonymousM);
+            }
+            paramAnonymousM = (ActivityResult)h.getParcelable(paramString);
+            if (paramAnonymousM != null)
+            {
+              h.remove(paramString);
+              paramA1.onActivityResult(paramA.c(paramAnonymousM.b(), paramAnonymousM.a()));
+            }
+          }
+          else
+          {
+            if (Lifecycle.Event.ON_STOP.equals(paramAnonymousEvent))
+            {
+              f.remove(paramString);
+              return;
+            }
+            if (Lifecycle.Event.ON_DESTROY.equals(paramAnonymousEvent)) {
+              l(paramString);
+            }
+          }
+        }
+      });
+      d.put(paramString, paramM);
+      return new a(paramString, paramA);
+    }
+    paramString = new StringBuilder();
+    paramString.append("LifecycleOwner ");
+    paramString.append(paramM);
+    paramString.append(" is attempting to register while current state is ");
+    paramString.append(localLifecycle.b());
+    paramString.append(". LifecycleOwners must call register before they are STARTED.");
+    throw new IllegalStateException(paramString.toString());
+  }
+  
+  final void l(String paramString)
+  {
+    if (!e.contains(paramString))
+    {
+      localObject = (Integer)c.remove(paramString);
+      if (localObject != null) {
+        b.remove(localObject);
+      }
+    }
+    f.remove(paramString);
+    if (g.containsKey(paramString))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Dropping pending result for request ");
+      ((StringBuilder)localObject).append(paramString);
+      ((StringBuilder)localObject).append(": ");
+      ((StringBuilder)localObject).append(g.get(paramString));
+      Log.w("ActivityResultRegistry", ((StringBuilder)localObject).toString());
+      g.remove(paramString);
+    }
+    if (h.containsKey(paramString))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Dropping pending result for request ");
+      ((StringBuilder)localObject).append(paramString);
+      ((StringBuilder)localObject).append(": ");
+      ((StringBuilder)localObject).append(h.getParcelable(paramString));
+      Log.w("ActivityResultRegistry", ((StringBuilder)localObject).toString());
+      h.remove(paramString);
+    }
+    Object localObject = (d)d.get(paramString);
+    if (localObject != null)
+    {
+      ((d)localObject).b();
+      d.remove(paramString);
+    }
+  }
+  
+  class a
+    extends b<I>
+  {
+    a(String paramString, androidx.activity.result.d.a paramA) {}
+    
+    public void b(I paramI, c paramC)
+    {
+      Integer localInteger = (Integer)c.get(paramString);
+      if (localInteger != null)
+      {
+        e.add(paramString);
+        try
+        {
+          f(localInteger.intValue(), paramA, paramI, paramC);
+          return;
+        }
+        catch (Exception paramI)
+        {
+          e.remove(paramString);
+          throw paramI;
+        }
+      }
+      paramC = new StringBuilder();
+      paramC.append("Attempting to launch an unregistered ActivityResultLauncher with contract ");
+      paramC.append(paramA);
+      paramC.append(" and input ");
+      paramC.append(paramI);
+      paramC.append(". You must ensure the ActivityResultLauncher is registered before calling launch().");
+      throw new IllegalStateException(paramC.toString());
+    }
+    
+    public void c()
+    {
+      l(paramString);
+    }
+  }
+  
+  class b
+    extends b<I>
+  {
+    b(String paramString, androidx.activity.result.d.a paramA) {}
+    
+    public void b(I paramI, c paramC)
+    {
+      Integer localInteger = (Integer)c.get(paramString);
+      if (localInteger != null)
+      {
+        e.add(paramString);
+        try
+        {
+          f(localInteger.intValue(), paramA, paramI, paramC);
+          return;
+        }
+        catch (Exception paramI)
+        {
+          e.remove(paramString);
+          throw paramI;
+        }
+      }
+      paramC = new StringBuilder();
+      paramC.append("Attempting to launch an unregistered ActivityResultLauncher with contract ");
+      paramC.append(paramA);
+      paramC.append(" and input ");
+      paramC.append(paramI);
+      paramC.append(". You must ensure the ActivityResultLauncher is registered before calling launch().");
+      throw new IllegalStateException(paramC.toString());
+    }
+    
+    public void c()
+    {
+      l(paramString);
+    }
+  }
+  
+  private static class c<O>
+  {
+    final a<O> a;
+    final androidx.activity.result.d.a<?, O> b;
+    
+    c(a<O> paramA, androidx.activity.result.d.a<?, O> paramA1)
+    {
+      a = paramA;
+      b = paramA1;
+    }
+  }
+  
+  private static class d
+  {
+    final Lifecycle a;
+    private final ArrayList<k> b;
+    
+    d(Lifecycle paramLifecycle)
+    {
+      a = paramLifecycle;
+      b = new ArrayList();
+    }
+    
+    void a(k paramK)
+    {
+      a.a(paramK);
+      b.add(paramK);
+    }
+    
+    void b()
+    {
+      Iterator localIterator = b.iterator();
+      while (localIterator.hasNext())
+      {
+        k localK = (k)localIterator.next();
+        a.c(localK);
+      }
+      b.clear();
+    }
+  }
+}

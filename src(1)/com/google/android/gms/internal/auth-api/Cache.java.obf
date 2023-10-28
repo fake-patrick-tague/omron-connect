@@ -1,0 +1,42 @@
+package com.google.android.gms.internal.auth-api;
+
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+
+public final class zbc
+{
+  private static final ClassLoader zba = zbc.class.getClassLoader();
+  
+  private zbc() {}
+  
+  public static <T extends Parcelable> T zba(Parcel paramParcel, Parcelable.Creator<T> paramCreator)
+  {
+    if (paramParcel.readInt() == 0) {
+      return null;
+    }
+    return (Parcelable)paramCreator.createFromParcel(paramParcel);
+  }
+  
+  public static void zbb(Parcel paramParcel, Parcelable paramParcelable)
+  {
+    if (paramParcelable == null)
+    {
+      paramParcel.writeInt(0);
+      return;
+    }
+    paramParcel.writeInt(1);
+    paramParcelable.writeToParcel(paramParcel, 0);
+  }
+  
+  public static void zbc(Parcel paramParcel, IInterface paramIInterface)
+  {
+    if (paramIInterface == null)
+    {
+      paramParcel.writeStrongBinder(null);
+      return;
+    }
+    paramParcel.writeStrongBinder(paramIInterface.asBinder());
+  }
+}

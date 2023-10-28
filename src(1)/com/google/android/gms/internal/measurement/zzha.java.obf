@@ -1,0 +1,90 @@
+package com.google.android.gms.internal.measurement;
+
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.Process;
+import android.os.UserManager;
+import android.util.Log;
+
+public final class zzha
+{
+  private static UserManager zza;
+  private static volatile boolean zzb = zzb() ^ true;
+  
+  private zzha() {}
+  
+  public static boolean zza(Context paramContext)
+  {
+    int i;
+    int j;
+    if (zzb())
+    {
+      if (zzb) {
+        return false;
+      }
+      for (;;)
+      {
+        try
+        {
+          if (!zzb) {
+            break label152;
+          }
+          return false;
+        }
+        finally {}
+        if (i > 2) {
+          break label157;
+        }
+        if (zza == null) {
+          zza = (UserManager)paramContext.getSystemService(UserManager.class);
+        }
+        UserManager localUserManager = zza;
+        if (localUserManager == null)
+        {
+          j = 1;
+          continue;
+        }
+        try
+        {
+          if (!localUserManager.isUserUnlocked())
+          {
+            boolean bool = localUserManager.isUserRunning(Process.myUserHandle());
+            if (bool) {
+              break label157;
+            }
+          }
+          i = 1;
+        }
+        catch (NullPointerException localNullPointerException)
+        {
+          Log.w("DirectBootUtils", "Failed to check if user is unlocked.", localNullPointerException);
+          zza = null;
+          i += 1;
+        }
+      }
+    }
+    for (;;)
+    {
+      j = i;
+      if (i != 0)
+      {
+        zza = null;
+        j = i;
+      }
+      if (j != 0) {
+        zzb = true;
+      }
+      return j == 0;
+      label152:
+      i = 1;
+      break;
+      label157:
+      i = 0;
+    }
+  }
+  
+  public static boolean zzb()
+  {
+    return Build.VERSION.SDK_INT >= 24;
+  }
+}

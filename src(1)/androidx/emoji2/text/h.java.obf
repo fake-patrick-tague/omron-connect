@@ -1,0 +1,137 @@
+package androidx.emoji2.text;
+
+import android.graphics.Typeface;
+import android.util.SparseArray;
+import androidx.emoji2.text.q.b;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+public final class m
+{
+  private final b a;
+  private final char[] b;
+  private final a c;
+  private final Typeface d;
+  
+  private m(Typeface paramTypeface, b paramB)
+  {
+    d = paramTypeface;
+    a = paramB;
+    c = new a(1024);
+    b = new char[paramB.k() * 2];
+    a(paramB);
+  }
+  
+  private void a(b paramB)
+  {
+    int j = paramB.k();
+    int i = 0;
+    while (i < j)
+    {
+      paramB = new h(this, i);
+      Character.toChars(paramB.f(), b, i * 2);
+      h(paramB);
+      i += 1;
+    }
+  }
+  
+  public static m b(Typeface paramTypeface, ByteBuffer paramByteBuffer)
+    throws IOException
+  {
+    try
+    {
+      c.h.m.m.a("EmojiCompat.MetadataRepo.create");
+      paramTypeface = new m(paramTypeface, l.b(paramByteBuffer));
+      return paramTypeface;
+    }
+    finally
+    {
+      c.h.m.m.b();
+    }
+  }
+  
+  public char[] c()
+  {
+    return b;
+  }
+  
+  public b d()
+  {
+    return a;
+  }
+  
+  int e()
+  {
+    return a.l();
+  }
+  
+  a f()
+  {
+    return c;
+  }
+  
+  Typeface g()
+  {
+    return d;
+  }
+  
+  void h(h paramH)
+  {
+    c.h.p.h.h(paramH, "emoji metadata cannot be null");
+    boolean bool;
+    if (paramH.c() > 0) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    c.h.p.h.b(bool, "invalid metadata codepoint length");
+    c.c(paramH, 0, paramH.c() - 1);
+  }
+  
+  static class a
+  {
+    private final SparseArray<a> a;
+    private h b;
+    
+    private a()
+    {
+      this(1);
+    }
+    
+    a(int paramInt)
+    {
+      a = new SparseArray(paramInt);
+    }
+    
+    a a(int paramInt)
+    {
+      SparseArray localSparseArray = a;
+      if (localSparseArray == null) {
+        return null;
+      }
+      return (a)localSparseArray.get(paramInt);
+    }
+    
+    final h b()
+    {
+      return b;
+    }
+    
+    void c(h paramH, int paramInt1, int paramInt2)
+    {
+      a localA2 = a(paramH.b(paramInt1));
+      a localA1 = localA2;
+      if (localA2 == null)
+      {
+        localA1 = new a();
+        a.put(paramH.b(paramInt1), localA1);
+      }
+      if (paramInt2 > paramInt1)
+      {
+        localA1.c(paramH, paramInt1 + 1, paramInt2);
+        return;
+      }
+      b = paramH;
+    }
+  }
+}

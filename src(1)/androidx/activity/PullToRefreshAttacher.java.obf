@@ -1,0 +1,56 @@
+package androidx.activity;
+
+import c.h.p.a;
+import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public abstract class j
+{
+  private CopyOnWriteArrayList<h> mCancellables = new CopyOnWriteArrayList();
+  private boolean mEnabled;
+  private a<Boolean> mEnabledConsumer;
+  
+  public j(boolean paramBoolean)
+  {
+    mEnabled = paramBoolean;
+  }
+  
+  void addCancellable(h paramH)
+  {
+    mCancellables.add(paramH);
+  }
+  
+  public abstract void handleOnBackPressed();
+  
+  public final boolean isEnabled()
+  {
+    return mEnabled;
+  }
+  
+  public final void remove()
+  {
+    Iterator localIterator = mCancellables.iterator();
+    while (localIterator.hasNext()) {
+      ((h)localIterator.next()).cancel();
+    }
+  }
+  
+  void removeCancellable(h paramH)
+  {
+    mCancellables.remove(paramH);
+  }
+  
+  public final void setEnabled(boolean paramBoolean)
+  {
+    mEnabled = paramBoolean;
+    a localA = mEnabledConsumer;
+    if (localA != null) {
+      localA.a(Boolean.valueOf(paramBoolean));
+    }
+  }
+  
+  void setIsEnabledConsumer(a<Boolean> paramA)
+  {
+    mEnabledConsumer = paramA;
+  }
+}

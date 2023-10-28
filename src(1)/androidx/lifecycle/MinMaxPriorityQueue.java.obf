@@ -1,0 +1,76 @@
+package androidx.lifecycle;
+
+import android.os.Handler;
+
+public class d0
+{
+  private final n a;
+  private final Handler b;
+  private a c;
+  
+  public d0(m paramM)
+  {
+    a = new n(paramM);
+    b = new Handler();
+  }
+  
+  private void f(Lifecycle.Event paramEvent)
+  {
+    a localA = c;
+    if (localA != null) {
+      localA.run();
+    }
+    paramEvent = new a(a, paramEvent);
+    c = paramEvent;
+    b.postAtFrontOfQueue(paramEvent);
+  }
+  
+  public Lifecycle a()
+  {
+    return a;
+  }
+  
+  public void b()
+  {
+    f(Lifecycle.Event.ON_START);
+  }
+  
+  public void c()
+  {
+    f(Lifecycle.Event.ON_CREATE);
+  }
+  
+  public void d()
+  {
+    f(Lifecycle.Event.ON_STOP);
+    f(Lifecycle.Event.ON_DESTROY);
+  }
+  
+  public void e()
+  {
+    f(Lifecycle.Event.ON_START);
+  }
+  
+  static class a
+    implements Runnable
+  {
+    private final n b;
+    final Lifecycle.Event c;
+    private boolean d = false;
+    
+    a(n paramN, Lifecycle.Event paramEvent)
+    {
+      b = paramN;
+      c = paramEvent;
+    }
+    
+    public void run()
+    {
+      if (!d)
+      {
+        b.h(c);
+        d = true;
+      }
+    }
+  }
+}

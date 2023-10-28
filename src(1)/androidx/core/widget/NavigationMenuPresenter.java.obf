@@ -1,0 +1,103 @@
+package androidx.core.widget;
+
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.widget.ImageView;
+
+public class e
+{
+  public static ColorStateList a(ImageView paramImageView)
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      return a.a(paramImageView);
+    }
+    if ((paramImageView instanceof n)) {
+      return ((n)paramImageView).getSupportImageTintList();
+    }
+    return null;
+  }
+  
+  public static PorterDuff.Mode b(ImageView paramImageView)
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      return a.b(paramImageView);
+    }
+    if ((paramImageView instanceof n)) {
+      return ((n)paramImageView).getSupportImageTintMode();
+    }
+    return null;
+  }
+  
+  public static void c(ImageView paramImageView, ColorStateList paramColorStateList)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 21)
+    {
+      a.c(paramImageView, paramColorStateList);
+      if (i == 21)
+      {
+        paramColorStateList = paramImageView.getDrawable();
+        if ((paramColorStateList != null) && (a.a(paramImageView) != null))
+        {
+          if (paramColorStateList.isStateful()) {
+            paramColorStateList.setState(paramImageView.getDrawableState());
+          }
+          paramImageView.setImageDrawable(paramColorStateList);
+        }
+      }
+    }
+    else if ((paramImageView instanceof n))
+    {
+      ((n)paramImageView).setSupportImageTintList(paramColorStateList);
+    }
+  }
+  
+  public static void d(ImageView paramImageView, PorterDuff.Mode paramMode)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 21)
+    {
+      a.d(paramImageView, paramMode);
+      if (i == 21)
+      {
+        paramMode = paramImageView.getDrawable();
+        if ((paramMode != null) && (a.a(paramImageView) != null))
+        {
+          if (paramMode.isStateful()) {
+            paramMode.setState(paramImageView.getDrawableState());
+          }
+          paramImageView.setImageDrawable(paramMode);
+        }
+      }
+    }
+    else if ((paramImageView instanceof n))
+    {
+      ((n)paramImageView).setSupportImageTintMode(paramMode);
+    }
+  }
+  
+  static class a
+  {
+    static ColorStateList a(ImageView paramImageView)
+    {
+      return paramImageView.getImageTintList();
+    }
+    
+    static PorterDuff.Mode b(ImageView paramImageView)
+    {
+      return paramImageView.getImageTintMode();
+    }
+    
+    static void c(ImageView paramImageView, ColorStateList paramColorStateList)
+    {
+      paramImageView.setImageTintList(paramColorStateList);
+    }
+    
+    static void d(ImageView paramImageView, PorterDuff.Mode paramMode)
+    {
+      paramImageView.setImageTintMode(paramMode);
+    }
+  }
+}

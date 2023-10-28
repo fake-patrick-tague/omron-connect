@@ -1,0 +1,91 @@
+package com.google.android.gms.oss.licenses;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Layout;
+import android.view.MenuItem;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import androidx.activity.ComponentActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.g;
+import androidx.fragment.app.m;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import java.util.ArrayList;
+import java.util.Collection;
+
+@KeepForSdk
+public final class OssLicensesActivity
+  extends g
+{
+  private com.google.android.gms.internal.oss_licenses.zzc zzh;
+  private String zzi = "";
+  private ScrollView zzj = null;
+  private TextView zzk = null;
+  private int zzl = 0;
+  private Task<String> zzm;
+  private Task<String> zzn;
+  private zzc zzo;
+  zze zzp;
+  
+  public OssLicensesActivity() {}
+  
+  public final void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    setContentView(R.layout.libraries_social_licenses_license_loading);
+    zzo = zzc.zza(this);
+    zzh = ((com.google.android.gms.internal.oss_licenses.zzc)getIntent().getParcelableExtra("license"));
+    if (getSupportActionBar() != null)
+    {
+      getSupportActionBar().I(zzh.toString());
+      getSupportActionBar().A(true);
+      getSupportActionBar().x(true);
+      getSupportActionBar().F(null);
+    }
+    paramBundle = new ArrayList();
+    Object localObject = zzo.zzb();
+    localObject = ((GoogleApi)localObject).doRead(new zzl((zzh)localObject, zzh));
+    zzm = ((Task)localObject);
+    paramBundle.add(localObject);
+    localObject = zzo.zzb();
+    localObject = ((GoogleApi)localObject).doRead(new zzj((zzh)localObject, getPackageName()));
+    zzn = ((Task)localObject);
+    paramBundle.add(localObject);
+    Tasks.whenAll(paramBundle).addOnCompleteListener(new zzf(this));
+  }
+  
+  public final boolean onOptionsItemSelected(MenuItem paramMenuItem)
+  {
+    if (paramMenuItem.getItemId() == 16908332)
+    {
+      finish();
+      return true;
+    }
+    return super.onOptionsItemSelected(paramMenuItem);
+  }
+  
+  public final void onRestoreInstanceState(Bundle paramBundle)
+  {
+    super.onRestoreInstanceState(paramBundle);
+    zzl = paramBundle.getInt("scroll_pos");
+  }
+  
+  public final void onSaveInstanceState(Bundle paramBundle)
+  {
+    super.onSaveInstanceState(paramBundle);
+    TextView localTextView = zzk;
+    if (localTextView != null)
+    {
+      if (zzj == null) {
+        return;
+      }
+      int i = localTextView.getLayout().getLineForVertical(zzj.getScrollY());
+      paramBundle.putInt("scroll_pos", zzk.getLayout().getLineStart(i));
+    }
+  }
+}

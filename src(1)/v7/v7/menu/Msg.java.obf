@@ -1,0 +1,164 @@
+package c.h.m;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+
+final class i
+  implements j
+{
+  private static final Locale[] a = new Locale[0];
+  private static final Locale b = new Locale("en", "XA");
+  private static final Locale c = new Locale("ar", "XB");
+  private static final Locale d = h.b("en-Latn");
+  private final Locale[] e;
+  private final String f;
+  
+  i(Locale... paramVarArgs)
+  {
+    if (paramVarArgs.length == 0)
+    {
+      e = a;
+      f = "";
+      return;
+    }
+    ArrayList localArrayList = new ArrayList();
+    HashSet localHashSet = new HashSet();
+    StringBuilder localStringBuilder = new StringBuilder();
+    int i = 0;
+    while (i < paramVarArgs.length)
+    {
+      Locale localLocale = paramVarArgs[i];
+      if (localLocale != null)
+      {
+        if (!localHashSet.contains(localLocale))
+        {
+          localLocale = (Locale)localLocale.clone();
+          localArrayList.add(localLocale);
+          c(localStringBuilder, localLocale);
+          if (i < paramVarArgs.length - 1) {
+            localStringBuilder.append(',');
+          }
+          localHashSet.add(localLocale);
+        }
+        i += 1;
+      }
+      else
+      {
+        paramVarArgs = new StringBuilder();
+        paramVarArgs.append("list[");
+        paramVarArgs.append(i);
+        paramVarArgs.append("] is null");
+        throw new NullPointerException(paramVarArgs.toString());
+      }
+    }
+    e = ((Locale[])localArrayList.toArray(new Locale[0]));
+    f = localStringBuilder.toString();
+  }
+  
+  static void c(StringBuilder paramStringBuilder, Locale paramLocale)
+  {
+    paramStringBuilder.append(paramLocale.getLanguage());
+    String str = paramLocale.getCountry();
+    if ((str != null) && (!str.isEmpty()))
+    {
+      paramStringBuilder.append('-');
+      paramStringBuilder.append(paramLocale.getCountry());
+    }
+  }
+  
+  public String a()
+  {
+    return f;
+  }
+  
+  public Object b()
+  {
+    return null;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (!(paramObject instanceof i)) {
+      return false;
+    }
+    paramObject = e;
+    if (e.length != paramObject.length) {
+      return false;
+    }
+    int i = 0;
+    for (;;)
+    {
+      Locale[] arrayOfLocale = e;
+      if (i >= arrayOfLocale.length) {
+        break;
+      }
+      if (!arrayOfLocale[i].equals(paramObject[i])) {
+        return false;
+      }
+      i += 1;
+    }
+    return true;
+  }
+  
+  public Locale get(int paramInt)
+  {
+    if (paramInt >= 0)
+    {
+      Locale[] arrayOfLocale = e;
+      if (paramInt < arrayOfLocale.length) {
+        return arrayOfLocale[paramInt];
+      }
+    }
+    return null;
+  }
+  
+  public int hashCode()
+  {
+    Locale[] arrayOfLocale = e;
+    int k = arrayOfLocale.length;
+    int j = 1;
+    int i = 0;
+    while (i < k)
+    {
+      j = j * 31 + arrayOfLocale[i].hashCode();
+      i += 1;
+    }
+    return j;
+  }
+  
+  public boolean isEmpty()
+  {
+    return e.length == 0;
+  }
+  
+  public int size()
+  {
+    return e.length;
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("[");
+    int i = 0;
+    for (;;)
+    {
+      Locale[] arrayOfLocale = e;
+      if (i >= arrayOfLocale.length) {
+        break;
+      }
+      localStringBuilder.append(arrayOfLocale[i]);
+      if (i < e.length - 1) {
+        localStringBuilder.append(',');
+      }
+      i += 1;
+    }
+    localStringBuilder.append("]");
+    return localStringBuilder.toString();
+  }
+}

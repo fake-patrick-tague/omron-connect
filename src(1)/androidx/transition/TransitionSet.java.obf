@@ -1,0 +1,408 @@
+package androidx.transition;
+
+import android.animation.TimeInterpolator;
+import android.util.AndroidRuntimeException;
+import android.view.View;
+import android.view.ViewGroup;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class TransitionSet
+  extends Transition
+{
+  private ArrayList<Transition> L = new ArrayList();
+  private boolean P = true;
+  int Q;
+  boolean R = false;
+  private int S = 0;
+  
+  public TransitionSet() {}
+  
+  private void j0(Transition paramTransition)
+  {
+    L.add(paramTransition);
+    v = this;
+  }
+  
+  private void s0()
+  {
+    b localB = new b(this);
+    Iterator localIterator = L.iterator();
+    while (localIterator.hasNext()) {
+      ((Transition)localIterator.next()).b(localB);
+    }
+    Q = L.size();
+  }
+  
+  public void P(View paramView)
+  {
+    super.P(paramView);
+    int j = L.size();
+    int i = 0;
+    while (i < j)
+    {
+      ((Transition)L.get(i)).P(paramView);
+      i += 1;
+    }
+  }
+  
+  public void T(View paramView)
+  {
+    super.T(paramView);
+    int j = L.size();
+    int i = 0;
+    while (i < j)
+    {
+      ((Transition)L.get(i)).T(paramView);
+      i += 1;
+    }
+  }
+  
+  protected void V()
+  {
+    if (L.isEmpty())
+    {
+      e0();
+      r();
+      return;
+    }
+    s0();
+    Object localObject;
+    if (!P)
+    {
+      int i = 1;
+      while (i < L.size())
+      {
+        ((Transition)L.get(i - 1)).b(new a((Transition)L.get(i)));
+        i += 1;
+      }
+      localObject = (Transition)L.get(0);
+      if (localObject != null) {
+        ((Transition)localObject).V();
+      }
+    }
+    else
+    {
+      localObject = L.iterator();
+      while (((Iterator)localObject).hasNext()) {
+        ((Transition)((Iterator)localObject).next()).V();
+      }
+    }
+  }
+  
+  public void X(Transition.e paramE)
+  {
+    super.X(paramE);
+    S |= 0x8;
+    int j = L.size();
+    int i = 0;
+    while (i < j)
+    {
+      ((Transition)L.get(i)).X(paramE);
+      i += 1;
+    }
+  }
+  
+  public void a0(PathMotion paramPathMotion)
+  {
+    super.a0(paramPathMotion);
+    S |= 0x4;
+    if (L != null)
+    {
+      int i = 0;
+      while (i < L.size())
+      {
+        ((Transition)L.get(i)).a0(paramPathMotion);
+        i += 1;
+      }
+    }
+  }
+  
+  public void b0(k paramK)
+  {
+    super.b0(paramK);
+    S |= 0x2;
+    int j = L.size();
+    int i = 0;
+    while (i < j)
+    {
+      ((Transition)L.get(i)).b0(paramK);
+      i += 1;
+    }
+  }
+  
+  String f0(String paramString)
+  {
+    Object localObject = super.f0(paramString);
+    int i = 0;
+    while (i < L.size())
+    {
+      StringBuilder localStringBuilder1 = new StringBuilder();
+      localStringBuilder1.append((String)localObject);
+      localStringBuilder1.append("\n");
+      localObject = (Transition)L.get(i);
+      StringBuilder localStringBuilder2 = new StringBuilder();
+      localStringBuilder2.append(paramString);
+      localStringBuilder2.append("  ");
+      localStringBuilder1.append(((Transition)localObject).f0(localStringBuilder2.toString()));
+      localObject = localStringBuilder1.toString();
+      i += 1;
+    }
+    return localObject;
+  }
+  
+  public TransitionSet g0(Transition.f paramF)
+  {
+    return (TransitionSet)super.b(paramF);
+  }
+  
+  public TransitionSet h0(View paramView)
+  {
+    int i = 0;
+    while (i < L.size())
+    {
+      ((Transition)L.get(i)).c(paramView);
+      i += 1;
+    }
+    return (TransitionSet)super.c(paramView);
+  }
+  
+  public void i(m paramM)
+  {
+    if (I(b))
+    {
+      Iterator localIterator = L.iterator();
+      while (localIterator.hasNext())
+      {
+        Transition localTransition = (Transition)localIterator.next();
+        if (localTransition.I(b))
+        {
+          localTransition.i(paramM);
+          c.add(localTransition);
+        }
+      }
+    }
+  }
+  
+  public TransitionSet i0(Transition paramTransition)
+  {
+    j0(paramTransition);
+    long l = g;
+    if (l >= 0L) {
+      paramTransition.W(l);
+    }
+    if ((S & 0x1) != 0) {
+      paramTransition.Y(u());
+    }
+    if ((S & 0x2) != 0) {
+      paramTransition.b0(y());
+    }
+    if ((S & 0x4) != 0) {
+      paramTransition.a0(x());
+    }
+    if ((S & 0x8) != 0) {
+      paramTransition.X(t());
+    }
+    return this;
+  }
+  
+  void k(m paramM)
+  {
+    super.k(paramM);
+    int j = L.size();
+    int i = 0;
+    while (i < j)
+    {
+      ((Transition)L.get(i)).k(paramM);
+      i += 1;
+    }
+  }
+  
+  public Transition k0(int paramInt)
+  {
+    if ((paramInt >= 0) && (paramInt < L.size())) {
+      return (Transition)L.get(paramInt);
+    }
+    return null;
+  }
+  
+  public void l(m paramM)
+  {
+    if (I(b))
+    {
+      Iterator localIterator = L.iterator();
+      while (localIterator.hasNext())
+      {
+        Transition localTransition = (Transition)localIterator.next();
+        if (localTransition.I(b))
+        {
+          localTransition.l(paramM);
+          c.add(localTransition);
+        }
+      }
+    }
+  }
+  
+  public int l0()
+  {
+    return L.size();
+  }
+  
+  public TransitionSet m0(Transition.f paramF)
+  {
+    return (TransitionSet)super.R(paramF);
+  }
+  
+  public TransitionSet n0(View paramView)
+  {
+    int i = 0;
+    while (i < L.size())
+    {
+      ((Transition)L.get(i)).S(paramView);
+      i += 1;
+    }
+    return (TransitionSet)super.S(paramView);
+  }
+  
+  public Transition o()
+  {
+    TransitionSet localTransitionSet = (TransitionSet)super.o();
+    L = new ArrayList();
+    int j = L.size();
+    int i = 0;
+    while (i < j)
+    {
+      localTransitionSet.j0(((Transition)L.get(i)).o());
+      i += 1;
+    }
+    return localTransitionSet;
+  }
+  
+  public TransitionSet o0(long paramLong)
+  {
+    super.W(paramLong);
+    if (g >= 0L)
+    {
+      ArrayList localArrayList = L;
+      if (localArrayList != null)
+      {
+        int j = localArrayList.size();
+        int i = 0;
+        while (i < j)
+        {
+          ((Transition)L.get(i)).W(paramLong);
+          i += 1;
+        }
+      }
+    }
+    return this;
+  }
+  
+  public TransitionSet p0(TimeInterpolator paramTimeInterpolator)
+  {
+    S |= 0x1;
+    ArrayList localArrayList = L;
+    if (localArrayList != null)
+    {
+      int j = localArrayList.size();
+      int i = 0;
+      while (i < j)
+      {
+        ((Transition)L.get(i)).Y(paramTimeInterpolator);
+        i += 1;
+      }
+    }
+    return (TransitionSet)super.Y(paramTimeInterpolator);
+  }
+  
+  protected void q(ViewGroup paramViewGroup, n paramN1, n paramN2, ArrayList<m> paramArrayList1, ArrayList<m> paramArrayList2)
+  {
+    long l1 = A();
+    int j = L.size();
+    int i = 0;
+    while (i < j)
+    {
+      Transition localTransition = (Transition)L.get(i);
+      if ((l1 > 0L) && ((P) || (i == 0)))
+      {
+        long l2 = localTransition.A();
+        if (l2 > 0L) {
+          localTransition.c0(l2 + l1);
+        } else {
+          localTransition.c0(l1);
+        }
+      }
+      localTransition.q(paramViewGroup, paramN1, paramN2, paramArrayList1, paramArrayList2);
+      i += 1;
+    }
+  }
+  
+  public TransitionSet q0(int paramInt)
+  {
+    if (paramInt != 0)
+    {
+      if (paramInt == 1)
+      {
+        P = false;
+        return this;
+      }
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Invalid parameter for TransitionSet ordering: ");
+      localStringBuilder.append(paramInt);
+      throw new AndroidRuntimeException(localStringBuilder.toString());
+    }
+    P = true;
+    return this;
+  }
+  
+  public TransitionSet r0(long paramLong)
+  {
+    return (TransitionSet)super.c0(paramLong);
+  }
+  
+  class a
+    extends i
+  {
+    a(Transition paramTransition) {}
+    
+    public void c(Transition paramTransition)
+    {
+      a.V();
+      paramTransition.R(this);
+    }
+  }
+  
+  static class b
+    extends i
+  {
+    TransitionSet a;
+    
+    b(TransitionSet paramTransitionSet)
+    {
+      a = paramTransitionSet;
+    }
+    
+    public void a(Transition paramTransition)
+    {
+      paramTransition = a;
+      if (!R)
+      {
+        paramTransition.e0();
+        a.R = true;
+      }
+    }
+    
+    public void c(Transition paramTransition)
+    {
+      TransitionSet localTransitionSet = a;
+      int i = Q - 1;
+      Q = i;
+      if (i == 0)
+      {
+        R = false;
+        localTransitionSet.r();
+      }
+      paramTransition.R(this);
+    }
+  }
+}

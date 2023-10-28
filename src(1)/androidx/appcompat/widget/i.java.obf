@@ -1,0 +1,207 @@
+package androidx.appcompat.widget;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+import androidx.core.widget.e;
+import c.a.j;
+import c.a.k.a.a;
+import c.h.q.f0;
+
+public class o
+{
+  private final ImageView a;
+  private l0 b;
+  private l0 c;
+  private l0 d;
+  private int e = 0;
+  
+  public o(ImageView paramImageView)
+  {
+    a = paramImageView;
+  }
+  
+  private boolean a(Drawable paramDrawable)
+  {
+    if (d == null) {
+      d = new l0();
+    }
+    l0 localL0 = d;
+    localL0.a();
+    Object localObject = e.a(a);
+    if (localObject != null)
+    {
+      d = true;
+      a = ((ColorStateList)localObject);
+    }
+    localObject = e.b(a);
+    if (localObject != null)
+    {
+      c = true;
+      b = ((PorterDuff.Mode)localObject);
+    }
+    if ((!d) && (!c)) {
+      return false;
+    }
+    k.i(paramDrawable, localL0, a.getDrawableState());
+    return true;
+  }
+  
+  private boolean l()
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i > 21) {
+      return b != null;
+    }
+    return i == 21;
+  }
+  
+  void b()
+  {
+    if (a.getDrawable() != null) {
+      a.getDrawable().setLevel(e);
+    }
+  }
+  
+  void c()
+  {
+    Drawable localDrawable = a.getDrawable();
+    if (localDrawable != null) {
+      x.b(localDrawable);
+    }
+    if (localDrawable != null)
+    {
+      if ((l()) && (a(localDrawable))) {
+        return;
+      }
+      l0 localL0 = c;
+      if (localL0 != null)
+      {
+        k.i(localDrawable, localL0, a.getDrawableState());
+        return;
+      }
+      localL0 = b;
+      if (localL0 != null) {
+        k.i(localDrawable, localL0, a.getDrawableState());
+      }
+    }
+  }
+  
+  ColorStateList d()
+  {
+    l0 localL0 = c;
+    if (localL0 != null) {
+      return a;
+    }
+    return null;
+  }
+  
+  PorterDuff.Mode e()
+  {
+    l0 localL0 = c;
+    if (localL0 != null) {
+      return b;
+    }
+    return null;
+  }
+  
+  boolean f()
+  {
+    Drawable localDrawable = a.getBackground();
+    return (Build.VERSION.SDK_INT < 21) || (!(localDrawable instanceof RippleDrawable));
+  }
+  
+  public void g(AttributeSet paramAttributeSet, int paramInt)
+  {
+    Object localObject2 = a.getContext();
+    Object localObject1 = j.P;
+    localObject2 = n0.v((Context)localObject2, paramAttributeSet, (int[])localObject1, paramInt, 0);
+    ImageView localImageView = a;
+    f0.n0(localImageView, localImageView.getContext(), (int[])localObject1, paramAttributeSet, ((n0)localObject2).r(), paramInt, 0);
+    try
+    {
+      localObject1 = a.getDrawable();
+      paramAttributeSet = (AttributeSet)localObject1;
+      if (localObject1 == null)
+      {
+        paramInt = ((n0)localObject2).n(j.Q, -1);
+        paramAttributeSet = (AttributeSet)localObject1;
+        if (paramInt != -1)
+        {
+          localObject1 = a.b(a.getContext(), paramInt);
+          paramAttributeSet = (AttributeSet)localObject1;
+          if (localObject1 != null)
+          {
+            a.setImageDrawable((Drawable)localObject1);
+            paramAttributeSet = (AttributeSet)localObject1;
+          }
+        }
+      }
+      if (paramAttributeSet != null) {
+        x.b(paramAttributeSet);
+      }
+      paramInt = j.R;
+      if (((n0)localObject2).s(paramInt)) {
+        e.c(a, ((n0)localObject2).c(paramInt));
+      }
+      paramInt = j.S;
+      if (((n0)localObject2).s(paramInt)) {
+        e.d(a, x.d(((n0)localObject2).k(paramInt, -1), null));
+      }
+      return;
+    }
+    finally
+    {
+      ((n0)localObject2).w();
+    }
+  }
+  
+  void h(Drawable paramDrawable)
+  {
+    e = paramDrawable.getLevel();
+  }
+  
+  public void i(int paramInt)
+  {
+    if (paramInt != 0)
+    {
+      Drawable localDrawable = a.b(a.getContext(), paramInt);
+      if (localDrawable != null) {
+        x.b(localDrawable);
+      }
+      a.setImageDrawable(localDrawable);
+    }
+    else
+    {
+      a.setImageDrawable(null);
+    }
+    c();
+  }
+  
+  void j(ColorStateList paramColorStateList)
+  {
+    if (c == null) {
+      c = new l0();
+    }
+    l0 localL0 = c;
+    a = paramColorStateList;
+    d = true;
+    c();
+  }
+  
+  void k(PorterDuff.Mode paramMode)
+  {
+    if (c == null) {
+      c = new l0();
+    }
+    l0 localL0 = c;
+    b = paramMode;
+    c = true;
+    c();
+  }
+}

@@ -1,0 +1,388 @@
+package androidx.appcompat.app;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
+import androidx.activity.ComponentActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.s0;
+import androidx.core.app.v;
+import androidx.core.app.v.a;
+import androidx.lifecycle.k0;
+import androidx.lifecycle.l0;
+import androidx.savedstate.c;
+import androidx.savedstate.c.c;
+import androidx.savedstate.f;
+import c.a.n.b.a;
+
+public class g
+  extends androidx.fragment.app.m
+  implements h, v.a
+{
+  private static final String DELEGATE_TAG = "androidx:appcompat";
+  private i mDelegate;
+  private Resources mResources;
+  
+  public g()
+  {
+    initDelegate();
+  }
+  
+  public g(int paramInt)
+  {
+    super(paramInt);
+    initDelegate();
+  }
+  
+  private void initDelegate()
+  {
+    getSavedStateRegistry().h("androidx:appcompat", new a());
+    addOnContextAvailableListener(new b());
+  }
+  
+  private void initViewTreeOwners()
+  {
+    k0.a(getWindow().getDecorView(), this);
+    l0.a(getWindow().getDecorView(), this);
+    f.a(getWindow().getDecorView(), this);
+    androidx.activity.m.a(getWindow().getDecorView(), this);
+  }
+  
+  private boolean performMenuItemShortcut(KeyEvent paramKeyEvent)
+  {
+    if ((Build.VERSION.SDK_INT < 26) && (!paramKeyEvent.isCtrlPressed()) && (!KeyEvent.metaStateHasNoModifiers(paramKeyEvent.getMetaState())) && (paramKeyEvent.getRepeatCount() == 0) && (!KeyEvent.isModifierKey(paramKeyEvent.getKeyCode())))
+    {
+      Window localWindow = getWindow();
+      if ((localWindow != null) && (localWindow.getDecorView() != null) && (localWindow.getDecorView().dispatchKeyShortcutEvent(paramKeyEvent))) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void addContentView(View paramView, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    initViewTreeOwners();
+    getDelegate().d(paramView, paramLayoutParams);
+  }
+  
+  protected void attachBaseContext(Context paramContext)
+  {
+    super.attachBaseContext(getDelegate().f(paramContext));
+  }
+  
+  public void closeOptionsMenu()
+  {
+    ActionBar localActionBar = getSupportActionBar();
+    if ((getWindow().hasFeature(0)) && ((localActionBar == null) || (!localActionBar.g()))) {
+      super.closeOptionsMenu();
+    }
+  }
+  
+  public boolean dispatchKeyEvent(KeyEvent paramKeyEvent)
+  {
+    int i = paramKeyEvent.getKeyCode();
+    ActionBar localActionBar = getSupportActionBar();
+    if ((i == 82) && (localActionBar != null) && (localActionBar.s(paramKeyEvent))) {
+      return true;
+    }
+    return super.dispatchKeyEvent(paramKeyEvent);
+  }
+  
+  public <T extends View> T findViewById(int paramInt)
+  {
+    return getDelegate().i(paramInt);
+  }
+  
+  public i getDelegate()
+  {
+    if (mDelegate == null) {
+      mDelegate = i.g(this, this);
+    }
+    return mDelegate;
+  }
+  
+  public e getDrawerToggleDelegate()
+  {
+    return getDelegate().m();
+  }
+  
+  public MenuInflater getMenuInflater()
+  {
+    return getDelegate().p();
+  }
+  
+  public Resources getResources()
+  {
+    if ((mResources == null) && (s0.c())) {
+      mResources = new s0(this, super.getResources());
+    }
+    Resources localResources2 = mResources;
+    Resources localResources1 = localResources2;
+    if (localResources2 == null) {
+      localResources1 = super.getResources();
+    }
+    return localResources1;
+  }
+  
+  public ActionBar getSupportActionBar()
+  {
+    return getDelegate().r();
+  }
+  
+  public Intent getSupportParentActivityIntent()
+  {
+    return androidx.core.app.i.a(this);
+  }
+  
+  public void invalidateOptionsMenu()
+  {
+    getDelegate().t();
+  }
+  
+  public void onConfigurationChanged(Configuration paramConfiguration)
+  {
+    super.onConfigurationChanged(paramConfiguration);
+    getDelegate().w(paramConfiguration);
+    if (mResources != null)
+    {
+      paramConfiguration = super.getResources().getConfiguration();
+      DisplayMetrics localDisplayMetrics = super.getResources().getDisplayMetrics();
+      mResources.updateConfiguration(paramConfiguration, localDisplayMetrics);
+    }
+  }
+  
+  public void onContentChanged()
+  {
+    onSupportContentChanged();
+  }
+  
+  public void onCreateSupportNavigateUpTaskStack(v paramV)
+  {
+    paramV.b(this);
+  }
+  
+  protected void onDestroy()
+  {
+    super.onDestroy();
+    getDelegate().y();
+  }
+  
+  public boolean onKeyDown(int paramInt, KeyEvent paramKeyEvent)
+  {
+    if (performMenuItemShortcut(paramKeyEvent)) {
+      return true;
+    }
+    return super.onKeyDown(paramInt, paramKeyEvent);
+  }
+  
+  protected void onLocalesChanged(c.h.m.h paramH) {}
+  
+  public final boolean onMenuItemSelected(int paramInt, MenuItem paramMenuItem)
+  {
+    if (super.onMenuItemSelected(paramInt, paramMenuItem)) {
+      return true;
+    }
+    ActionBar localActionBar = getSupportActionBar();
+    if ((paramMenuItem.getItemId() == 16908332) && (localActionBar != null) && ((localActionBar.k() & 0x4) != 0)) {
+      return onSupportNavigateUp();
+    }
+    return false;
+  }
+  
+  public boolean onMenuOpened(int paramInt, Menu paramMenu)
+  {
+    return super.onMenuOpened(paramInt, paramMenu);
+  }
+  
+  protected void onNightModeChanged(int paramInt) {}
+  
+  public void onPanelClosed(int paramInt, Menu paramMenu)
+  {
+    super.onPanelClosed(paramInt, paramMenu);
+  }
+  
+  protected void onPostCreate(Bundle paramBundle)
+  {
+    super.onPostCreate(paramBundle);
+    getDelegate().z(paramBundle);
+  }
+  
+  protected void onPostResume()
+  {
+    super.onPostResume();
+    getDelegate().A();
+  }
+  
+  public void onPrepareSupportNavigateUpTaskStack(v paramV) {}
+  
+  protected void onStart()
+  {
+    super.onStart();
+    getDelegate().C();
+  }
+  
+  protected void onStop()
+  {
+    super.onStop();
+    getDelegate().D();
+  }
+  
+  public void onSupportActionModeFinished(c.a.n.b paramB) {}
+  
+  public void onSupportActionModeStarted(c.a.n.b paramB) {}
+  
+  @Deprecated
+  public void onSupportContentChanged() {}
+  
+  public boolean onSupportNavigateUp()
+  {
+    Object localObject = getSupportParentActivityIntent();
+    if (localObject != null) {
+      if (supportShouldUpRecreateTask((Intent)localObject))
+      {
+        localObject = v.d(this);
+        onCreateSupportNavigateUpTaskStack((v)localObject);
+        onPrepareSupportNavigateUpTaskStack((v)localObject);
+        ((v)localObject).e();
+      }
+    }
+    try
+    {
+      androidx.core.app.b.n(this);
+    }
+    catch (IllegalStateException localIllegalStateException)
+    {
+      for (;;) {}
+    }
+    finish();
+    break label55;
+    supportNavigateUpTo((Intent)localObject);
+    label55:
+    return true;
+    return false;
+  }
+  
+  protected void onTitleChanged(CharSequence paramCharSequence, int paramInt)
+  {
+    super.onTitleChanged(paramCharSequence, paramInt);
+    getDelegate().N(paramCharSequence);
+  }
+  
+  public c.a.n.b onWindowStartingSupportActionMode(b.a paramA)
+  {
+    return null;
+  }
+  
+  public void openOptionsMenu()
+  {
+    ActionBar localActionBar = getSupportActionBar();
+    if ((getWindow().hasFeature(0)) && ((localActionBar == null) || (!localActionBar.t()))) {
+      super.openOptionsMenu();
+    }
+  }
+  
+  public void setContentView(int paramInt)
+  {
+    initViewTreeOwners();
+    getDelegate().H(paramInt);
+  }
+  
+  public void setContentView(View paramView)
+  {
+    initViewTreeOwners();
+    getDelegate().I(paramView);
+  }
+  
+  public void setContentView(View paramView, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    initViewTreeOwners();
+    getDelegate().J(paramView, paramLayoutParams);
+  }
+  
+  public void setSupportActionBar(Toolbar paramToolbar)
+  {
+    getDelegate().L(paramToolbar);
+  }
+  
+  @Deprecated
+  public void setSupportProgress(int paramInt) {}
+  
+  @Deprecated
+  public void setSupportProgressBarIndeterminate(boolean paramBoolean) {}
+  
+  @Deprecated
+  public void setSupportProgressBarIndeterminateVisibility(boolean paramBoolean) {}
+  
+  @Deprecated
+  public void setSupportProgressBarVisibility(boolean paramBoolean) {}
+  
+  public void setTheme(int paramInt)
+  {
+    super.setTheme(paramInt);
+    getDelegate().M(paramInt);
+  }
+  
+  public c.a.n.b startSupportActionMode(b.a paramA)
+  {
+    return getDelegate().O(paramA);
+  }
+  
+  public void supportInvalidateOptionsMenu()
+  {
+    getDelegate().t();
+  }
+  
+  public void supportNavigateUpTo(Intent paramIntent)
+  {
+    androidx.core.app.i.e(this, paramIntent);
+  }
+  
+  public boolean supportRequestWindowFeature(int paramInt)
+  {
+    return getDelegate().G(paramInt);
+  }
+  
+  public boolean supportShouldUpRecreateTask(Intent paramIntent)
+  {
+    return androidx.core.app.i.f(this, paramIntent);
+  }
+  
+  class a
+    implements c.c
+  {
+    a() {}
+    
+    public Bundle a()
+    {
+      Bundle localBundle = new Bundle();
+      getDelegate().B(localBundle);
+      return localBundle;
+    }
+  }
+  
+  class b
+    implements androidx.activity.n.b
+  {
+    b() {}
+    
+    public void a(Context paramContext)
+    {
+      paramContext = getDelegate();
+      paramContext.s();
+      paramContext.x(getSavedStateRegistry().a("androidx:appcompat"));
+    }
+  }
+}

@@ -1,0 +1,247 @@
+package com.google.android.gms.oss.licenses;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.g;
+import androidx.fragment.app.m;
+import androidx.loader.content.b;
+import c.p.a.a;
+import c.p.a.a.a;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.tasks.Task;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class OssLicensesMenuActivity
+  extends g
+  implements a.a<List<com.google.android.gms.internal.oss_licenses.zzc>>
+{
+  private static String zzx;
+  private boolean zzaa;
+  private Task<String> zzab;
+  private zzc zzo;
+  private zze zzp;
+  private ListView zzy;
+  private ArrayAdapter<com.google.android.gms.internal.oss_licenses.zzc> zzz;
+  
+  public OssLicensesMenuActivity() {}
+  
+  /* Error */
+  @KeepForSdk
+  static boolean fileExistsAndNotEmpty(Context paramContext, String paramString)
+  {
+    // Byte code:
+    //   0: iconst_0
+    //   1: istore_3
+    //   2: aconst_null
+    //   3: astore 7
+    //   5: aconst_null
+    //   6: astore 6
+    //   8: aload 6
+    //   10: astore 4
+    //   12: aload 7
+    //   14: astore 5
+    //   16: aload_0
+    //   17: invokevirtual 44	android/content/Context:getResources	()Landroid/content/res/Resources;
+    //   20: astore_0
+    //   21: aload 6
+    //   23: astore 4
+    //   25: aload 7
+    //   27: astore 5
+    //   29: aload_0
+    //   30: aload_0
+    //   31: aload_1
+    //   32: ldc 46
+    //   34: aload_0
+    //   35: getstatic 52	com/google/android/gms/oss/licenses/R$id:license_list	I
+    //   38: invokevirtual 58	android/content/res/Resources:getResourcePackageName	(I)Ljava/lang/String;
+    //   41: invokevirtual 62	android/content/res/Resources:getIdentifier	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+    //   44: invokevirtual 66	android/content/res/Resources:openRawResource	(I)Ljava/io/InputStream;
+    //   47: astore_0
+    //   48: aload_0
+    //   49: astore 4
+    //   51: aload_0
+    //   52: astore 5
+    //   54: aload_0
+    //   55: invokevirtual 72	java/io/InputStream:available	()I
+    //   58: istore_2
+    //   59: iload_2
+    //   60: ifle +5 -> 65
+    //   63: iconst_1
+    //   64: istore_3
+    //   65: aload_0
+    //   66: invokevirtual 75	java/io/InputStream:close	()V
+    //   69: iload_3
+    //   70: ireturn
+    //   71: astore_0
+    //   72: aload 4
+    //   74: ifnull +8 -> 82
+    //   77: aload 4
+    //   79: invokevirtual 75	java/io/InputStream:close	()V
+    //   82: aload_0
+    //   83: athrow
+    //   84: aload 5
+    //   86: ifnull +8 -> 94
+    //   89: aload 5
+    //   91: invokevirtual 75	java/io/InputStream:close	()V
+    //   94: iconst_0
+    //   95: ireturn
+    //   96: astore_0
+    //   97: goto -13 -> 84
+    //   100: astore_0
+    //   101: iload_3
+    //   102: ireturn
+    //   103: astore_1
+    //   104: goto -22 -> 82
+    //   107: astore_0
+    //   108: iconst_0
+    //   109: ireturn
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	110	0	paramContext	Context
+    //   0	110	1	paramString	String
+    //   58	2	2	i	int
+    //   1	101	3	bool	boolean
+    //   10	68	4	localObject1	Object
+    //   14	76	5	localObject2	Object
+    //   6	16	6	localObject3	Object
+    //   3	23	7	localObject4	Object
+    // Exception table:
+    //   from	to	target	type
+    //   16	21	71	finally
+    //   29	48	71	finally
+    //   54	59	71	finally
+    //   16	21	96	android/content/res/Resources$NotFoundException
+    //   16	21	96	java/io/IOException
+    //   29	48	96	android/content/res/Resources$NotFoundException
+    //   29	48	96	java/io/IOException
+    //   54	59	96	android/content/res/Resources$NotFoundException
+    //   54	59	96	java/io/IOException
+    //   65	69	100	java/io/IOException
+    //   77	82	103	java/io/IOException
+    //   89	94	107	java/io/IOException
+  }
+  
+  public static void setActivityTitle(String paramString)
+  {
+    zzx = paramString;
+  }
+  
+  @KeepForSdk
+  protected final void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    zzo = zzc.zza(this);
+    boolean bool;
+    if ((fileExistsAndNotEmpty(this, "third_party_licenses")) && (fileExistsAndNotEmpty(this, "third_party_license_metadata"))) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    zzaa = bool;
+    if (zzx == null)
+    {
+      paramBundle = getIntent();
+      if (paramBundle.hasExtra("title"))
+      {
+        zzx = paramBundle.getStringExtra("title");
+        Log.w("OssLicensesMenuActivity", "The intent based title is deprecated. Use OssLicensesMenuActivity.setActivityTitle(title) instead.");
+      }
+    }
+    paramBundle = zzx;
+    if (paramBundle != null) {
+      setTitle(paramBundle);
+    }
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().x(true);
+    }
+    if (zzaa)
+    {
+      paramBundle = zzc.zza(this).zzb();
+      zzab = paramBundle.doRead(new zzk(paramBundle, getPackageName()));
+      getSupportLoaderManager().d(54321, null, this);
+      zzab.addOnCompleteListener(new zzp(this));
+      return;
+    }
+    setContentView(R.layout.license_menu_activity_no_licenses);
+  }
+  
+  @KeepForSdk
+  public final b<List<com.google.android.gms.internal.oss_licenses.zzc>> onCreateLoader(int paramInt, Bundle paramBundle)
+  {
+    if (zzaa) {
+      return new zzo(this, zzc.zza(this));
+    }
+    return null;
+  }
+  
+  @KeepForSdk
+  public final void onDestroy()
+  {
+    getSupportLoaderManager().a(54321);
+    super.onDestroy();
+  }
+  
+  @KeepForSdk
+  public final void onLoadFinished(b<List<com.google.android.gms.internal.oss_licenses.zzc>> paramB, List<com.google.android.gms.internal.oss_licenses.zzc> paramList)
+  {
+    zzz.clear();
+    zzz.addAll(paramList);
+    zzz.notifyDataSetChanged();
+  }
+  
+  @KeepForSdk
+  public final void onLoaderReset(b<List<com.google.android.gms.internal.oss_licenses.zzc>> paramB)
+  {
+    zzz.clear();
+    zzz.notifyDataSetChanged();
+  }
+  
+  @KeepForSdk
+  public final boolean onOptionsItemSelected(MenuItem paramMenuItem)
+  {
+    if (paramMenuItem.getItemId() == 16908332)
+    {
+      finish();
+      return true;
+    }
+    return super.onOptionsItemSelected(paramMenuItem);
+  }
+  
+  private final class zza
+    extends ArrayAdapter<com.google.android.gms.internal.oss_licenses.zzc>
+  {
+    zza(Context paramContext)
+    {
+      super(i, zzc.zzb(OssLicensesMenuActivity.zza(OssLicensesMenuActivity.this)), new ArrayList());
+    }
+    
+    public final View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
+    {
+      Object localObject = paramView;
+      if (paramView == null)
+      {
+        OssLicensesMenuActivity.zzb(OssLicensesMenuActivity.this);
+        paramView = getLayoutInflater();
+        localObject = OssLicensesMenuActivity.zza(OssLicensesMenuActivity.this);
+        localObject = paramView.inflate(zzg.getXml(zzc.zza((zze)localObject)), paramViewGroup, false);
+      }
+      OssLicensesMenuActivity.zzb(OssLicensesMenuActivity.this);
+      ((TextView)((View)localObject).findViewById(zzc.zzb(OssLicensesMenuActivity.zza(OssLicensesMenuActivity.this)))).setText(((com.google.android.gms.internal.oss_licenses.zzc)getItem(paramInt)).toString());
+      return localObject;
+    }
+  }
+}

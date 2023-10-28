@@ -1,0 +1,156 @@
+package androidx.transition;
+
+import android.graphics.Matrix;
+import android.util.Log;
+import android.view.View;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+class c0
+{
+  private static Method a;
+  private static boolean b;
+  private static Field c;
+  private static boolean d;
+  
+  c0() {}
+  
+  private void b()
+  {
+    if (!b)
+    {
+      try
+      {
+        Object localObject = Integer.TYPE;
+        localObject = View.class.getDeclaredMethod("setFrame", new Class[] { localObject, localObject, localObject, localObject });
+        a = (Method)localObject;
+        ((Method)localObject).setAccessible(true);
+      }
+      catch (NoSuchMethodException localNoSuchMethodException)
+      {
+        Log.i("ViewUtilsBase", "Failed to retrieve setFrame method", localNoSuchMethodException);
+      }
+      b = true;
+    }
+  }
+  
+  public void a(View paramView)
+  {
+    if (paramView.getVisibility() == 0) {
+      paramView.setTag(f.a, null);
+    }
+  }
+  
+  public float c(View paramView)
+  {
+    Float localFloat = (Float)paramView.getTag(f.a);
+    if (localFloat != null) {
+      return paramView.getAlpha() / localFloat.floatValue();
+    }
+    return paramView.getAlpha();
+  }
+  
+  public void d(View paramView)
+  {
+    int i = f.a;
+    if (paramView.getTag(i) == null) {
+      paramView.setTag(i, Float.valueOf(paramView.getAlpha()));
+    }
+  }
+  
+  public void e(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    b();
+    Method localMethod = a;
+    if (localMethod != null) {}
+    try
+    {
+      localMethod.invoke(paramView, new Object[] { Integer.valueOf(paramInt1), Integer.valueOf(paramInt2), Integer.valueOf(paramInt3), Integer.valueOf(paramInt4) });
+      return;
+    }
+    catch (InvocationTargetException paramView)
+    {
+      throw new RuntimeException(paramView.getCause());
+      return;
+    }
+    catch (IllegalAccessException paramView) {}
+  }
+  
+  public void f(View paramView, float paramFloat)
+  {
+    Float localFloat = (Float)paramView.getTag(f.a);
+    if (localFloat != null)
+    {
+      paramView.setAlpha(localFloat.floatValue() * paramFloat);
+      return;
+    }
+    paramView.setAlpha(paramFloat);
+  }
+  
+  public void g(View paramView, int paramInt)
+  {
+    if (!d) {}
+    try
+    {
+      localField = View.class.getDeclaredField("mViewFlags");
+      c = localField;
+      localField.setAccessible(true);
+    }
+    catch (NoSuchFieldException localNoSuchFieldException)
+    {
+      for (;;)
+      {
+        try
+        {
+          Field localField;
+          int i = localField.getInt(paramView);
+          c.setInt(paramView, paramInt | i & 0xFFFFFFF3);
+          return;
+        }
+        catch (IllegalAccessException paramView) {}
+        localNoSuchFieldException = localNoSuchFieldException;
+      }
+    }
+    Log.i("ViewUtilsBase", "fetchViewFlagsField: ");
+    d = true;
+    localField = c;
+    if (localField != null) {}
+  }
+  
+  public void h(View paramView, Matrix paramMatrix)
+  {
+    Object localObject = paramView.getParent();
+    if ((localObject instanceof View))
+    {
+      localObject = (View)localObject;
+      h((View)localObject, paramMatrix);
+      paramMatrix.preTranslate(-((View)localObject).getScrollX(), -((View)localObject).getScrollY());
+    }
+    paramMatrix.preTranslate(paramView.getLeft(), paramView.getTop());
+    paramView = paramView.getMatrix();
+    if (!paramView.isIdentity()) {
+      paramMatrix.preConcat(paramView);
+    }
+  }
+  
+  public void i(View paramView, Matrix paramMatrix)
+  {
+    Object localObject = paramView.getParent();
+    if ((localObject instanceof View))
+    {
+      localObject = (View)localObject;
+      i((View)localObject, paramMatrix);
+      paramMatrix.postTranslate(((View)localObject).getScrollX(), ((View)localObject).getScrollY());
+    }
+    paramMatrix.postTranslate(-paramView.getLeft(), -paramView.getTop());
+    paramView = paramView.getMatrix();
+    if (!paramView.isIdentity())
+    {
+      localObject = new Matrix();
+      if (paramView.invert((Matrix)localObject)) {
+        paramMatrix.postConcat((Matrix)localObject);
+      }
+    }
+  }
+}

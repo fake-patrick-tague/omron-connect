@@ -1,0 +1,35 @@
+package com.google.android.gms.fitness.service;
+
+import android.os.RemoteException;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.zzv;
+import java.util.Iterator;
+import java.util.List;
+
+final class zzc
+  implements SensorEventDispatcher
+{
+  private final zzv zzrt;
+  
+  zzc(zzv paramZzv)
+  {
+    zzrt = ((zzv)Preconditions.checkNotNull(paramZzv));
+  }
+  
+  public final void publish(DataPoint paramDataPoint)
+    throws RemoteException
+  {
+    paramDataPoint.zzh();
+    zzrt.zzc(paramDataPoint);
+  }
+  
+  public final void publish(List<DataPoint> paramList)
+    throws RemoteException
+  {
+    paramList = paramList.iterator();
+    while (paramList.hasNext()) {
+      publish((DataPoint)paramList.next());
+    }
+  }
+}

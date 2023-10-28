@@ -1,0 +1,67 @@
+package androidx.fragment.app;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import java.util.ArrayList;
+
+final class FragmentManagerState
+  implements Parcelable
+{
+  public static final Parcelable.Creator<FragmentManagerState> CREATOR = new a();
+  ArrayList<String> b;
+  ArrayList<String> c;
+  BackStackRecordState[] d;
+  int e;
+  String f = null;
+  ArrayList<String> g = new ArrayList();
+  ArrayList<BackStackState> h = new ArrayList();
+  ArrayList<FragmentManager.LaunchedFragmentInfo> i;
+  
+  public FragmentManagerState() {}
+  
+  public FragmentManagerState(Parcel paramParcel)
+  {
+    b = paramParcel.createStringArrayList();
+    c = paramParcel.createStringArrayList();
+    d = ((BackStackRecordState[])paramParcel.createTypedArray(BackStackRecordState.CREATOR));
+    e = paramParcel.readInt();
+    f = paramParcel.readString();
+    g = paramParcel.createStringArrayList();
+    h = paramParcel.createTypedArrayList(BackStackState.CREATOR);
+    i = paramParcel.createTypedArrayList(FragmentManager.LaunchedFragmentInfo.CREATOR);
+  }
+  
+  public int describeContents()
+  {
+    return 0;
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramParcel.writeStringList(b);
+    paramParcel.writeStringList(c);
+    paramParcel.writeTypedArray(d, paramInt);
+    paramParcel.writeInt(e);
+    paramParcel.writeString(f);
+    paramParcel.writeStringList(g);
+    paramParcel.writeTypedList(h);
+    paramParcel.writeTypedList(i);
+  }
+  
+  class a
+    implements Parcelable.Creator<FragmentManagerState>
+  {
+    a() {}
+    
+    public FragmentManagerState a(Parcel paramParcel)
+    {
+      return new FragmentManagerState(paramParcel);
+    }
+    
+    public FragmentManagerState[] b(int paramInt)
+    {
+      return new FragmentManagerState[paramInt];
+    }
+  }
+}

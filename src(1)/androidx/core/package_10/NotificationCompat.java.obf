@@ -1,0 +1,1756 @@
+package androidx.core.app;
+
+import android.app.Notification;
+import android.app.Notification.BigPictureStyle;
+import android.app.Notification.BigTextStyle;
+import android.app.Notification.BubbleMetadata;
+import android.app.Notification.Builder;
+import android.app.Notification.DecoratedCustomViewStyle;
+import android.app.Notification.MessagingStyle;
+import android.app.Notification.MessagingStyle.Message;
+import android.app.PendingIntent;
+import android.app.Person;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
+import android.media.AudioAttributes.Builder;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.SystemClock;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.TextAppearanceSpan;
+import android.widget.RemoteViews;
+import androidx.core.graphics.drawable.IconCompat;
+import c.h.c;
+import c.h.d;
+import c.h.e;
+import c.h.f;
+import c.h.g;
+import c.h.h;
+import c.h.o.a;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+
+public class m
+{
+  public static Bundle a(Notification paramNotification)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 19) {
+      return extras;
+    }
+    if (i >= 16) {
+      return o.c(paramNotification);
+    }
+    return null;
+  }
+  
+  public static class a
+  {
+    final Bundle a;
+    private IconCompat b;
+    private final t[] c;
+    private final t[] d;
+    private boolean e;
+    boolean f = true;
+    private final int g;
+    private final boolean h;
+    @Deprecated
+    public int i;
+    public CharSequence j;
+    public PendingIntent k;
+    private boolean l;
+    
+    public a(int paramInt, CharSequence paramCharSequence, PendingIntent paramPendingIntent)
+    {
+      this(localIconCompat, paramCharSequence, paramPendingIntent);
+    }
+    
+    public a(IconCompat paramIconCompat, CharSequence paramCharSequence, PendingIntent paramPendingIntent)
+    {
+      this(paramIconCompat, paramCharSequence, paramPendingIntent, new Bundle(), null, null, true, 0, true, false, false);
+    }
+    
+    a(IconCompat paramIconCompat, CharSequence paramCharSequence, PendingIntent paramPendingIntent, Bundle paramBundle, t[] paramArrayOfT1, t[] paramArrayOfT2, boolean paramBoolean1, int paramInt, boolean paramBoolean2, boolean paramBoolean3, boolean paramBoolean4)
+    {
+      b = paramIconCompat;
+      if ((paramIconCompat != null) && (paramIconCompat.o() == 2)) {
+        i = paramIconCompat.l();
+      }
+      j = m.e.k(paramCharSequence);
+      k = paramPendingIntent;
+      if (paramBundle == null) {
+        paramBundle = new Bundle();
+      }
+      a = paramBundle;
+      c = paramArrayOfT1;
+      d = paramArrayOfT2;
+      e = paramBoolean1;
+      g = paramInt;
+      f = paramBoolean2;
+      h = paramBoolean3;
+      l = paramBoolean4;
+    }
+    
+    public PendingIntent a()
+    {
+      return k;
+    }
+    
+    public boolean b()
+    {
+      return e;
+    }
+    
+    public t[] c()
+    {
+      return d;
+    }
+    
+    public Bundle d()
+    {
+      return a;
+    }
+    
+    public IconCompat e()
+    {
+      if (b == null)
+      {
+        int m = i;
+        if (m != 0) {
+          b = IconCompat.j(null, "", m);
+        }
+      }
+      return b;
+    }
+    
+    public t[] f()
+    {
+      return c;
+    }
+    
+    public int g()
+    {
+      return g;
+    }
+    
+    public boolean h()
+    {
+      return f;
+    }
+    
+    public CharSequence i()
+    {
+      return j;
+    }
+    
+    public boolean j()
+    {
+      return l;
+    }
+    
+    public boolean k()
+    {
+      return h;
+    }
+    
+    public static final class a
+    {
+      private final IconCompat a;
+      private final CharSequence b;
+      private final PendingIntent c;
+      private boolean d = true;
+      private final Bundle e;
+      private ArrayList<t> f;
+      private int g;
+      private boolean h = true;
+      private boolean i;
+      private boolean j;
+      
+      public a(int paramInt, CharSequence paramCharSequence, PendingIntent paramPendingIntent)
+      {
+        this(localIconCompat, paramCharSequence, paramPendingIntent, new Bundle(), null, true, 0, true, false, false);
+      }
+      
+      private a(IconCompat paramIconCompat, CharSequence paramCharSequence, PendingIntent paramPendingIntent, Bundle paramBundle, t[] paramArrayOfT, boolean paramBoolean1, int paramInt, boolean paramBoolean2, boolean paramBoolean3, boolean paramBoolean4)
+      {
+        a = paramIconCompat;
+        b = m.e.k(paramCharSequence);
+        c = paramPendingIntent;
+        e = paramBundle;
+        if (paramArrayOfT == null) {
+          paramIconCompat = null;
+        } else {
+          paramIconCompat = new ArrayList(Arrays.asList(paramArrayOfT));
+        }
+        f = paramIconCompat;
+        d = paramBoolean1;
+        g = paramInt;
+        h = paramBoolean2;
+        i = paramBoolean3;
+        j = paramBoolean4;
+      }
+      
+      private void c()
+      {
+        if (!i) {
+          return;
+        }
+        Objects.requireNonNull(c, "Contextual Actions must contain a valid PendingIntent");
+      }
+      
+      public a a(Bundle paramBundle)
+      {
+        if (paramBundle != null) {
+          e.putAll(paramBundle);
+        }
+        return this;
+      }
+      
+      public m.a b()
+      {
+        c();
+        Object localObject1 = new ArrayList();
+        ArrayList localArrayList = new ArrayList();
+        Object localObject2 = f;
+        if (localObject2 != null)
+        {
+          localObject2 = ((ArrayList)localObject2).iterator();
+          while (((Iterator)localObject2).hasNext())
+          {
+            t localT = (t)((Iterator)localObject2).next();
+            if (localT.j()) {
+              ((List)localObject1).add(localT);
+            } else {
+              localArrayList.add(localT);
+            }
+          }
+        }
+        boolean bool = ((List)localObject1).isEmpty();
+        localObject2 = null;
+        if (bool) {
+          localObject1 = null;
+        } else {
+          localObject1 = (t[])((List)localObject1).toArray(new t[((List)localObject1).size()]);
+        }
+        if (!localArrayList.isEmpty()) {
+          localObject2 = (t[])localArrayList.toArray(new t[localArrayList.size()]);
+        }
+        return new m.a(a, b, c, e, (t[])localObject2, (t[])localObject1, d, g, h, i, j);
+      }
+    }
+  }
+  
+  public static class b
+    extends m.h
+  {
+    private IconCompat a;
+    private IconCompat b;
+    private boolean c;
+    private CharSequence d;
+    private boolean e;
+    
+    public b() {}
+    
+    public b a(Bitmap paramBitmap)
+    {
+      if (paramBitmap == null) {
+        paramBitmap = null;
+      } else {
+        paramBitmap = IconCompat.f(paramBitmap);
+      }
+      b = paramBitmap;
+      c = true;
+      return this;
+    }
+    
+    public void apply(j paramJ)
+    {
+      int i = Build.VERSION.SDK_INT;
+      if (i >= 16)
+      {
+        Object localObject2 = new Notification.BigPictureStyle(paramJ.a()).setBigContentTitle(mBigContentTitle);
+        IconCompat localIconCompat = a;
+        Context localContext = null;
+        Object localObject1 = localObject2;
+        if (localIconCompat != null) {
+          if (i >= 31)
+          {
+            if ((paramJ instanceof n)) {
+              localObject1 = ((n)paramJ).f();
+            } else {
+              localObject1 = null;
+            }
+            c.a((Notification.BigPictureStyle)localObject2, a.x((Context)localObject1));
+            localObject1 = localObject2;
+          }
+          else
+          {
+            localObject1 = localObject2;
+            if (localIconCompat.o() == 1) {
+              localObject1 = ((Notification.BigPictureStyle)localObject2).bigPicture(a.k());
+            }
+          }
+        }
+        if (c)
+        {
+          localObject2 = b;
+          if (localObject2 == null)
+          {
+            a.a((Notification.BigPictureStyle)localObject1, null);
+          }
+          else if (i >= 23)
+          {
+            if ((paramJ instanceof n)) {
+              localContext = ((n)paramJ).f();
+            }
+            b.a((Notification.BigPictureStyle)localObject1, b.x(localContext));
+          }
+          else if (((IconCompat)localObject2).o() == 1)
+          {
+            a.a((Notification.BigPictureStyle)localObject1, b.k());
+          }
+          else
+          {
+            a.a((Notification.BigPictureStyle)localObject1, null);
+          }
+        }
+        if (mSummaryTextSet) {
+          a.b((Notification.BigPictureStyle)localObject1, mSummaryText);
+        }
+        if (i >= 31)
+        {
+          c.c((Notification.BigPictureStyle)localObject1, e);
+          c.b((Notification.BigPictureStyle)localObject1, d);
+        }
+      }
+    }
+    
+    public b b(Bitmap paramBitmap)
+    {
+      if (paramBitmap == null) {
+        paramBitmap = null;
+      } else {
+        paramBitmap = IconCompat.f(paramBitmap);
+      }
+      a = paramBitmap;
+      return this;
+    }
+    
+    public b c(CharSequence paramCharSequence)
+    {
+      mBigContentTitle = m.e.k(paramCharSequence);
+      return this;
+    }
+    
+    public b d(CharSequence paramCharSequence)
+    {
+      mSummaryText = m.e.k(paramCharSequence);
+      mSummaryTextSet = true;
+      return this;
+    }
+    
+    protected String getClassName()
+    {
+      return "androidx.core.app.NotificationCompat$BigPictureStyle";
+    }
+    
+    private static class a
+    {
+      static void a(Notification.BigPictureStyle paramBigPictureStyle, Bitmap paramBitmap)
+      {
+        paramBigPictureStyle.bigLargeIcon(paramBitmap);
+      }
+      
+      static void b(Notification.BigPictureStyle paramBigPictureStyle, CharSequence paramCharSequence)
+      {
+        paramBigPictureStyle.setSummaryText(paramCharSequence);
+      }
+    }
+    
+    private static class b
+    {
+      static void a(Notification.BigPictureStyle paramBigPictureStyle, Icon paramIcon)
+      {
+        paramBigPictureStyle.bigLargeIcon(paramIcon);
+      }
+    }
+    
+    private static class c
+    {
+      static void a(Notification.BigPictureStyle paramBigPictureStyle, Icon paramIcon)
+      {
+        paramBigPictureStyle.bigPicture(paramIcon);
+      }
+      
+      static void b(Notification.BigPictureStyle paramBigPictureStyle, CharSequence paramCharSequence)
+      {
+        paramBigPictureStyle.setContentDescription(paramCharSequence);
+      }
+      
+      static void c(Notification.BigPictureStyle paramBigPictureStyle, boolean paramBoolean)
+      {
+        paramBigPictureStyle.showBigPictureWhenCollapsed(paramBoolean);
+      }
+    }
+  }
+  
+  public static class c
+    extends m.h
+  {
+    private CharSequence a;
+    
+    public c() {}
+    
+    public c a(CharSequence paramCharSequence)
+    {
+      a = m.e.k(paramCharSequence);
+      return this;
+    }
+    
+    public void addCompatExtras(Bundle paramBundle)
+    {
+      super.addCompatExtras(paramBundle);
+      if (Build.VERSION.SDK_INT < 21) {
+        paramBundle.putCharSequence("android.bigText", a);
+      }
+    }
+    
+    public void apply(j paramJ)
+    {
+      if (Build.VERSION.SDK_INT >= 16)
+      {
+        paramJ = new Notification.BigTextStyle(paramJ.a()).setBigContentTitle(mBigContentTitle).bigText(a);
+        if (mSummaryTextSet) {
+          paramJ.setSummaryText(mSummaryText);
+        }
+      }
+    }
+    
+    public c b(CharSequence paramCharSequence)
+    {
+      mBigContentTitle = m.e.k(paramCharSequence);
+      return this;
+    }
+    
+    public c c(CharSequence paramCharSequence)
+    {
+      mSummaryText = m.e.k(paramCharSequence);
+      mSummaryTextSet = true;
+      return this;
+    }
+    
+    protected String getClassName()
+    {
+      return "androidx.core.app.NotificationCompat$BigTextStyle";
+    }
+  }
+  
+  public static final class d
+  {
+    public static Notification.BubbleMetadata a(d paramD)
+    {
+      if (paramD == null) {
+        return null;
+      }
+      int i = Build.VERSION.SDK_INT;
+      if (i >= 30) {
+        return b.a(paramD);
+      }
+      if (i == 29) {
+        return a.a(paramD);
+      }
+      return null;
+    }
+    
+    private static class a
+    {
+      static Notification.BubbleMetadata a(m.d paramD)
+      {
+        if (paramD == null) {
+          return null;
+        }
+        throw null;
+      }
+    }
+    
+    private static class b
+    {
+      static Notification.BubbleMetadata a(m.d paramD)
+      {
+        if (paramD == null) {
+          return null;
+        }
+        throw null;
+      }
+    }
+  }
+  
+  public static class e
+  {
+    boolean A = false;
+    boolean B;
+    boolean C;
+    String D;
+    Bundle E;
+    int F = 0;
+    int G = 0;
+    Notification H;
+    RemoteViews I;
+    RemoteViews J;
+    RemoteViews K;
+    String L;
+    int M = 0;
+    String N;
+    androidx.core.content.b O;
+    long P;
+    int Q = 0;
+    int R = 0;
+    boolean S;
+    m.d T;
+    Notification U;
+    boolean V;
+    Icon W;
+    @Deprecated
+    public ArrayList<String> X;
+    public Context a;
+    public ArrayList<m.a> b = new ArrayList();
+    public ArrayList<r> c = new ArrayList();
+    ArrayList<m.a> d = new ArrayList();
+    CharSequence e;
+    CharSequence f;
+    PendingIntent g;
+    PendingIntent h;
+    RemoteViews i;
+    Bitmap j;
+    CharSequence k;
+    int l;
+    int m;
+    boolean n = true;
+    boolean o;
+    boolean p;
+    m.h q;
+    CharSequence r;
+    CharSequence s;
+    CharSequence[] t;
+    int u;
+    int v;
+    boolean w;
+    String x;
+    boolean y;
+    String z;
+    
+    @Deprecated
+    public e(Context paramContext)
+    {
+      this(paramContext, null);
+    }
+    
+    public e(Context paramContext, String paramString)
+    {
+      Notification localNotification = new Notification();
+      U = localNotification;
+      a = paramContext;
+      L = paramString;
+      when = System.currentTimeMillis();
+      U.audioStreamType = -1;
+      m = 0;
+      X = new ArrayList();
+      S = true;
+    }
+    
+    protected static CharSequence k(CharSequence paramCharSequence)
+    {
+      if (paramCharSequence == null) {
+        return paramCharSequence;
+      }
+      CharSequence localCharSequence = paramCharSequence;
+      if (paramCharSequence.length() > 5120) {
+        localCharSequence = paramCharSequence.subSequence(0, 5120);
+      }
+      return localCharSequence;
+    }
+    
+    private Bitmap l(Bitmap paramBitmap)
+    {
+      Object localObject = paramBitmap;
+      if (paramBitmap != null)
+      {
+        if (Build.VERSION.SDK_INT >= 27) {
+          return paramBitmap;
+        }
+        localObject = a.getResources();
+        int i1 = ((Resources)localObject).getDimensionPixelSize(c.b);
+        int i2 = ((Resources)localObject).getDimensionPixelSize(c.a);
+        if ((paramBitmap.getWidth() <= i1) && (paramBitmap.getHeight() <= i2)) {
+          return paramBitmap;
+        }
+        double d1 = Math.min(i1 / Math.max(1, paramBitmap.getWidth()), i2 / Math.max(1, paramBitmap.getHeight()));
+        localObject = Bitmap.createScaledBitmap(paramBitmap, (int)Math.ceil(paramBitmap.getWidth() * d1), (int)Math.ceil(paramBitmap.getHeight() * d1), true);
+      }
+      return localObject;
+    }
+    
+    private void x(int paramInt, boolean paramBoolean)
+    {
+      if (paramBoolean)
+      {
+        localNotification = U;
+        flags = (paramInt | flags);
+        return;
+      }
+      Notification localNotification = U;
+      flags = (paramInt & flags);
+    }
+    
+    public e A(boolean paramBoolean)
+    {
+      A = paramBoolean;
+      return this;
+    }
+    
+    public e B(int paramInt)
+    {
+      l = paramInt;
+      return this;
+    }
+    
+    public e C(boolean paramBoolean)
+    {
+      x(8, paramBoolean);
+      return this;
+    }
+    
+    public e D(int paramInt)
+    {
+      m = paramInt;
+      return this;
+    }
+    
+    public e E(Notification paramNotification)
+    {
+      H = paramNotification;
+      return this;
+    }
+    
+    public e F(String paramString)
+    {
+      N = paramString;
+      return this;
+    }
+    
+    public e G(boolean paramBoolean)
+    {
+      n = paramBoolean;
+      return this;
+    }
+    
+    public e H(int paramInt)
+    {
+      U.icon = paramInt;
+      return this;
+    }
+    
+    public e I(Uri paramUri)
+    {
+      Notification localNotification = U;
+      sound = paramUri;
+      audioStreamType = -1;
+      if (Build.VERSION.SDK_INT >= 21) {
+        audioAttributes = new AudioAttributes.Builder().setContentType(4).setUsage(5).build();
+      }
+      return this;
+    }
+    
+    public e J(m.h paramH)
+    {
+      if (q != paramH)
+      {
+        q = paramH;
+        if (paramH != null) {
+          paramH.setBuilder(this);
+        }
+      }
+      return this;
+    }
+    
+    public e K(CharSequence paramCharSequence)
+    {
+      r = k(paramCharSequence);
+      return this;
+    }
+    
+    public e L(CharSequence paramCharSequence)
+    {
+      U.tickerText = k(paramCharSequence);
+      return this;
+    }
+    
+    public e M(long[] paramArrayOfLong)
+    {
+      U.vibrate = paramArrayOfLong;
+      return this;
+    }
+    
+    public e N(int paramInt)
+    {
+      G = paramInt;
+      return this;
+    }
+    
+    public e O(long paramLong)
+    {
+      U.when = paramLong;
+      return this;
+    }
+    
+    public e a(int paramInt, CharSequence paramCharSequence, PendingIntent paramPendingIntent)
+    {
+      b.add(new m.a(paramInt, paramCharSequence, paramPendingIntent));
+      return this;
+    }
+    
+    public e b(m.a paramA)
+    {
+      if (paramA != null) {
+        b.add(paramA);
+      }
+      return this;
+    }
+    
+    public Notification c()
+    {
+      return new n(this).c();
+    }
+    
+    public RemoteViews d()
+    {
+      return J;
+    }
+    
+    public int e()
+    {
+      return F;
+    }
+    
+    public RemoteViews f()
+    {
+      return I;
+    }
+    
+    public Bundle g()
+    {
+      if (E == null) {
+        E = new Bundle();
+      }
+      return E;
+    }
+    
+    public RemoteViews h()
+    {
+      return K;
+    }
+    
+    public int i()
+    {
+      return m;
+    }
+    
+    public long j()
+    {
+      if (n) {
+        return U.when;
+      }
+      return 0L;
+    }
+    
+    public e m(boolean paramBoolean)
+    {
+      x(16, paramBoolean);
+      return this;
+    }
+    
+    public e n(String paramString)
+    {
+      D = paramString;
+      return this;
+    }
+    
+    public e o(String paramString)
+    {
+      L = paramString;
+      return this;
+    }
+    
+    public e p(int paramInt)
+    {
+      F = paramInt;
+      return this;
+    }
+    
+    public e q(PendingIntent paramPendingIntent)
+    {
+      g = paramPendingIntent;
+      return this;
+    }
+    
+    public e r(CharSequence paramCharSequence)
+    {
+      f = k(paramCharSequence);
+      return this;
+    }
+    
+    public e s(CharSequence paramCharSequence)
+    {
+      e = k(paramCharSequence);
+      return this;
+    }
+    
+    public e t(RemoteViews paramRemoteViews)
+    {
+      J = paramRemoteViews;
+      return this;
+    }
+    
+    public e u(RemoteViews paramRemoteViews)
+    {
+      I = paramRemoteViews;
+      return this;
+    }
+    
+    public e v(int paramInt)
+    {
+      Notification localNotification = U;
+      defaults = paramInt;
+      if ((paramInt & 0x4) != 0) {
+        flags |= 0x1;
+      }
+      return this;
+    }
+    
+    public e w(PendingIntent paramPendingIntent)
+    {
+      U.deleteIntent = paramPendingIntent;
+      return this;
+    }
+    
+    public e y(Bitmap paramBitmap)
+    {
+      j = l(paramBitmap);
+      return this;
+    }
+    
+    public e z(int paramInt1, int paramInt2, int paramInt3)
+    {
+      Notification localNotification = U;
+      ledARGB = paramInt1;
+      ledOnMS = paramInt2;
+      ledOffMS = paramInt3;
+      if ((paramInt2 != 0) && (paramInt3 != 0)) {
+        paramInt1 = 1;
+      } else {
+        paramInt1 = 0;
+      }
+      flags = (paramInt1 | flags & 0xFFFFFFFE);
+      return this;
+    }
+  }
+  
+  public static class f
+    extends m.h
+  {
+    public f() {}
+    
+    private RemoteViews a(RemoteViews paramRemoteViews, boolean paramBoolean)
+    {
+      int i = g.c;
+      int m = 1;
+      int k = 0;
+      RemoteViews localRemoteViews1 = applyStandardTemplate(true, i, false);
+      localRemoteViews1.removeAllViews(e.L);
+      List localList = c(mBuilder.b);
+      if ((paramBoolean) && (localList != null))
+      {
+        int n = Math.min(localList.size(), 3);
+        if (n > 0)
+        {
+          i = 0;
+          for (;;)
+          {
+            j = m;
+            if (i >= n) {
+              break;
+            }
+            RemoteViews localRemoteViews2 = b((m.a)localList.get(i));
+            localRemoteViews1.addView(e.L, localRemoteViews2);
+            i += 1;
+          }
+        }
+      }
+      int j = 0;
+      if (j != 0) {
+        i = k;
+      } else {
+        i = 8;
+      }
+      localRemoteViews1.setViewVisibility(e.L, i);
+      localRemoteViews1.setViewVisibility(e.I, i);
+      buildIntoRemoteViews(localRemoteViews1, paramRemoteViews);
+      return localRemoteViews1;
+    }
+    
+    private RemoteViews b(m.a paramA)
+    {
+      int i;
+      if (k == null) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      Object localObject = mBuilder.a.getPackageName();
+      int j;
+      if (i != 0) {
+        j = g.b;
+      } else {
+        j = g.a;
+      }
+      localObject = new RemoteViews((String)localObject, j);
+      IconCompat localIconCompat = paramA.e();
+      if (localIconCompat != null) {
+        ((RemoteViews)localObject).setImageViewBitmap(e.J, createColoredBitmap(localIconCompat, mBuilder.a.getResources().getColor(c.h.b.a)));
+      }
+      ((RemoteViews)localObject).setTextViewText(e.K, j);
+      if (i == 0) {
+        ((RemoteViews)localObject).setOnClickPendingIntent(e.H, k);
+      }
+      if (Build.VERSION.SDK_INT >= 15) {
+        ((RemoteViews)localObject).setContentDescription(e.H, j);
+      }
+      return localObject;
+    }
+    
+    private static List<m.a> c(List<m.a> paramList)
+    {
+      if (paramList == null) {
+        return null;
+      }
+      ArrayList localArrayList = new ArrayList();
+      paramList = paramList.iterator();
+      while (paramList.hasNext())
+      {
+        m.a localA = (m.a)paramList.next();
+        if (!localA.k()) {
+          localArrayList.add(localA);
+        }
+      }
+      return localArrayList;
+    }
+    
+    public void apply(j paramJ)
+    {
+      if (Build.VERSION.SDK_INT >= 24) {
+        paramJ.a().setStyle(new Notification.DecoratedCustomViewStyle());
+      }
+    }
+    
+    protected String getClassName()
+    {
+      return "androidx.core.app.NotificationCompat$DecoratedCustomViewStyle";
+    }
+    
+    public RemoteViews makeBigContentView(j paramJ)
+    {
+      if (Build.VERSION.SDK_INT >= 24) {
+        return null;
+      }
+      paramJ = mBuilder.d();
+      if (paramJ == null) {
+        paramJ = mBuilder.f();
+      }
+      if (paramJ == null) {
+        return null;
+      }
+      return a(paramJ, true);
+    }
+    
+    public RemoteViews makeContentView(j paramJ)
+    {
+      if (Build.VERSION.SDK_INT >= 24) {
+        return null;
+      }
+      if (mBuilder.f() == null) {
+        return null;
+      }
+      return a(mBuilder.f(), false);
+    }
+    
+    public RemoteViews makeHeadsUpContentView(j paramJ)
+    {
+      if (Build.VERSION.SDK_INT >= 24) {
+        return null;
+      }
+      RemoteViews localRemoteViews = mBuilder.h();
+      if (localRemoteViews != null) {
+        paramJ = localRemoteViews;
+      } else {
+        paramJ = mBuilder.f();
+      }
+      if (localRemoteViews == null) {
+        return null;
+      }
+      return a(paramJ, true);
+    }
+  }
+  
+  public static class g
+    extends m.h
+  {
+    private final List<a> a = new ArrayList();
+    private final List<a> b = new ArrayList();
+    private r c;
+    private CharSequence d;
+    private Boolean e;
+    
+    public g(r paramR)
+    {
+      if (!TextUtils.isEmpty(paramR.c()))
+      {
+        c = paramR;
+        return;
+      }
+      throw new IllegalArgumentException("User's name must not be empty.");
+    }
+    
+    private a c()
+    {
+      int i = a.size() - 1;
+      Object localObject;
+      while (i >= 0)
+      {
+        localObject = (a)a.get(i);
+        if ((((a)localObject).d() != null) && (!TextUtils.isEmpty(((a)localObject).d().c()))) {
+          return localObject;
+        }
+        i -= 1;
+      }
+      if (!a.isEmpty())
+      {
+        localObject = a;
+        return (a)((List)localObject).get(((List)localObject).size() - 1);
+      }
+      return null;
+    }
+    
+    private boolean d()
+    {
+      int i = a.size() - 1;
+      while (i >= 0)
+      {
+        a localA = (a)a.get(i);
+        if ((localA.d() != null) && (localA.d().c() == null)) {
+          return true;
+        }
+        i -= 1;
+      }
+      return false;
+    }
+    
+    private TextAppearanceSpan f(int paramInt)
+    {
+      return new TextAppearanceSpan(null, 0, 0, ColorStateList.valueOf(paramInt), null);
+    }
+    
+    private CharSequence g(a paramA)
+    {
+      a localA = a.c();
+      SpannableStringBuilder localSpannableStringBuilder = new SpannableStringBuilder();
+      int j;
+      if (Build.VERSION.SDK_INT >= 21) {
+        j = 1;
+      } else {
+        j = 0;
+      }
+      int i;
+      if (j != 0) {
+        i = -16777216;
+      } else {
+        i = -1;
+      }
+      Object localObject1 = paramA.d();
+      String str = "";
+      if (localObject1 == null) {
+        localObject1 = "";
+      } else {
+        localObject1 = paramA.d().c();
+      }
+      int k = i;
+      Object localObject2 = localObject1;
+      if (TextUtils.isEmpty((CharSequence)localObject1))
+      {
+        localObject1 = c.c();
+        k = i;
+        localObject2 = localObject1;
+        if (j != 0)
+        {
+          k = i;
+          localObject2 = localObject1;
+          if (mBuilder.e() != 0)
+          {
+            k = mBuilder.e();
+            localObject2 = localObject1;
+          }
+        }
+      }
+      localObject1 = localA.h(localObject2);
+      localSpannableStringBuilder.append((CharSequence)localObject1);
+      localSpannableStringBuilder.setSpan(f(k), localSpannableStringBuilder.length() - ((CharSequence)localObject1).length(), localSpannableStringBuilder.length(), 33);
+      if (paramA.e() == null) {
+        paramA = str;
+      } else {
+        paramA = paramA.e();
+      }
+      localSpannableStringBuilder.append("  ").append(localA.h(paramA));
+      return localSpannableStringBuilder;
+    }
+    
+    public g a(a paramA)
+    {
+      if (paramA != null)
+      {
+        a.add(paramA);
+        if (a.size() > 25) {
+          a.remove(0);
+        }
+      }
+      return this;
+    }
+    
+    public void addCompatExtras(Bundle paramBundle)
+    {
+      super.addCompatExtras(paramBundle);
+      paramBundle.putCharSequence("android.selfDisplayName", c.c());
+      paramBundle.putBundle("android.messagingStyleUser", c.i());
+      paramBundle.putCharSequence("android.hiddenConversationTitle", d);
+      if ((d != null) && (e.booleanValue())) {
+        paramBundle.putCharSequence("android.conversationTitle", d);
+      }
+      if (!a.isEmpty()) {
+        paramBundle.putParcelableArray("android.messages", a.a(a));
+      }
+      if (!b.isEmpty()) {
+        paramBundle.putParcelableArray("android.messages.historic", a.a(b));
+      }
+      Boolean localBoolean = e;
+      if (localBoolean != null) {
+        paramBundle.putBoolean("android.isGroupConversation", localBoolean.booleanValue());
+      }
+    }
+    
+    public void apply(j paramJ)
+    {
+      h(e());
+      int i = Build.VERSION.SDK_INT;
+      Object localObject2;
+      if (i >= 24)
+      {
+        if (i >= 28) {
+          localObject1 = new Notification.MessagingStyle(c.h());
+        } else {
+          localObject1 = new Notification.MessagingStyle(c.c());
+        }
+        localObject2 = a.iterator();
+        while (((Iterator)localObject2).hasNext()) {
+          ((Notification.MessagingStyle)localObject1).addMessage(((a)((Iterator)localObject2).next()).g());
+        }
+        if (Build.VERSION.SDK_INT >= 26)
+        {
+          localObject2 = b.iterator();
+          while (((Iterator)localObject2).hasNext()) {
+            ((Notification.MessagingStyle)localObject1).addHistoricMessage(((a)((Iterator)localObject2).next()).g());
+          }
+        }
+        if ((e.booleanValue()) || (Build.VERSION.SDK_INT >= 28)) {
+          ((Notification.MessagingStyle)localObject1).setConversationTitle(d);
+        }
+        if (Build.VERSION.SDK_INT >= 28) {
+          ((Notification.MessagingStyle)localObject1).setGroupConversation(e.booleanValue());
+        }
+        ((Notification.MessagingStyle)localObject1).setBuilder(paramJ.a());
+        return;
+      }
+      Object localObject1 = c();
+      if ((d != null) && (e.booleanValue()))
+      {
+        paramJ.a().setContentTitle(d);
+      }
+      else if (localObject1 != null)
+      {
+        paramJ.a().setContentTitle("");
+        if (((a)localObject1).d() != null) {
+          paramJ.a().setContentTitle(((a)localObject1).d().c());
+        }
+      }
+      if (localObject1 != null)
+      {
+        localObject2 = paramJ.a();
+        if (d != null) {
+          localObject1 = g((a)localObject1);
+        } else {
+          localObject1 = ((a)localObject1).e();
+        }
+        ((Notification.Builder)localObject2).setContentText((CharSequence)localObject1);
+      }
+      if (i >= 16)
+      {
+        localObject2 = new SpannableStringBuilder();
+        if ((d == null) && (!d())) {
+          i = 0;
+        } else {
+          i = 1;
+        }
+        int j = a.size() - 1;
+        while (j >= 0)
+        {
+          localObject1 = (a)a.get(j);
+          if (i != 0) {
+            localObject1 = g((a)localObject1);
+          } else {
+            localObject1 = ((a)localObject1).e();
+          }
+          if (j != a.size() - 1) {
+            ((SpannableStringBuilder)localObject2).insert(0, "\n");
+          }
+          ((SpannableStringBuilder)localObject2).insert(0, (CharSequence)localObject1);
+          j -= 1;
+        }
+        new Notification.BigTextStyle(paramJ.a()).setBigContentTitle(null).bigText((CharSequence)localObject2);
+      }
+    }
+    
+    public g b(CharSequence paramCharSequence, long paramLong, r paramR)
+    {
+      a(new a(paramCharSequence, paramLong, paramR));
+      return this;
+    }
+    
+    public boolean e()
+    {
+      Object localObject = mBuilder;
+      boolean bool2 = false;
+      boolean bool1 = false;
+      if ((localObject != null) && (a.getApplicationInfo().targetSdkVersion < 28) && (e == null))
+      {
+        if (d != null) {
+          bool1 = true;
+        }
+        return bool1;
+      }
+      localObject = e;
+      bool1 = bool2;
+      if (localObject != null) {
+        bool1 = ((Boolean)localObject).booleanValue();
+      }
+      return bool1;
+    }
+    
+    protected String getClassName()
+    {
+      return "androidx.core.app.NotificationCompat$MessagingStyle";
+    }
+    
+    public g h(boolean paramBoolean)
+    {
+      e = Boolean.valueOf(paramBoolean);
+      return this;
+    }
+    
+    public static final class a
+    {
+      private final CharSequence a;
+      private final long b;
+      private final r c;
+      private Bundle d = new Bundle();
+      private String e;
+      private Uri f;
+      
+      public a(CharSequence paramCharSequence, long paramLong, r paramR)
+      {
+        a = paramCharSequence;
+        b = paramLong;
+        c = paramR;
+      }
+      
+      static Bundle[] a(List<a> paramList)
+      {
+        Bundle[] arrayOfBundle = new Bundle[paramList.size()];
+        int j = paramList.size();
+        int i = 0;
+        while (i < j)
+        {
+          arrayOfBundle[i] = ((a)paramList.get(i)).h();
+          i += 1;
+        }
+        return arrayOfBundle;
+      }
+      
+      private Bundle h()
+      {
+        Bundle localBundle = new Bundle();
+        Object localObject = a;
+        if (localObject != null) {
+          localBundle.putCharSequence("text", (CharSequence)localObject);
+        }
+        localBundle.putLong("time", b);
+        localObject = c;
+        if (localObject != null)
+        {
+          localBundle.putCharSequence("sender", ((r)localObject).c());
+          if (Build.VERSION.SDK_INT >= 28) {
+            localBundle.putParcelable("sender_person", c.h());
+          } else {
+            localBundle.putBundle("person", c.i());
+          }
+        }
+        localObject = e;
+        if (localObject != null) {
+          localBundle.putString("type", (String)localObject);
+        }
+        localObject = f;
+        if (localObject != null) {
+          localBundle.putParcelable("uri", (Parcelable)localObject);
+        }
+        localObject = d;
+        if (localObject != null) {
+          localBundle.putBundle("extras", (Bundle)localObject);
+        }
+        return localBundle;
+      }
+      
+      public String b()
+      {
+        return e;
+      }
+      
+      public Uri c()
+      {
+        return f;
+      }
+      
+      public r d()
+      {
+        return c;
+      }
+      
+      public CharSequence e()
+      {
+        return a;
+      }
+      
+      public long f()
+      {
+        return b;
+      }
+      
+      Notification.MessagingStyle.Message g()
+      {
+        r localR = d();
+        int i = Build.VERSION.SDK_INT;
+        CharSequence localCharSequence1 = null;
+        Object localObject = null;
+        long l;
+        if (i >= 28)
+        {
+          localCharSequence1 = e();
+          l = f();
+          if (localR != null) {
+            localObject = localR.h();
+          }
+          localObject = new Notification.MessagingStyle.Message(localCharSequence1, l, (Person)localObject);
+        }
+        else
+        {
+          CharSequence localCharSequence2 = e();
+          l = f();
+          if (localR == null) {
+            localObject = localCharSequence1;
+          } else {
+            localObject = localR.c();
+          }
+          localObject = new Notification.MessagingStyle.Message(localCharSequence2, l, (CharSequence)localObject);
+        }
+        if (b() != null) {
+          ((Notification.MessagingStyle.Message)localObject).setData(b(), c());
+        }
+        return localObject;
+      }
+    }
+  }
+  
+  public static abstract class h
+  {
+    CharSequence mBigContentTitle;
+    protected m.e mBuilder;
+    CharSequence mSummaryText;
+    boolean mSummaryTextSet = false;
+    
+    public h() {}
+    
+    private int calculateTopPadding()
+    {
+      Resources localResources = mBuilder.a.getResources();
+      int i = localResources.getDimensionPixelSize(c.i);
+      int j = localResources.getDimensionPixelSize(c.j);
+      float f = (constrain(getConfigurationfontScale, 1.0F, 1.3F) - 1.0F) / 0.29999995F;
+      return Math.round((1.0F - f) * i + f * j);
+    }
+    
+    private static float constrain(float paramFloat1, float paramFloat2, float paramFloat3)
+    {
+      if (paramFloat1 < paramFloat2) {
+        return paramFloat2;
+      }
+      paramFloat2 = paramFloat1;
+      if (paramFloat1 > paramFloat3) {
+        paramFloat2 = paramFloat3;
+      }
+      return paramFloat2;
+    }
+    
+    private Bitmap createColoredBitmap(int paramInt1, int paramInt2, int paramInt3)
+    {
+      return createColoredBitmap(IconCompat.i(mBuilder.a, paramInt1), paramInt2, paramInt3);
+    }
+    
+    private Bitmap createColoredBitmap(IconCompat paramIconCompat, int paramInt1, int paramInt2)
+    {
+      paramIconCompat = paramIconCompat.r(mBuilder.a);
+      int i;
+      if (paramInt2 == 0) {
+        i = paramIconCompat.getIntrinsicWidth();
+      } else {
+        i = paramInt2;
+      }
+      int j = paramInt2;
+      if (paramInt2 == 0) {
+        j = paramIconCompat.getIntrinsicHeight();
+      }
+      Bitmap localBitmap = Bitmap.createBitmap(i, j, Bitmap.Config.ARGB_8888);
+      paramIconCompat.setBounds(0, 0, i, j);
+      if (paramInt1 != 0) {
+        paramIconCompat.mutate().setColorFilter(new PorterDuffColorFilter(paramInt1, PorterDuff.Mode.SRC_IN));
+      }
+      paramIconCompat.draw(new Canvas(localBitmap));
+      return localBitmap;
+    }
+    
+    private Bitmap createIconWithBackground(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      int j = d.c;
+      int i = paramInt4;
+      if (paramInt4 == 0) {
+        i = 0;
+      }
+      Bitmap localBitmap = createColoredBitmap(j, i, paramInt2);
+      Canvas localCanvas = new Canvas(localBitmap);
+      Drawable localDrawable = mBuilder.a.getResources().getDrawable(paramInt1).mutate();
+      localDrawable.setFilterBitmap(true);
+      paramInt1 = (paramInt2 - paramInt3) / 2;
+      paramInt2 = paramInt3 + paramInt1;
+      localDrawable.setBounds(paramInt1, paramInt1, paramInt2, paramInt2);
+      localDrawable.setColorFilter(new PorterDuffColorFilter(-1, PorterDuff.Mode.SRC_ATOP));
+      localDrawable.draw(localCanvas);
+      return localBitmap;
+    }
+    
+    private void hideNormalContent(RemoteViews paramRemoteViews)
+    {
+      paramRemoteViews.setViewVisibility(e.m0, 8);
+      paramRemoteViews.setViewVisibility(e.k0, 8);
+      paramRemoteViews.setViewVisibility(e.j0, 8);
+    }
+    
+    public void addCompatExtras(Bundle paramBundle)
+    {
+      if (mSummaryTextSet) {
+        paramBundle.putCharSequence("android.summaryText", mSummaryText);
+      }
+      Object localObject = mBigContentTitle;
+      if (localObject != null) {
+        paramBundle.putCharSequence("android.title.big", (CharSequence)localObject);
+      }
+      localObject = getClassName();
+      if (localObject != null) {
+        paramBundle.putString("androidx.core.app.extra.COMPAT_TEMPLATE", (String)localObject);
+      }
+    }
+    
+    public void apply(j paramJ) {}
+    
+    public RemoteViews applyStandardTemplate(boolean paramBoolean1, int paramInt, boolean paramBoolean2)
+    {
+      Resources localResources = mBuilder.a.getResources();
+      RemoteViews localRemoteViews = new RemoteViews(mBuilder.a.getPackageName(), paramInt);
+      paramInt = mBuilder.i();
+      int m = 1;
+      int k = 0;
+      if (paramInt < -1) {
+        paramInt = 1;
+      } else {
+        paramInt = 0;
+      }
+      int n = Build.VERSION.SDK_INT;
+      if ((n >= 16) && (n < 21)) {
+        if (paramInt != 0)
+        {
+          localRemoteViews.setInt(e.R, "setBackgroundResource", d.b);
+          localRemoteViews.setInt(e.N, "setBackgroundResource", d.e);
+        }
+        else
+        {
+          localRemoteViews.setInt(e.R, "setBackgroundResource", d.a);
+          localRemoteViews.setInt(e.N, "setBackgroundResource", d.d);
+        }
+      }
+      Object localObject = mBuilder;
+      if (j != null)
+      {
+        if (n >= 16)
+        {
+          paramInt = e.N;
+          localRemoteViews.setViewVisibility(paramInt, 0);
+          localRemoteViews.setImageViewBitmap(paramInt, mBuilder.j);
+        }
+        else
+        {
+          localRemoteViews.setViewVisibility(e.N, 8);
+        }
+        if ((paramBoolean1) && (mBuilder.U.icon != 0))
+        {
+          paramInt = localResources.getDimensionPixelSize(c.e);
+          i = localResources.getDimensionPixelSize(c.f);
+          if (n >= 21)
+          {
+            localObject = mBuilder;
+            localObject = createIconWithBackground(U.icon, paramInt, paramInt - i * 2, ((m.e)localObject).e());
+            localRemoteViews.setImageViewBitmap(e.U, (Bitmap)localObject);
+          }
+          else
+          {
+            localRemoteViews.setImageViewBitmap(e.U, createColoredBitmap(mBuilder.U.icon, -1));
+          }
+          localRemoteViews.setViewVisibility(e.U, 0);
+        }
+      }
+      else if ((paramBoolean1) && (U.icon != 0))
+      {
+        paramInt = e.N;
+        localRemoteViews.setViewVisibility(paramInt, 0);
+        if (n >= 21)
+        {
+          i = localResources.getDimensionPixelSize(c.d);
+          j = localResources.getDimensionPixelSize(c.c);
+          int i1 = localResources.getDimensionPixelSize(c.g);
+          localObject = mBuilder;
+          localRemoteViews.setImageViewBitmap(paramInt, createIconWithBackground(U.icon, i - j, i1, ((m.e)localObject).e()));
+        }
+        else
+        {
+          localRemoteViews.setImageViewBitmap(paramInt, createColoredBitmap(mBuilder.U.icon, -1));
+        }
+      }
+      localObject = mBuilder.e;
+      if (localObject != null) {
+        localRemoteViews.setTextViewText(e.m0, (CharSequence)localObject);
+      }
+      localObject = mBuilder.f;
+      if (localObject != null)
+      {
+        localRemoteViews.setTextViewText(e.j0, (CharSequence)localObject);
+        paramInt = 1;
+      }
+      else
+      {
+        paramInt = 0;
+      }
+      if ((n < 21) && (mBuilder.j != null)) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      localObject = mBuilder;
+      CharSequence localCharSequence = k;
+      if (localCharSequence != null)
+      {
+        paramInt = e.O;
+        localRemoteViews.setTextViewText(paramInt, localCharSequence);
+        localRemoteViews.setViewVisibility(paramInt, 0);
+      }
+      for (;;)
+      {
+        i = 1;
+        paramInt = i;
+        break label672;
+        if (l <= 0) {
+          break;
+        }
+        paramInt = localResources.getInteger(f.a);
+        if (mBuilder.l > paramInt)
+        {
+          localRemoteViews.setTextViewText(e.O, localResources.getString(h.a));
+        }
+        else
+        {
+          localObject = NumberFormat.getIntegerInstance();
+          localRemoteViews.setTextViewText(e.O, ((NumberFormat)localObject).format(mBuilder.l));
+        }
+        localRemoteViews.setViewVisibility(e.O, 0);
+      }
+      localRemoteViews.setViewVisibility(e.O, 8);
+      int j = paramInt;
+      paramInt = i;
+      int i = j;
+      label672:
+      localObject = mBuilder.r;
+      if ((localObject != null) && (n >= 16))
+      {
+        localRemoteViews.setTextViewText(e.j0, (CharSequence)localObject);
+        localObject = mBuilder.f;
+        if (localObject != null)
+        {
+          j = e.k0;
+          localRemoteViews.setTextViewText(j, (CharSequence)localObject);
+          localRemoteViews.setViewVisibility(j, 0);
+          j = 1;
+        }
+        else
+        {
+          localRemoteViews.setViewVisibility(e.k0, 8);
+        }
+      }
+      else
+      {
+        j = 0;
+      }
+      if ((j != 0) && (n >= 16))
+      {
+        if (paramBoolean2)
+        {
+          float f = localResources.getDimensionPixelSize(c.h);
+          localRemoteViews.setTextViewTextSize(e.j0, 0, f);
+        }
+        localRemoteViews.setViewPadding(e.P, 0, 0, 0, 0);
+      }
+      if (mBuilder.j() != 0L) {
+        if ((mBuilder.o) && (n >= 16))
+        {
+          j = e.M;
+          localRemoteViews.setViewVisibility(j, 0);
+          localRemoteViews.setLong(j, "setBase", mBuilder.j() + (SystemClock.elapsedRealtime() - System.currentTimeMillis()));
+          localRemoteViews.setBoolean(j, "setStarted", true);
+          paramBoolean1 = mBuilder.p;
+          paramInt = m;
+          if (paramBoolean1)
+          {
+            paramInt = m;
+            if (n >= 24)
+            {
+              localRemoteViews.setChronometerCountDown(j, paramBoolean1);
+              paramInt = m;
+            }
+          }
+        }
+        else
+        {
+          paramInt = e.l0;
+          localRemoteViews.setViewVisibility(paramInt, 0);
+          localRemoteViews.setLong(paramInt, "setTime", mBuilder.j());
+          paramInt = m;
+        }
+      }
+      j = e.V;
+      if (paramInt != 0) {
+        paramInt = 0;
+      } else {
+        paramInt = 8;
+      }
+      localRemoteViews.setViewVisibility(j, paramInt);
+      j = e.Q;
+      if (i != 0) {
+        paramInt = k;
+      } else {
+        paramInt = 8;
+      }
+      localRemoteViews.setViewVisibility(j, paramInt);
+      return localRemoteViews;
+    }
+    
+    public void buildIntoRemoteViews(RemoteViews paramRemoteViews1, RemoteViews paramRemoteViews2)
+    {
+      hideNormalContent(paramRemoteViews1);
+      int i = e.S;
+      paramRemoteViews1.removeAllViews(i);
+      paramRemoteViews1.addView(i, paramRemoteViews2.clone());
+      paramRemoteViews1.setViewVisibility(i, 0);
+      if (Build.VERSION.SDK_INT >= 21) {
+        paramRemoteViews1.setViewPadding(e.T, 0, calculateTopPadding(), 0, 0);
+      }
+    }
+    
+    public Bitmap createColoredBitmap(int paramInt1, int paramInt2)
+    {
+      return createColoredBitmap(paramInt1, paramInt2, 0);
+    }
+    
+    Bitmap createColoredBitmap(IconCompat paramIconCompat, int paramInt)
+    {
+      return createColoredBitmap(paramIconCompat, paramInt, 0);
+    }
+    
+    protected String getClassName()
+    {
+      return null;
+    }
+    
+    public RemoteViews makeBigContentView(j paramJ)
+    {
+      return null;
+    }
+    
+    public RemoteViews makeContentView(j paramJ)
+    {
+      return null;
+    }
+    
+    public RemoteViews makeHeadsUpContentView(j paramJ)
+    {
+      return null;
+    }
+    
+    public void setBuilder(m.e paramE)
+    {
+      if (mBuilder != paramE)
+      {
+        mBuilder = paramE;
+        if (paramE != null) {
+          paramE.J(this);
+        }
+      }
+    }
+  }
+}

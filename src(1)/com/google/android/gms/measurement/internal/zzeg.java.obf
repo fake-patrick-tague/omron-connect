@@ -1,0 +1,67 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseLockedException;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.io.File;
+
+@VisibleForTesting
+final class zzeg
+  extends SQLiteOpenHelper
+{
+  zzeg(zzeh paramZzeh, Context paramContext, String paramString)
+  {
+    super(paramContext, "google_app_measurement_local.db", null, 1);
+  }
+  
+  public final SQLiteDatabase getWritableDatabase()
+    throws SQLiteException
+  {
+    try
+    {
+      localSQLiteDatabase = super.getWritableDatabase();
+      return localSQLiteDatabase;
+    }
+    catch (SQLiteDatabaseLockedException localSQLiteDatabaseLockedException)
+    {
+      SQLiteDatabase localSQLiteDatabase;
+      throw localSQLiteDatabaseLockedException;
+    }
+    catch (SQLiteException localSQLiteException2)
+    {
+      for (;;) {}
+    }
+    zza.zzs.zzay().zzd().zza("Opening the local database failed, dropping and recreating it");
+    zza.zzs.zzf();
+    if (!zza.zzs.zzau().getDatabasePath("google_app_measurement_local.db").delete()) {
+      zza.zzs.zzay().zzd().zzb("Failed to delete corrupted local db file", "google_app_measurement_local.db");
+    }
+    try
+    {
+      localSQLiteDatabase = super.getWritableDatabase();
+      return localSQLiteDatabase;
+    }
+    catch (SQLiteException localSQLiteException1)
+    {
+      zza.zzs.zzay().zzd().zzb("Failed to open local database. Events will bypass local storage", localSQLiteException1);
+      return null;
+    }
+  }
+  
+  public final void onCreate(SQLiteDatabase paramSQLiteDatabase)
+  {
+    zzan.zzb(zza.zzs.zzay(), paramSQLiteDatabase);
+  }
+  
+  public final void onDowngrade(SQLiteDatabase paramSQLiteDatabase, int paramInt1, int paramInt2) {}
+  
+  public final void onOpen(SQLiteDatabase paramSQLiteDatabase)
+  {
+    zzan.zza(zza.zzs.zzay(), paramSQLiteDatabase, "messages", "create table if not exists messages ( type INTEGER NOT NULL, entry BLOB NOT NULL)", "type,entry", null);
+  }
+  
+  public final void onUpgrade(SQLiteDatabase paramSQLiteDatabase, int paramInt1, int paramInt2) {}
+}

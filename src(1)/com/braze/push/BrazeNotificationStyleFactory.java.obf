@@ -1,0 +1,523 @@
+package com.braze.push;
+
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.ApplicationInfoFlags;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.widget.RemoteViews;
+import androidx.core.app.m.b;
+import androidx.core.app.m.c;
+import androidx.core.app.m.e;
+import androidx.core.app.m.f;
+import androidx.core.app.m.g;
+import androidx.core.app.m.h;
+import com.braze.Braze;
+import com.braze.Braze.Companion;
+import com.braze.IBrazeDeeplinkHandler;
+import com.braze.IBrazeDeeplinkHandler.IntentFlagPurpose;
+import com.braze.configuration.BrazeConfigurationProvider;
+import com.braze.enums.BrazeDateFormat;
+import com.braze.enums.BrazeViewBounds;
+import com.braze.images.IBrazeImageLoader;
+import com.braze.models.push.BrazeNotificationPayload;
+import com.braze.models.push.BrazeNotificationPayload.ConversationMessage;
+import com.braze.models.push.BrazeNotificationPayload.ConversationPerson;
+import com.braze.models.push.BrazeNotificationPayload.PushStoryPage;
+import com.braze.push.support.HtmlUtils;
+import com.braze.support.BrazeImageUtils;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.DateTimeUtils;
+import com.braze.support.IntentUtils;
+import com.braze.ui.BrazeDeeplinkHandler;
+import com.braze.ui.BrazeDeeplinkHandler.Companion;
+import com.braze.ui.R.id;
+import com.braze.ui.R.layout;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public class BrazeNotificationStyleFactory
+{
+  public static final Companion Companion = new Companion(null);
+  
+  public static final class Companion
+  {
+    private Companion() {}
+    
+    private final PendingIntent createStoryPageClickedPendingIntent(Context paramContext, BrazeNotificationPayload paramBrazeNotificationPayload, BrazeNotificationPayload.PushStoryPage paramPushStoryPage)
+    {
+      Intent localIntent = new Intent("com.braze.action.BRAZE_STORY_CLICKED").setClass(paramContext, NotificationTrampolineActivity.class);
+      i.d(localIntent, "Intent(Constants.BRAZE_S?lineActivity::class.java)");
+      localIntent.setFlags(localIntent.getFlags() | BrazeDeeplinkHandler.Companion.getInstance().getIntentFlags(IBrazeDeeplinkHandler.IntentFlagPurpose.NOTIFICATION_PUSH_STORY_PAGE_CLICK));
+      localIntent.putExtras(paramBrazeNotificationPayload.getNotificationExtras());
+      localIntent.putExtra("braze_action_uri", paramPushStoryPage.getDeeplink());
+      localIntent.putExtra("braze_action_use_webview", paramPushStoryPage.getUseWebview());
+      localIntent.putExtra("braze_story_page_id", paramPushStoryPage.getStoryPageId());
+      localIntent.putExtra("braze_campaign_id", paramPushStoryPage.getCampaignId());
+      localIntent.putExtra("nid", BrazeNotificationUtils.getNotificationId(paramBrazeNotificationPayload));
+      paramContext = PendingIntent.getActivity(paramContext, IntentUtils.getRequestCode(), localIntent, IntentUtils.getImmutablePendingIntentFlags());
+      i.d(paramContext, "getActivity(\n           ?tentFlags()\n            )");
+      return paramContext;
+    }
+    
+    private final PendingIntent createStoryTraversedPendingIntent(Context paramContext, Bundle paramBundle, int paramInt)
+    {
+      Intent localIntent = new Intent("com.braze.action.STORY_TRAVERSE").setClass(paramContext, BrazeNotificationUtils.getNotificationReceiverClass());
+      i.d(localIntent, "Intent(Constants.BRAZE_S?otificationReceiverClass)");
+      if (paramBundle != null)
+      {
+        paramBundle.putInt("braze_story_index", paramInt);
+        localIntent.putExtras(paramBundle);
+      }
+      paramInt = IntentUtils.getImmutablePendingIntentFlags();
+      paramContext = PendingIntent.getBroadcast(paramContext, IntentUtils.getRequestCode(), localIntent, 0x40000000 | paramInt);
+      i.d(paramContext, "getBroadcast(\n          ?      flags\n            )");
+      return paramContext;
+    }
+    
+    private final boolean isRemoteViewNotificationAvailableSpaceConstrained(Context paramContext)
+    {
+      return (Build.VERSION.SDK_INT >= 31) && (getApplicationContextgetApplicationInfotargetSdkVersion >= 31);
+    }
+    
+    private final boolean populatePushStoryPage(RemoteViews paramRemoteViews, BrazeNotificationPayload paramBrazeNotificationPayload, BrazeNotificationPayload.PushStoryPage paramPushStoryPage)
+    {
+      Context localContext = paramBrazeNotificationPayload.getContext();
+      int j = 0;
+      if (localContext == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, populatePushStoryPage.1.INSTANCE, 3, null);
+        return false;
+      }
+      Object localObject1 = paramBrazeNotificationPayload.getConfigurationProvider();
+      if (localObject1 == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, populatePushStoryPage.2.INSTANCE, 3, null);
+        return false;
+      }
+      Object localObject2 = paramPushStoryPage.getBitmapUrl();
+      int i;
+      if ((localObject2 != null) && (!g.o((CharSequence)localObject2))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, populatePushStoryPage.3.INSTANCE, 3, null);
+        return false;
+      }
+      Bundle localBundle = paramBrazeNotificationPayload.getNotificationExtras();
+      localObject2 = Braze.Companion.getInstance(localContext).getImageLoader().getPushBitmapFromUrl(localContext, localBundle, (String)localObject2, BrazeViewBounds.NOTIFICATION_ONE_IMAGE_STORY);
+      if (localObject2 == null) {
+        return false;
+      }
+      paramRemoteViews.setImageViewBitmap(R.id.com_braze_story_image_view, (Bitmap)localObject2);
+      localObject2 = paramPushStoryPage.getTitle();
+      if ((localObject2 != null) && (!g.o((CharSequence)localObject2))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i == 0)
+      {
+        localObject2 = HtmlUtils.getHtmlSpannedTextIfEnabled((String)localObject2, (BrazeConfigurationProvider)localObject1);
+        paramRemoteViews.setTextViewText(R.id.com_braze_story_text_view, (CharSequence)localObject2);
+        i = paramPushStoryPage.getTitleGravity();
+        paramRemoteViews.setInt(R.id.com_braze_story_text_view_container, "setGravity", i);
+      }
+      else
+      {
+        paramRemoteViews.setInt(R.id.com_braze_story_text_view_container, "setVisibility", 8);
+      }
+      localObject2 = paramPushStoryPage.getSubtitle();
+      if (localObject2 != null)
+      {
+        i = j;
+        if (!g.o((CharSequence)localObject2)) {}
+      }
+      else
+      {
+        i = 1;
+      }
+      if (i == 0)
+      {
+        localObject1 = HtmlUtils.getHtmlSpannedTextIfEnabled((String)localObject2, (BrazeConfigurationProvider)localObject1);
+        paramRemoteViews.setTextViewText(R.id.com_braze_story_text_view_small, (CharSequence)localObject1);
+        i = paramPushStoryPage.getSubtitleGravity();
+        paramRemoteViews.setInt(R.id.com_braze_story_text_view_small_container, "setGravity", i);
+      }
+      else
+      {
+        paramRemoteViews.setInt(R.id.com_braze_story_text_view_small_container, "setVisibility", 8);
+      }
+      paramBrazeNotificationPayload = createStoryPageClickedPendingIntent(localContext, paramBrazeNotificationPayload, paramPushStoryPage);
+      paramRemoteViews.setOnClickPendingIntent(R.id.com_braze_story_relative_layout, paramBrazeNotificationPayload);
+      return true;
+    }
+    
+    public final m.b getBigPictureNotificationStyle(BrazeNotificationPayload paramBrazeNotificationPayload)
+    {
+      i.e(paramBrazeNotificationPayload, "payload");
+      Context localContext = paramBrazeNotificationPayload.getContext();
+      if (localContext == null) {
+        return null;
+      }
+      Object localObject1 = paramBrazeNotificationPayload.getBigImageUrl();
+      int i;
+      if ((localObject1 != null) && (!g.o((CharSequence)localObject1))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0) {
+        return null;
+      }
+      Object localObject3 = paramBrazeNotificationPayload.getNotificationExtras();
+      localObject3 = Braze.Companion.getInstance(localContext).getImageLoader().getPushBitmapFromUrl(localContext, (Bundle)localObject3, (String)localObject1, BrazeViewBounds.NOTIFICATION_EXPANDED_IMAGE);
+      if (localObject3 == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new j((String)localObject1)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Failed to download image bitmap for big picture notification style. Url: ");
+            localStringBuilder.append($imageUrl);
+            return localStringBuilder.toString();
+          }
+        }, 3, null);
+        return null;
+      }
+      localObject1 = localObject3;
+      try
+      {
+        Object localObject2;
+        if (((Bitmap)localObject3).getWidth() > ((Bitmap)localObject3).getHeight())
+        {
+          int m = BrazeImageUtils.getPixelsFromDensityAndDp(BrazeImageUtils.getDensityDpi(localContext), 192);
+          int j = m * 2;
+          int k = BrazeImageUtils.getDisplayWidthPixels(localContext);
+          i = j;
+          if (j > k) {
+            i = k;
+          }
+          try
+          {
+            localObject1 = Bitmap.createScaledBitmap((Bitmap)localObject3, i, m, true);
+          }
+          catch (Exception localException)
+          {
+            BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, localException, getBigPictureNotificationStyle.2.INSTANCE);
+            localObject2 = localObject3;
+          }
+        }
+        if (localObject2 == null)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, getBigPictureNotificationStyle.3.INSTANCE, 2, null);
+          return null;
+        }
+        localObject3 = new m.b();
+        ((m.b)localObject3).b(localObject2);
+        setBigPictureSummaryAndTitle((m.b)localObject3, paramBrazeNotificationPayload);
+        return localObject3;
+      }
+      catch (Exception paramBrazeNotificationPayload)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramBrazeNotificationPayload, getBigPictureNotificationStyle.4.INSTANCE);
+      }
+      return null;
+    }
+    
+    public final m.c getBigTextNotificationStyle(BrazeNotificationPayload paramBrazeNotificationPayload)
+    {
+      i.e(paramBrazeNotificationPayload, "payload");
+      m.c localC = new m.c();
+      BrazeConfigurationProvider localBrazeConfigurationProvider = paramBrazeNotificationPayload.getConfigurationProvider();
+      if (localBrazeConfigurationProvider == null) {
+        return localC;
+      }
+      Object localObject = paramBrazeNotificationPayload.getContentText();
+      if (localObject != null)
+      {
+        localObject = HtmlUtils.getHtmlSpannedTextIfEnabled((String)localObject, localBrazeConfigurationProvider);
+        if (localObject != null) {
+          localC.a((CharSequence)localObject);
+        }
+      }
+      localObject = paramBrazeNotificationPayload.getBigSummaryText();
+      if (localObject != null) {
+        localC.c(HtmlUtils.getHtmlSpannedTextIfEnabled((String)localObject, localBrazeConfigurationProvider));
+      }
+      paramBrazeNotificationPayload = paramBrazeNotificationPayload.getBigTitleText();
+      if (paramBrazeNotificationPayload != null) {
+        localC.b(HtmlUtils.getHtmlSpannedTextIfEnabled(paramBrazeNotificationPayload, localBrazeConfigurationProvider));
+      }
+      return localC;
+    }
+    
+    public final m.g getConversationalPushStyle(m.e paramE, BrazeNotificationPayload paramBrazeNotificationPayload)
+    {
+      i.e(paramE, "notificationBuilder");
+      i.e(paramBrazeNotificationPayload, "payload");
+      for (;;)
+      {
+        try
+        {
+          Map localMap = paramBrazeNotificationPayload.getConversationPersonMap();
+          Object localObject = (BrazeNotificationPayload.ConversationPerson)localMap.get(paramBrazeNotificationPayload.getConversationReplyPersonId());
+          if (localObject == null)
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getConversationalPushStyle.1.INSTANCE, 3, null);
+            return null;
+          }
+          localObject = new m.g(((BrazeNotificationPayload.ConversationPerson)localObject).getPerson());
+          Iterator localIterator = paramBrazeNotificationPayload.getConversationMessages().iterator();
+          if (localIterator.hasNext())
+          {
+            BrazeNotificationPayload.ConversationMessage localConversationMessage = (BrazeNotificationPayload.ConversationMessage)localIterator.next();
+            BrazeNotificationPayload.ConversationPerson localConversationPerson = (BrazeNotificationPayload.ConversationPerson)localMap.get(localConversationMessage.getPersonId());
+            if (localConversationPerson == null)
+            {
+              BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new j(localConversationMessage)
+              {
+                public final String invoke()
+                {
+                  StringBuilder localStringBuilder = new StringBuilder();
+                  localStringBuilder.append("Message person does not exist in mapping. Not rendering a style. ");
+                  localStringBuilder.append($message);
+                  return localStringBuilder.toString();
+                }
+              }, 3, null);
+              return null;
+            }
+            ((m.g)localObject).b(localConversationMessage.getMessage(), localConversationMessage.getTimestamp(), localConversationPerson.getPerson());
+            continue;
+          }
+          int i = localMap.size();
+          bool = true;
+          if (i > 1)
+          {
+            ((m.g)localObject).h(bool);
+            paramE.F(paramBrazeNotificationPayload.getConversationShortcutId());
+            return localObject;
+          }
+        }
+        catch (Exception paramE)
+        {
+          BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramE, getConversationalPushStyle.3.INSTANCE);
+          return null;
+        }
+        boolean bool = false;
+      }
+    }
+    
+    public final m.h getInlineImageStyle(BrazeNotificationPayload paramBrazeNotificationPayload, m.e paramE)
+    {
+      i.e(paramBrazeNotificationPayload, "payload");
+      i.e(paramE, "notificationBuilder");
+      Context localContext = paramBrazeNotificationPayload.getContext();
+      if (localContext == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getInlineImageStyle.1.INSTANCE, 3, null);
+        return null;
+      }
+      Object localObject1 = paramBrazeNotificationPayload.getBigImageUrl();
+      int i;
+      if ((localObject1 != null) && (!g.o((CharSequence)localObject1))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getInlineImageStyle.2.INSTANCE, 3, null);
+        return null;
+      }
+      Bundle localBundle = paramBrazeNotificationPayload.getNotificationExtras();
+      localObject1 = Braze.Companion.getInstance(localContext).getImageLoader().getPushBitmapFromUrl(localContext, localBundle, (String)localObject1, BrazeViewBounds.NOTIFICATION_INLINE_PUSH_IMAGE);
+      if (localObject1 == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getInlineImageStyle.3.INSTANCE, 3, null);
+        return null;
+      }
+      boolean bool = isRemoteViewNotificationAvailableSpaceConstrained(localContext);
+      Object localObject2 = localContext.getPackageName();
+      if (bool) {
+        i = R.layout.com_braze_push_inline_image_constrained;
+      } else {
+        i = R.layout.com_braze_notification_inline_image;
+      }
+      localObject2 = new RemoteViews((String)localObject2, i);
+      BrazeConfigurationProvider localBrazeConfigurationProvider = new BrazeConfigurationProvider(localContext);
+      Object localObject3 = Icon.createWithResource(localContext, localBrazeConfigurationProvider.getSmallNotificationIconResourceId());
+      i.d(localObject3, "createWithResource(\n    ?nResourceId\n            )");
+      paramBrazeNotificationPayload = paramBrazeNotificationPayload.getAccentColor();
+      if (paramBrazeNotificationPayload != null) {
+        ((Icon)localObject3).setTint(paramBrazeNotificationPayload.intValue());
+      }
+      ((RemoteViews)localObject2).setImageViewIcon(R.id.com_braze_inline_image_push_app_icon, (Icon)localObject3);
+      localObject3 = localContext.getPackageManager();
+      try
+      {
+        if (Build.VERSION.SDK_INT >= 33) {
+          paramBrazeNotificationPayload = ((PackageManager)localObject3).getApplicationInfo(localContext.getPackageName(), PackageManager.ApplicationInfoFlags.of(0L));
+        } else {
+          paramBrazeNotificationPayload = ((PackageManager)localObject3).getApplicationInfo(localContext.getPackageName(), 0);
+        }
+        i.d(paramBrazeNotificationPayload, "{\n                if (Bu?          }\n            }");
+        paramBrazeNotificationPayload = HtmlUtils.getHtmlSpannedTextIfEnabled((String)((PackageManager)localObject3).getApplicationLabel(paramBrazeNotificationPayload), localBrazeConfigurationProvider);
+        ((RemoteViews)localObject2).setTextViewText(R.id.com_braze_inline_image_push_app_name_text, paramBrazeNotificationPayload);
+        ((RemoteViews)localObject2).setTextViewText(R.id.com_braze_inline_image_push_time_text, DateTimeUtils.formatDateNow(BrazeDateFormat.CLOCK_12_HOUR));
+        paramBrazeNotificationPayload = localBundle.getString("t");
+        if (paramBrazeNotificationPayload != null) {
+          ((RemoteViews)localObject2).setTextViewText(R.id.com_braze_inline_image_push_title_text, HtmlUtils.getHtmlSpannedTextIfEnabled(paramBrazeNotificationPayload, localBrazeConfigurationProvider));
+        }
+        paramBrazeNotificationPayload = localBundle.getString("a");
+        if (paramBrazeNotificationPayload != null) {
+          ((RemoteViews)localObject2).setTextViewText(R.id.com_braze_inline_image_push_content_text, HtmlUtils.getHtmlSpannedTextIfEnabled(paramBrazeNotificationPayload, localBrazeConfigurationProvider));
+        }
+        paramE.u((RemoteViews)localObject2);
+        if (bool)
+        {
+          paramE.y((Bitmap)localObject1);
+          return new m.f();
+        }
+        ((RemoteViews)localObject2).setImageViewBitmap(R.id.com_braze_inline_image_push_side_image, (Bitmap)localObject1);
+        return new BrazeNotificationStyleFactory.NoOpSentinelStyle();
+      }
+      catch (PackageManager.NameNotFoundException paramBrazeNotificationPayload)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramBrazeNotificationPayload, getInlineImageStyle.applicationInfo.1.INSTANCE);
+      }
+      return null;
+    }
+    
+    public final m.h getNotificationStyle(m.e paramE, BrazeNotificationPayload paramBrazeNotificationPayload)
+    {
+      i.e(paramE, "notificationBuilder");
+      i.e(paramBrazeNotificationPayload, "payload");
+      if ((paramBrazeNotificationPayload.isPushStory()) && (paramBrazeNotificationPayload.getContext() != null))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getNotificationStyle.1.INSTANCE, 3, null);
+        paramE = getStoryStyle(paramE, paramBrazeNotificationPayload);
+      }
+      else if ((paramBrazeNotificationPayload.isConversationalPush()) && (Build.VERSION.SDK_INT >= 25))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getNotificationStyle.2.INSTANCE, 3, null);
+        paramE = getConversationalPushStyle(paramE, paramBrazeNotificationPayload);
+      }
+      else if (paramBrazeNotificationPayload.getBigImageUrl() != null)
+      {
+        if ((Build.VERSION.SDK_INT >= 23) && (paramBrazeNotificationPayload.isInlineImagePush()))
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getNotificationStyle.3.INSTANCE, 3, null);
+          paramE = getInlineImageStyle(paramBrazeNotificationPayload, paramE);
+        }
+        else
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getNotificationStyle.4.INSTANCE, 3, null);
+          paramE = getBigPictureNotificationStyle(paramBrazeNotificationPayload);
+        }
+      }
+      else
+      {
+        paramE = null;
+      }
+      Object localObject = paramE;
+      if (paramE == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getNotificationStyle.5.INSTANCE, 3, null);
+        localObject = getBigTextNotificationStyle(paramBrazeNotificationPayload);
+      }
+      return localObject;
+    }
+    
+    public final m.f getStoryStyle(m.e paramE, BrazeNotificationPayload paramBrazeNotificationPayload)
+    {
+      i.e(paramE, "notificationBuilder");
+      i.e(paramBrazeNotificationPayload, "payload");
+      Object localObject1 = paramBrazeNotificationPayload.getContext();
+      if (localObject1 == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, getStoryStyle.1.INSTANCE, 3, null);
+        return null;
+      }
+      Object localObject2 = paramBrazeNotificationPayload.getPushStoryPages();
+      int i = paramBrazeNotificationPayload.getPushStoryPageIndex();
+      Object localObject3 = (BrazeNotificationPayload.PushStoryPage)((List)localObject2).get(i);
+      RemoteViews localRemoteViews = new RemoteViews(((Context)localObject1).getPackageName(), R.layout.com_braze_push_story_one_image);
+      if (!populatePushStoryPage(localRemoteViews, paramBrazeNotificationPayload, (BrazeNotificationPayload.PushStoryPage)localObject3))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, getStoryStyle.2.INSTANCE, 2, null);
+        return null;
+      }
+      localObject3 = paramBrazeNotificationPayload.getNotificationExtras();
+      paramBrazeNotificationPayload = new m.f();
+      int j = ((List)localObject2).size();
+      localObject2 = createStoryTraversedPendingIntent((Context)localObject1, (Bundle)localObject3, (i - 1 + j) % j);
+      localRemoteViews.setOnClickPendingIntent(R.id.com_braze_story_button_previous, (PendingIntent)localObject2);
+      localObject1 = createStoryTraversedPendingIntent((Context)localObject1, (Bundle)localObject3, (i + 1) % j);
+      localRemoteViews.setOnClickPendingIntent(R.id.com_braze_story_button_next, (PendingIntent)localObject1);
+      paramE.t(localRemoteViews);
+      paramE.C(true);
+      return paramBrazeNotificationPayload;
+    }
+    
+    public final void setBigPictureSummaryAndTitle(m.b paramB, BrazeNotificationPayload paramBrazeNotificationPayload)
+    {
+      i.e(paramB, "bigPictureNotificationStyle");
+      i.e(paramBrazeNotificationPayload, "payload");
+      BrazeConfigurationProvider localBrazeConfigurationProvider = paramBrazeNotificationPayload.getConfigurationProvider();
+      if (localBrazeConfigurationProvider == null) {
+        return;
+      }
+      String str1 = paramBrazeNotificationPayload.getBigSummaryText();
+      String str2 = paramBrazeNotificationPayload.getBigTitleText();
+      String str3 = paramBrazeNotificationPayload.getSummaryText();
+      if (str1 != null) {
+        paramB.d(HtmlUtils.getHtmlSpannedTextIfEnabled(str1, localBrazeConfigurationProvider));
+      }
+      if (str2 != null) {
+        paramB.c(HtmlUtils.getHtmlSpannedTextIfEnabled(str2, localBrazeConfigurationProvider));
+      }
+      if ((str3 == null) && (str1 == null))
+      {
+        paramBrazeNotificationPayload = paramBrazeNotificationPayload.getContentText();
+        if (paramBrazeNotificationPayload != null) {
+          paramB.d(HtmlUtils.getHtmlSpannedTextIfEnabled(paramBrazeNotificationPayload, localBrazeConfigurationProvider));
+        }
+      }
+    }
+    
+    public final void setStyleIfSupported(m.e paramE, BrazeNotificationPayload paramBrazeNotificationPayload)
+    {
+      i.e(paramE, "notificationBuilder");
+      i.e(paramBrazeNotificationPayload, "payload");
+      paramBrazeNotificationPayload = getNotificationStyle(paramE, paramBrazeNotificationPayload);
+      if (!(paramBrazeNotificationPayload instanceof BrazeNotificationStyleFactory.NoOpSentinelStyle))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, setStyleIfSupported.1.INSTANCE, 3, null);
+        paramE.J(paramBrazeNotificationPayload);
+      }
+    }
+  }
+  
+  private static final class NoOpSentinelStyle
+    extends m.h
+  {
+    public NoOpSentinelStyle() {}
+  }
+}

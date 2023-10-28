@@ -1,0 +1,108 @@
+package androidx.work.impl;
+
+import android.content.Context;
+import androidx.room.RoomDatabase;
+import androidx.room.RoomDatabase.a;
+import androidx.room.RoomDatabase.b;
+import androidx.room.p.a;
+import androidx.work.impl.n.e;
+import androidx.work.impl.n.k;
+import androidx.work.impl.n.n;
+import androidx.work.impl.n.q;
+import androidx.work.impl.n.t;
+import c.t.a.c.b;
+import c.t.a.c.b.a;
+import c.t.a.c.c;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+
+public abstract class WorkDatabase
+  extends RoomDatabase
+{
+  private static final long l = TimeUnit.DAYS.toMillis(1L);
+  
+  public WorkDatabase() {}
+  
+  public static WorkDatabase s(Context paramContext, Executor paramExecutor, boolean paramBoolean)
+  {
+    RoomDatabase.a localA;
+    if (paramBoolean)
+    {
+      localA = androidx.room.h.c(paramContext, WorkDatabase.class).c();
+    }
+    else
+    {
+      localA = androidx.room.h.a(paramContext, WorkDatabase.class, i.d());
+      localA.f(new a());
+    }
+    return (WorkDatabase)localA.g(paramExecutor).a(u()).b(new a[] { h.a }).b(new a[] { new h.h(paramContext, 2, 3) }).b(new a[] { h.b }).b(new a[] { h.c }).b(new a[] { new h.h(paramContext, 5, 6) }).b(new a[] { h.d }).b(new a[] { h.e }).b(new a[] { h.f }).b(new a[] { new h.i(paramContext) }).b(new a[] { new h.h(paramContext, 10, 11) }).b(new a[] { h.g }).e().d();
+  }
+  
+  static RoomDatabase.b u()
+  {
+    return new b();
+  }
+  
+  static long v()
+  {
+    return System.currentTimeMillis() - l;
+  }
+  
+  static String w()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("DELETE FROM workspec WHERE state IN (2, 3, 5) AND (period_start_time + minimum_retention_duration) < ");
+    localStringBuilder.append(v());
+    localStringBuilder.append(" AND (SELECT COUNT(*)=0 FROM dependency WHERE     prerequisite_id=id AND     work_spec_id NOT IN         (SELECT id FROM workspec WHERE state IN (2, 3, 5)))");
+    return localStringBuilder.toString();
+  }
+  
+  public abstract n A();
+  
+  public abstract q B();
+  
+  public abstract t C();
+  
+  public abstract androidx.work.impl.n.b t();
+  
+  public abstract e x();
+  
+  public abstract androidx.work.impl.n.h y();
+  
+  public abstract k z();
+  
+  class a
+    implements c.c
+  {
+    a() {}
+    
+    public c.t.a.c create(c.b paramB)
+    {
+      c.b.a localA = c.b.a(WorkDatabase.this);
+      localA.c(b).b(c).d(true);
+      return new c.t.a.g.c().create(localA.a());
+    }
+  }
+  
+  class b
+    extends RoomDatabase.b
+  {
+    b() {}
+    
+    public void c(c.t.a.b paramB)
+    {
+      super.c(paramB);
+      paramB.beginTransaction();
+      try
+      {
+        paramB.execSQL(WorkDatabase.w());
+        paramB.setTransactionSuccessful();
+        return;
+      }
+      finally
+      {
+        paramB.endTransaction();
+      }
+    }
+  }
+}

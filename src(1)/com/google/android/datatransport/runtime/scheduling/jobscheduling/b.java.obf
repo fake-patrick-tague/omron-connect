@@ -1,0 +1,96 @@
+package com.google.android.datatransport.runtime.scheduling.jobscheduling;
+
+import android.app.job.JobInfo;
+import android.app.job.JobInfo.Builder;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
+import android.os.PersistableBundle;
+import android.util.Base64;
+import com.google.android.datatransport.h.p;
+import com.google.android.datatransport.h.y.j.j0;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.Adler32;
+
+public class s
+  implements x
+{
+  private final Context a;
+  private final j0 b;
+  private final SchedulerConfig c;
+  
+  public s(Context paramContext, j0 paramJ0, SchedulerConfig paramSchedulerConfig)
+  {
+    a = paramContext;
+    b = paramJ0;
+    c = paramSchedulerConfig;
+  }
+  
+  private boolean d(JobScheduler paramJobScheduler, int paramInt1, int paramInt2)
+  {
+    paramJobScheduler = paramJobScheduler.getAllPendingJobs().iterator();
+    boolean bool2;
+    JobInfo localJobInfo;
+    int i;
+    do
+    {
+      boolean bool3 = paramJobScheduler.hasNext();
+      bool2 = false;
+      bool1 = bool2;
+      if (!bool3) {
+        break;
+      }
+      localJobInfo = (JobInfo)paramJobScheduler.next();
+      i = localJobInfo.getExtras().getInt("attemptNumber");
+    } while (localJobInfo.getId() != paramInt1);
+    boolean bool1 = bool2;
+    if (i >= paramInt2) {
+      bool1 = true;
+    }
+    return bool1;
+  }
+  
+  public void a(p paramP, int paramInt)
+  {
+    b(paramP, paramInt, false);
+  }
+  
+  public void b(p paramP, int paramInt, boolean paramBoolean)
+  {
+    Object localObject = new ComponentName(a, JobInfoSchedulerService.class);
+    JobScheduler localJobScheduler = (JobScheduler)a.getSystemService("jobscheduler");
+    int i = c(paramP);
+    if ((!paramBoolean) && (d(localJobScheduler, i, paramInt)))
+    {
+      com.google.android.datatransport.h.w.a.b("JobInfoScheduler", "Upload for context %s is already scheduled. Returning...", paramP);
+      return;
+    }
+    long l = b.q0(paramP);
+    localObject = c.c(new JobInfo.Builder(i, (ComponentName)localObject), paramP.d(), l, paramInt);
+    PersistableBundle localPersistableBundle = new PersistableBundle();
+    localPersistableBundle.putInt("attemptNumber", paramInt);
+    localPersistableBundle.putString("backendName", paramP.b());
+    localPersistableBundle.putInt("priority", com.google.android.datatransport.h.b0.a.a(paramP.d()));
+    if (paramP.c() != null) {
+      localPersistableBundle.putString("extras", Base64.encodeToString(paramP.c(), 0));
+    }
+    ((JobInfo.Builder)localObject).setExtras(localPersistableBundle);
+    com.google.android.datatransport.h.w.a.c("JobInfoScheduler", "Scheduling upload for context %s with jobId=%d in %dms(Backend next call timestamp %d). Attempt %d", new Object[] { paramP, Integer.valueOf(i), Long.valueOf(c.g(paramP.d(), l, paramInt)), Long.valueOf(l), Integer.valueOf(paramInt) });
+    localJobScheduler.schedule(((JobInfo.Builder)localObject).build());
+  }
+  
+  int c(p paramP)
+  {
+    Adler32 localAdler32 = new Adler32();
+    localAdler32.update(a.getPackageName().getBytes(Charset.forName("UTF-8")));
+    localAdler32.update(paramP.b().getBytes(Charset.forName("UTF-8")));
+    localAdler32.update(ByteBuffer.allocate(4).putInt(com.google.android.datatransport.h.b0.a.a(paramP.d())).array());
+    if (paramP.c() != null) {
+      localAdler32.update(paramP.c());
+    }
+    return (int)localAdler32.getValue();
+  }
+}

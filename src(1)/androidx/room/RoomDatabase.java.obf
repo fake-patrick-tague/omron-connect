@@ -1,0 +1,499 @@
+package androidx.room;
+
+import android.app.ActivityManager;
+import android.content.Context;
+import android.database.Cursor;
+import android.os.Build.VERSION;
+import android.os.CancellationSignal;
+import android.os.Looper;
+import android.util.Log;
+import c.t.a.b;
+import c.t.a.c.c;
+import c.t.a.e;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+public abstract class RoomDatabase
+{
+  @Deprecated
+  protected volatile b a;
+  private Executor b;
+  private Executor c;
+  private c.t.a.c d;
+  private final f e = e();
+  private boolean f;
+  boolean g;
+  @Deprecated
+  protected List<b> h;
+  private final ReentrantReadWriteLock i = new ReentrantReadWriteLock();
+  private final ThreadLocal<Integer> j = new ThreadLocal();
+  private final Map<String, Object> k = new ConcurrentHashMap();
+  
+  public RoomDatabase() {}
+  
+  private static boolean n()
+  {
+    return Looper.getMainLooper().getThread() == Thread.currentThread();
+  }
+  
+  public void a()
+  {
+    if (f) {
+      return;
+    }
+    if (!n()) {
+      return;
+    }
+    throw new IllegalStateException("Cannot access database on the main thread since it may potentially lock the UI for a long period of time.");
+  }
+  
+  public void b()
+  {
+    if (!k())
+    {
+      if (j.get() == null) {
+        return;
+      }
+      throw new IllegalStateException("Cannot access database on a different coroutine context inherited from a suspending transaction.");
+    }
+  }
+  
+  @Deprecated
+  public void c()
+  {
+    a();
+    b localB = d.getWritableDatabase();
+    e.m(localB);
+    localB.beginTransaction();
+  }
+  
+  public c.t.a.f d(String paramString)
+  {
+    a();
+    b();
+    return d.getWritableDatabase().compileStatement(paramString);
+  }
+  
+  protected abstract f e();
+  
+  protected abstract c.t.a.c f(a paramA);
+  
+  @Deprecated
+  public void g()
+  {
+    d.getWritableDatabase().endTransaction();
+    if (!k()) {
+      e.f();
+    }
+  }
+  
+  Lock h()
+  {
+    return i.readLock();
+  }
+  
+  public c.t.a.c i()
+  {
+    return d;
+  }
+  
+  public Executor j()
+  {
+    return b;
+  }
+  
+  public boolean k()
+  {
+    return d.getWritableDatabase().inTransaction();
+  }
+  
+  public void l(a paramA)
+  {
+    c.t.a.c localC = f(paramA);
+    d = localC;
+    if ((localC instanceof l)) {
+      ((l)localC).h(paramA);
+    }
+    int m = Build.VERSION.SDK_INT;
+    boolean bool1 = false;
+    boolean bool2 = false;
+    if (m >= 16)
+    {
+      bool1 = bool2;
+      if (g == JournalMode.d) {
+        bool1 = true;
+      }
+      d.setWriteAheadLoggingEnabled(bool1);
+    }
+    h = e;
+    b = h;
+    c = new o(i);
+    f = f;
+    g = bool1;
+    if (j) {
+      e.i(b, c);
+    }
+  }
+  
+  protected void m(b paramB)
+  {
+    e.d(paramB);
+  }
+  
+  public boolean o()
+  {
+    b localB = a;
+    return (localB != null) && (localB.isOpen());
+  }
+  
+  public Cursor p(e paramE)
+  {
+    return q(paramE, null);
+  }
+  
+  public Cursor q(e paramE, CancellationSignal paramCancellationSignal)
+  {
+    a();
+    b();
+    if ((paramCancellationSignal != null) && (Build.VERSION.SDK_INT >= 16)) {
+      return d.getWritableDatabase().query(paramE, paramCancellationSignal);
+    }
+    return d.getWritableDatabase().query(paramE);
+  }
+  
+  @Deprecated
+  public void r()
+  {
+    d.getWritableDatabase().setTransactionSuccessful();
+  }
+  
+  public static enum JournalMode
+  {
+    static
+    {
+      JournalMode localJournalMode1 = new JournalMode("AUTOMATIC", 0);
+      b = localJournalMode1;
+      JournalMode localJournalMode2 = new JournalMode("TRUNCATE", 1);
+      c = localJournalMode2;
+      JournalMode localJournalMode3 = new JournalMode("WRITE_AHEAD_LOGGING", 2);
+      d = localJournalMode3;
+      e = new JournalMode[] { localJournalMode1, localJournalMode2, localJournalMode3 };
+    }
+    
+    private static boolean a(ActivityManager paramActivityManager)
+    {
+      if (Build.VERSION.SDK_INT >= 19) {
+        return paramActivityManager.isLowRamDevice();
+      }
+      return false;
+    }
+    
+    JournalMode b(Context paramContext)
+    {
+      if (this != b) {
+        return this;
+      }
+      if (Build.VERSION.SDK_INT >= 16)
+      {
+        paramContext = (ActivityManager)paramContext.getSystemService("activity");
+        if ((paramContext != null) && (!a(paramContext))) {
+          return d;
+        }
+      }
+      return c;
+    }
+  }
+  
+  public static class a<T extends RoomDatabase>
+  {
+    private final Class<T> a;
+    private final String b;
+    private final Context c;
+    private ArrayList<RoomDatabase.b> d;
+    private Executor e;
+    private Executor f;
+    private c.c g;
+    private boolean h;
+    private RoomDatabase.JournalMode i;
+    private boolean j;
+    private boolean k;
+    private boolean l;
+    private final RoomDatabase.c m;
+    private Set<Integer> n;
+    private Set<Integer> o;
+    private String p;
+    private File q;
+    
+    a(Context paramContext, Class<T> paramClass, String paramString)
+    {
+      c = paramContext;
+      a = paramClass;
+      b = paramString;
+      i = RoomDatabase.JournalMode.b;
+      k = true;
+      m = new RoomDatabase.c();
+    }
+    
+    public a<T> a(RoomDatabase.b paramB)
+    {
+      if (d == null) {
+        d = new ArrayList();
+      }
+      d.add(paramB);
+      return this;
+    }
+    
+    public a<T> b(androidx.room.p.a... paramVarArgs)
+    {
+      if (o == null) {
+        o = new HashSet();
+      }
+      int i2 = paramVarArgs.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        androidx.room.p.a localA = paramVarArgs[i1];
+        o.add(Integer.valueOf(a));
+        o.add(Integer.valueOf(b));
+        i1 += 1;
+      }
+      m.b(paramVarArgs);
+      return this;
+    }
+    
+    public a<T> c()
+    {
+      h = true;
+      return this;
+    }
+    
+    public T d()
+    {
+      if (c != null)
+      {
+        if (a != null)
+        {
+          Object localObject1 = e;
+          if ((localObject1 == null) && (f == null))
+          {
+            localObject1 = c.b.a.a.a.d();
+            f = ((Executor)localObject1);
+            e = ((Executor)localObject1);
+          }
+          else if ((localObject1 != null) && (f == null))
+          {
+            f = ((Executor)localObject1);
+          }
+          else if (localObject1 == null)
+          {
+            localObject1 = f;
+            if (localObject1 != null) {
+              e = ((Executor)localObject1);
+            }
+          }
+          localObject1 = o;
+          Object localObject2;
+          if ((localObject1 != null) && (n != null))
+          {
+            localObject2 = ((Set)localObject1).iterator();
+            while (((Iterator)localObject2).hasNext())
+            {
+              localObject1 = (Integer)((Iterator)localObject2).next();
+              if (n.contains(localObject1))
+              {
+                localObject2 = new StringBuilder();
+                ((StringBuilder)localObject2).append("Inconsistency detected. A Migration was supplied to addMigration(Migration... migrations) that has a start or end version equal to a start version supplied to fallbackToDestructiveMigrationFrom(int... startVersions). Start version: ");
+                ((StringBuilder)localObject2).append(localObject1);
+                throw new IllegalArgumentException(((StringBuilder)localObject2).toString());
+              }
+            }
+          }
+          if (g == null) {
+            g = new c.t.a.g.c();
+          }
+          localObject1 = p;
+          if ((localObject1 != null) || (q != null))
+          {
+            if (b != null)
+            {
+              if ((localObject1 != null) && (q != null)) {
+                throw new IllegalArgumentException("Both createFromAsset() and createFromFile() was called on this Builder but the database can only be created using one of the two configurations.");
+              }
+              g = new m((String)localObject1, q, g);
+            }
+          }
+          else
+          {
+            localObject1 = c;
+            localObject1 = new a((Context)localObject1, b, g, m, d, h, i.b((Context)localObject1), e, f, j, k, l, n, p, q);
+            localObject2 = (RoomDatabase)h.b(a, "_Impl");
+            ((RoomDatabase)localObject2).l((a)localObject1);
+            return localObject2;
+          }
+          throw new IllegalArgumentException("Cannot create from asset or file for an in-memory database.");
+        }
+        throw new IllegalArgumentException("Must provide an abstract class that extends RoomDatabase");
+      }
+      throw new IllegalArgumentException("Cannot provide null context for the database.");
+    }
+    
+    public a<T> e()
+    {
+      k = false;
+      l = true;
+      return this;
+    }
+    
+    public a<T> f(c.c paramC)
+    {
+      g = paramC;
+      return this;
+    }
+    
+    public a<T> g(Executor paramExecutor)
+    {
+      e = paramExecutor;
+      return this;
+    }
+  }
+  
+  public static abstract class b
+  {
+    public b() {}
+    
+    public void a(b paramB) {}
+    
+    public void b(b paramB) {}
+    
+    public void c(b paramB) {}
+  }
+  
+  public static class c
+  {
+    private HashMap<Integer, TreeMap<Integer, androidx.room.p.a>> a = new HashMap();
+    
+    public c() {}
+    
+    private void a(androidx.room.p.a paramA)
+    {
+      int i = a;
+      int j = b;
+      Object localObject2 = (TreeMap)a.get(Integer.valueOf(i));
+      Object localObject1 = localObject2;
+      if (localObject2 == null)
+      {
+        localObject1 = new TreeMap();
+        a.put(Integer.valueOf(i), localObject1);
+      }
+      localObject2 = (androidx.room.p.a)((TreeMap)localObject1).get(Integer.valueOf(j));
+      if (localObject2 != null)
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Overriding migration ");
+        localStringBuilder.append(localObject2);
+        localStringBuilder.append(" with ");
+        localStringBuilder.append(paramA);
+        Log.w("ROOM", localStringBuilder.toString());
+      }
+      ((TreeMap)localObject1).put(Integer.valueOf(j), paramA);
+    }
+    
+    private List<androidx.room.p.a> d(List<androidx.room.p.a> paramList, boolean paramBoolean, int paramInt1, int paramInt2)
+    {
+      while (paramBoolean ? paramInt1 < paramInt2 : paramInt1 > paramInt2)
+      {
+        TreeMap localTreeMap = (TreeMap)a.get(Integer.valueOf(paramInt1));
+        if (localTreeMap == null) {
+          return null;
+        }
+        if (paramBoolean) {
+          localObject = localTreeMap.descendingKeySet();
+        } else {
+          localObject = localTreeMap.keySet();
+        }
+        Object localObject = ((Set)localObject).iterator();
+        int j;
+        int k;
+        do
+        {
+          boolean bool = ((Iterator)localObject).hasNext();
+          j = 1;
+          int m = 0;
+          if (!bool) {
+            break;
+          }
+          k = ((Integer)((Iterator)localObject).next()).intValue();
+          if (paramBoolean)
+          {
+            i = m;
+            if (k <= paramInt2)
+            {
+              i = m;
+              if (k <= paramInt1) {}
+            }
+          }
+          else
+          {
+            do
+            {
+              i = 1;
+              break;
+              i = m;
+              if (k < paramInt2) {
+                break;
+              }
+              i = m;
+            } while (k < paramInt1);
+          }
+        } while (i == 0);
+        paramList.add(localTreeMap.get(Integer.valueOf(k)));
+        paramInt1 = k;
+        int i = j;
+        break label197;
+        i = 0;
+        label197:
+        if (i == 0) {
+          return null;
+        }
+      }
+      return paramList;
+    }
+    
+    public void b(androidx.room.p.a... paramVarArgs)
+    {
+      int j = paramVarArgs.length;
+      int i = 0;
+      while (i < j)
+      {
+        a(paramVarArgs[i]);
+        i += 1;
+      }
+    }
+    
+    public List<androidx.room.p.a> c(int paramInt1, int paramInt2)
+    {
+      if (paramInt1 == paramInt2) {
+        return Collections.emptyList();
+      }
+      boolean bool;
+      if (paramInt2 > paramInt1) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      return d(new ArrayList(), bool, paramInt1, paramInt2);
+    }
+  }
+}

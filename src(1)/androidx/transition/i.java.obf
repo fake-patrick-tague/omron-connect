@@ -1,0 +1,167 @@
+package androidx.transition;
+
+import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnPreDrawListener;
+import c.e.a;
+import c.e.g;
+import c.h.q.f0;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class j
+{
+  private static Transition a = new AutoTransition();
+  private static ThreadLocal<WeakReference<a<ViewGroup, ArrayList<Transition>>>> b = new ThreadLocal();
+  static ArrayList<ViewGroup> c = new ArrayList();
+  
+  public static void a(ViewGroup paramViewGroup, Transition paramTransition)
+  {
+    if ((!c.contains(paramViewGroup)) && (f0.T(paramViewGroup)))
+    {
+      c.add(paramViewGroup);
+      Transition localTransition = paramTransition;
+      if (paramTransition == null) {
+        localTransition = a;
+      }
+      paramTransition = localTransition.o();
+      d(paramViewGroup, paramTransition);
+      h.c(paramViewGroup, null);
+      c(paramViewGroup, paramTransition);
+    }
+  }
+  
+  static a<ViewGroup, ArrayList<Transition>> b()
+  {
+    Object localObject = (WeakReference)b.get();
+    if (localObject != null)
+    {
+      localObject = (a)((WeakReference)localObject).get();
+      if (localObject != null) {
+        return localObject;
+      }
+    }
+    localObject = new a();
+    WeakReference localWeakReference = new WeakReference(localObject);
+    b.set(localWeakReference);
+    return localObject;
+  }
+  
+  private static void c(ViewGroup paramViewGroup, Transition paramTransition)
+  {
+    if ((paramTransition != null) && (paramViewGroup != null))
+    {
+      paramTransition = new a(paramTransition, paramViewGroup);
+      paramViewGroup.addOnAttachStateChangeListener(paramTransition);
+      paramViewGroup.getViewTreeObserver().addOnPreDrawListener(paramTransition);
+    }
+  }
+  
+  private static void d(ViewGroup paramViewGroup, Transition paramTransition)
+  {
+    Object localObject = (ArrayList)b().get(paramViewGroup);
+    if ((localObject != null) && (((ArrayList)localObject).size() > 0))
+    {
+      localObject = ((ArrayList)localObject).iterator();
+      while (((Iterator)localObject).hasNext()) {
+        ((Transition)((Iterator)localObject).next()).P(paramViewGroup);
+      }
+    }
+    if (paramTransition != null) {
+      paramTransition.m(paramViewGroup, true);
+    }
+    paramViewGroup = h.b(paramViewGroup);
+    if (paramViewGroup != null) {
+      paramViewGroup.a();
+    }
+  }
+  
+  private static class a
+    implements ViewTreeObserver.OnPreDrawListener, View.OnAttachStateChangeListener
+  {
+    Transition b;
+    ViewGroup c;
+    
+    a(Transition paramTransition, ViewGroup paramViewGroup)
+    {
+      b = paramTransition;
+      c = paramViewGroup;
+    }
+    
+    private void a()
+    {
+      c.getViewTreeObserver().removeOnPreDrawListener(this);
+      c.removeOnAttachStateChangeListener(this);
+    }
+    
+    public boolean onPreDraw()
+    {
+      a();
+      if (!j.c.remove(c)) {
+        return true;
+      }
+      final a localA = j.b();
+      ArrayList localArrayList2 = (ArrayList)localA.get(c);
+      ArrayList localArrayList1 = null;
+      Object localObject;
+      if (localArrayList2 == null)
+      {
+        localObject = new ArrayList();
+        localA.put(c, localObject);
+      }
+      else
+      {
+        localObject = localArrayList2;
+        if (localArrayList2.size() > 0)
+        {
+          localArrayList1 = new ArrayList(localArrayList2);
+          localObject = localArrayList2;
+        }
+      }
+      ((ArrayList)localObject).add(b);
+      b.b(new a(localA));
+      b.m(c, false);
+      if (localArrayList1 != null)
+      {
+        localObject = localArrayList1.iterator();
+        while (((Iterator)localObject).hasNext()) {
+          ((Transition)((Iterator)localObject).next()).T(c);
+        }
+      }
+      b.Q(c);
+      return true;
+    }
+    
+    public void onViewAttachedToWindow(View paramView) {}
+    
+    public void onViewDetachedFromWindow(View paramView)
+    {
+      a();
+      j.c.remove(c);
+      paramView = (ArrayList)j.b().get(c);
+      if ((paramView != null) && (paramView.size() > 0))
+      {
+        paramView = paramView.iterator();
+        while (paramView.hasNext()) {
+          ((Transition)paramView.next()).T(c);
+        }
+      }
+      b.n(true);
+    }
+    
+    class a
+      extends i
+    {
+      a(a paramA) {}
+      
+      public void c(Transition paramTransition)
+      {
+        ((ArrayList)localA.get(c)).remove(paramTransition);
+        paramTransition.R(this);
+      }
+    }
+  }
+}

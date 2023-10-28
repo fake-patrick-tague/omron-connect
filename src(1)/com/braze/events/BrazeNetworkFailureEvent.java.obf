@@ -1,0 +1,79 @@
+package com.braze.events;
+
+import bo.app.a2;
+import bo.app.c0;
+import bo.app.j0;
+import bo.app.x3;
+import kotlin.x.d.i;
+
+public final class BrazeNetworkFailureEvent
+{
+  private final a2 brazeRequest;
+  private final String networkExceptionMessage;
+  private final Exception originalException;
+  private final Long requestInitiationTime;
+  private final RequestType requestType;
+  
+  public BrazeNetworkFailureEvent(Exception paramException, a2 paramA2)
+  {
+    originalException = paramException;
+    brazeRequest = paramA2;
+    networkExceptionMessage = paramException.getMessage();
+    requestInitiationTime = paramA2.j();
+    if ((paramA2 instanceof c0))
+    {
+      paramException = RequestType.CONTENT_CARDS_SYNC;
+    }
+    else if ((paramA2 instanceof j0))
+    {
+      paramException = paramA2.c();
+      int i = 1;
+      if ((paramException == null) || (paramException.x() != true)) {
+        i = 0;
+      }
+      if (i != 0) {
+        paramException = RequestType.NEWS_FEED_SYNC;
+      } else {
+        paramException = RequestType.OTHER;
+      }
+    }
+    else
+    {
+      paramException = RequestType.OTHER;
+    }
+    requestType = paramException;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof BrazeNetworkFailureEvent)) {
+      return false;
+    }
+    paramObject = (BrazeNetworkFailureEvent)paramObject;
+    if (!i.a(originalException, originalException)) {
+      return false;
+    }
+    return i.a(brazeRequest, brazeRequest);
+  }
+  
+  public int hashCode()
+  {
+    return originalException.hashCode() * 31 + brazeRequest.hashCode();
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("BrazeNetworkFailureEvent(originalException=");
+    localStringBuilder.append(originalException);
+    localStringBuilder.append(", brazeRequest=");
+    localStringBuilder.append(brazeRequest);
+    localStringBuilder.append(')');
+    return localStringBuilder.toString();
+  }
+  
+  public static enum RequestType {}
+}

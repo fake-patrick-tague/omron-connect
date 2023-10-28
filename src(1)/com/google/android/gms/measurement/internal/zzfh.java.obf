@@ -1,0 +1,41 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.Context;
+import android.content.Intent;
+import com.google.android.gms.common.internal.Preconditions;
+
+public final class zzfh
+{
+  private final zzfh.zza zza;
+  
+  public zzfh(zzfh.zza paramZza)
+  {
+    Preconditions.checkNotNull(paramZza);
+    zza = paramZza;
+  }
+  
+  public final void zza(Context paramContext, Intent paramIntent)
+  {
+    zzfy localZzfy = zzfy.zzp(paramContext, null, null);
+    zzeo localZzeo = localZzfy.zzay();
+    if (paramIntent == null)
+    {
+      localZzeo.zzk().zza("Receiver called with null intent");
+      return;
+    }
+    localZzfy.zzaw();
+    paramIntent = paramIntent.getAction();
+    localZzeo.zzj().zzb("Local receiver got", paramIntent);
+    if ("com.google.android.gms.measurement.UPLOAD".equals(paramIntent))
+    {
+      paramIntent = new Intent().setClassName(paramContext, "com.google.android.gms.measurement.AppMeasurementService");
+      paramIntent.setAction("com.google.android.gms.measurement.UPLOAD");
+      localZzeo.zzj().zza("Starting wakeful intent.");
+      zza.doStartService(paramContext, paramIntent);
+      return;
+    }
+    if ("com.android.vending.INSTALL_REFERRER".equals(paramIntent)) {
+      localZzeo.zzk().zza("Install Referrer Broadcasts are deprecated");
+    }
+  }
+}

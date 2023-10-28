@@ -1,0 +1,108 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.Bundle;
+import android.os.DeadObjectException;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.Api.AnyClient;
+import com.google.android.gms.common.api.Api.AnyClientKey;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+public final class zaaj
+  implements zabf
+{
+  private final zabi zaa;
+  private boolean zab = false;
+  
+  public zaaj(zabi paramZabi)
+  {
+    zaa = paramZabi;
+  }
+  
+  public final <A extends Api.AnyClient, R extends Result, T extends BaseImplementation.ApiMethodImpl<R, A>> T zaa(T paramT)
+  {
+    zab(paramT);
+    return paramT;
+  }
+  
+  public final <A extends Api.AnyClient, T extends BaseImplementation.ApiMethodImpl<? extends Result, A>> T zab(T paramT)
+  {
+    try
+    {
+      zaa.zag.zai.zaa(paramT);
+      Object localObject = zaa.zag;
+      Api.AnyClientKey localAnyClientKey = paramT.getClientKey();
+      localObject = (Api.Client)zac.get(localAnyClientKey);
+      Preconditions.checkNotNull(localObject, "Appropriate Api was not requested.");
+      if ((!((Api.Client)localObject).isConnected()) && (zaa.zab.containsKey(paramT.getClientKey())))
+      {
+        paramT.setFailedResult(new Status(17));
+        return paramT;
+      }
+      paramT.run((Api.AnyClient)localObject);
+      return paramT;
+    }
+    catch (DeadObjectException localDeadObjectException)
+    {
+      for (;;) {}
+    }
+    zaa.zal(new zaah(this, this));
+    return paramT;
+  }
+  
+  public final void zad() {}
+  
+  public final void zae()
+  {
+    if (zab)
+    {
+      zab = false;
+      zaa.zal(new zaai(this, this));
+    }
+  }
+  
+  final void zaf()
+  {
+    if (zab)
+    {
+      zab = false;
+      zaa.zag.zai.zab();
+      zaj();
+    }
+  }
+  
+  public final void zag(Bundle paramBundle) {}
+  
+  public final void zah(ConnectionResult paramConnectionResult, Api<?> paramApi, boolean paramBoolean) {}
+  
+  public final void zai(int paramInt)
+  {
+    zaa.zak(null);
+    zaa.zah.zac(paramInt, zab);
+  }
+  
+  public final boolean zaj()
+  {
+    if (zab) {
+      return false;
+    }
+    Object localObject = zaa.zag.zah;
+    if ((localObject != null) && (!((Set)localObject).isEmpty()))
+    {
+      zab = true;
+      localObject = ((Set)localObject).iterator();
+      while (((Iterator)localObject).hasNext()) {
+        ((zada)((Iterator)localObject).next()).zah();
+      }
+      return false;
+    }
+    zaa.zak(null);
+    return true;
+  }
+}

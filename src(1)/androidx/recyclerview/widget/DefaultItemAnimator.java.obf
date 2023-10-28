@@ -1,0 +1,731 @@
+package androidx.recyclerview.widget;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
+import android.view.View;
+import android.view.ViewPropertyAnimator;
+import c.h.q.f0;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class g
+  extends w
+{
+  private static TimeInterpolator h;
+  private ArrayList<RecyclerView.b0> i = new ArrayList();
+  private ArrayList<RecyclerView.b0> j = new ArrayList();
+  private ArrayList<j> k = new ArrayList();
+  private ArrayList<i> l = new ArrayList();
+  ArrayList<ArrayList<RecyclerView.b0>> m = new ArrayList();
+  ArrayList<ArrayList<j>> n = new ArrayList();
+  ArrayList<ArrayList<i>> o = new ArrayList();
+  ArrayList<RecyclerView.b0> p = new ArrayList();
+  ArrayList<RecyclerView.b0> q = new ArrayList();
+  ArrayList<RecyclerView.b0> r = new ArrayList();
+  ArrayList<RecyclerView.b0> s = new ArrayList();
+  
+  public g() {}
+  
+  private void V(final RecyclerView.b0 paramB0)
+  {
+    final View localView = itemView;
+    final ViewPropertyAnimator localViewPropertyAnimator = localView.animate();
+    r.add(paramB0);
+    localViewPropertyAnimator.setDuration(o()).alpha(0.0F).setListener(new d(paramB0, localViewPropertyAnimator, localView)).start();
+  }
+  
+  private void Y(List<i> paramList, RecyclerView.b0 paramB0)
+  {
+    int i1 = paramList.size() - 1;
+    while (i1 >= 0)
+    {
+      i localI = (i)paramList.get(i1);
+      if ((a0(localI, paramB0)) && (a == null) && (b == null)) {
+        paramList.remove(localI);
+      }
+      i1 -= 1;
+    }
+  }
+  
+  private void Z(i paramI)
+  {
+    RecyclerView.b0 localB0 = a;
+    if (localB0 != null) {
+      a0(paramI, localB0);
+    }
+    localB0 = b;
+    if (localB0 != null) {
+      a0(paramI, localB0);
+    }
+  }
+  
+  private boolean a0(i paramI, RecyclerView.b0 paramB0)
+  {
+    RecyclerView.b0 localB0 = b;
+    boolean bool = false;
+    if (localB0 == paramB0)
+    {
+      b = null;
+    }
+    else
+    {
+      if (a != paramB0) {
+        break label69;
+      }
+      a = null;
+      bool = true;
+    }
+    itemView.setAlpha(1.0F);
+    itemView.setTranslationX(0.0F);
+    itemView.setTranslationY(0.0F);
+    D(paramB0, bool);
+    return true;
+    label69:
+    return false;
+  }
+  
+  private void b0(RecyclerView.b0 paramB0)
+  {
+    if (h == null) {
+      h = new ValueAnimator().getInterpolator();
+    }
+    itemView.animate().setInterpolator(h);
+    j(paramB0);
+  }
+  
+  public boolean A(RecyclerView.b0 paramB0)
+  {
+    b0(paramB0);
+    i.add(paramB0);
+    return true;
+  }
+  
+  void S(final RecyclerView.b0 paramB0)
+  {
+    final View localView = itemView;
+    final ViewPropertyAnimator localViewPropertyAnimator = localView.animate();
+    p.add(paramB0);
+    localViewPropertyAnimator.alpha(1.0F).setDuration(l()).setListener(new e(paramB0, localView, localViewPropertyAnimator)).start();
+  }
+  
+  void T(final i paramI)
+  {
+    Object localObject1 = a;
+    final View localView = null;
+    if (localObject1 == null) {
+      localObject1 = null;
+    } else {
+      localObject1 = itemView;
+    }
+    Object localObject2 = b;
+    if (localObject2 != null) {
+      localView = itemView;
+    }
+    if (localObject1 != null)
+    {
+      localObject2 = ((View)localObject1).animate().setDuration(m());
+      s.add(a);
+      ((ViewPropertyAnimator)localObject2).translationX(e - c);
+      ((ViewPropertyAnimator)localObject2).translationY(f - d);
+      ((ViewPropertyAnimator)localObject2).alpha(0.0F).setListener(new g(paramI, (ViewPropertyAnimator)localObject2, (View)localObject1)).start();
+    }
+    if (localView != null)
+    {
+      localObject1 = localView.animate();
+      s.add(b);
+      ((ViewPropertyAnimator)localObject1).translationX(0.0F).translationY(0.0F).setDuration(m()).alpha(1.0F).setListener(new h(paramI, (ViewPropertyAnimator)localObject1, localView)).start();
+    }
+  }
+  
+  void U(final RecyclerView.b0 paramB0, final int paramInt1, final int paramInt2, int paramInt3, int paramInt4)
+  {
+    final View localView = itemView;
+    paramInt1 = paramInt3 - paramInt1;
+    paramInt2 = paramInt4 - paramInt2;
+    if (paramInt1 != 0) {
+      localView.animate().translationX(0.0F);
+    }
+    if (paramInt2 != 0) {
+      localView.animate().translationY(0.0F);
+    }
+    final ViewPropertyAnimator localViewPropertyAnimator = localView.animate();
+    q.add(paramB0);
+    localViewPropertyAnimator.setDuration(n()).setListener(new f(paramB0, paramInt1, localView, paramInt2, localViewPropertyAnimator)).start();
+  }
+  
+  void W(List<RecyclerView.b0> paramList)
+  {
+    int i1 = paramList.size() - 1;
+    while (i1 >= 0)
+    {
+      getitemView.animate().cancel();
+      i1 -= 1;
+    }
+  }
+  
+  void X()
+  {
+    if (!p()) {
+      i();
+    }
+  }
+  
+  public boolean g(RecyclerView.b0 paramB0, List<Object> paramList)
+  {
+    return (!paramList.isEmpty()) || (super.g(paramB0, paramList));
+  }
+  
+  public void j(RecyclerView.b0 paramB0)
+  {
+    View localView = itemView;
+    localView.animate().cancel();
+    int i1 = k.size() - 1;
+    while (i1 >= 0)
+    {
+      if (k.get(i1)).a == paramB0)
+      {
+        localView.setTranslationY(0.0F);
+        localView.setTranslationX(0.0F);
+        F(paramB0);
+        k.remove(i1);
+      }
+      i1 -= 1;
+    }
+    Y(l, paramB0);
+    if (i.remove(paramB0))
+    {
+      localView.setAlpha(1.0F);
+      H(paramB0);
+    }
+    if (j.remove(paramB0))
+    {
+      localView.setAlpha(1.0F);
+      B(paramB0);
+    }
+    i1 = o.size() - 1;
+    ArrayList localArrayList;
+    while (i1 >= 0)
+    {
+      localArrayList = (ArrayList)o.get(i1);
+      Y(localArrayList, paramB0);
+      if (localArrayList.isEmpty()) {
+        o.remove(i1);
+      }
+      i1 -= 1;
+    }
+    i1 = n.size() - 1;
+    while (i1 >= 0)
+    {
+      localArrayList = (ArrayList)n.get(i1);
+      int i2 = localArrayList.size() - 1;
+      while (i2 >= 0)
+      {
+        if (geta == paramB0)
+        {
+          localView.setTranslationY(0.0F);
+          localView.setTranslationX(0.0F);
+          F(paramB0);
+          localArrayList.remove(i2);
+          if (!localArrayList.isEmpty()) {
+            break;
+          }
+          n.remove(i1);
+          break;
+        }
+        i2 -= 1;
+      }
+      i1 -= 1;
+    }
+    i1 = m.size() - 1;
+    while (i1 >= 0)
+    {
+      localArrayList = (ArrayList)m.get(i1);
+      if (localArrayList.remove(paramB0))
+      {
+        localView.setAlpha(1.0F);
+        B(paramB0);
+        if (localArrayList.isEmpty()) {
+          m.remove(i1);
+        }
+      }
+      i1 -= 1;
+    }
+    r.remove(paramB0);
+    p.remove(paramB0);
+    s.remove(paramB0);
+    q.remove(paramB0);
+    X();
+  }
+  
+  public void k()
+  {
+    int i1 = k.size() - 1;
+    Object localObject1;
+    Object localObject2;
+    while (i1 >= 0)
+    {
+      localObject1 = (j)k.get(i1);
+      localObject2 = a.itemView;
+      ((View)localObject2).setTranslationY(0.0F);
+      ((View)localObject2).setTranslationX(0.0F);
+      F(a);
+      k.remove(i1);
+      i1 -= 1;
+    }
+    i1 = i.size() - 1;
+    while (i1 >= 0)
+    {
+      H((RecyclerView.b0)i.get(i1));
+      i.remove(i1);
+      i1 -= 1;
+    }
+    i1 = j.size() - 1;
+    while (i1 >= 0)
+    {
+      localObject1 = (RecyclerView.b0)j.get(i1);
+      itemView.setAlpha(1.0F);
+      B((RecyclerView.b0)localObject1);
+      j.remove(i1);
+      i1 -= 1;
+    }
+    i1 = l.size() - 1;
+    while (i1 >= 0)
+    {
+      Z((i)l.get(i1));
+      i1 -= 1;
+    }
+    l.clear();
+    if (!p()) {
+      return;
+    }
+    i1 = n.size() - 1;
+    int i2;
+    while (i1 >= 0)
+    {
+      localObject1 = (ArrayList)n.get(i1);
+      i2 = ((ArrayList)localObject1).size() - 1;
+      while (i2 >= 0)
+      {
+        localObject2 = (j)((ArrayList)localObject1).get(i2);
+        View localView = a.itemView;
+        localView.setTranslationY(0.0F);
+        localView.setTranslationX(0.0F);
+        F(a);
+        ((ArrayList)localObject1).remove(i2);
+        if (((ArrayList)localObject1).isEmpty()) {
+          n.remove(localObject1);
+        }
+        i2 -= 1;
+      }
+      i1 -= 1;
+    }
+    i1 = m.size() - 1;
+    while (i1 >= 0)
+    {
+      localObject1 = (ArrayList)m.get(i1);
+      i2 = ((ArrayList)localObject1).size() - 1;
+      while (i2 >= 0)
+      {
+        localObject2 = (RecyclerView.b0)((ArrayList)localObject1).get(i2);
+        itemView.setAlpha(1.0F);
+        B((RecyclerView.b0)localObject2);
+        ((ArrayList)localObject1).remove(i2);
+        if (((ArrayList)localObject1).isEmpty()) {
+          m.remove(localObject1);
+        }
+        i2 -= 1;
+      }
+      i1 -= 1;
+    }
+    i1 = o.size() - 1;
+    while (i1 >= 0)
+    {
+      localObject1 = (ArrayList)o.get(i1);
+      i2 = ((ArrayList)localObject1).size() - 1;
+      while (i2 >= 0)
+      {
+        Z((i)((ArrayList)localObject1).get(i2));
+        if (((ArrayList)localObject1).isEmpty()) {
+          o.remove(localObject1);
+        }
+        i2 -= 1;
+      }
+      i1 -= 1;
+    }
+    W(r);
+    W(q);
+    W(p);
+    W(s);
+    i();
+  }
+  
+  public boolean p()
+  {
+    return (!j.isEmpty()) || (!l.isEmpty()) || (!k.isEmpty()) || (!i.isEmpty()) || (!q.isEmpty()) || (!r.isEmpty()) || (!p.isEmpty()) || (!s.isEmpty()) || (!n.isEmpty()) || (!m.isEmpty()) || (!o.isEmpty());
+  }
+  
+  public void v()
+  {
+    boolean bool1 = i.isEmpty() ^ true;
+    boolean bool2 = k.isEmpty() ^ true;
+    boolean bool3 = l.isEmpty() ^ true;
+    boolean bool4 = j.isEmpty() ^ true;
+    if ((!bool1) && (!bool2) && (!bool4) && (!bool3)) {
+      return;
+    }
+    Object localObject1 = i.iterator();
+    while (((Iterator)localObject1).hasNext()) {
+      V((RecyclerView.b0)((Iterator)localObject1).next());
+    }
+    i.clear();
+    Object localObject2;
+    if (bool2)
+    {
+      localObject1 = new ArrayList();
+      ((ArrayList)localObject1).addAll(k);
+      n.add(localObject1);
+      k.clear();
+      localObject2 = new a((ArrayList)localObject1);
+      if (bool1) {
+        f0.i0(get0a.itemView, (Runnable)localObject2, o());
+      } else {
+        ((Runnable)localObject2).run();
+      }
+    }
+    if (bool3)
+    {
+      localObject1 = new ArrayList();
+      ((ArrayList)localObject1).addAll(l);
+      o.add(localObject1);
+      l.clear();
+      localObject2 = new b((ArrayList)localObject1);
+      if (bool1) {
+        f0.i0(get0a.itemView, (Runnable)localObject2, o());
+      } else {
+        ((Runnable)localObject2).run();
+      }
+    }
+    if (bool4)
+    {
+      localObject1 = new ArrayList();
+      ((ArrayList)localObject1).addAll(j);
+      m.add(localObject1);
+      j.clear();
+      localObject2 = new c((ArrayList)localObject1);
+      if ((!bool1) && (!bool2) && (!bool3))
+      {
+        ((Runnable)localObject2).run();
+        return;
+      }
+      long l3 = 0L;
+      long l1;
+      if (bool1) {
+        l1 = o();
+      } else {
+        l1 = 0L;
+      }
+      if (bool2) {
+        l2 = n();
+      } else {
+        l2 = 0L;
+      }
+      if (bool3) {
+        l3 = m();
+      }
+      long l2 = Math.max(l2, l3);
+      f0.i0(get0itemView, (Runnable)localObject2, l1 + l2);
+    }
+  }
+  
+  public boolean x(RecyclerView.b0 paramB0)
+  {
+    b0(paramB0);
+    itemView.setAlpha(0.0F);
+    j.add(paramB0);
+    return true;
+  }
+  
+  public boolean y(RecyclerView.b0 paramB01, RecyclerView.b0 paramB02, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    if (paramB01 == paramB02) {
+      return z(paramB01, paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+    float f1 = itemView.getTranslationX();
+    float f2 = itemView.getTranslationY();
+    float f3 = itemView.getAlpha();
+    b0(paramB01);
+    int i1 = (int)(paramInt3 - paramInt1 - f1);
+    int i2 = (int)(paramInt4 - paramInt2 - f2);
+    itemView.setTranslationX(f1);
+    itemView.setTranslationY(f2);
+    itemView.setAlpha(f3);
+    if (paramB02 != null)
+    {
+      b0(paramB02);
+      itemView.setTranslationX(-i1);
+      itemView.setTranslationY(-i2);
+      itemView.setAlpha(0.0F);
+    }
+    l.add(new i(paramB01, paramB02, paramInt1, paramInt2, paramInt3, paramInt4));
+    return true;
+  }
+  
+  public boolean z(RecyclerView.b0 paramB0, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    View localView = itemView;
+    paramInt1 += (int)localView.getTranslationX();
+    paramInt2 += (int)itemView.getTranslationY();
+    b0(paramB0);
+    int i1 = paramInt3 - paramInt1;
+    int i2 = paramInt4 - paramInt2;
+    if ((i1 == 0) && (i2 == 0))
+    {
+      F(paramB0);
+      return false;
+    }
+    if (i1 != 0) {
+      localView.setTranslationX(-i1);
+    }
+    if (i2 != 0) {
+      localView.setTranslationY(-i2);
+    }
+    k.add(new j(paramB0, paramInt1, paramInt2, paramInt3, paramInt4));
+    return true;
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(ArrayList paramArrayList) {}
+    
+    public void run()
+    {
+      Iterator localIterator = b.iterator();
+      while (localIterator.hasNext())
+      {
+        g.j localJ = (g.j)localIterator.next();
+        U(a, b, c, d, e);
+      }
+      b.clear();
+      n.remove(b);
+    }
+  }
+  
+  class b
+    implements Runnable
+  {
+    b(ArrayList paramArrayList) {}
+    
+    public void run()
+    {
+      Iterator localIterator = b.iterator();
+      while (localIterator.hasNext())
+      {
+        g.i localI = (g.i)localIterator.next();
+        T(localI);
+      }
+      b.clear();
+      o.remove(b);
+    }
+  }
+  
+  class c
+    implements Runnable
+  {
+    c(ArrayList paramArrayList) {}
+    
+    public void run()
+    {
+      Iterator localIterator = b.iterator();
+      while (localIterator.hasNext())
+      {
+        RecyclerView.b0 localB0 = (RecyclerView.b0)localIterator.next();
+        S(localB0);
+      }
+      b.clear();
+      m.remove(b);
+    }
+  }
+  
+  class d
+    extends AnimatorListenerAdapter
+  {
+    d(RecyclerView.b0 paramB0, ViewPropertyAnimator paramViewPropertyAnimator, View paramView) {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      localViewPropertyAnimator.setListener(null);
+      localView.setAlpha(1.0F);
+      H(paramB0);
+      r.remove(paramB0);
+      X();
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      I(paramB0);
+    }
+  }
+  
+  class e
+    extends AnimatorListenerAdapter
+  {
+    e(RecyclerView.b0 paramB0, View paramView, ViewPropertyAnimator paramViewPropertyAnimator) {}
+    
+    public void onAnimationCancel(Animator paramAnimator)
+    {
+      localView.setAlpha(1.0F);
+    }
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      localViewPropertyAnimator.setListener(null);
+      B(paramB0);
+      p.remove(paramB0);
+      X();
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      C(paramB0);
+    }
+  }
+  
+  class f
+    extends AnimatorListenerAdapter
+  {
+    f(RecyclerView.b0 paramB0, int paramInt1, View paramView, int paramInt2, ViewPropertyAnimator paramViewPropertyAnimator) {}
+    
+    public void onAnimationCancel(Animator paramAnimator)
+    {
+      if (paramInt1 != 0) {
+        localView.setTranslationX(0.0F);
+      }
+      if (paramInt2 != 0) {
+        localView.setTranslationY(0.0F);
+      }
+    }
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      localViewPropertyAnimator.setListener(null);
+      F(paramB0);
+      q.remove(paramB0);
+      X();
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      G(paramB0);
+    }
+  }
+  
+  class g
+    extends AnimatorListenerAdapter
+  {
+    g(g.i paramI, ViewPropertyAnimator paramViewPropertyAnimator, View paramView) {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      b.setListener(null);
+      c.setAlpha(1.0F);
+      c.setTranslationX(0.0F);
+      c.setTranslationY(0.0F);
+      D(paramIa, true);
+      s.remove(paramIa);
+      X();
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      E(paramIa, true);
+    }
+  }
+  
+  class h
+    extends AnimatorListenerAdapter
+  {
+    h(g.i paramI, ViewPropertyAnimator paramViewPropertyAnimator, View paramView) {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      b.setListener(null);
+      localView.setAlpha(1.0F);
+      localView.setTranslationX(0.0F);
+      localView.setTranslationY(0.0F);
+      D(paramIb, false);
+      s.remove(paramIb);
+      X();
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      E(paramIb, false);
+    }
+  }
+  
+  private static class i
+  {
+    public RecyclerView.b0 a;
+    public RecyclerView.b0 b;
+    public int c;
+    public int d;
+    public int e;
+    public int f;
+    
+    private i(RecyclerView.b0 paramB01, RecyclerView.b0 paramB02)
+    {
+      a = paramB01;
+      b = paramB02;
+    }
+    
+    i(RecyclerView.b0 paramB01, RecyclerView.b0 paramB02, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      this(paramB01, paramB02);
+      c = paramInt1;
+      d = paramInt2;
+      e = paramInt3;
+      f = paramInt4;
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("ChangeInfo{oldHolder=");
+      localStringBuilder.append(a);
+      localStringBuilder.append(", newHolder=");
+      localStringBuilder.append(b);
+      localStringBuilder.append(", fromX=");
+      localStringBuilder.append(c);
+      localStringBuilder.append(", fromY=");
+      localStringBuilder.append(d);
+      localStringBuilder.append(", toX=");
+      localStringBuilder.append(e);
+      localStringBuilder.append(", toY=");
+      localStringBuilder.append(f);
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  private static class j
+  {
+    public RecyclerView.b0 a;
+    public int b;
+    public int c;
+    public int d;
+    public int e;
+    
+    j(RecyclerView.b0 paramB0, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      a = paramB0;
+      b = paramInt1;
+      c = paramInt2;
+      d = paramInt3;
+      e = paramInt4;
+    }
+  }
+}

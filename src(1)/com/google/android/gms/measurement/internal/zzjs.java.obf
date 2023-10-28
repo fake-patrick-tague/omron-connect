@@ -1,0 +1,536 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.util.Pair;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.stats.ConnectionTracker;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.internal.measurement.zzcf;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+@VisibleForTesting
+public final class zzjs
+  extends zzf
+{
+  private final zzjr zza;
+  private zzee zzb;
+  private volatile Boolean zzc;
+  private final zzap zzd;
+  private final zzkj zze;
+  private final List zzf = new ArrayList();
+  private final zzap zzg;
+  
+  protected zzjs(zzfy paramZzfy)
+  {
+    super(paramZzfy);
+    zze = new zzkj(paramZzfy.zzav());
+    zza = new zzjr(this);
+    zzd = new zzjc(this, paramZzfy);
+    zzg = new zzje(this, paramZzfy);
+  }
+  
+  private final zzq zzO(boolean paramBoolean)
+  {
+    zzs.zzaw();
+    zzef localZzef = zzs.zzh();
+    String str = null;
+    Object localObject1 = str;
+    if (paramBoolean)
+    {
+      localObject1 = zzs.zzay();
+      if (zzs.zzm().zzb == null)
+      {
+        localObject1 = str;
+      }
+      else
+      {
+        Object localObject2 = zzs.zzm().zzb.zza();
+        localObject1 = str;
+        if (localObject2 != null) {
+          if (localObject2 == zzfd.zza)
+          {
+            localObject1 = str;
+          }
+          else
+          {
+            localObject1 = String.valueOf(second);
+            str = (String)first;
+            localObject2 = new StringBuilder();
+            ((StringBuilder)localObject2).append((String)localObject1);
+            ((StringBuilder)localObject2).append(":");
+            ((StringBuilder)localObject2).append(str);
+            localObject1 = ((StringBuilder)localObject2).toString();
+          }
+        }
+      }
+    }
+    return localZzef.zzj((String)localObject1);
+  }
+  
+  private final void zzP()
+  {
+    zzg();
+    zzs.zzay().zzj().zzb("Processing queued up service tasks", Integer.valueOf(zzf.size()));
+    Iterator localIterator = zzf.iterator();
+    while (localIterator.hasNext())
+    {
+      Runnable localRunnable = (Runnable)localIterator.next();
+      try
+      {
+        localRunnable.run();
+      }
+      catch (RuntimeException localRuntimeException)
+      {
+        zzs.zzay().zzd().zzb("Task exception while flushing queue", localRuntimeException);
+      }
+    }
+    zzf.clear();
+    zzg.zzb();
+  }
+  
+  private final void zzQ()
+  {
+    zzg();
+    zze.zzb();
+    zzap localZzap = zzd;
+    zzs.zzf();
+    localZzap.zzd(((Long)zzeb.zzI.zza(null)).longValue());
+  }
+  
+  private final void zzR(Runnable paramRunnable)
+    throws IllegalStateException
+  {
+    zzg();
+    if (zzL())
+    {
+      paramRunnable.run();
+      return;
+    }
+    int i = zzf.size();
+    zzs.zzf();
+    if (i >= 1000L)
+    {
+      zzs.zzay().zzd().zza("Discarding data. Max runnable queue size reached");
+      return;
+    }
+    zzf.add(paramRunnable);
+    zzg.zzd(60000L);
+    zzr();
+  }
+  
+  private final boolean zzS()
+  {
+    zzs.zzaw();
+    return true;
+  }
+  
+  protected final void zzA(zzaw paramZzaw, String paramString)
+  {
+    Preconditions.checkNotNull(paramZzaw);
+    zzg();
+    zza();
+    zzS();
+    boolean bool = zzs.zzi().zzo(paramZzaw);
+    zzR(new zzjh(this, true, zzO(true), bool, paramZzaw, paramString));
+  }
+  
+  public final void zzB(zzcf paramZzcf, zzaw paramZzaw, String paramString)
+  {
+    zzg();
+    zza();
+    if (zzs.zzv().zzo(12451000) != 0)
+    {
+      zzs.zzay().zzk().zza("Not bundling data. Service unavailable or out of date");
+      zzs.zzv().zzS(paramZzcf, new byte[0]);
+      return;
+    }
+    zzR(new zzjd(this, paramZzaw, paramString, paramZzcf));
+  }
+  
+  protected final void zzC()
+  {
+    zzg();
+    zza();
+    zzq localZzq = zzO(false);
+    zzS();
+    zzs.zzi().zzj();
+    zzR(new zziw(this, localZzq));
+  }
+  
+  @VisibleForTesting
+  final void zzD(zzee paramZzee, AbstractSafeParcelable paramAbstractSafeParcelable, zzq paramZzq)
+  {
+    zzg();
+    zza();
+    zzS();
+    zzs.zzf();
+    int j = 0;
+    int i = 100;
+    while ((j < 1001) && (i == 100))
+    {
+      ArrayList localArrayList = new ArrayList();
+      Object localObject = zzs.zzi().zzi(100);
+      if (localObject != null)
+      {
+        localArrayList.addAll((Collection)localObject);
+        i = ((List)localObject).size();
+      }
+      else
+      {
+        i = 0;
+      }
+      if ((paramAbstractSafeParcelable != null) && (i < 100)) {
+        localArrayList.add(paramAbstractSafeParcelable);
+      }
+      int m = localArrayList.size();
+      int k = 0;
+      while (k < m)
+      {
+        localObject = (AbstractSafeParcelable)localArrayList.get(k);
+        if ((localObject instanceof zzaw)) {
+          try
+          {
+            paramZzee.zzk((zzaw)localObject, paramZzq);
+          }
+          catch (RemoteException localRemoteException1)
+          {
+            zzs.zzay().zzd().zzb("Failed to send event to the service", localRemoteException1);
+          }
+        } else if ((localRemoteException1 instanceof zzlc)) {
+          try
+          {
+            paramZzee.zzt((zzlc)localRemoteException1, paramZzq);
+          }
+          catch (RemoteException localRemoteException2)
+          {
+            zzs.zzay().zzd().zzb("Failed to send user property to the service", localRemoteException2);
+          }
+        } else if ((localRemoteException2 instanceof zzac)) {
+          try
+          {
+            paramZzee.zzn((zzac)localRemoteException2, paramZzq);
+          }
+          catch (RemoteException localRemoteException3)
+          {
+            zzs.zzay().zzd().zzb("Failed to send conditional user property to the service", localRemoteException3);
+          }
+        } else {
+          zzs.zzay().zzd().zza("Discarding data. Unrecognized parcel type.");
+        }
+        k += 1;
+      }
+      j += 1;
+    }
+  }
+  
+  protected final void zzE(zzac paramZzac)
+  {
+    Preconditions.checkNotNull(paramZzac);
+    zzg();
+    zza();
+    zzs.zzaw();
+    boolean bool = zzs.zzi().zzn(paramZzac);
+    zzac localZzac = new zzac(paramZzac);
+    zzR(new zzji(this, true, zzO(true), bool, localZzac, paramZzac));
+  }
+  
+  protected final void zzF(boolean paramBoolean)
+  {
+    zzg();
+    zza();
+    if (paramBoolean)
+    {
+      zzS();
+      zzs.zzi().zzj();
+    }
+    if (zzM()) {
+      zzR(new zzjg(this, zzO(false)));
+    }
+  }
+  
+  protected final void zzG(zzik paramZzik)
+  {
+    zzg();
+    zza();
+    zzR(new zzja(this, paramZzik));
+  }
+  
+  public final void zzH(Bundle paramBundle)
+  {
+    zzg();
+    zza();
+    zzR(new zzjb(this, zzO(false), paramBundle));
+  }
+  
+  protected final void zzI()
+  {
+    zzg();
+    zza();
+    zzR(new zzjf(this, zzO(true)));
+  }
+  
+  @VisibleForTesting
+  protected final void zzJ(zzee paramZzee)
+  {
+    zzg();
+    Preconditions.checkNotNull(paramZzee);
+    zzb = paramZzee;
+    zzQ();
+    zzP();
+  }
+  
+  protected final void zzK(zzlc paramZzlc)
+  {
+    zzg();
+    zza();
+    zzS();
+    boolean bool = zzs.zzi().zzp(paramZzlc);
+    zzR(new zziu(this, zzO(true), bool, paramZzlc));
+  }
+  
+  public final boolean zzL()
+  {
+    zzg();
+    zza();
+    return zzb != null;
+  }
+  
+  final boolean zzM()
+  {
+    zzg();
+    zza();
+    if (zzN()) {
+      return zzs.zzv().zzm() >= ((Integer)zzeb.zzaf.zza(null)).intValue();
+    }
+    return true;
+  }
+  
+  final boolean zzN()
+  {
+    zzg();
+    zza();
+    if (zzc == null)
+    {
+      zzg();
+      zza();
+      Object localObject = zzs.zzm();
+      ((zzgr)localObject).zzg();
+      boolean bool2 = ((zzfd)localObject).zza().contains("use_service");
+      boolean bool1 = false;
+      if (!bool2) {
+        localObject = null;
+      } else {
+        localObject = Boolean.valueOf(((zzfd)localObject).zza().getBoolean("use_service", false));
+      }
+      int i = 1;
+      boolean bool3 = true;
+      bool2 = true;
+      if ((localObject != null) && (((Boolean)localObject).booleanValue()))
+      {
+        bool1 = bool3;
+      }
+      else
+      {
+        zzs.zzaw();
+        if (zzs.zzh().zzh() == 1) {}
+        for (;;)
+        {
+          bool1 = true;
+          break;
+          zzs.zzay().zzj().zza("Checking service availability");
+          int j = zzs.zzv().zzo(12451000);
+          if (j != 0)
+          {
+            if (j != 1)
+            {
+              if (j != 2)
+              {
+                if (j != 3)
+                {
+                  if (j != 9)
+                  {
+                    if (j != 18) {
+                      zzs.zzay().zzk().zzb("Unexpected service status", Integer.valueOf(j));
+                    } else {
+                      zzs.zzay().zzk().zza("Service updating");
+                    }
+                  }
+                  else {
+                    zzs.zzay().zzk().zza("Service invalid");
+                  }
+                }
+                else {
+                  zzs.zzay().zzk().zza("Service disabled");
+                }
+                i = 0;
+                break;
+              }
+              else
+              {
+                zzs.zzay().zzc().zza("Service container out of date");
+                if (zzs.zzv().zzm() < 17443) {
+                  break;
+                }
+                if (localObject == null) {
+                  bool1 = bool2;
+                } else {
+                  bool1 = false;
+                }
+                i = 0;
+                break;
+              }
+            }
+            else
+            {
+              zzs.zzay().zzj().zza("Service missing");
+              break;
+            }
+          }
+          else {
+            zzs.zzay().zzj().zza("Service available");
+          }
+        }
+        if ((!bool1) && (zzs.zzf().zzx()))
+        {
+          zzs.zzay().zzd().zza("No way to upload. Consider using the full version of Analytics");
+        }
+        else if (i != 0)
+        {
+          localObject = zzs.zzm();
+          ((zzgr)localObject).zzg();
+          localObject = ((zzfd)localObject).zza().edit();
+          ((SharedPreferences.Editor)localObject).putBoolean("use_service", bool1);
+          ((SharedPreferences.Editor)localObject).apply();
+        }
+      }
+      zzc = Boolean.valueOf(bool1);
+    }
+    return zzc.booleanValue();
+  }
+  
+  protected final boolean zzf()
+  {
+    return false;
+  }
+  
+  final Boolean zzj()
+  {
+    return zzc;
+  }
+  
+  protected final void zzq()
+  {
+    zzg();
+    zza();
+    zzq localZzq = zzO(true);
+    zzs.zzi().zzk();
+    zzR(new zziz(this, localZzq));
+  }
+  
+  final void zzr()
+  {
+    zzg();
+    zza();
+    if (zzL()) {
+      return;
+    }
+    if (!zzN())
+    {
+      if (!zzs.zzf().zzx())
+      {
+        zzs.zzaw();
+        Object localObject = zzs.zzau().getPackageManager().queryIntentServices(new Intent().setClassName(zzs.zzau(), "com.google.android.gms.measurement.AppMeasurementService"), 65536);
+        if ((localObject != null) && (!((List)localObject).isEmpty()))
+        {
+          localObject = new Intent("com.google.android.gms.measurement.START");
+          Context localContext = zzs.zzau();
+          zzs.zzaw();
+          ((Intent)localObject).setComponent(new ComponentName(localContext, "com.google.android.gms.measurement.AppMeasurementService"));
+          zza.zzb((Intent)localObject);
+          return;
+        }
+        zzs.zzay().zzd().zza("Unable to use remote or local measurement implementation. Please register the AppMeasurementService service in the app manifest");
+      }
+      return;
+    }
+    zza.zzc();
+  }
+  
+  public final void zzs()
+  {
+    zzg();
+    zza();
+    zza.zzd();
+    try
+    {
+      ConnectionTracker.getInstance().unbindService(zzs.zzau(), zza);
+      zzb = null;
+      return;
+    }
+    catch (IllegalStateException|IllegalArgumentException localIllegalStateException)
+    {
+      for (;;) {}
+    }
+  }
+  
+  public final void zzt(zzcf paramZzcf)
+  {
+    zzg();
+    zza();
+    zzR(new zziy(this, zzO(false), paramZzcf));
+  }
+  
+  public final void zzu(AtomicReference paramAtomicReference)
+  {
+    zzg();
+    zza();
+    zzR(new zzix(this, paramAtomicReference, zzO(false)));
+  }
+  
+  protected final void zzv(zzcf paramZzcf, String paramString1, String paramString2)
+  {
+    zzg();
+    zza();
+    zzR(new zzjk(this, paramString1, paramString2, zzO(false), paramZzcf));
+  }
+  
+  protected final void zzw(AtomicReference paramAtomicReference, String paramString1, String paramString2, String paramString3)
+  {
+    zzg();
+    zza();
+    zzR(new zzjj(this, paramAtomicReference, null, paramString2, paramString3, zzO(false)));
+  }
+  
+  protected final void zzx(AtomicReference paramAtomicReference, boolean paramBoolean)
+  {
+    zzg();
+    zza();
+    zzR(new zziv(this, paramAtomicReference, zzO(false), paramBoolean));
+  }
+  
+  protected final void zzy(zzcf paramZzcf, String paramString1, String paramString2, boolean paramBoolean)
+  {
+    zzg();
+    zza();
+    zzR(new zzit(this, paramString1, paramString2, zzO(false), paramBoolean, paramZzcf));
+  }
+  
+  protected final void zzz(AtomicReference paramAtomicReference, String paramString1, String paramString2, String paramString3, boolean paramBoolean)
+  {
+    zzg();
+    zza();
+    zzR(new zzjl(this, paramAtomicReference, null, paramString2, paramString3, zzO(false), paramBoolean));
+  }
+}

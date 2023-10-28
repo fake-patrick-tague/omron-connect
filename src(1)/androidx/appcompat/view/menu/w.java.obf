@@ -1,0 +1,687 @@
+package androidx.appcompat.view.menu;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Rect;
+import android.os.Build.VERSION;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.os.SystemClock;
+import android.util.DisplayMetrics;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
+import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.FrameLayout;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.PopupWindow.OnDismissListener;
+import android.widget.TextView;
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.appcompat.widget.b0;
+import androidx.appcompat.widget.c0;
+import c.h.q.f0;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+final class d
+  extends k
+  implements m, View.OnKeyListener, PopupWindow.OnDismissListener
+{
+  private static final int c = c.a.g.e;
+  ViewTreeObserver A;
+  private PopupWindow.OnDismissListener B;
+  boolean C;
+  private final Context d;
+  private final int e;
+  private final int f;
+  private final int g;
+  private final boolean h;
+  final Handler i;
+  private final List<g> j = new ArrayList();
+  final List<d> k = new ArrayList();
+  final ViewTreeObserver.OnGlobalLayoutListener l = new a();
+  private final View.OnAttachStateChangeListener m = new b();
+  private final b0 n = new c();
+  private int o = 0;
+  private int p = 0;
+  private View q;
+  View r;
+  private int s;
+  private boolean t;
+  private boolean u;
+  private int v;
+  private int w;
+  private boolean x;
+  private boolean y;
+  private m.a z;
+  
+  public d(Context paramContext, View paramView, int paramInt1, int paramInt2, boolean paramBoolean)
+  {
+    d = paramContext;
+    q = paramView;
+    f = paramInt1;
+    g = paramInt2;
+    h = paramBoolean;
+    x = false;
+    s = F();
+    paramContext = paramContext.getResources();
+    e = Math.max(getDisplayMetricswidthPixels / 2, paramContext.getDimensionPixelSize(c.a.d.d));
+    i = new Handler();
+  }
+  
+  private c0 B()
+  {
+    c0 localC0 = new c0(d, null, f, g);
+    localC0.T(n);
+    localC0.L(this);
+    localC0.K(this);
+    localC0.D(q);
+    localC0.G(p);
+    localC0.J(true);
+    localC0.I(2);
+    return localC0;
+  }
+  
+  private int C(g paramG)
+  {
+    int i2 = k.size();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      if (paramG == k.get(i1)).b) {
+        return i1;
+      }
+      i1 += 1;
+    }
+    return -1;
+  }
+  
+  private MenuItem D(g paramG1, g paramG2)
+  {
+    int i2 = paramG1.size();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      MenuItem localMenuItem = paramG1.getItem(i1);
+      if ((localMenuItem.hasSubMenu()) && (paramG2 == localMenuItem.getSubMenu())) {
+        return localMenuItem;
+      }
+      i1 += 1;
+    }
+    return null;
+  }
+  
+  private View E(d paramD, g paramG)
+  {
+    paramG = D(b, paramG);
+    if (paramG == null) {
+      return null;
+    }
+    ListView localListView = paramD.a();
+    paramD = localListView.getAdapter();
+    boolean bool = paramD instanceof HeaderViewListAdapter;
+    int i1 = 0;
+    int i2;
+    if (bool)
+    {
+      paramD = (HeaderViewListAdapter)paramD;
+      i2 = paramD.getHeadersCount();
+      paramD = (f)paramD.getWrappedAdapter();
+    }
+    else
+    {
+      paramD = (f)paramD;
+      i2 = 0;
+    }
+    int i3 = paramD.getCount();
+    while (i1 < i3)
+    {
+      if (paramG == paramD.c(i1)) {
+        break label104;
+      }
+      i1 += 1;
+    }
+    i1 = -1;
+    label104:
+    if (i1 == -1) {
+      return null;
+    }
+    i1 = i1 + i2 - localListView.getFirstVisiblePosition();
+    if (i1 >= 0)
+    {
+      if (i1 >= localListView.getChildCount()) {
+        return null;
+      }
+      return localListView.getChildAt(i1);
+    }
+    return null;
+  }
+  
+  private int F()
+  {
+    int i2 = f0.D(q);
+    int i1 = 1;
+    if (i2 == 1) {
+      i1 = 0;
+    }
+    return i1;
+  }
+  
+  private int G(int paramInt)
+  {
+    Object localObject = k;
+    localObject = ((d)((List)localObject).get(((List)localObject).size() - 1)).a();
+    int[] arrayOfInt = new int[2];
+    ((ListView)localObject).getLocationOnScreen(arrayOfInt);
+    Rect localRect = new Rect();
+    r.getWindowVisibleDisplayFrame(localRect);
+    if (s == 1)
+    {
+      if (arrayOfInt[0] + ((ListView)localObject).getWidth() + paramInt > right) {
+        return 0;
+      }
+      return 1;
+    }
+    if (arrayOfInt[0] - paramInt < 0) {
+      return 1;
+    }
+    return 0;
+  }
+  
+  private void H(g paramG)
+  {
+    Object localObject3 = LayoutInflater.from(d);
+    Object localObject1 = new f(paramG, (LayoutInflater)localObject3, h, c);
+    if ((!b()) && (x)) {
+      ((f)localObject1).d(true);
+    } else if (b()) {
+      ((f)localObject1).d(k.z(paramG));
+    }
+    int i2 = k.q((ListAdapter)localObject1, null, d, e);
+    c0 localC0 = B();
+    localC0.p((ListAdapter)localObject1);
+    localC0.F(i2);
+    localC0.G(p);
+    if (k.size() > 0)
+    {
+      localObject1 = k;
+      localObject1 = (d)((List)localObject1).get(((List)localObject1).size() - 1);
+      localObject2 = E((d)localObject1, paramG);
+    }
+    else
+    {
+      localObject1 = null;
+      localObject2 = localObject1;
+    }
+    if (localObject2 != null)
+    {
+      localC0.U(false);
+      localC0.R(null);
+      int i1 = G(i2);
+      int i3;
+      if (i1 == 1) {
+        i3 = 1;
+      } else {
+        i3 = 0;
+      }
+      s = i1;
+      int i4;
+      if (Build.VERSION.SDK_INT >= 26)
+      {
+        localC0.D((View)localObject2);
+        i1 = 0;
+        i4 = i1;
+      }
+      else
+      {
+        int[] arrayOfInt1 = new int[2];
+        q.getLocationOnScreen(arrayOfInt1);
+        int[] arrayOfInt2 = new int[2];
+        ((View)localObject2).getLocationOnScreen(arrayOfInt2);
+        if ((p & 0x7) == 5)
+        {
+          arrayOfInt1[0] += q.getWidth();
+          arrayOfInt2[0] += ((View)localObject2).getWidth();
+        }
+        i4 = arrayOfInt2[0] - arrayOfInt1[0];
+        i1 = arrayOfInt2[1] - arrayOfInt1[1];
+      }
+      if ((p & 0x5) == 5)
+      {
+        if (i3 == 0)
+        {
+          i2 = ((View)localObject2).getWidth();
+          break label367;
+        }
+      }
+      else
+      {
+        if (i3 == 0) {
+          break label367;
+        }
+        i2 = ((View)localObject2).getWidth();
+      }
+      i2 = i4 + i2;
+      break label372;
+      label367:
+      i2 = i4 - i2;
+      label372:
+      localC0.e(i2);
+      localC0.M(true);
+      localC0.l(i1);
+    }
+    else
+    {
+      if (t) {
+        localC0.e(v);
+      }
+      if (u) {
+        localC0.l(w);
+      }
+      localC0.H(p());
+    }
+    Object localObject2 = new d(localC0, paramG, s);
+    k.add(localObject2);
+    localC0.h();
+    localObject2 = localC0.k();
+    ((ListView)localObject2).setOnKeyListener(this);
+    if ((localObject1 == null) && (y) && (paramG.z() != null))
+    {
+      localObject1 = (FrameLayout)((LayoutInflater)localObject3).inflate(c.a.g.l, (ViewGroup)localObject2, false);
+      localObject3 = (TextView)((FrameLayout)localObject1).findViewById(16908310);
+      ((FrameLayout)localObject1).setEnabled(false);
+      ((TextView)localObject3).setText(paramG.z());
+      ((ListView)localObject2).addHeaderView((View)localObject1, null, false);
+      localC0.h();
+    }
+  }
+  
+  public void a(g paramG, boolean paramBoolean)
+  {
+    int i1 = C(paramG);
+    if (i1 < 0) {
+      return;
+    }
+    int i2 = i1 + 1;
+    if (i2 < k.size()) {
+      k.get(i2)).b.e(false);
+    }
+    Object localObject = (d)k.remove(i1);
+    b.Q(this);
+    if (C)
+    {
+      a.S(null);
+      a.E(0);
+    }
+    a.dismiss();
+    i1 = k.size();
+    if (i1 > 0) {
+      s = k.get(i1 - 1)).c;
+    } else {
+      s = F();
+    }
+    if (i1 == 0)
+    {
+      dismiss();
+      localObject = z;
+      if (localObject != null) {
+        ((m.a)localObject).a(paramG, true);
+      }
+      paramG = A;
+      if (paramG != null)
+      {
+        if (paramG.isAlive()) {
+          A.removeGlobalOnLayoutListener(l);
+        }
+        A = null;
+      }
+      r.removeOnAttachStateChangeListener(m);
+      B.onDismiss();
+      return;
+    }
+    if (paramBoolean) {
+      k.get(0)).b.e(false);
+    }
+  }
+  
+  public boolean b()
+  {
+    int i1 = k.size();
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (i1 > 0)
+    {
+      bool1 = bool2;
+      if (k.get(0)).a.b()) {
+        bool1 = true;
+      }
+    }
+    return bool1;
+  }
+  
+  public void c(boolean paramBoolean)
+  {
+    Iterator localIterator = k.iterator();
+    while (localIterator.hasNext()) {
+      k.A(((d)localIterator.next()).a().getAdapter()).notifyDataSetChanged();
+    }
+  }
+  
+  public boolean d()
+  {
+    return false;
+  }
+  
+  public void dismiss()
+  {
+    int i1 = k.size();
+    if (i1 > 0)
+    {
+      d[] arrayOfD = (d[])k.toArray(new d[i1]);
+      i1 -= 1;
+      while (i1 >= 0)
+      {
+        d localD = arrayOfD[i1];
+        if (a.b()) {
+          a.dismiss();
+        }
+        i1 -= 1;
+      }
+    }
+  }
+  
+  public void g(m.a paramA)
+  {
+    z = paramA;
+  }
+  
+  public void h()
+  {
+    if (b()) {
+      return;
+    }
+    Object localObject = j.iterator();
+    while (((Iterator)localObject).hasNext()) {
+      H((g)((Iterator)localObject).next());
+    }
+    j.clear();
+    localObject = q;
+    r = ((View)localObject);
+    if (localObject != null)
+    {
+      int i1;
+      if (A == null) {
+        i1 = 1;
+      } else {
+        i1 = 0;
+      }
+      localObject = ((View)localObject).getViewTreeObserver();
+      A = ((ViewTreeObserver)localObject);
+      if (i1 != 0) {
+        ((ViewTreeObserver)localObject).addOnGlobalLayoutListener(l);
+      }
+      r.addOnAttachStateChangeListener(m);
+    }
+  }
+  
+  public void j(Parcelable paramParcelable) {}
+  
+  public ListView k()
+  {
+    if (k.isEmpty()) {
+      return null;
+    }
+    List localList = k;
+    return ((d)localList.get(localList.size() - 1)).a();
+  }
+  
+  public boolean l(r paramR)
+  {
+    Object localObject = k.iterator();
+    while (((Iterator)localObject).hasNext())
+    {
+      d localD = (d)((Iterator)localObject).next();
+      if (paramR == b)
+      {
+        localD.a().requestFocus();
+        return true;
+      }
+    }
+    if (paramR.hasVisibleItems())
+    {
+      n(paramR);
+      localObject = z;
+      if (localObject != null) {
+        ((m.a)localObject).b(paramR);
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  public Parcelable m()
+  {
+    return null;
+  }
+  
+  public void n(g paramG)
+  {
+    paramG.c(this, d);
+    if (b())
+    {
+      H(paramG);
+      return;
+    }
+    j.add(paramG);
+  }
+  
+  protected boolean o()
+  {
+    return false;
+  }
+  
+  public void onDismiss()
+  {
+    int i2 = k.size();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      localD = (d)k.get(i1);
+      if (!a.b()) {
+        break label53;
+      }
+      i1 += 1;
+    }
+    d localD = null;
+    label53:
+    if (localD != null) {
+      b.e(false);
+    }
+  }
+  
+  public boolean onKey(View paramView, int paramInt, KeyEvent paramKeyEvent)
+  {
+    if ((paramKeyEvent.getAction() == 1) && (paramInt == 82))
+    {
+      dismiss();
+      return true;
+    }
+    return false;
+  }
+  
+  public void r(View paramView)
+  {
+    if (q != paramView)
+    {
+      q = paramView;
+      p = c.h.q.k.b(o, f0.D(paramView));
+    }
+  }
+  
+  public void t(boolean paramBoolean)
+  {
+    x = paramBoolean;
+  }
+  
+  public void u(int paramInt)
+  {
+    if (o != paramInt)
+    {
+      o = paramInt;
+      p = c.h.q.k.b(paramInt, f0.D(q));
+    }
+  }
+  
+  public void v(int paramInt)
+  {
+    t = true;
+    v = paramInt;
+  }
+  
+  public void w(PopupWindow.OnDismissListener paramOnDismissListener)
+  {
+    B = paramOnDismissListener;
+  }
+  
+  public void x(boolean paramBoolean)
+  {
+    y = paramBoolean;
+  }
+  
+  public void y(int paramInt)
+  {
+    u = true;
+    w = paramInt;
+  }
+  
+  class a
+    implements ViewTreeObserver.OnGlobalLayoutListener
+  {
+    a() {}
+    
+    public void onGlobalLayout()
+    {
+      if ((b()) && (k.size() > 0) && (!k.get(0)).a.B()))
+      {
+        Object localObject = r;
+        if ((localObject != null) && (((View)localObject).isShown())) {
+          localObject = k.iterator();
+        }
+        while (((Iterator)localObject).hasNext())
+        {
+          nexta.h();
+          continue;
+          dismiss();
+        }
+      }
+    }
+  }
+  
+  class b
+    implements View.OnAttachStateChangeListener
+  {
+    b() {}
+    
+    public void onViewAttachedToWindow(View paramView) {}
+    
+    public void onViewDetachedFromWindow(View paramView)
+    {
+      Object localObject = A;
+      if (localObject != null)
+      {
+        if (!((ViewTreeObserver)localObject).isAlive()) {
+          A = paramView.getViewTreeObserver();
+        }
+        localObject = d.this;
+        A.removeGlobalOnLayoutListener(l);
+      }
+      paramView.removeOnAttachStateChangeListener(this);
+    }
+  }
+  
+  class c
+    implements b0
+  {
+    c() {}
+    
+    public void d(final g paramG, final MenuItem paramMenuItem)
+    {
+      Handler localHandler = d.this.i;
+      final d.d localD = null;
+      localHandler.removeCallbacksAndMessages(null);
+      int j = k.size();
+      int i = 0;
+      while (i < j)
+      {
+        if (paramG == k.get(i)).b) {
+          break label75;
+        }
+        i += 1;
+      }
+      i = -1;
+      label75:
+      if (i == -1) {
+        return;
+      }
+      i += 1;
+      if (i < k.size()) {
+        localD = (d.d)k.get(i);
+      }
+      paramMenuItem = new a(localD, paramMenuItem, paramG);
+      long l = SystemClock.uptimeMillis();
+      d.this.i.postAtTime(paramMenuItem, paramG, l + 200L);
+    }
+    
+    public void g(g paramG, MenuItem paramMenuItem)
+    {
+      i.removeCallbacksAndMessages(paramG);
+    }
+    
+    class a
+      implements Runnable
+    {
+      a(d.d paramD, MenuItem paramMenuItem, g paramG) {}
+      
+      public void run()
+      {
+        d.d localD = localD;
+        if (localD != null)
+        {
+          C = true;
+          b.e(false);
+          C = false;
+        }
+        if ((paramMenuItem.isEnabled()) && (paramMenuItem.hasSubMenu())) {
+          paramG.N(paramMenuItem, 4);
+        }
+      }
+    }
+  }
+  
+  private static class d
+  {
+    public final c0 a;
+    public final g b;
+    public final int c;
+    
+    public d(c0 paramC0, g paramG, int paramInt)
+    {
+      a = paramC0;
+      b = paramG;
+      c = paramInt;
+    }
+    
+    public ListView a()
+    {
+      return a.k();
+    }
+  }
+}

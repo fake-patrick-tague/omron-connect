@@ -1,0 +1,754 @@
+package androidx.fragment.app;
+
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import c.h.m.e;
+import c.h.m.e.b;
+import c.h.q.f0;
+import c.m.b;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
+abstract class SpecialEffectsController
+{
+  private final ViewGroup a;
+  final ArrayList<Operation> b = new ArrayList();
+  final ArrayList<Operation> c = new ArrayList();
+  boolean d = false;
+  boolean e = false;
+  
+  SpecialEffectsController(ViewGroup paramViewGroup)
+  {
+    a = paramViewGroup;
+  }
+  
+  private void a(final SpecialEffectsController.Operation.State paramState, SpecialEffectsController.Operation.LifecycleImpact paramLifecycleImpact, y paramY)
+  {
+    synchronized (b)
+    {
+      e localE = new e();
+      Operation localOperation = h(paramY.k());
+      if (localOperation != null)
+      {
+        localOperation.k(paramState, paramLifecycleImpact);
+        return;
+      }
+      paramState = new d(paramState, paramLifecycleImpact, paramY, localE);
+      b.add(paramState);
+      paramState.a(new a(paramState));
+      paramState.a(new b(paramState));
+      return;
+    }
+  }
+  
+  private Operation h(Fragment paramFragment)
+  {
+    Iterator localIterator = b.iterator();
+    while (localIterator.hasNext())
+    {
+      Operation localOperation = (Operation)localIterator.next();
+      if ((localOperation.f().equals(paramFragment)) && (!localOperation.h())) {
+        return localOperation;
+      }
+    }
+    return null;
+  }
+  
+  private Operation i(Fragment paramFragment)
+  {
+    Iterator localIterator = c.iterator();
+    while (localIterator.hasNext())
+    {
+      Operation localOperation = (Operation)localIterator.next();
+      if ((localOperation.f().equals(paramFragment)) && (!localOperation.h())) {
+        return localOperation;
+      }
+    }
+    return null;
+  }
+  
+  static SpecialEffectsController n(ViewGroup paramViewGroup, FragmentManager paramFragmentManager)
+  {
+    return o(paramViewGroup, paramFragmentManager.w0());
+  }
+  
+  static SpecialEffectsController o(ViewGroup paramViewGroup, h0 paramH0)
+  {
+    int i = b.b;
+    Object localObject = paramViewGroup.getTag(i);
+    if ((localObject instanceof SpecialEffectsController)) {
+      return (SpecialEffectsController)localObject;
+    }
+    paramH0 = paramH0.a(paramViewGroup);
+    paramViewGroup.setTag(i, paramH0);
+    return paramH0;
+  }
+  
+  private void q()
+  {
+    Iterator localIterator = b.iterator();
+    while (localIterator.hasNext())
+    {
+      Operation localOperation = (Operation)localIterator.next();
+      if (localOperation.g() == SpecialEffectsController.Operation.LifecycleImpact.c) {
+        localOperation.k(SpecialEffectsController.Operation.State.b(localOperation.f().requireView().getVisibility()), SpecialEffectsController.Operation.LifecycleImpact.b);
+      }
+    }
+  }
+  
+  void b(SpecialEffectsController.Operation.State paramState, y paramY)
+  {
+    if (FragmentManager.E0(2))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SpecialEffectsController: Enqueuing add operation for fragment ");
+      localStringBuilder.append(paramY.k());
+      Log.v("FragmentManager", localStringBuilder.toString());
+    }
+    a(paramState, SpecialEffectsController.Operation.LifecycleImpact.c, paramY);
+  }
+  
+  void c(y paramY)
+  {
+    if (FragmentManager.E0(2))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SpecialEffectsController: Enqueuing hide operation for fragment ");
+      localStringBuilder.append(paramY.k());
+      Log.v("FragmentManager", localStringBuilder.toString());
+    }
+    a(SpecialEffectsController.Operation.State.d, SpecialEffectsController.Operation.LifecycleImpact.b, paramY);
+  }
+  
+  void d(y paramY)
+  {
+    if (FragmentManager.E0(2))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SpecialEffectsController: Enqueuing remove operation for fragment ");
+      localStringBuilder.append(paramY.k());
+      Log.v("FragmentManager", localStringBuilder.toString());
+    }
+    a(SpecialEffectsController.Operation.State.b, SpecialEffectsController.Operation.LifecycleImpact.d, paramY);
+  }
+  
+  void e(y paramY)
+  {
+    if (FragmentManager.E0(2))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SpecialEffectsController: Enqueuing show operation for fragment ");
+      localStringBuilder.append(paramY.k());
+      Log.v("FragmentManager", localStringBuilder.toString());
+    }
+    a(SpecialEffectsController.Operation.State.c, SpecialEffectsController.Operation.LifecycleImpact.b, paramY);
+  }
+  
+  abstract void f(List<Operation> paramList, boolean paramBoolean);
+  
+  void g()
+  {
+    if (e) {
+      return;
+    }
+    if (!f0.S(a))
+    {
+      j();
+      d = false;
+      return;
+    }
+    synchronized (b)
+    {
+      if (!b.isEmpty())
+      {
+        Object localObject1 = new ArrayList(c);
+        c.clear();
+        localObject1 = ((ArrayList)localObject1).iterator();
+        while (((Iterator)localObject1).hasNext())
+        {
+          localObject3 = (Operation)((Iterator)localObject1).next();
+          if (FragmentManager.E0(2))
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("SpecialEffectsController: Cancelling operation ");
+            localStringBuilder.append(localObject3);
+            Log.v("FragmentManager", localStringBuilder.toString());
+          }
+          ((Operation)localObject3).b();
+          if (!((Operation)localObject3).i()) {
+            c.add(localObject3);
+          }
+        }
+        q();
+        localObject1 = new ArrayList(b);
+        b.clear();
+        c.addAll((Collection)localObject1);
+        if (FragmentManager.E0(2)) {
+          Log.v("FragmentManager", "SpecialEffectsController: Executing pending operations");
+        }
+        Object localObject3 = ((ArrayList)localObject1).iterator();
+        while (((Iterator)localObject3).hasNext()) {
+          ((Operation)((Iterator)localObject3).next()).l();
+        }
+        f((List)localObject1, d);
+        d = false;
+        if (FragmentManager.E0(2)) {
+          Log.v("FragmentManager", "SpecialEffectsController: Finished executing pending operations");
+        }
+      }
+      return;
+    }
+  }
+  
+  void j()
+  {
+    if (FragmentManager.E0(2)) {
+      Log.v("FragmentManager", "SpecialEffectsController: Forcing all operations to complete");
+    }
+    boolean bool = f0.S(a);
+    synchronized (b)
+    {
+      q();
+      Object localObject1 = b.iterator();
+      while (((Iterator)localObject1).hasNext()) {
+        ((Operation)((Iterator)localObject1).next()).l();
+      }
+      Iterator localIterator = new ArrayList(c).iterator();
+      Operation localOperation;
+      StringBuilder localStringBuilder;
+      while (localIterator.hasNext())
+      {
+        localOperation = (Operation)localIterator.next();
+        if (FragmentManager.E0(2))
+        {
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("SpecialEffectsController: ");
+          if (bool)
+          {
+            localObject1 = "";
+          }
+          else
+          {
+            localObject1 = new StringBuilder();
+            ((StringBuilder)localObject1).append("Container ");
+            ((StringBuilder)localObject1).append(a);
+            ((StringBuilder)localObject1).append(" is not attached to window. ");
+            localObject1 = ((StringBuilder)localObject1).toString();
+          }
+          localStringBuilder.append((String)localObject1);
+          localStringBuilder.append("Cancelling running operation ");
+          localStringBuilder.append(localOperation);
+          Log.v("FragmentManager", localStringBuilder.toString());
+        }
+        localOperation.b();
+      }
+      localIterator = new ArrayList(b).iterator();
+      while (localIterator.hasNext())
+      {
+        localOperation = (Operation)localIterator.next();
+        if (FragmentManager.E0(2))
+        {
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("SpecialEffectsController: ");
+          if (bool)
+          {
+            localObject1 = "";
+          }
+          else
+          {
+            localObject1 = new StringBuilder();
+            ((StringBuilder)localObject1).append("Container ");
+            ((StringBuilder)localObject1).append(a);
+            ((StringBuilder)localObject1).append(" is not attached to window. ");
+            localObject1 = ((StringBuilder)localObject1).toString();
+          }
+          localStringBuilder.append((String)localObject1);
+          localStringBuilder.append("Cancelling pending operation ");
+          localStringBuilder.append(localOperation);
+          Log.v("FragmentManager", localStringBuilder.toString());
+        }
+        localOperation.b();
+      }
+      return;
+    }
+  }
+  
+  void k()
+  {
+    if (e)
+    {
+      if (FragmentManager.E0(2)) {
+        Log.v("FragmentManager", "SpecialEffectsController: Forcing postponed operations");
+      }
+      e = false;
+      g();
+    }
+  }
+  
+  SpecialEffectsController.Operation.LifecycleImpact l(y paramY)
+  {
+    Object localObject = h(paramY.k());
+    if (localObject != null) {
+      localObject = ((Operation)localObject).g();
+    } else {
+      localObject = null;
+    }
+    paramY = i(paramY.k());
+    if ((paramY != null) && ((localObject == null) || (localObject == SpecialEffectsController.Operation.LifecycleImpact.b))) {
+      return paramY.g();
+    }
+    return localObject;
+  }
+  
+  public ViewGroup m()
+  {
+    return a;
+  }
+  
+  void p()
+  {
+    for (;;)
+    {
+      int i;
+      synchronized (b)
+      {
+        q();
+        e = false;
+        i = b.size() - 1;
+        if (i >= 0)
+        {
+          Operation localOperation = (Operation)b.get(i);
+          SpecialEffectsController.Operation.State localState1 = SpecialEffectsController.Operation.State.c(fmView);
+          SpecialEffectsController.Operation.State localState2 = localOperation.e();
+          SpecialEffectsController.Operation.State localState3 = SpecialEffectsController.Operation.State.c;
+          if ((localState2 != localState3) || (localState1 == localState3)) {
+            break label101;
+          }
+          e = localOperation.f().isPostponed();
+        }
+        return;
+      }
+      label101:
+      i -= 1;
+    }
+  }
+  
+  void r(boolean paramBoolean)
+  {
+    d = paramBoolean;
+  }
+  
+  static class Operation
+  {
+    private State a;
+    private LifecycleImpact b;
+    private final Fragment c;
+    private final List<Runnable> d = new ArrayList();
+    private final HashSet<e> e = new HashSet();
+    private boolean f = false;
+    private boolean g = false;
+    
+    Operation(State paramState, LifecycleImpact paramLifecycleImpact, Fragment paramFragment, e paramE)
+    {
+      a = paramState;
+      b = paramLifecycleImpact;
+      c = paramFragment;
+      paramE.b(new a());
+    }
+    
+    final void a(Runnable paramRunnable)
+    {
+      d.add(paramRunnable);
+    }
+    
+    final void b()
+    {
+      if (h()) {
+        return;
+      }
+      f = true;
+      if (e.isEmpty())
+      {
+        c();
+        return;
+      }
+      Iterator localIterator = new ArrayList(e).iterator();
+      while (localIterator.hasNext()) {
+        ((e)localIterator.next()).a();
+      }
+    }
+    
+    public void c()
+    {
+      if (g) {
+        return;
+      }
+      if (FragmentManager.E0(2))
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("SpecialEffectsController: ");
+        ((StringBuilder)localObject).append(this);
+        ((StringBuilder)localObject).append(" has called complete.");
+        Log.v("FragmentManager", ((StringBuilder)localObject).toString());
+      }
+      g = true;
+      Object localObject = d.iterator();
+      while (((Iterator)localObject).hasNext()) {
+        ((Runnable)((Iterator)localObject).next()).run();
+      }
+    }
+    
+    public final void d(e paramE)
+    {
+      if ((e.remove(paramE)) && (e.isEmpty())) {
+        c();
+      }
+    }
+    
+    public State e()
+    {
+      return a;
+    }
+    
+    public final Fragment f()
+    {
+      return c;
+    }
+    
+    LifecycleImpact g()
+    {
+      return b;
+    }
+    
+    final boolean h()
+    {
+      return f;
+    }
+    
+    final boolean i()
+    {
+      return g;
+    }
+    
+    public final void j(e paramE)
+    {
+      l();
+      e.add(paramE);
+    }
+    
+    final void k(State paramState, LifecycleImpact paramLifecycleImpact)
+    {
+      int i = SpecialEffectsController.c.b[paramLifecycleImpact.ordinal()];
+      if (i != 1)
+      {
+        if (i != 2)
+        {
+          if (i != 3) {
+            return;
+          }
+          if (a != State.b)
+          {
+            if (FragmentManager.E0(2))
+            {
+              paramLifecycleImpact = new StringBuilder();
+              paramLifecycleImpact.append("SpecialEffectsController: For fragment ");
+              paramLifecycleImpact.append(c);
+              paramLifecycleImpact.append(" mFinalState = ");
+              paramLifecycleImpact.append(a);
+              paramLifecycleImpact.append(" -> ");
+              paramLifecycleImpact.append(paramState);
+              paramLifecycleImpact.append(". ");
+              Log.v("FragmentManager", paramLifecycleImpact.toString());
+            }
+            a = paramState;
+          }
+        }
+        else
+        {
+          if (FragmentManager.E0(2))
+          {
+            paramState = new StringBuilder();
+            paramState.append("SpecialEffectsController: For fragment ");
+            paramState.append(c);
+            paramState.append(" mFinalState = ");
+            paramState.append(a);
+            paramState.append(" -> REMOVED. mLifecycleImpact  = ");
+            paramState.append(b);
+            paramState.append(" to REMOVING.");
+            Log.v("FragmentManager", paramState.toString());
+          }
+          a = State.b;
+          b = LifecycleImpact.d;
+        }
+      }
+      else if (a == State.b)
+      {
+        if (FragmentManager.E0(2))
+        {
+          paramState = new StringBuilder();
+          paramState.append("SpecialEffectsController: For fragment ");
+          paramState.append(c);
+          paramState.append(" mFinalState = REMOVED -> VISIBLE. mLifecycleImpact = ");
+          paramState.append(b);
+          paramState.append(" to ADDING.");
+          Log.v("FragmentManager", paramState.toString());
+        }
+        a = State.c;
+        b = LifecycleImpact.c;
+      }
+    }
+    
+    void l() {}
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Operation ");
+      localStringBuilder.append("{");
+      localStringBuilder.append(Integer.toHexString(System.identityHashCode(this)));
+      localStringBuilder.append("} ");
+      localStringBuilder.append("{");
+      localStringBuilder.append("mFinalState = ");
+      localStringBuilder.append(a);
+      localStringBuilder.append("} ");
+      localStringBuilder.append("{");
+      localStringBuilder.append("mLifecycleImpact = ");
+      localStringBuilder.append(b);
+      localStringBuilder.append("} ");
+      localStringBuilder.append("{");
+      localStringBuilder.append("mFragment = ");
+      localStringBuilder.append(c);
+      localStringBuilder.append("}");
+      return localStringBuilder.toString();
+    }
+    
+    static enum LifecycleImpact
+    {
+      static
+      {
+        LifecycleImpact localLifecycleImpact1 = new LifecycleImpact("NONE", 0);
+        b = localLifecycleImpact1;
+        LifecycleImpact localLifecycleImpact2 = new LifecycleImpact("ADDING", 1);
+        c = localLifecycleImpact2;
+        LifecycleImpact localLifecycleImpact3 = new LifecycleImpact("REMOVING", 2);
+        d = localLifecycleImpact3;
+        e = new LifecycleImpact[] { localLifecycleImpact1, localLifecycleImpact2, localLifecycleImpact3 };
+      }
+    }
+    
+    static enum State
+    {
+      static
+      {
+        State localState1 = new State("REMOVED", 0);
+        b = localState1;
+        State localState2 = new State("VISIBLE", 1);
+        c = localState2;
+        State localState3 = new State("GONE", 2);
+        d = localState3;
+        State localState4 = new State("INVISIBLE", 3);
+        e = localState4;
+        f = new State[] { localState1, localState2, localState3, localState4 };
+      }
+      
+      static State b(int paramInt)
+      {
+        if (paramInt != 0)
+        {
+          if (paramInt != 4)
+          {
+            if (paramInt == 8) {
+              return d;
+            }
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Unknown visibility ");
+            localStringBuilder.append(paramInt);
+            throw new IllegalArgumentException(localStringBuilder.toString());
+          }
+          return e;
+        }
+        return c;
+      }
+      
+      static State c(View paramView)
+      {
+        if ((paramView.getAlpha() == 0.0F) && (paramView.getVisibility() == 0)) {
+          return e;
+        }
+        return b(paramView.getVisibility());
+      }
+      
+      void a(View paramView)
+      {
+        int i = SpecialEffectsController.c.a[ordinal()];
+        if (i != 1)
+        {
+          if (i != 2)
+          {
+            if (i != 3)
+            {
+              if (i != 4) {
+                return;
+              }
+              if (FragmentManager.E0(2))
+              {
+                localObject = new StringBuilder();
+                ((StringBuilder)localObject).append("SpecialEffectsController: Setting view ");
+                ((StringBuilder)localObject).append(paramView);
+                ((StringBuilder)localObject).append(" to INVISIBLE");
+                Log.v("FragmentManager", ((StringBuilder)localObject).toString());
+              }
+              paramView.setVisibility(4);
+              return;
+            }
+            if (FragmentManager.E0(2))
+            {
+              localObject = new StringBuilder();
+              ((StringBuilder)localObject).append("SpecialEffectsController: Setting view ");
+              ((StringBuilder)localObject).append(paramView);
+              ((StringBuilder)localObject).append(" to GONE");
+              Log.v("FragmentManager", ((StringBuilder)localObject).toString());
+            }
+            paramView.setVisibility(8);
+            return;
+          }
+          if (FragmentManager.E0(2))
+          {
+            localObject = new StringBuilder();
+            ((StringBuilder)localObject).append("SpecialEffectsController: Setting view ");
+            ((StringBuilder)localObject).append(paramView);
+            ((StringBuilder)localObject).append(" to VISIBLE");
+            Log.v("FragmentManager", ((StringBuilder)localObject).toString());
+          }
+          paramView.setVisibility(0);
+          return;
+        }
+        Object localObject = (ViewGroup)paramView.getParent();
+        if (localObject != null)
+        {
+          if (FragmentManager.E0(2))
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("SpecialEffectsController: Removing view ");
+            localStringBuilder.append(paramView);
+            localStringBuilder.append(" from container ");
+            localStringBuilder.append(localObject);
+            Log.v("FragmentManager", localStringBuilder.toString());
+          }
+          ((ViewGroup)localObject).removeView(paramView);
+        }
+      }
+    }
+    
+    class a
+      implements e.b
+    {
+      a() {}
+      
+      public void a()
+      {
+        b();
+      }
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(SpecialEffectsController.d paramD) {}
+    
+    public void run()
+    {
+      if (b.contains(paramState)) {
+        paramState.e().a(paramStatefmView);
+      }
+    }
+  }
+  
+  class b
+    implements Runnable
+  {
+    b(SpecialEffectsController.d paramD) {}
+    
+    public void run()
+    {
+      b.remove(paramState);
+      c.remove(paramState);
+    }
+  }
+  
+  private static class d
+    extends SpecialEffectsController.Operation
+  {
+    private final y h;
+    
+    d(SpecialEffectsController.Operation.State paramState, SpecialEffectsController.Operation.LifecycleImpact paramLifecycleImpact, y paramY, e paramE)
+    {
+      super(paramLifecycleImpact, paramY.k(), paramE);
+      h = paramY;
+    }
+    
+    public void c()
+    {
+      super.c();
+      h.m();
+    }
+    
+    void l()
+    {
+      Fragment localFragment;
+      View localView;
+      StringBuilder localStringBuilder;
+      if (g() == SpecialEffectsController.Operation.LifecycleImpact.c)
+      {
+        localFragment = h.k();
+        localView = mView.findFocus();
+        if (localView != null)
+        {
+          localFragment.setFocusedView(localView);
+          if (FragmentManager.E0(2))
+          {
+            localStringBuilder = new StringBuilder();
+            localStringBuilder.append("requestFocus: Saved focused view ");
+            localStringBuilder.append(localView);
+            localStringBuilder.append(" for Fragment ");
+            localStringBuilder.append(localFragment);
+            Log.v("FragmentManager", localStringBuilder.toString());
+          }
+        }
+        localView = f().requireView();
+        if (localView.getParent() == null)
+        {
+          h.b();
+          localView.setAlpha(0.0F);
+        }
+        if ((localView.getAlpha() == 0.0F) && (localView.getVisibility() == 0)) {
+          localView.setVisibility(4);
+        }
+        localView.setAlpha(localFragment.getPostOnViewCreatedAlpha());
+        return;
+      }
+      if (g() == SpecialEffectsController.Operation.LifecycleImpact.d)
+      {
+        localFragment = h.k();
+        localView = localFragment.requireView();
+        if (FragmentManager.E0(2))
+        {
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Clearing focus ");
+          localStringBuilder.append(localView.findFocus());
+          localStringBuilder.append(" on view ");
+          localStringBuilder.append(localView);
+          localStringBuilder.append(" for Fragment ");
+          localStringBuilder.append(localFragment);
+          Log.v("FragmentManager", localStringBuilder.toString());
+        }
+        localView.clearFocus();
+      }
+    }
+  }
+}

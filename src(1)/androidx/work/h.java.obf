@@ -1,0 +1,97 @@
+package androidx.work;
+
+import android.os.Build.VERSION;
+import androidx.work.impl.n.p;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+public abstract class s
+{
+  private UUID a;
+  private p b;
+  private Set<String> c;
+  
+  protected s(UUID paramUUID, p paramP, Set<String> paramSet)
+  {
+    a = paramUUID;
+    b = paramP;
+    c = paramSet;
+  }
+  
+  public String a()
+  {
+    return a.toString();
+  }
+  
+  public Set<String> b()
+  {
+    return c;
+  }
+  
+  public p c()
+  {
+    return b;
+  }
+  
+  public static abstract class a<B extends a<?, ?>, W extends s>
+  {
+    boolean a = false;
+    UUID b = UUID.randomUUID();
+    p c;
+    Set<String> d = new HashSet();
+    Class<? extends ListenableWorker> e;
+    
+    a(Class<? extends ListenableWorker> paramClass)
+    {
+      e = paramClass;
+      c = new p(b.toString(), paramClass.getName());
+      a(paramClass.getName());
+    }
+    
+    public final B a(String paramString)
+    {
+      d.add(paramString);
+      return d();
+    }
+    
+    public final W b()
+    {
+      s localS = c();
+      Object localObject = c.l;
+      int i = Build.VERSION.SDK_INT;
+      if (((i < 24) || (!((b)localObject).e())) && (!((b)localObject).f()) && (!((b)localObject).g()) && ((i < 23) || (!((b)localObject).h()))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      localObject = c;
+      if (s) {
+        if (i == 0)
+        {
+          if (i > 0L) {
+            throw new IllegalArgumentException("Expedited jobs cannot be delayed");
+          }
+        }
+        else {
+          throw new IllegalArgumentException("Expedited jobs only support network and storage constraints");
+        }
+      }
+      b = UUID.randomUUID();
+      localObject = new p(c);
+      c = ((p)localObject);
+      c = b.toString();
+      return localS;
+    }
+    
+    abstract W c();
+    
+    abstract B d();
+    
+    public final B e(d paramD)
+    {
+      c.g = paramD;
+      return d();
+    }
+  }
+}

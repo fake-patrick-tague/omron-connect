@@ -1,0 +1,6 @@
+package com.google.android.gms.internal.measurement;
+
+public abstract interface zzou
+{
+  public abstract boolean getOrElse();
+}

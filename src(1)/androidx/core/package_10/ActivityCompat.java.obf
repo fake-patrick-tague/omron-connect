@@ -1,0 +1,338 @@
+package androidx.core.app;
+
+import android.app.Activity;
+import android.app.SharedElementCallback;
+import android.app.SharedElementCallback.OnSharedElementsReadyListener;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.IntentSender.SendIntentException;
+import android.content.pm.PackageManager;
+import android.graphics.Matrix;
+import android.graphics.RectF;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcelable;
+import android.text.TextUtils;
+import android.view.View;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class b
+  extends androidx.core.content.a
+{
+  private static f d;
+  
+  public static void n(Activity paramActivity)
+  {
+    if (Build.VERSION.SDK_INT >= 16)
+    {
+      b.a(paramActivity);
+      return;
+    }
+    paramActivity.finish();
+  }
+  
+  public static void o(Activity paramActivity)
+  {
+    if (Build.VERSION.SDK_INT >= 21)
+    {
+      c.a(paramActivity);
+      return;
+    }
+    paramActivity.finish();
+  }
+  
+  public static void q(Activity paramActivity)
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      c.b(paramActivity);
+    }
+  }
+  
+  public static void r(Activity paramActivity)
+  {
+    if (Build.VERSION.SDK_INT >= 28)
+    {
+      paramActivity.recreate();
+      return;
+    }
+    new Handler(paramActivity.getMainLooper()).post(new a(paramActivity));
+  }
+  
+  public static void s(final Activity paramActivity, String[] paramArrayOfString, final int paramInt)
+  {
+    Object localObject = d;
+    if ((localObject != null) && (((f)localObject).a(paramActivity, paramArrayOfString, paramInt))) {
+      return;
+    }
+    HashSet localHashSet = new HashSet();
+    int k = 0;
+    int i = 0;
+    while (i < paramArrayOfString.length) {
+      if (!TextUtils.isEmpty(paramArrayOfString[i]))
+      {
+        if ((!c.h.m.a.d()) && (TextUtils.equals(paramArrayOfString[i], "android.permission.POST_NOTIFICATIONS"))) {
+          localHashSet.add(Integer.valueOf(i));
+        }
+        i += 1;
+      }
+      else
+      {
+        paramActivity = new StringBuilder();
+        paramActivity.append("Permission request for permissions ");
+        paramActivity.append(Arrays.toString(paramArrayOfString));
+        paramActivity.append(" must not contain null or empty values");
+        throw new IllegalArgumentException(paramActivity.toString());
+      }
+    }
+    i = localHashSet.size();
+    if (i > 0) {
+      localObject = new String[paramArrayOfString.length - i];
+    } else {
+      localObject = paramArrayOfString;
+    }
+    if (i > 0)
+    {
+      if (i == paramArrayOfString.length) {
+        return;
+      }
+      int j = 0;
+      i = k;
+      while (i < paramArrayOfString.length)
+      {
+        k = j;
+        if (!localHashSet.contains(Integer.valueOf(i)))
+        {
+          localObject[j] = paramArrayOfString[i];
+          k = j + 1;
+        }
+        i += 1;
+        j = k;
+      }
+    }
+    if (Build.VERSION.SDK_INT >= 23)
+    {
+      if ((paramActivity instanceof g)) {
+        ((g)paramActivity).validateRequestPermissionsRequestCode(paramInt);
+      }
+      d.b(paramActivity, paramArrayOfString, paramInt);
+      return;
+    }
+    if ((paramActivity instanceof e)) {
+      new Handler(Looper.getMainLooper()).post(new a((String[])localObject, paramActivity, paramInt));
+    }
+  }
+  
+  public static void t(Activity paramActivity, u paramU)
+  {
+    if (Build.VERSION.SDK_INT >= 21)
+    {
+      if (paramU != null) {
+        paramU = new h(paramU);
+      } else {
+        paramU = null;
+      }
+      c.c(paramActivity, paramU);
+    }
+  }
+  
+  public static void u(Activity paramActivity, u paramU)
+  {
+    if (Build.VERSION.SDK_INT >= 21)
+    {
+      if (paramU != null) {
+        paramU = new h(paramU);
+      } else {
+        paramU = null;
+      }
+      c.d(paramActivity, paramU);
+    }
+  }
+  
+  public static boolean v(Activity paramActivity, String paramString)
+  {
+    if ((!c.h.m.a.d()) && (TextUtils.equals("android.permission.POST_NOTIFICATIONS", paramString))) {
+      return false;
+    }
+    if (Build.VERSION.SDK_INT >= 23) {
+      return d.c(paramActivity, paramString);
+    }
+    return false;
+  }
+  
+  public static void w(Activity paramActivity, Intent paramIntent, int paramInt, Bundle paramBundle)
+  {
+    if (Build.VERSION.SDK_INT >= 16)
+    {
+      b.b(paramActivity, paramIntent, paramInt, paramBundle);
+      return;
+    }
+    paramActivity.startActivityForResult(paramIntent, paramInt);
+  }
+  
+  public static void x(Activity paramActivity, IntentSender paramIntentSender, int paramInt1, Intent paramIntent, int paramInt2, int paramInt3, int paramInt4, Bundle paramBundle)
+    throws IntentSender.SendIntentException
+  {
+    if (Build.VERSION.SDK_INT >= 16)
+    {
+      b.c(paramActivity, paramIntentSender, paramInt1, paramIntent, paramInt2, paramInt3, paramInt4, paramBundle);
+      return;
+    }
+    paramActivity.startIntentSenderForResult(paramIntentSender, paramInt1, paramIntent, paramInt2, paramInt3, paramInt4);
+  }
+  
+  public static void y(Activity paramActivity)
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      c.e(paramActivity);
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(Activity paramActivity, int paramInt) {}
+    
+    public void run()
+    {
+      int[] arrayOfInt = new int[b.this.length];
+      PackageManager localPackageManager = paramActivity.getPackageManager();
+      String str = paramActivity.getPackageName();
+      int j = b.this.length;
+      int i = 0;
+      while (i < j)
+      {
+        arrayOfInt[i] = localPackageManager.checkPermission(b.this[i], str);
+        i += 1;
+      }
+      ((b.e)paramActivity).onRequestPermissionsResult(paramInt, b.this, arrayOfInt);
+    }
+  }
+  
+  static class b
+  {
+    static void a(Activity paramActivity)
+    {
+      paramActivity.finishAffinity();
+    }
+    
+    static void b(Activity paramActivity, Intent paramIntent, int paramInt, Bundle paramBundle)
+    {
+      paramActivity.startActivityForResult(paramIntent, paramInt, paramBundle);
+    }
+    
+    static void c(Activity paramActivity, IntentSender paramIntentSender, int paramInt1, Intent paramIntent, int paramInt2, int paramInt3, int paramInt4, Bundle paramBundle)
+      throws IntentSender.SendIntentException
+    {
+      paramActivity.startIntentSenderForResult(paramIntentSender, paramInt1, paramIntent, paramInt2, paramInt3, paramInt4, paramBundle);
+    }
+  }
+  
+  static class c
+  {
+    static void a(Activity paramActivity)
+    {
+      paramActivity.finishAfterTransition();
+    }
+    
+    static void b(Activity paramActivity)
+    {
+      paramActivity.postponeEnterTransition();
+    }
+    
+    static void c(Activity paramActivity, SharedElementCallback paramSharedElementCallback)
+    {
+      paramActivity.setEnterSharedElementCallback(paramSharedElementCallback);
+    }
+    
+    static void d(Activity paramActivity, SharedElementCallback paramSharedElementCallback)
+    {
+      paramActivity.setExitSharedElementCallback(paramSharedElementCallback);
+    }
+    
+    static void e(Activity paramActivity)
+    {
+      paramActivity.startPostponedEnterTransition();
+    }
+  }
+  
+  static class d
+  {
+    static void a(Object paramObject)
+    {
+      ((SharedElementCallback.OnSharedElementsReadyListener)paramObject).onSharedElementsReady();
+    }
+    
+    static void b(Activity paramActivity, String[] paramArrayOfString, int paramInt)
+    {
+      paramActivity.requestPermissions(paramArrayOfString, paramInt);
+    }
+    
+    static boolean c(Activity paramActivity, String paramString)
+    {
+      return paramActivity.shouldShowRequestPermissionRationale(paramString);
+    }
+  }
+  
+  public static abstract interface e
+  {
+    public abstract void onRequestPermissionsResult(int paramInt, String[] paramArrayOfString, int[] paramArrayOfInt);
+  }
+  
+  public static abstract interface f
+  {
+    public abstract boolean a(Activity paramActivity, String[] paramArrayOfString, int paramInt);
+  }
+  
+  public static abstract interface g
+  {
+    public abstract void validateRequestPermissionsRequestCode(int paramInt);
+  }
+  
+  static class h
+    extends SharedElementCallback
+  {
+    h(u paramU) {}
+    
+    public Parcelable onCaptureSharedElementSnapshot(View paramView, Matrix paramMatrix, RectF paramRectF)
+    {
+      throw null;
+    }
+    
+    public View onCreateSnapshotView(Context paramContext, Parcelable paramParcelable)
+    {
+      throw null;
+    }
+    
+    public void onMapSharedElements(List<String> paramList, Map<String, View> paramMap)
+    {
+      throw null;
+    }
+    
+    public void onRejectSharedElements(List<View> paramList)
+    {
+      throw null;
+    }
+    
+    public void onSharedElementEnd(List<String> paramList, List<View> paramList1, List<View> paramList2)
+    {
+      throw null;
+    }
+    
+    public void onSharedElementStart(List<String> paramList, List<View> paramList1, List<View> paramList2)
+    {
+      throw null;
+    }
+    
+    public void onSharedElementsArrived(List<String> paramList, List<View> paramList1, SharedElementCallback.OnSharedElementsReadyListener paramOnSharedElementsReadyListener)
+    {
+      throw null;
+    }
+  }
+}

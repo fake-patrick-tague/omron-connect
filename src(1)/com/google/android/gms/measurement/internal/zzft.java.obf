@@ -1,0 +1,54 @@
+package com.google.android.gms.measurement.internal;
+
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicLong;
+
+final class zzft
+  extends FutureTask
+  implements Comparable
+{
+  final boolean zza;
+  private final long zzc;
+  private final String zzd;
+  
+  zzft(zzfv paramZzfv, Runnable paramRunnable, boolean paramBoolean, String paramString)
+  {
+    super(paramRunnable, null);
+    Preconditions.checkNotNull(paramString);
+    long l = zzfv.zzk().getAndIncrement();
+    zzc = l;
+    zzd = paramString;
+    zza = paramBoolean;
+    if (l == Long.MAX_VALUE) {
+      zzs.zzay().zzd().zza("Tasks index overflow");
+    }
+  }
+  
+  zzft(zzfv paramZzfv, Callable paramCallable, boolean paramBoolean, String paramString)
+  {
+    super(paramCallable);
+    Preconditions.checkNotNull("Task exception on worker thread");
+    long l = zzfv.zzk().getAndIncrement();
+    zzc = l;
+    zzd = "Task exception on worker thread";
+    zza = paramBoolean;
+    if (l == Long.MAX_VALUE) {
+      zzs.zzay().zzd().zza("Tasks index overflow");
+    }
+  }
+  
+  protected final void setException(Throwable paramThrowable)
+  {
+    zzb.zzs.zzay().zzd().zzb(zzd, paramThrowable);
+    if ((paramThrowable instanceof zzfr))
+    {
+      Thread.UncaughtExceptionHandler localUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+      if (localUncaughtExceptionHandler != null) {
+        localUncaughtExceptionHandler.uncaughtException(Thread.currentThread(), paramThrowable);
+      }
+    }
+    super.setException(paramThrowable);
+  }
+}

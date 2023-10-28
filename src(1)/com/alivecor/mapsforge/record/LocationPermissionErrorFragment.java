@@ -1,0 +1,119 @@
+package com.alivecor.mapsforge.record;
+
+import android.content.ActivityNotFoundException;
+import android.content.ContextWrapper;
+import android.os.BaseBundle;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.activity.result.Label;
+import androidx.activity.result.asm.f;
+import androidx.activity.result.b;
+import androidx.core.package_10.ActivityCompat;
+import androidx.fragment.package_11.Fragment;
+import com.alivecor.alivecorkitlite.R.drawable;
+import com.alivecor.alivecorkitlite.R.string;
+import java.util.Arrays;
+import l.a.a;
+import l.a.a.c;
+
+public class LocationPermissionErrorFragment
+  extends RecordingError1ButtonFragment
+{
+  private boolean permissionDenied;
+  b<String[]> requestMultiplePermissions = registerForActivityResult(new f(), new Bookmarks(this));
+  
+  public LocationPermissionErrorFragment() {}
+  
+  private void requestPermission()
+  {
+    a.f("EEEE").a("requestPermission(): Show Rationale? %b", new Object[] { Boolean.valueOf(ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), "android.permission.ACCESS_FINE_LOCATION")) });
+    if (getArguments() != null)
+    {
+      a.f("EEEE").a("getArguments(): %s", new Object[] { getArguments() });
+      String str = getArguments().getString("arg_value", null);
+      if ((str != null) && (str.equals(RecordingError.NEARBY_DEVICES_PERMISSION.name())) && (Build.VERSION.SDK_INT >= 31) && (!PermissionsUtil.isBleEnabled(requireActivity().getApplicationContext()).booleanValue()))
+      {
+        a.d("Needs NEARBY_DEVICES_PERMISSION.", new Object[0]);
+        requestMultiplePermissions.a(new String[] { "android.permission.BLUETOOTH_SCAN", "android.permission.BLUETOOTH_CONNECT" });
+        return;
+      }
+    }
+    if (Build.VERSION.SDK_INT < 31)
+    {
+      if ((permissionDenied) && (!ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), "android.permission.ACCESS_FINE_LOCATION"))) {}
+      try
+      {
+        Util.startMyAppSettings(requireActivity());
+        return;
+      }
+      catch (ActivityNotFoundException localActivityNotFoundException) {}
+      PermissionsUtil.askForFineLocation(this);
+      return;
+    }
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramLayoutInflater = super.onCreateView(paramLayoutInflater, paramViewGroup, paramBundle);
+    title.setText(R.string.recording_error_triangle_location_permission_title);
+    message.setText(R.string.recording_error_triangle_location_permission_message);
+    if (getArguments() != null)
+    {
+      paramViewGroup = getArguments().getString("arg_value", null);
+      if ((paramViewGroup != null) && (paramViewGroup.equals(RecordingError.NEARBY_DEVICES_PERMISSION.name())))
+      {
+        title.setText(R.string.nearby_request_title);
+        message.setText(R.string.nearby_request);
+      }
+    }
+    icon.setImageResource(R.drawable.location_icon);
+    actionBtn.setText(R.string.allow_access);
+    actionBtn.setOnClickListener(new RadialTimePickerDialog.1(this));
+    helpBtn.setText(R.string.learn_more);
+    return paramLayoutInflater;
+  }
+  
+  void onHelp()
+  {
+    String str2 = Urls.getFullUrl("app-redirect/i-need-help-in-recording-location-error");
+    String str1 = str2;
+    if (getArguments() != null)
+    {
+      str1 = str2;
+      if (getArguments().containsKey("help url")) {
+        str1 = getArguments().getString("help url");
+      }
+    }
+    Util.openInBrowser(requireContext(), str1);
+  }
+  
+  public void onRequestPermissionsResult(int paramInt, String[] paramArrayOfString, int[] paramArrayOfInt)
+  {
+    a.g("onRequestPermissionsResult: %d:\n%s\n%s", new Object[] { Integer.valueOf(paramInt), Arrays.toString(paramArrayOfString), Arrays.toString(paramArrayOfInt) });
+    int i = 0;
+    paramInt = 0;
+    while (i < paramArrayOfString.length)
+    {
+      String str = paramArrayOfString[i];
+      paramInt = paramArrayOfInt[i];
+      if ((str.equals("android.permission.ACCESS_FINE_LOCATION")) && (paramInt == 0)) {
+        paramInt = 1;
+      } else {
+        paramInt = 0;
+      }
+      i += 1;
+    }
+    if (paramInt != 0)
+    {
+      getViewModel().restart();
+      return;
+    }
+    a.h("User denied location permission", new Object[0]);
+    permissionDenied = true;
+  }
+}

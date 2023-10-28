@@ -1,0 +1,48 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.Feature;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+
+@SafeParcelable.Class(creator="ConnectionInfoCreator")
+public final class zzj
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<zzj> CREATOR = new zzk();
+  @SafeParcelable.Field(id=1)
+  Bundle zza;
+  @SafeParcelable.Field(id=2)
+  Feature[] zzb;
+  @SafeParcelable.Field(defaultValue="0", id=3)
+  int zzc;
+  @SafeParcelable.Field(id=4)
+  ConnectionTelemetryConfiguration zzd;
+  
+  public zzj() {}
+  
+  @SafeParcelable.Constructor
+  zzj(@SafeParcelable.Param(id=1) Bundle paramBundle, @SafeParcelable.Param(id=2) Feature[] paramArrayOfFeature, @SafeParcelable.Param(id=3) int paramInt, @SafeParcelable.Param(id=4) ConnectionTelemetryConfiguration paramConnectionTelemetryConfiguration)
+  {
+    zza = paramBundle;
+    zzb = paramArrayOfFeature;
+    zzc = paramInt;
+    zzd = paramConnectionTelemetryConfiguration;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeBundle(paramParcel, 1, zza, false);
+    SafeParcelWriter.writeTypedArray(paramParcel, 2, zzb, paramInt, false);
+    SafeParcelWriter.writeInt(paramParcel, 3, zzc);
+    SafeParcelWriter.writeParcelable(paramParcel, 4, zzd, paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

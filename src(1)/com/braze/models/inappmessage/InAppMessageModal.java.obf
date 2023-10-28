@@ -1,0 +1,80 @@
+package com.braze.models.inappmessage;
+
+import bo.app.w0;
+import bo.app.z1;
+import com.braze.enums.inappmessage.CropType;
+import com.braze.enums.inappmessage.ImageStyle;
+import com.braze.enums.inappmessage.MessageType;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import kotlin.x.d.i;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class InAppMessageModal
+  extends InAppMessageImmersiveBase
+{
+  public InAppMessageModal() {}
+  
+  public InAppMessageModal(JSONObject paramJSONObject, z1 paramZ1)
+  {
+    super(paramJSONObject, paramZ1);
+    if (getImageStyle() == ImageStyle.GRAPHIC) {
+      paramZ1 = CropType.CENTER_CROP;
+    } else {
+      paramZ1 = CropType.FIT_CENTER;
+    }
+    try
+    {
+      Object localObject = w0.a;
+      paramJSONObject = paramJSONObject.getString("crop_type");
+      i.d(paramJSONObject, "jsonObject.getString(key)");
+      localObject = Locale.US;
+      i.d(localObject, "US");
+      localObject = paramJSONObject.toUpperCase((Locale)localObject);
+      i.d(localObject, "this as java.lang.String).toUpperCase(locale)");
+      CropType[] arrayOfCropType = CropType.values();
+      int i = 0;
+      int j = arrayOfCropType.length;
+      while (i < j)
+      {
+        paramJSONObject = arrayOfCropType[i];
+        i += 1;
+        if (i.a(paramJSONObject.name(), localObject)) {
+          break label136;
+        }
+      }
+      throw new NoSuchElementException("Array contains no element matching the predicate.");
+    }
+    catch (Exception paramJSONObject)
+    {
+      for (;;)
+      {
+        label136:
+        paramJSONObject = paramZ1;
+      }
+    }
+    setCropType(paramJSONObject);
+  }
+  
+  public JSONObject forJsonPut()
+  {
+    JSONObject localJSONObject = getJsonObject();
+    if (localJSONObject != null) {
+      return localJSONObject;
+    }
+    localJSONObject = super.forJsonPut();
+    try
+    {
+      localJSONObject.put("type", getMessageType().name());
+      return localJSONObject;
+    }
+    catch (JSONException localJSONException) {}
+    return localJSONObject;
+  }
+  
+  public MessageType getMessageType()
+  {
+    return MessageType.MODAL;
+  }
+}

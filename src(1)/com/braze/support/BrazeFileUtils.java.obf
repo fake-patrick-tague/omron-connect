@@ -1,0 +1,687 @@
+package com.braze.support;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.res.AssetManager;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.List;
+import kotlin.io.l;
+import kotlin.x.c.a;
+import kotlin.x.d.j;
+
+public final class BrazeFileUtils
+{
+  public static final List<String> REMOTE_SCHEMES = kotlin.collections.i.f(new String[] { "http", "https", "ftp", "ftps", "about", "javascript" });
+  private static final String TAG = BrazeLogger.INSTANCE.getBrazeLogTag("BrazeFileUtils");
+  
+  public static final void deleteFileOrDirectory(File paramFile)
+  {
+    kotlin.x.d.i.e(paramFile, "fileOrDirectory");
+    if (!kotlin.io.g.c(paramFile)) {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.W, null, new a(paramFile), 4, null);
+    }
+  }
+  
+  public static final void deleteSharedPreferencesFile(Context paramContext, File paramFile)
+  {
+    kotlin.x.d.i.e(paramContext, "context");
+    kotlin.x.d.i.e(paramFile, "file");
+    if (!paramFile.exists())
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.W, null, new b(paramFile), 4, null);
+      return;
+    }
+    String str = paramFile.getName();
+    kotlin.x.d.i.d(str, "fileName");
+    if (!kotlin.text.g.m(str, ".xml", false, 2, null))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.W, null, new c(paramFile), 4, null);
+      return;
+    }
+    str = kotlin.text.g.V(str, ".xml");
+    if (Build.VERSION.SDK_INT >= 24)
+    {
+      paramContext.deleteSharedPreferences(str);
+      return;
+    }
+    paramContext.getSharedPreferences(str, 0).edit().clear().commit();
+    deleteFileOrDirectory(paramFile);
+  }
+  
+  /* Error */
+  public static final kotlin.l<File, java.util.Map<String, String>> downloadFileToPath(String paramString1, final String paramString2, String paramString3, String paramString4)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: ldc -86
+    //   3: invokestatic 78	kotlin/x/d/i:e	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   6: aload_1
+    //   7: ldc -84
+    //   9: invokestatic 78	kotlin/x/d/i:e	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   12: aload_2
+    //   13: ldc -82
+    //   15: invokestatic 78	kotlin/x/d/i:e	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   18: sipush 1337
+    //   21: invokestatic 180	android/net/TrafficStats:setThreadStatsTag	(I)V
+    //   24: getstatic 186	com/braze/Braze:Companion	Lcom/braze/Braze$Companion;
+    //   27: invokevirtual 191	com/braze/Braze$Companion:getOutboundNetworkRequestsOffline	()Z
+    //   30: ifne +542 -> 572
+    //   33: aload_0
+    //   34: invokestatic 195	kotlin/text/g:o	(Ljava/lang/CharSequence;)Z
+    //   37: ifne +506 -> 543
+    //   40: aload_1
+    //   41: invokestatic 195	kotlin/text/g:o	(Ljava/lang/CharSequence;)Z
+    //   44: ifne +470 -> 514
+    //   47: aload_2
+    //   48: invokestatic 195	kotlin/text/g:o	(Ljava/lang/CharSequence;)Z
+    //   51: ifne +434 -> 485
+    //   54: aconst_null
+    //   55: astore 7
+    //   57: aconst_null
+    //   58: astore 8
+    //   60: aload 8
+    //   62: astore 5
+    //   64: new 105	java/io/File
+    //   67: dup
+    //   68: aload_0
+    //   69: invokespecial 198	java/io/File:<init>	(Ljava/lang/String;)V
+    //   72: invokevirtual 201	java/io/File:mkdirs	()Z
+    //   75: pop
+    //   76: aload_3
+    //   77: ifnull +558 -> 635
+    //   80: aload 8
+    //   82: astore 5
+    //   84: aload_3
+    //   85: invokestatic 195	kotlin/text/g:o	(Ljava/lang/CharSequence;)Z
+    //   88: ifeq +541 -> 629
+    //   91: goto +544 -> 635
+    //   94: aload_2
+    //   95: astore 6
+    //   97: iload 4
+    //   99: ifne +49 -> 148
+    //   102: aload 8
+    //   104: astore 5
+    //   106: new 203	java/lang/StringBuilder
+    //   109: dup
+    //   110: invokespecial 205	java/lang/StringBuilder:<init>	()V
+    //   113: astore 6
+    //   115: aload 8
+    //   117: astore 5
+    //   119: aload 6
+    //   121: aload_2
+    //   122: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   125: pop
+    //   126: aload 8
+    //   128: astore 5
+    //   130: aload 6
+    //   132: aload_3
+    //   133: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   136: pop
+    //   137: aload 8
+    //   139: astore 5
+    //   141: aload 6
+    //   143: invokevirtual 212	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   146: astore 6
+    //   148: aload 8
+    //   150: astore 5
+    //   152: new 105	java/io/File
+    //   155: dup
+    //   156: aload_0
+    //   157: aload 6
+    //   159: invokespecial 215	java/io/File:<init>	(Ljava/lang/String;Ljava/lang/String;)V
+    //   162: astore_2
+    //   163: aload 8
+    //   165: astore 5
+    //   167: new 217	java/net/URL
+    //   170: dup
+    //   171: aload_1
+    //   172: invokespecial 218	java/net/URL:<init>	(Ljava/lang/String;)V
+    //   175: astore_0
+    //   176: aload 8
+    //   178: astore 5
+    //   180: getstatic 224	bo/app/p6:a	Lbo/app/p6;
+    //   183: aload_0
+    //   184: invokevirtual 227	bo/app/p6:a	(Ljava/net/URL;)Ljava/net/HttpURLConnection;
+    //   187: astore_0
+    //   188: aload_0
+    //   189: invokevirtual 233	java/net/HttpURLConnection:getResponseCode	()I
+    //   192: istore 4
+    //   194: iload 4
+    //   196: sipush 200
+    //   199: if_icmpne +104 -> 303
+    //   202: new 235	java/io/DataInputStream
+    //   205: dup
+    //   206: aload_0
+    //   207: invokevirtual 239	java/net/HttpURLConnection:getInputStream	()Ljava/io/InputStream;
+    //   210: invokespecial 242	java/io/DataInputStream:<init>	(Ljava/io/InputStream;)V
+    //   213: astore_3
+    //   214: new 244	java/io/FileOutputStream
+    //   217: dup
+    //   218: aload_2
+    //   219: invokespecial 245	java/io/FileOutputStream:<init>	(Ljava/io/File;)V
+    //   222: astore 5
+    //   224: aload_3
+    //   225: aload 5
+    //   227: iconst_0
+    //   228: iconst_2
+    //   229: aconst_null
+    //   230: invokestatic 251	kotlin/io/b:b	(Ljava/io/InputStream;Ljava/io/OutputStream;IILjava/lang/Object;)J
+    //   233: pop2
+    //   234: aload 5
+    //   236: aconst_null
+    //   237: invokestatic 256	kotlin/io/c:a	(Ljava/io/Closeable;Ljava/lang/Throwable;)V
+    //   240: aload_3
+    //   241: aconst_null
+    //   242: invokestatic 256	kotlin/io/c:a	(Ljava/io/Closeable;Ljava/lang/Throwable;)V
+    //   245: aload_0
+    //   246: invokevirtual 260	java/net/HttpURLConnection:getHeaderFields	()Ljava/util/Map;
+    //   249: astore_3
+    //   250: aload_3
+    //   251: ldc_w 262
+    //   254: invokestatic 119	kotlin/x/d/i:d	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   257: aload_3
+    //   258: invokestatic 267	bo/app/v1:a	(Ljava/util/Map;)Ljava/util/Map;
+    //   261: astore_3
+    //   262: aload_0
+    //   263: invokevirtual 270	java/net/HttpURLConnection:disconnect	()V
+    //   266: new 272	kotlin/l
+    //   269: dup
+    //   270: aload_2
+    //   271: aload_3
+    //   272: invokespecial 275	kotlin/l:<init>	(Ljava/lang/Object;Ljava/lang/Object;)V
+    //   275: areturn
+    //   276: astore_2
+    //   277: aload_2
+    //   278: athrow
+    //   279: astore 6
+    //   281: aload 5
+    //   283: aload_2
+    //   284: invokestatic 256	kotlin/io/c:a	(Ljava/io/Closeable;Ljava/lang/Throwable;)V
+    //   287: aload 6
+    //   289: athrow
+    //   290: astore_2
+    //   291: aload_2
+    //   292: athrow
+    //   293: astore 5
+    //   295: aload_3
+    //   296: aload_2
+    //   297: invokestatic 256	kotlin/io/c:a	(Ljava/io/Closeable;Ljava/lang/Throwable;)V
+    //   300: aload 5
+    //   302: athrow
+    //   303: getstatic 37	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   306: getstatic 45	com/braze/support/BrazeFileUtils:TAG	Ljava/lang/String;
+    //   309: aconst_null
+    //   310: aconst_null
+    //   311: new 20	com/braze/support/BrazeFileUtils$h
+    //   314: dup
+    //   315: iload 4
+    //   317: aload_1
+    //   318: invokespecial 278	com/braze/support/BrazeFileUtils$h:<init>	(ILjava/lang/String;)V
+    //   321: bipush 6
+    //   323: aconst_null
+    //   324: invokestatic 97	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   327: new 203	java/lang/StringBuilder
+    //   330: dup
+    //   331: invokespecial 205	java/lang/StringBuilder:<init>	()V
+    //   334: astore_2
+    //   335: aload_2
+    //   336: ldc_w 280
+    //   339: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   342: pop
+    //   343: aload_2
+    //   344: iload 4
+    //   346: invokevirtual 283	java/lang/StringBuilder:append	(I)Ljava/lang/StringBuilder;
+    //   349: pop
+    //   350: aload_2
+    //   351: ldc_w 285
+    //   354: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   357: pop
+    //   358: aload_2
+    //   359: aload_1
+    //   360: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   363: pop
+    //   364: aload_2
+    //   365: ldc_w 287
+    //   368: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   371: pop
+    //   372: new 168	java/lang/Exception
+    //   375: dup
+    //   376: aload_2
+    //   377: invokevirtual 212	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   380: invokespecial 288	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   383: athrow
+    //   384: astore_1
+    //   385: aload_0
+    //   386: astore 5
+    //   388: goto +85 -> 473
+    //   391: astore_2
+    //   392: goto +11 -> 403
+    //   395: astore_1
+    //   396: goto +77 -> 473
+    //   399: astore_2
+    //   400: aload 7
+    //   402: astore_0
+    //   403: aload_0
+    //   404: astore 5
+    //   406: getstatic 37	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   409: getstatic 45	com/braze/support/BrazeFileUtils:TAG	Ljava/lang/String;
+    //   412: getstatic 291	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   415: aload_2
+    //   416: new 22	com/braze/support/BrazeFileUtils$i
+    //   419: dup
+    //   420: aload_1
+    //   421: invokespecial 292	com/braze/support/BrazeFileUtils$i:<init>	(Ljava/lang/String;)V
+    //   424: invokevirtual 296	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   427: aload_0
+    //   428: astore 5
+    //   430: new 203	java/lang/StringBuilder
+    //   433: dup
+    //   434: invokespecial 205	java/lang/StringBuilder:<init>	()V
+    //   437: astore_2
+    //   438: aload_0
+    //   439: astore 5
+    //   441: aload_2
+    //   442: ldc_w 298
+    //   445: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   448: pop
+    //   449: aload_0
+    //   450: astore 5
+    //   452: aload_2
+    //   453: aload_1
+    //   454: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   457: pop
+    //   458: aload_0
+    //   459: astore 5
+    //   461: new 168	java/lang/Exception
+    //   464: dup
+    //   465: aload_2
+    //   466: invokevirtual 212	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   469: invokespecial 288	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   472: athrow
+    //   473: aload 5
+    //   475: ifnull +8 -> 483
+    //   478: aload 5
+    //   480: invokevirtual 270	java/net/HttpURLConnection:disconnect	()V
+    //   483: aload_1
+    //   484: athrow
+    //   485: getstatic 37	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   488: getstatic 45	com/braze/support/BrazeFileUtils:TAG	Ljava/lang/String;
+    //   491: getstatic 300	com/braze/support/BrazeLogger$Priority:I	Lcom/braze/support/BrazeLogger$Priority;
+    //   494: aconst_null
+    //   495: getstatic 303	com/braze/support/BrazeFileUtils$g:b	Lcom/braze/support/BrazeFileUtils$g;
+    //   498: iconst_4
+    //   499: aconst_null
+    //   500: invokestatic 97	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   503: new 168	java/lang/Exception
+    //   506: dup
+    //   507: ldc_w 305
+    //   510: invokespecial 288	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   513: athrow
+    //   514: getstatic 37	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   517: getstatic 45	com/braze/support/BrazeFileUtils:TAG	Ljava/lang/String;
+    //   520: getstatic 300	com/braze/support/BrazeLogger$Priority:I	Lcom/braze/support/BrazeLogger$Priority;
+    //   523: aconst_null
+    //   524: getstatic 308	com/braze/support/BrazeFileUtils$f:b	Lcom/braze/support/BrazeFileUtils$f;
+    //   527: iconst_4
+    //   528: aconst_null
+    //   529: invokestatic 97	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   532: new 168	java/lang/Exception
+    //   535: dup
+    //   536: ldc_w 310
+    //   539: invokespecial 288	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   542: athrow
+    //   543: getstatic 37	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   546: getstatic 45	com/braze/support/BrazeFileUtils:TAG	Ljava/lang/String;
+    //   549: getstatic 300	com/braze/support/BrazeLogger$Priority:I	Lcom/braze/support/BrazeLogger$Priority;
+    //   552: aconst_null
+    //   553: getstatic 313	com/braze/support/BrazeFileUtils$e:b	Lcom/braze/support/BrazeFileUtils$e;
+    //   556: iconst_4
+    //   557: aconst_null
+    //   558: invokestatic 97	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   561: new 168	java/lang/Exception
+    //   564: dup
+    //   565: ldc_w 315
+    //   568: invokespecial 288	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   571: athrow
+    //   572: getstatic 37	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   575: getstatic 45	com/braze/support/BrazeFileUtils:TAG	Ljava/lang/String;
+    //   578: getstatic 300	com/braze/support/BrazeLogger$Priority:I	Lcom/braze/support/BrazeLogger$Priority;
+    //   581: aconst_null
+    //   582: new 12	com/braze/support/BrazeFileUtils$d
+    //   585: dup
+    //   586: aload_1
+    //   587: invokespecial 316	com/braze/support/BrazeFileUtils$d:<init>	(Ljava/lang/String;)V
+    //   590: iconst_4
+    //   591: aconst_null
+    //   592: invokestatic 97	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   595: new 203	java/lang/StringBuilder
+    //   598: dup
+    //   599: invokespecial 205	java/lang/StringBuilder:<init>	()V
+    //   602: astore_0
+    //   603: aload_0
+    //   604: ldc_w 318
+    //   607: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   610: pop
+    //   611: aload_0
+    //   612: aload_1
+    //   613: invokevirtual 209	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   616: pop
+    //   617: new 168	java/lang/Exception
+    //   620: dup
+    //   621: aload_0
+    //   622: invokevirtual 212	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   625: invokespecial 288	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   628: athrow
+    //   629: iconst_0
+    //   630: istore 4
+    //   632: goto -538 -> 94
+    //   635: iconst_1
+    //   636: istore 4
+    //   638: goto -544 -> 94
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	641	0	paramString1	String
+    //   0	641	1	paramString2	String
+    //   0	641	2	paramString3	String
+    //   0	641	3	paramString4	String
+    //   97	540	4	i	int
+    //   62	220	5	localObject1	Object
+    //   293	8	5	localObject2	Object
+    //   386	93	5	str	String
+    //   95	63	6	localObject3	Object
+    //   279	9	6	localObject4	Object
+    //   55	346	7	localObject5	Object
+    //   58	119	8	localObject6	Object
+    // Exception table:
+    //   from	to	target	type
+    //   224	234	276	finally
+    //   277	279	279	finally
+    //   214	224	290	finally
+    //   234	240	290	finally
+    //   281	290	290	finally
+    //   291	293	293	finally
+    //   188	194	384	finally
+    //   202	214	384	finally
+    //   240	262	384	finally
+    //   295	303	384	finally
+    //   303	384	384	finally
+    //   188	194	391	java/lang/Exception
+    //   202	214	391	java/lang/Exception
+    //   240	262	391	java/lang/Exception
+    //   295	303	391	java/lang/Exception
+    //   303	384	391	java/lang/Exception
+    //   64	76	395	finally
+    //   84	91	395	finally
+    //   106	115	395	finally
+    //   119	126	395	finally
+    //   130	137	395	finally
+    //   141	148	395	finally
+    //   152	163	395	finally
+    //   167	176	395	finally
+    //   180	188	395	finally
+    //   406	427	395	finally
+    //   430	438	395	finally
+    //   441	449	395	finally
+    //   452	458	395	finally
+    //   461	473	395	finally
+    //   64	76	399	java/lang/Exception
+    //   84	91	399	java/lang/Exception
+    //   106	115	399	java/lang/Exception
+    //   119	126	399	java/lang/Exception
+    //   130	137	399	java/lang/Exception
+    //   141	148	399	java/lang/Exception
+    //   152	163	399	java/lang/Exception
+    //   167	176	399	java/lang/Exception
+    //   180	188	399	java/lang/Exception
+  }
+  
+  public static final String getAssetFileStringContents(AssetManager paramAssetManager, String paramString)
+  {
+    kotlin.x.d.i.e(paramAssetManager, "<this>");
+    kotlin.x.d.i.e(paramString, "assetPath");
+    paramAssetManager = paramAssetManager.open(paramString);
+    kotlin.x.d.i.d(paramAssetManager, "this.open(assetPath)");
+    paramAssetManager = new InputStreamReader(paramAssetManager, kotlin.text.c.b);
+    if ((paramAssetManager instanceof BufferedReader)) {
+      paramAssetManager = (BufferedReader)paramAssetManager;
+    } else {
+      paramAssetManager = new BufferedReader(paramAssetManager, 8192);
+    }
+    try
+    {
+      paramString = l.c(paramAssetManager);
+      kotlin.io.c.a(paramAssetManager, null);
+      return paramString;
+    }
+    finally
+    {
+      try
+      {
+        throw paramString;
+      }
+      finally
+      {
+        kotlin.io.c.a(paramAssetManager, paramString);
+      }
+    }
+  }
+  
+  public static final boolean isLocalUri(Uri paramUri)
+  {
+    kotlin.x.d.i.e(paramUri, "<this>");
+    paramUri = paramUri.getScheme();
+    boolean bool = false;
+    int i;
+    if ((paramUri != null) && (!kotlin.text.g.o(paramUri))) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if ((i != 0) || (kotlin.x.d.i.a(paramUri, "file"))) {
+      bool = true;
+    }
+    return bool;
+  }
+  
+  public static final boolean isRemoteUri(Uri paramUri)
+  {
+    kotlin.x.d.i.e(paramUri, "<this>");
+    paramUri = paramUri.getScheme();
+    int i;
+    if ((paramUri != null) && (!kotlin.text.g.o(paramUri))) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if (i != 0)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.I, null, j.b, 4, null);
+      return false;
+    }
+    return REMOTE_SCHEMES.contains(paramUri);
+  }
+  
+  static final class a
+    extends j
+    implements a<String>
+  {
+    a(File paramFile)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Could not recursively delete ");
+      localStringBuilder.append(b.getName());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class b
+    extends j
+    implements a<String>
+  {
+    b(File paramFile)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Cannot delete SharedPreferences that does not exist. Path: ");
+      localStringBuilder.append(b.getAbsolutePath());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class c
+    extends j
+    implements a<String>
+  {
+    c(File paramFile)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SharedPreferences file is expected to end in .xml. Path: ");
+      localStringBuilder.append(b.getAbsolutePath());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class d
+    extends j
+    implements a<String>
+  {
+    d(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SDK is offline. File not downloaded for url: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class e
+    extends j
+    implements a<String>
+  {
+    public static final e b = new e();
+    
+    e()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Download directory null or blank. File not downloaded.";
+    }
+  }
+  
+  static final class f
+    extends j
+    implements a<String>
+  {
+    public static final f b = new f();
+    
+    f()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Zip file url null or blank. File not downloaded.";
+    }
+  }
+  
+  static final class g
+    extends j
+    implements a<String>
+  {
+    public static final g b = new g();
+    
+    g()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Output filename null or blank. File not downloaded.";
+    }
+  }
+  
+  static final class h
+    extends j
+    implements a<String>
+  {
+    h(int paramInt, String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("HTTP response code was ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(". File with url ");
+      localStringBuilder.append(paramString2);
+      localStringBuilder.append(" could not be downloaded.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class i
+    extends j
+    implements a<String>
+  {
+    i(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Exception during download of file from url : ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class j
+    extends j
+    implements a<String>
+  {
+    public static final j b = new j();
+    
+    j()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Null or blank Uri scheme.";
+    }
+  }
+}

@@ -1,0 +1,143 @@
+package androidx.work.impl.m;
+
+import android.content.Context;
+import androidx.work.impl.m.e.b;
+import androidx.work.impl.m.e.c.a;
+import androidx.work.impl.m.e.e;
+import androidx.work.impl.m.e.f;
+import androidx.work.impl.m.e.g;
+import androidx.work.impl.m.e.h;
+import androidx.work.impl.n.p;
+import androidx.work.j;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class d
+  implements c.a
+{
+  private static final String a = j.f("WorkConstraintsTracker");
+  private final c b;
+  private final androidx.work.impl.m.e.c<?>[] c;
+  private final Object d;
+  
+  public d(Context paramContext, androidx.work.impl.utils.p.a paramA, c paramC)
+  {
+    paramContext = paramContext.getApplicationContext();
+    b = paramC;
+    c = new androidx.work.impl.m.e.c[] { new androidx.work.impl.m.e.a(paramContext, paramA), new b(paramContext, paramA), new h(paramContext, paramA), new androidx.work.impl.m.e.d(paramContext, paramA), new g(paramContext, paramA), new f(paramContext, paramA), new e(paramContext, paramA) };
+    d = new Object();
+  }
+  
+  public void a(List<String> paramList)
+  {
+    synchronized (d)
+    {
+      ArrayList localArrayList = new ArrayList();
+      paramList = paramList.iterator();
+      while (paramList.hasNext())
+      {
+        String str = (String)paramList.next();
+        if (c(str))
+        {
+          j.c().a(a, String.format("Constraints met for %s", new Object[] { str }), new Throwable[0]);
+          localArrayList.add(str);
+        }
+      }
+      paramList = b;
+      if (paramList != null) {
+        paramList.f(localArrayList);
+      }
+      return;
+    }
+  }
+  
+  public void b(List<String> paramList)
+  {
+    synchronized (d)
+    {
+      c localC = b;
+      if (localC != null) {
+        localC.b(paramList);
+      }
+      return;
+    }
+  }
+  
+  public boolean c(String paramString)
+  {
+    for (;;)
+    {
+      int i;
+      synchronized (d)
+      {
+        androidx.work.impl.m.e.c[] arrayOfC = c;
+        int j = arrayOfC.length;
+        i = 0;
+        if (i < j)
+        {
+          androidx.work.impl.m.e.c localC = arrayOfC[i];
+          if (localC.d(paramString))
+          {
+            j.c().a(a, String.format("Work %s constrained by %s", new Object[] { paramString, localC.getClass().getSimpleName() }), new Throwable[0]);
+            return false;
+          }
+        }
+        else
+        {
+          return true;
+        }
+      }
+      i += 1;
+    }
+  }
+  
+  public void d(Iterable<p> paramIterable)
+  {
+    synchronized (d)
+    {
+      androidx.work.impl.m.e.c[] arrayOfC = c;
+      int k = arrayOfC.length;
+      int j = 0;
+      int i = 0;
+      while (i < k)
+      {
+        arrayOfC[i].g(null);
+        i += 1;
+      }
+      arrayOfC = c;
+      k = arrayOfC.length;
+      i = 0;
+      while (i < k)
+      {
+        arrayOfC[i].e(paramIterable);
+        i += 1;
+      }
+      paramIterable = c;
+      k = paramIterable.length;
+      i = j;
+      while (i < k)
+      {
+        paramIterable[i].g(this);
+        i += 1;
+      }
+      return;
+    }
+  }
+  
+  public void e()
+  {
+    synchronized (d)
+    {
+      androidx.work.impl.m.e.c[] arrayOfC = c;
+      int j = arrayOfC.length;
+      int i = 0;
+      while (i < j)
+      {
+        arrayOfC[i].f();
+        i += 1;
+      }
+      return;
+    }
+  }
+}

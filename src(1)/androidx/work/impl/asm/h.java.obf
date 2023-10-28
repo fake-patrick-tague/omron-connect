@@ -1,0 +1,436 @@
+package androidx.work.impl.n;
+
+import androidx.work.BackoffPolicy;
+import androidx.work.OutOfQuotaPolicy;
+import androidx.work.WorkInfo;
+import androidx.work.WorkInfo.State;
+import androidx.work.b;
+import androidx.work.d;
+import androidx.work.j;
+import c.b.a.c.a;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
+public final class p
+{
+  private static final String a = j.f("WorkSpec");
+  public static final a<List<c>, List<WorkInfo>> b = new a();
+  public String c;
+  public WorkInfo.State d = WorkInfo.State.b;
+  public String e;
+  public String f;
+  public d g;
+  public d h;
+  public long i;
+  public long j;
+  public long k;
+  public b l;
+  public int m;
+  public BackoffPolicy n;
+  public long o;
+  public long p;
+  public long q;
+  public long r;
+  public boolean s;
+  public OutOfQuotaPolicy t;
+  
+  public p(p paramP)
+  {
+    d localD = d.b;
+    g = localD;
+    h = localD;
+    l = b.a;
+    n = BackoffPolicy.b;
+    o = 30000L;
+    r = -1L;
+    t = OutOfQuotaPolicy.b;
+    c = c;
+    e = e;
+    d = d;
+    f = f;
+    g = new d(g);
+    h = new d(h);
+    i = i;
+    j = j;
+    k = k;
+    l = new b(l);
+    m = m;
+    n = n;
+    o = o;
+    p = p;
+    q = q;
+    r = r;
+    s = s;
+    t = t;
+  }
+  
+  public p(String paramString1, String paramString2)
+  {
+    d localD = d.b;
+    g = localD;
+    h = localD;
+    l = b.a;
+    n = BackoffPolicy.b;
+    o = 30000L;
+    r = -1L;
+    t = OutOfQuotaPolicy.b;
+    c = paramString1;
+    e = paramString2;
+  }
+  
+  public long a()
+  {
+    boolean bool = c();
+    int i2 = 0;
+    int i1 = 0;
+    if (bool)
+    {
+      if (n == BackoffPolicy.c) {
+        i1 = 1;
+      }
+      if (i1 != 0) {
+        l1 = o * m;
+      } else {
+        l1 = Math.scalb((float)o, m - 1);
+      }
+      return p + Math.min(18000000L, l1);
+    }
+    bool = d();
+    long l2 = 0L;
+    if (bool)
+    {
+      l1 = System.currentTimeMillis();
+      long l3 = p;
+      if (l3 == 0L) {
+        l1 += i;
+      } else {
+        l1 = l3;
+      }
+      long l5 = k;
+      long l4 = j;
+      i1 = i2;
+      if (l5 != l4) {
+        i1 = 1;
+      }
+      if (i1 != 0)
+      {
+        if (l3 == 0L) {
+          l2 = l5 * -1L;
+        }
+        return l1 + l4 + l2;
+      }
+      if (l3 != 0L) {
+        l2 = l4;
+      }
+      return l1 + l2;
+    }
+    l2 = p;
+    long l1 = l2;
+    if (l2 == 0L) {
+      l1 = System.currentTimeMillis();
+    }
+    return l1 + i;
+  }
+  
+  public boolean b()
+  {
+    return b.a.equals(l) ^ true;
+  }
+  
+  public boolean c()
+  {
+    return (d == WorkInfo.State.b) && (m > 0);
+  }
+  
+  public boolean d()
+  {
+    return j != 0L;
+  }
+  
+  public void e(long paramLong)
+  {
+    long l1 = paramLong;
+    if (paramLong < 900000L)
+    {
+      j.c().h(a, String.format("Interval duration lesser than minimum allowed value; Changed to %s", new Object[] { Long.valueOf(900000L) }), new Throwable[0]);
+      l1 = 900000L;
+    }
+    f(l1, l1);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (paramObject != null)
+    {
+      if (p.class != paramObject.getClass()) {
+        return false;
+      }
+      paramObject = (p)paramObject;
+      if (i != i) {
+        return false;
+      }
+      if (j != j) {
+        return false;
+      }
+      if (k != k) {
+        return false;
+      }
+      if (m != m) {
+        return false;
+      }
+      if (o != o) {
+        return false;
+      }
+      if (p != p) {
+        return false;
+      }
+      if (q != q) {
+        return false;
+      }
+      if (r != r) {
+        return false;
+      }
+      if (s != s) {
+        return false;
+      }
+      if (!c.equals(c)) {
+        return false;
+      }
+      if (d != d) {
+        return false;
+      }
+      if (!e.equals(e)) {
+        return false;
+      }
+      String str = f;
+      if (str != null)
+      {
+        if (!str.equals(f)) {
+          return false;
+        }
+      }
+      else if (f != null) {
+        return false;
+      }
+      if (!g.equals(g)) {
+        return false;
+      }
+      if (!h.equals(h)) {
+        return false;
+      }
+      if (!l.equals(l)) {
+        return false;
+      }
+      if (n != n) {
+        return false;
+      }
+      return t == t;
+    }
+    return false;
+  }
+  
+  public void f(long paramLong1, long paramLong2)
+  {
+    long l1 = paramLong1;
+    if (paramLong1 < 900000L)
+    {
+      j.c().h(a, String.format("Interval duration lesser than minimum allowed value; Changed to %s", new Object[] { Long.valueOf(900000L) }), new Throwable[0]);
+      l1 = 900000L;
+    }
+    paramLong1 = paramLong2;
+    if (paramLong2 < 300000L)
+    {
+      j.c().h(a, String.format("Flex duration lesser than minimum allowed value; Changed to %s", new Object[] { Long.valueOf(300000L) }), new Throwable[0]);
+      paramLong1 = 300000L;
+    }
+    paramLong2 = paramLong1;
+    if (paramLong1 > l1)
+    {
+      j.c().h(a, String.format("Flex duration greater than interval duration; Changed to %s", new Object[] { Long.valueOf(l1) }), new Throwable[0]);
+      paramLong2 = l1;
+    }
+    j = l1;
+    k = paramLong2;
+  }
+  
+  public int hashCode()
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e2expr(TypeTransformer.java:632)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:716)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e2expr(TypeTransformer.java:629)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:716)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e2expr(TypeTransformer.java:629)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:716)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("{WorkSpec: ");
+    localStringBuilder.append(c);
+    localStringBuilder.append("}");
+    return localStringBuilder.toString();
+  }
+  
+  class a
+    implements a<List<p.c>, List<WorkInfo>>
+  {
+    a() {}
+    
+    public List<WorkInfo> a(List<p.c> paramList)
+    {
+      if (paramList == null) {
+        return null;
+      }
+      ArrayList localArrayList = new ArrayList(paramList.size());
+      paramList = paramList.iterator();
+      while (paramList.hasNext()) {
+        localArrayList.add(((p.c)paramList.next()).a());
+      }
+      return localArrayList;
+    }
+  }
+  
+  public static class b
+  {
+    public String a;
+    public WorkInfo.State b;
+    
+    public b() {}
+    
+    public boolean equals(Object paramObject)
+    {
+      if (this == paramObject) {
+        return true;
+      }
+      if (!(paramObject instanceof b)) {
+        return false;
+      }
+      paramObject = (b)paramObject;
+      if (b != b) {
+        return false;
+      }
+      return a.equals(a);
+    }
+    
+    public int hashCode()
+    {
+      return a.hashCode() * 31 + b.hashCode();
+    }
+  }
+  
+  public static class c
+  {
+    public String a;
+    public WorkInfo.State b;
+    public d c;
+    public int d;
+    public List<String> e;
+    public List<d> f;
+    
+    public c() {}
+    
+    public WorkInfo a()
+    {
+      Object localObject = f;
+      if ((localObject != null) && (!((List)localObject).isEmpty())) {
+        localObject = (d)f.get(0);
+      } else {
+        localObject = d.b;
+      }
+      return new WorkInfo(UUID.fromString(a), b, c, e, (d)localObject, d);
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (this == paramObject) {
+        return true;
+      }
+      if (!(paramObject instanceof c)) {
+        return false;
+      }
+      paramObject = (c)paramObject;
+      if (d != d) {
+        return false;
+      }
+      Object localObject = a;
+      if (localObject != null)
+      {
+        if (!((String)localObject).equals(a)) {
+          return false;
+        }
+      }
+      else if (a != null) {
+        return false;
+      }
+      if (b != b) {
+        return false;
+      }
+      localObject = c;
+      if (localObject != null)
+      {
+        if (!((d)localObject).equals(c)) {
+          return false;
+        }
+      }
+      else if (c != null) {
+        return false;
+      }
+      localObject = e;
+      if (localObject != null)
+      {
+        if (!((List)localObject).equals(e)) {
+          return false;
+        }
+      }
+      else if (e != null) {
+        return false;
+      }
+      localObject = f;
+      paramObject = f;
+      if (localObject != null) {
+        return ((List)localObject).equals(paramObject);
+      }
+      return paramObject == null;
+    }
+    
+    public int hashCode()
+    {
+      Object localObject = a;
+      int n = 0;
+      int i;
+      if (localObject != null) {
+        i = ((String)localObject).hashCode();
+      } else {
+        i = 0;
+      }
+      localObject = b;
+      int j;
+      if (localObject != null) {
+        j = ((Enum)localObject).hashCode();
+      } else {
+        j = 0;
+      }
+      localObject = c;
+      int k;
+      if (localObject != null) {
+        k = ((d)localObject).hashCode();
+      } else {
+        k = 0;
+      }
+      int i1 = d;
+      localObject = e;
+      int m;
+      if (localObject != null) {
+        m = ((List)localObject).hashCode();
+      } else {
+        m = 0;
+      }
+      localObject = f;
+      if (localObject != null) {
+        n = ((List)localObject).hashCode();
+      }
+      return ((((i * 31 + j) * 31 + k) * 31 + i1) * 31 + m) * 31 + n;
+    }
+  }
+}

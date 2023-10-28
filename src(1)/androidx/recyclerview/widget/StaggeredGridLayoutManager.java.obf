@@ -1,0 +1,3023 @@
+package androidx.recyclerview.widget;
+
+import android.content.Context;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.accessibility.AccessibilityEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
+
+public class StaggeredGridLayoutManager
+  extends RecyclerView.o
+  implements RecyclerView.x.b
+{
+  boolean A = false;
+  private BitSet B;
+  int C = -1;
+  int D = Integer.MIN_VALUE;
+  LazySpanLookup E = new LazySpanLookup();
+  private int F = 2;
+  private boolean G;
+  private boolean H;
+  private SavedState I;
+  private int J;
+  private final Rect K = new Rect();
+  private final b L = new b();
+  private boolean M = false;
+  private boolean N = true;
+  private int[] O;
+  private final Runnable P = new a();
+  private int s = -1;
+  c[] t;
+  s u;
+  s v;
+  private int w;
+  private int x;
+  private final n y;
+  boolean z = false;
+  
+  public StaggeredGridLayoutManager(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    paramContext = RecyclerView.o.B0(paramContext, paramAttributeSet, paramInt1, paramInt2);
+    e3(a);
+    g3(b);
+    f3(c);
+    y = new n();
+    x2();
+  }
+  
+  private int D2(int paramInt)
+  {
+    int i = g0() - 1;
+    while (i >= 0)
+    {
+      int j = A0(f0(i));
+      if ((j >= 0) && (j < paramInt)) {
+        return j;
+      }
+      i -= 1;
+    }
+    return 0;
+  }
+  
+  private void E2(RecyclerView.u paramU, RecyclerView.y paramY, boolean paramBoolean)
+  {
+    int i = I2(Integer.MIN_VALUE);
+    if (i == Integer.MIN_VALUE) {
+      return;
+    }
+    i = u.i() - i;
+    if (i > 0)
+    {
+      i -= -c3(-i, paramU, paramY);
+      if ((paramBoolean) && (i > 0)) {
+        u.r(i);
+      }
+    }
+  }
+  
+  private void F2(RecyclerView.u paramU, RecyclerView.y paramY, boolean paramBoolean)
+  {
+    int i = L2(Integer.MAX_VALUE);
+    if (i == Integer.MAX_VALUE) {
+      return;
+    }
+    i -= u.m();
+    if (i > 0)
+    {
+      i -= c3(i, paramU, paramY);
+      if ((paramBoolean) && (i > 0)) {
+        u.r(-i);
+      }
+    }
+  }
+  
+  private int I2(int paramInt)
+  {
+    int j = t[0].l(paramInt);
+    int i = 1;
+    while (i < s)
+    {
+      int m = t[i].l(paramInt);
+      int k = j;
+      if (m > j) {
+        k = m;
+      }
+      i += 1;
+      j = k;
+    }
+    return j;
+  }
+  
+  private int J2(int paramInt)
+  {
+    int j = t[0].p(paramInt);
+    int i = 1;
+    while (i < s)
+    {
+      int m = t[i].p(paramInt);
+      int k = j;
+      if (m > j) {
+        k = m;
+      }
+      i += 1;
+      j = k;
+    }
+    return j;
+  }
+  
+  private int K2(int paramInt)
+  {
+    int j = t[0].l(paramInt);
+    int i = 1;
+    while (i < s)
+    {
+      int m = t[i].l(paramInt);
+      int k = j;
+      if (m < j) {
+        k = m;
+      }
+      i += 1;
+      j = k;
+    }
+    return j;
+  }
+  
+  private int L2(int paramInt)
+  {
+    int j = t[0].p(paramInt);
+    int i = 1;
+    while (i < s)
+    {
+      int m = t[i].p(paramInt);
+      int k = j;
+      if (m < j) {
+        k = m;
+      }
+      i += 1;
+      j = k;
+    }
+    return j;
+  }
+  
+  private c M2(n paramN)
+  {
+    boolean bool = U2(e);
+    int j = -1;
+    int i;
+    int k;
+    if (bool)
+    {
+      i = s - 1;
+      k = -1;
+    }
+    else
+    {
+      i = 0;
+      j = s;
+      k = 1;
+    }
+    int m = e;
+    c localC = null;
+    paramN = null;
+    int i1;
+    int n;
+    if (m == 1)
+    {
+      m = Integer.MAX_VALUE;
+      i2 = u.m();
+      while (i != j)
+      {
+        localC = t[i];
+        i1 = localC.l(i2);
+        n = m;
+        if (i1 < m)
+        {
+          paramN = localC;
+          n = i1;
+        }
+        i += k;
+        m = n;
+      }
+      return paramN;
+    }
+    m = Integer.MIN_VALUE;
+    int i2 = u.i();
+    paramN = localC;
+    while (i != j)
+    {
+      localC = t[i];
+      i1 = localC.p(i2);
+      n = m;
+      if (i1 > m)
+      {
+        paramN = localC;
+        n = i1;
+      }
+      i += k;
+      m = n;
+    }
+    return paramN;
+  }
+  
+  private void N2(int paramInt1, int paramInt2, int paramInt3)
+  {
+    int j;
+    if (A) {
+      j = H2();
+    } else {
+      j = G2();
+    }
+    int i;
+    if (paramInt3 == 8)
+    {
+      if (paramInt1 < paramInt2)
+      {
+        i = paramInt2 + 1;
+      }
+      else
+      {
+        i = paramInt1 + 1;
+        k = paramInt2;
+        break label60;
+      }
+    }
+    else {
+      i = paramInt1 + paramInt2;
+    }
+    int k = paramInt1;
+    label60:
+    E.h(k);
+    if (paramInt3 != 1)
+    {
+      if (paramInt3 != 2)
+      {
+        if (paramInt3 == 8)
+        {
+          E.k(paramInt1, 1);
+          E.j(paramInt2, 1);
+        }
+      }
+      else {
+        E.k(paramInt1, paramInt2);
+      }
+    }
+    else {
+      E.j(paramInt1, paramInt2);
+    }
+    if (i <= j) {
+      return;
+    }
+    if (A) {
+      paramInt1 = G2();
+    } else {
+      paramInt1 = H2();
+    }
+    if (k <= paramInt1) {
+      O1();
+    }
+  }
+  
+  private void R2(View paramView, int paramInt1, int paramInt2, boolean paramBoolean)
+  {
+    G(paramView, K);
+    LayoutParams localLayoutParams = (LayoutParams)paramView.getLayoutParams();
+    int i = leftMargin;
+    Rect localRect = K;
+    paramInt1 = o3(paramInt1, i + left, rightMargin + right);
+    i = topMargin;
+    localRect = K;
+    paramInt2 = o3(paramInt2, i + top, bottomMargin + bottom);
+    if (paramBoolean) {
+      paramBoolean = e2(paramView, paramInt1, paramInt2, localLayoutParams);
+    } else {
+      paramBoolean = c2(paramView, paramInt1, paramInt2, localLayoutParams);
+    }
+    if (paramBoolean) {
+      paramView.measure(paramInt1, paramInt2);
+    }
+  }
+  
+  private void S2(View paramView, LayoutParams paramLayoutParams, boolean paramBoolean)
+  {
+    if (g)
+    {
+      if (w == 1)
+      {
+        R2(paramView, J, RecyclerView.o.h0(t0(), u0(), u() + a(), height, true), paramBoolean);
+        return;
+      }
+      R2(paramView, RecyclerView.o.h0(H0(), I0(), v() + p(), width, true), J, paramBoolean);
+      return;
+    }
+    if (w == 1)
+    {
+      R2(paramView, RecyclerView.o.h0(x, I0(), 0, width, false), RecyclerView.o.h0(t0(), u0(), u() + a(), height, true), paramBoolean);
+      return;
+    }
+    R2(paramView, RecyclerView.o.h0(H0(), I0(), v() + p(), width, true), RecyclerView.o.h0(x, u0(), 0, height, false), paramBoolean);
+  }
+  
+  private void T2(RecyclerView.u paramU, RecyclerView.y paramY, boolean paramBoolean)
+  {
+    b localB = L;
+    if (((I != null) || (C != -1)) && (paramY.b() == 0))
+    {
+      F1(paramU);
+      localB.c();
+      return;
+    }
+    boolean bool = e;
+    int j = 1;
+    if ((bool) && (C == -1) && (I == null)) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if (i != 0)
+    {
+      localB.c();
+      if (I != null)
+      {
+        k2(localB);
+      }
+      else
+      {
+        b3();
+        c = A;
+      }
+      k3(paramY, localB);
+      e = true;
+    }
+    if ((I == null) && (C == -1) && ((c != G) || (Q2() != H)))
+    {
+      E.b();
+      d = true;
+    }
+    Object localObject;
+    if (g0() > 0)
+    {
+      localObject = I;
+      if ((localObject == null) || (d < 1))
+      {
+        if (d)
+        {
+          i = 0;
+          while (i < s)
+          {
+            t[i].e();
+            int k = b;
+            if (k != Integer.MIN_VALUE) {
+              t[i].v(k);
+            }
+            i += 1;
+          }
+        }
+        if ((i == 0) && (L.f != null)) {
+          i = 0;
+        }
+        while (i < s)
+        {
+          localObject = t[i];
+          ((c)localObject).e();
+          ((c)localObject).v(L.f[i]);
+          i += 1;
+          continue;
+          i = 0;
+          while (i < s)
+          {
+            t[i].b(A, b);
+            i += 1;
+          }
+          L.d(t);
+        }
+      }
+    }
+    T(paramU);
+    y.a = false;
+    M = false;
+    m3(v.n());
+    l3(a, paramY);
+    if (c)
+    {
+      d3(-1);
+      y2(paramU, y, paramY);
+      d3(1);
+      localObject = y;
+      c = (a + d);
+      y2(paramU, (n)localObject, paramY);
+    }
+    else
+    {
+      d3(1);
+      y2(paramU, y, paramY);
+      d3(-1);
+      localObject = y;
+      c = (a + d);
+      y2(paramU, (n)localObject, paramY);
+    }
+    a3();
+    if (g0() > 0) {
+      if (A)
+      {
+        E2(paramU, paramY, true);
+        F2(paramU, paramY, false);
+      }
+      else
+      {
+        F2(paramU, paramY, true);
+        E2(paramU, paramY, false);
+      }
+    }
+    if ((paramBoolean) && (!paramY.e()))
+    {
+      if ((F != 0) && (g0() > 0) && ((M) || (O2() != null))) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        J1(P);
+        if (p2())
+        {
+          i = j;
+          break label677;
+        }
+      }
+    }
+    int i = 0;
+    label677:
+    if (paramY.e()) {
+      L.c();
+    }
+    G = c;
+    H = Q2();
+    if (i != 0)
+    {
+      L.c();
+      T2(paramU, paramY, false);
+    }
+  }
+  
+  private boolean U2(int paramInt)
+  {
+    int i;
+    if (w == 0)
+    {
+      if (paramInt == -1) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      return i != A;
+    }
+    if (paramInt == -1) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (i == A) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    return i == Q2();
+  }
+  
+  private void W2(View paramView)
+  {
+    int i = s - 1;
+    while (i >= 0)
+    {
+      t[i].u(paramView);
+      i -= 1;
+    }
+  }
+  
+  private void X2(RecyclerView.u paramU, n paramN)
+  {
+    if (a)
+    {
+      if (i) {
+        return;
+      }
+      if (b == 0)
+      {
+        if (e == -1)
+        {
+          Y2(paramU, g);
+          return;
+        }
+        Z2(paramU, f);
+        return;
+      }
+      if (e == -1)
+      {
+        i = f;
+        i -= J2(i);
+        if (i < 0) {
+          i = g;
+        } else {
+          i = g - Math.min(i, b);
+        }
+        Y2(paramU, i);
+        return;
+      }
+      int i = K2(g) - g;
+      if (i < 0)
+      {
+        i = f;
+      }
+      else
+      {
+        int j = f;
+        i = Math.min(i, b) + j;
+      }
+      Z2(paramU, i);
+    }
+  }
+  
+  private void Y2(RecyclerView.u paramU, int paramInt)
+  {
+    int i = g0() - 1;
+    while (i >= 0)
+    {
+      View localView = f0(i);
+      if ((u.g(localView) < paramInt) || (u.q(localView) < paramInt)) {
+        break;
+      }
+      LayoutParams localLayoutParams = (LayoutParams)localView.getLayoutParams();
+      if (g)
+      {
+        int m = 0;
+        int j = 0;
+        int k;
+        for (;;)
+        {
+          k = m;
+          if (j >= s) {
+            break;
+          }
+          if (t[j].a.size() == 1) {
+            return;
+          }
+          j += 1;
+        }
+        while (k < s)
+        {
+          t[k].s();
+          k += 1;
+        }
+      }
+      if (f.a.size() == 1) {
+        return;
+      }
+      f.s();
+      H1(localView, paramU);
+      i -= 1;
+    }
+  }
+  
+  private void Z2(RecyclerView.u paramU, int paramInt)
+  {
+    while (g0() > 0)
+    {
+      int k = 0;
+      View localView = f0(0);
+      if ((u.d(localView) > paramInt) || (u.p(localView) > paramInt)) {
+        break;
+      }
+      LayoutParams localLayoutParams = (LayoutParams)localView.getLayoutParams();
+      if (g)
+      {
+        int i = 0;
+        int j;
+        for (;;)
+        {
+          j = k;
+          if (i >= s) {
+            break;
+          }
+          if (t[i].a.size() == 1) {
+            return;
+          }
+          i += 1;
+        }
+        while (j < s)
+        {
+          t[j].t();
+          j += 1;
+        }
+      }
+      if (f.a.size() == 1) {
+        return;
+      }
+      f.t();
+      H1(localView, paramU);
+    }
+  }
+  
+  private void a3()
+  {
+    if (v.k() == 1073741824) {
+      return;
+    }
+    float f1 = 0.0F;
+    int m = g0();
+    int j = 0;
+    int i = 0;
+    View localView;
+    while (i < m)
+    {
+      localView = f0(i);
+      float f3 = v.e(localView);
+      if (f3 >= f1)
+      {
+        float f2 = f3;
+        if (((LayoutParams)localView.getLayoutParams()).e()) {
+          f2 = f3 * 1.0F / s;
+        }
+        f1 = Math.max(f1, f2);
+      }
+      i += 1;
+    }
+    int n = x;
+    int k = Math.round(f1 * s);
+    i = k;
+    if (v.k() == Integer.MIN_VALUE) {
+      i = Math.min(k, v.n());
+    }
+    m3(i);
+    i = j;
+    if (x == n) {
+      return;
+    }
+    while (i < m)
+    {
+      localView = f0(i);
+      LayoutParams localLayoutParams = (LayoutParams)localView.getLayoutParams();
+      if (!g) {
+        if ((Q2()) && (w == 1))
+        {
+          j = s;
+          k = f.e;
+          localView.offsetLeftAndRight(-(j - 1 - k) * x - -(j - 1 - k) * n);
+        }
+        else
+        {
+          k = f.e;
+          j = x * k;
+          k *= n;
+          if (w == 1) {
+            localView.offsetLeftAndRight(j - k);
+          } else {
+            localView.offsetTopAndBottom(j - k);
+          }
+        }
+      }
+      i += 1;
+    }
+  }
+  
+  private void b3()
+  {
+    if ((w != 1) && (Q2()))
+    {
+      A = (z ^ true);
+      return;
+    }
+    A = z;
+  }
+  
+  private void d3(int paramInt)
+  {
+    n localN = y;
+    e = paramInt;
+    boolean bool2 = A;
+    int i = 1;
+    boolean bool1;
+    if (paramInt == -1) {
+      bool1 = true;
+    } else {
+      bool1 = false;
+    }
+    if (bool2 == bool1) {
+      paramInt = i;
+    } else {
+      paramInt = -1;
+    }
+    d = paramInt;
+  }
+  
+  private void h3(int paramInt1, int paramInt2)
+  {
+    int i = 0;
+    while (i < s)
+    {
+      if (!t[i].a.isEmpty()) {
+        n3(t[i], paramInt1, paramInt2);
+      }
+      i += 1;
+    }
+  }
+  
+  private boolean i3(RecyclerView.y paramY, b paramB)
+  {
+    int i;
+    if (G) {
+      i = D2(paramY.b());
+    } else {
+      i = z2(paramY.b());
+    }
+    a = i;
+    b = Integer.MIN_VALUE;
+    return true;
+  }
+  
+  private void j2(View paramView)
+  {
+    int i = s - 1;
+    while (i >= 0)
+    {
+      t[i].a(paramView);
+      i -= 1;
+    }
+  }
+  
+  private void k2(b paramB)
+  {
+    SavedState localSavedState = I;
+    int i = d;
+    if (i > 0)
+    {
+      if (i == s)
+      {
+        i = 0;
+        while (i < s)
+        {
+          t[i].e();
+          localSavedState = I;
+          int k = e[i];
+          int j = k;
+          if (k != Integer.MIN_VALUE)
+          {
+            if (j) {
+              j = u.i();
+            } else {
+              j = u.m();
+            }
+            j = k + j;
+          }
+          t[i].v(j);
+          i += 1;
+        }
+      }
+      localSavedState.b();
+      localSavedState = I;
+      b = c;
+    }
+    localSavedState = I;
+    H = k;
+    f3(i);
+    b3();
+    localSavedState = I;
+    i = b;
+    if (i != -1)
+    {
+      C = i;
+      c = j;
+    }
+    else
+    {
+      c = A;
+    }
+    if (f > 1)
+    {
+      paramB = E;
+      a = g;
+      b = h;
+    }
+  }
+  
+  private void l3(int paramInt, RecyclerView.y paramY)
+  {
+    n localN = y;
+    boolean bool2 = false;
+    b = 0;
+    c = paramInt;
+    if (R0())
+    {
+      i = paramY.c();
+      if (i != -1)
+      {
+        boolean bool3 = A;
+        if (i < paramInt) {
+          bool1 = true;
+        } else {
+          bool1 = false;
+        }
+        if (bool3 == bool1)
+        {
+          paramInt = u.n();
+          i = 0;
+          break label95;
+        }
+        i = u.n();
+        paramInt = 0;
+        break label95;
+      }
+    }
+    paramInt = 0;
+    int i = paramInt;
+    label95:
+    if (j0())
+    {
+      y.f = (u.m() - i);
+      y.g = (u.i() + paramInt);
+    }
+    else
+    {
+      y.g = (u.h() + paramInt);
+      y.f = (-i);
+    }
+    paramY = y;
+    h = false;
+    a = true;
+    boolean bool1 = bool2;
+    if (u.k() == 0)
+    {
+      bool1 = bool2;
+      if (u.h() == 0) {
+        bool1 = true;
+      }
+    }
+    i = bool1;
+  }
+  
+  private void n2(View paramView, LayoutParams paramLayoutParams, n paramN)
+  {
+    if (e == 1)
+    {
+      if (g)
+      {
+        j2(paramView);
+        return;
+      }
+      f.a(paramView);
+      return;
+    }
+    if (g)
+    {
+      W2(paramView);
+      return;
+    }
+    f.u(paramView);
+  }
+  
+  private void n3(c paramC, int paramInt1, int paramInt2)
+  {
+    int i = paramC.j();
+    if (paramInt1 == -1)
+    {
+      if (paramC.o() + i <= paramInt2) {
+        B.set(e, false);
+      }
+    }
+    else if (paramC.k() - i >= paramInt2) {
+      B.set(e, false);
+    }
+  }
+  
+  private int o2(int paramInt)
+  {
+    int j = g0();
+    int i = -1;
+    if (j == 0)
+    {
+      paramInt = i;
+      if (A) {
+        paramInt = 1;
+      }
+      return paramInt;
+    }
+    int k;
+    if (paramInt < G2()) {
+      k = 1;
+    } else {
+      k = 0;
+    }
+    if (k != A) {
+      return -1;
+    }
+    return 1;
+  }
+  
+  private int o3(int paramInt1, int paramInt2, int paramInt3)
+  {
+    if ((paramInt2 == 0) && (paramInt3 == 0)) {
+      return paramInt1;
+    }
+    int i = View.MeasureSpec.getMode(paramInt1);
+    if ((i != Integer.MIN_VALUE) && (i != 1073741824)) {
+      return paramInt1;
+    }
+    return View.MeasureSpec.makeMeasureSpec(Math.max(0, View.MeasureSpec.getSize(paramInt1) - paramInt2 - paramInt3), i);
+  }
+  
+  private boolean q2(c paramC)
+  {
+    if (A)
+    {
+      if (paramC.k() < u.i())
+      {
+        ArrayList localArrayList = a;
+        return ngetsize1g ^ true;
+      }
+    }
+    else if (paramC.o() > u.m()) {
+      return na.get(0)).g ^ true;
+    }
+    return false;
+  }
+  
+  private int r2(RecyclerView.y paramY)
+  {
+    if (g0() == 0) {
+      return 0;
+    }
+    return v.a(paramY, u, B2(N ^ true), A2(N ^ true), this, N);
+  }
+  
+  private int s2(RecyclerView.y paramY)
+  {
+    if (g0() == 0) {
+      return 0;
+    }
+    return v.b(paramY, u, B2(N ^ true), A2(N ^ true), this, N, A);
+  }
+  
+  private int t2(RecyclerView.y paramY)
+  {
+    if (g0() == 0) {
+      return 0;
+    }
+    return v.c(paramY, u, B2(N ^ true), A2(N ^ true), this, N);
+  }
+  
+  private int u2(int paramInt)
+  {
+    if (paramInt != 1)
+    {
+      if (paramInt != 2)
+      {
+        if (paramInt != 17)
+        {
+          if (paramInt != 33)
+          {
+            if (paramInt != 66)
+            {
+              if (paramInt != 130) {
+                return Integer.MIN_VALUE;
+              }
+              if (w == 1) {
+                return 1;
+              }
+              return Integer.MIN_VALUE;
+            }
+            if (w == 0) {
+              return 1;
+            }
+            return Integer.MIN_VALUE;
+          }
+          if (w == 1) {
+            return -1;
+          }
+          return Integer.MIN_VALUE;
+        }
+        if (w == 0) {
+          return -1;
+        }
+        return Integer.MIN_VALUE;
+      }
+      if (w == 1) {
+        return 1;
+      }
+      if (Q2()) {
+        return -1;
+      }
+      return 1;
+    }
+    if (w == 1) {
+      return -1;
+    }
+    if (Q2()) {
+      return 1;
+    }
+    return -1;
+  }
+  
+  private StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem v2(int paramInt)
+  {
+    StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem localFullSpanItem = new StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem();
+    d = new int[s];
+    int i = 0;
+    while (i < s)
+    {
+      d[i] = (paramInt - t[i].l(paramInt));
+      i += 1;
+    }
+    return localFullSpanItem;
+  }
+  
+  private StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem w2(int paramInt)
+  {
+    StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem localFullSpanItem = new StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem();
+    d = new int[s];
+    int i = 0;
+    while (i < s)
+    {
+      d[i] = (t[i].p(paramInt) - paramInt);
+      i += 1;
+    }
+    return localFullSpanItem;
+  }
+  
+  private void x2()
+  {
+    u = s.b(this, w);
+    v = s.b(this, 1 - w);
+  }
+  
+  private int y2(RecyclerView.u paramU, n paramN, RecyclerView.y paramY)
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.useAs(TypeTransformer.java:868)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:668)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  private int z2(int paramInt)
+  {
+    int j = g0();
+    int i = 0;
+    while (i < j)
+    {
+      int k = A0(f0(i));
+      if ((k >= 0) && (k < paramInt)) {
+        return k;
+      }
+      i += 1;
+    }
+    return 0;
+  }
+  
+  View A2(boolean paramBoolean)
+  {
+    int j = u.m();
+    int k = u.i();
+    int i = g0() - 1;
+    Object localObject2;
+    for (Object localObject1 = null; i >= 0; localObject1 = localObject2)
+    {
+      View localView = f0(i);
+      int m = u.g(localView);
+      int n = u.d(localView);
+      localObject2 = localObject1;
+      if (n > j) {
+        if (m >= k)
+        {
+          localObject2 = localObject1;
+        }
+        else if (n > k)
+        {
+          if (!paramBoolean) {
+            return localView;
+          }
+          localObject2 = localObject1;
+          if (localObject1 == null) {
+            localObject2 = localView;
+          }
+        }
+        else
+        {
+          return localView;
+        }
+      }
+      i -= 1;
+    }
+    return localObject1;
+  }
+  
+  View B2(boolean paramBoolean)
+  {
+    int j = u.m();
+    int k = u.i();
+    int m = g0();
+    Object localObject1 = null;
+    int i = 0;
+    while (i < m)
+    {
+      View localView = f0(i);
+      int n = u.g(localView);
+      Object localObject2 = localObject1;
+      if (u.d(localView) > j) {
+        if (n >= k)
+        {
+          localObject2 = localObject1;
+        }
+        else if (n < j)
+        {
+          if (!paramBoolean) {
+            return localView;
+          }
+          localObject2 = localObject1;
+          if (localObject1 == null) {
+            localObject2 = localView;
+          }
+        }
+        else
+        {
+          return localView;
+        }
+      }
+      i += 1;
+      localObject1 = localObject2;
+    }
+    return localObject1;
+  }
+  
+  int C2()
+  {
+    View localView;
+    if (A) {
+      localView = A2(true);
+    } else {
+      localView = B2(true);
+    }
+    if (localView == null) {
+      return -1;
+    }
+    return A0(localView);
+  }
+  
+  public void D(String paramString)
+  {
+    if (I == null) {
+      super.D(paramString);
+    }
+  }
+  
+  int G2()
+  {
+    if (g0() == 0) {
+      return 0;
+    }
+    return A0(f0(0));
+  }
+  
+  public boolean H()
+  {
+    return w == 0;
+  }
+  
+  int H2()
+  {
+    int i = g0();
+    if (i == 0) {
+      return 0;
+    }
+    return A0(f0(i - 1));
+  }
+  
+  public boolean I()
+  {
+    return w == 1;
+  }
+  
+  public boolean J(RecyclerView.LayoutParams paramLayoutParams)
+  {
+    return paramLayoutParams instanceof LayoutParams;
+  }
+  
+  public void L(int paramInt1, int paramInt2, RecyclerView.y paramY, RecyclerView.o.c paramC)
+  {
+    if (w != 0) {
+      paramInt1 = paramInt2;
+    }
+    if (g0() != 0)
+    {
+      if (paramInt1 == 0) {
+        return;
+      }
+      V2(paramInt1, paramY);
+      Object localObject = O;
+      if ((localObject == null) || (localObject.length < s)) {
+        O = new int[s];
+      }
+      int k = 0;
+      paramInt2 = 0;
+      int i;
+      for (paramInt1 = paramInt2; paramInt2 < s; paramInt1 = i)
+      {
+        localObject = y;
+        if (d == -1)
+        {
+          i = f;
+          j = t[paramInt2].p(i);
+        }
+        else
+        {
+          i = t[paramInt2].l(g);
+          j = y.g;
+        }
+        int j = i - j;
+        i = paramInt1;
+        if (j >= 0)
+        {
+          O[paramInt1] = j;
+          i = paramInt1 + 1;
+        }
+        paramInt2 += 1;
+      }
+      Arrays.sort(O, 0, paramInt1);
+      paramInt2 = k;
+      while ((paramInt2 < paramInt1) && (y.a(paramY)))
+      {
+        paramC.a(y.c, O[paramInt2]);
+        localObject = y;
+        c += d;
+        paramInt2 += 1;
+      }
+    }
+  }
+  
+  public boolean L0()
+  {
+    return F != 0;
+  }
+  
+  public int N(RecyclerView.y paramY)
+  {
+    return r2(paramY);
+  }
+  
+  public int O(RecyclerView.y paramY)
+  {
+    return s2(paramY);
+  }
+  
+  View O2()
+  {
+    int i = g0() - 1;
+    BitSet localBitSet = new BitSet(s);
+    localBitSet.set(0, s, true);
+    int j = w;
+    int n = -1;
+    if ((j == 1) && (Q2())) {
+      j = 1;
+    } else {
+      j = -1;
+    }
+    int k;
+    if (A)
+    {
+      k = -1;
+    }
+    else
+    {
+      k = i + 1;
+      i = 0;
+    }
+    int m = i;
+    if (i < k)
+    {
+      n = 1;
+      m = i;
+    }
+    while (m != k)
+    {
+      View localView = f0(m);
+      LayoutParams localLayoutParams = (LayoutParams)localView.getLayoutParams();
+      if (localBitSet.get(f.e))
+      {
+        if (q2(f)) {
+          return localView;
+        }
+        localBitSet.clear(f.e);
+      }
+      if (!g)
+      {
+        i = m + n;
+        if (i != k)
+        {
+          Object localObject = f0(i);
+          int i1;
+          if (A)
+          {
+            i = u.d(localView);
+            i1 = u.d((View)localObject);
+            if (i < i1) {
+              return localView;
+            }
+            if (i != i1) {
+              break label274;
+            }
+          }
+          else
+          {
+            i = u.g(localView);
+            i1 = u.g((View)localObject);
+            if (i > i1) {
+              return localView;
+            }
+            if (i != i1) {
+              break label274;
+            }
+          }
+          i = 1;
+          break label276;
+          label274:
+          i = 0;
+          label276:
+          if (i != 0)
+          {
+            localObject = (LayoutParams)((View)localObject).getLayoutParams();
+            if (f.e - f.e < 0) {
+              i = 1;
+            } else {
+              i = 0;
+            }
+            if (j < 0) {
+              i1 = 1;
+            } else {
+              i1 = 0;
+            }
+            if (i != i1) {
+              return localView;
+            }
+          }
+        }
+      }
+      m += n;
+    }
+    return null;
+  }
+  
+  public int P(RecyclerView.y paramY)
+  {
+    return t2(paramY);
+  }
+  
+  public void P2()
+  {
+    E.b();
+    O1();
+  }
+  
+  public int Q(RecyclerView.y paramY)
+  {
+    return r2(paramY);
+  }
+  
+  boolean Q2()
+  {
+    return w0() == 1;
+  }
+  
+  public int R(RecyclerView.y paramY)
+  {
+    return s2(paramY);
+  }
+  
+  public int R1(int paramInt, RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    return c3(paramInt, paramU, paramY);
+  }
+  
+  public int S(RecyclerView.y paramY)
+  {
+    return t2(paramY);
+  }
+  
+  public void S1(int paramInt)
+  {
+    SavedState localSavedState = I;
+    if ((localSavedState != null) && (b != paramInt)) {
+      localSavedState.a();
+    }
+    C = paramInt;
+    D = Integer.MIN_VALUE;
+    O1();
+  }
+  
+  public int T1(int paramInt, RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    return c3(paramInt, paramU, paramY);
+  }
+  
+  void V2(int paramInt, RecyclerView.y paramY)
+  {
+    int i;
+    int j;
+    if (paramInt > 0)
+    {
+      i = H2();
+      j = 1;
+    }
+    else
+    {
+      i = G2();
+      j = -1;
+    }
+    y.a = true;
+    l3(i, paramY);
+    d3(j);
+    paramY = y;
+    c = (i + d);
+    b = Math.abs(paramInt);
+  }
+  
+  public void W0(int paramInt)
+  {
+    super.W0(paramInt);
+    int i = 0;
+    while (i < s)
+    {
+      t[i].r(paramInt);
+      i += 1;
+    }
+  }
+  
+  public void X0(int paramInt)
+  {
+    super.X0(paramInt);
+    int i = 0;
+    while (i < s)
+    {
+      t[i].r(paramInt);
+      i += 1;
+    }
+  }
+  
+  public void Y0(RecyclerView.Adapter paramAdapter1, RecyclerView.Adapter paramAdapter2)
+  {
+    E.b();
+    int i = 0;
+    while (i < s)
+    {
+      t[i].e();
+      i += 1;
+    }
+  }
+  
+  public void Z1(Rect paramRect, int paramInt1, int paramInt2)
+  {
+    int i = v() + p();
+    int j = u() + a();
+    if (w == 1)
+    {
+      paramInt2 = RecyclerView.o.K(paramInt2, paramRect.height() + j, y0());
+      i = RecyclerView.o.K(paramInt1, x * s + i, z0());
+      paramInt1 = paramInt2;
+      paramInt2 = i;
+    }
+    else
+    {
+      paramInt1 = RecyclerView.o.K(paramInt1, paramRect.width() + i, z0());
+      i = RecyclerView.o.K(paramInt2, x * s + j, y0());
+      paramInt2 = paramInt1;
+      paramInt1 = i;
+    }
+    Y1(paramInt2, paramInt1);
+  }
+  
+  public RecyclerView.LayoutParams a0()
+  {
+    if (w == 0) {
+      return new LayoutParams(-2, -1);
+    }
+    return new LayoutParams(-1, -2);
+  }
+  
+  public RecyclerView.LayoutParams b0(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    return new LayoutParams(paramContext, paramAttributeSet);
+  }
+  
+  public RecyclerView.LayoutParams c0(ViewGroup.LayoutParams paramLayoutParams)
+  {
+    if ((paramLayoutParams instanceof ViewGroup.MarginLayoutParams)) {
+      return new LayoutParams((ViewGroup.MarginLayoutParams)paramLayoutParams);
+    }
+    return new LayoutParams(paramLayoutParams);
+  }
+  
+  public void c1(RecyclerView paramRecyclerView, RecyclerView.u paramU)
+  {
+    super.c1(paramRecyclerView, paramU);
+    J1(P);
+    int i = 0;
+    while (i < s)
+    {
+      t[i].e();
+      i += 1;
+    }
+    paramRecyclerView.requestLayout();
+  }
+  
+  int c3(int paramInt, RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    if (g0() != 0)
+    {
+      if (paramInt == 0) {
+        return 0;
+      }
+      V2(paramInt, paramY);
+      int i = y2(paramU, y, paramY);
+      if (y.b >= i) {
+        if (paramInt < 0) {
+          paramInt = -i;
+        } else {
+          paramInt = i;
+        }
+      }
+      u.r(-paramInt);
+      G = A;
+      paramY = y;
+      b = 0;
+      X2(paramU, paramY);
+      return paramInt;
+    }
+    return 0;
+  }
+  
+  public PointF d(int paramInt)
+  {
+    paramInt = o2(paramInt);
+    PointF localPointF = new PointF();
+    if (paramInt == 0) {
+      return null;
+    }
+    if (w == 0)
+    {
+      x = paramInt;
+      y = 0.0F;
+      return localPointF;
+    }
+    x = 0.0F;
+    y = paramInt;
+    return localPointF;
+  }
+  
+  public View d1(View paramView, int paramInt, RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    if (g0() == 0) {
+      return null;
+    }
+    paramView = Y(paramView);
+    if (paramView == null) {
+      return null;
+    }
+    b3();
+    int k = u2(paramInt);
+    if (k == Integer.MIN_VALUE) {
+      return null;
+    }
+    Object localObject = (LayoutParams)paramView.getLayoutParams();
+    boolean bool1 = g;
+    localObject = f;
+    if (k == 1) {
+      paramInt = H2();
+    } else {
+      paramInt = G2();
+    }
+    l3(paramInt, paramY);
+    d3(k);
+    n localN = y;
+    c = (d + paramInt);
+    b = ((int)(u.n() * 0.33333334F));
+    localN = y;
+    h = true;
+    int j = 0;
+    a = false;
+    y2(paramU, localN, paramY);
+    G = A;
+    if (!bool1)
+    {
+      paramU = ((c)localObject).m(paramInt, k);
+      if ((paramU != null) && (paramU != paramView)) {
+        return paramU;
+      }
+    }
+    if (U2(k))
+    {
+      i = s - 1;
+      while (i >= 0)
+      {
+        paramU = t[i].m(paramInt, k);
+        if ((paramU != null) && (paramU != paramView)) {
+          return paramU;
+        }
+        i -= 1;
+      }
+    }
+    int i = 0;
+    while (i < s)
+    {
+      paramU = t[i].m(paramInt, k);
+      if ((paramU != null) && (paramU != paramView)) {
+        return paramU;
+      }
+      i += 1;
+    }
+    boolean bool2 = z;
+    if (k == -1) {
+      paramInt = 1;
+    } else {
+      paramInt = 0;
+    }
+    if ((bool2 ^ true) == paramInt) {
+      paramInt = 1;
+    } else {
+      paramInt = 0;
+    }
+    if (!bool1)
+    {
+      if (paramInt != 0) {
+        i = ((c)localObject).f();
+      } else {
+        i = ((c)localObject).g();
+      }
+      paramU = Z(i);
+      if ((paramU != null) && (paramU != paramView)) {
+        return paramU;
+      }
+    }
+    i = j;
+    if (U2(k))
+    {
+      i = s - 1;
+      while (i >= 0)
+      {
+        if (i != e)
+        {
+          if (paramInt != 0) {
+            j = t[i].f();
+          } else {
+            j = t[i].g();
+          }
+          paramU = Z(j);
+          if ((paramU != null) && (paramU != paramView)) {
+            return paramU;
+          }
+        }
+        i -= 1;
+      }
+    }
+    while (i < s)
+    {
+      if (paramInt != 0) {
+        j = t[i].f();
+      } else {
+        j = t[i].g();
+      }
+      paramU = Z(j);
+      if ((paramU != null) && (paramU != paramView)) {
+        return paramU;
+      }
+      i += 1;
+    }
+    return null;
+  }
+  
+  public void e1(AccessibilityEvent paramAccessibilityEvent)
+  {
+    super.e1(paramAccessibilityEvent);
+    if (g0() > 0)
+    {
+      View localView1 = B2(false);
+      View localView2 = A2(false);
+      if (localView1 != null)
+      {
+        if (localView2 == null) {
+          return;
+        }
+        int i = A0(localView1);
+        int j = A0(localView2);
+        if (i < j)
+        {
+          paramAccessibilityEvent.setFromIndex(i);
+          paramAccessibilityEvent.setToIndex(j);
+          return;
+        }
+        paramAccessibilityEvent.setFromIndex(j);
+        paramAccessibilityEvent.setToIndex(i);
+      }
+    }
+  }
+  
+  public void e3(int paramInt)
+  {
+    if ((paramInt != 0) && (paramInt != 1)) {
+      throw new IllegalArgumentException("invalid orientation.");
+    }
+    D(null);
+    if (paramInt == w) {
+      return;
+    }
+    w = paramInt;
+    s localS = u;
+    u = v;
+    v = localS;
+    O1();
+  }
+  
+  public void f2(RecyclerView paramRecyclerView, RecyclerView.y paramY, int paramInt)
+  {
+    paramRecyclerView = new o(paramRecyclerView.getContext());
+    paramRecyclerView.p(paramInt);
+    g2(paramRecyclerView);
+  }
+  
+  public void f3(boolean paramBoolean)
+  {
+    D(null);
+    SavedState localSavedState = I;
+    if ((localSavedState != null) && (i != paramBoolean)) {
+      i = paramBoolean;
+    }
+    z = paramBoolean;
+    O1();
+  }
+  
+  public void g3(int paramInt)
+  {
+    D(null);
+    if (paramInt != s)
+    {
+      P2();
+      s = paramInt;
+      B = new BitSet(s);
+      t = new c[s];
+      paramInt = 0;
+      while (paramInt < s)
+      {
+        t[paramInt] = new c(paramInt);
+        paramInt += 1;
+      }
+      O1();
+    }
+  }
+  
+  public boolean i2()
+  {
+    return I == null;
+  }
+  
+  boolean j3(RecyclerView.y paramY, b paramB)
+  {
+    boolean bool2 = paramY.e();
+    boolean bool1 = false;
+    if (!bool2)
+    {
+      int i = C;
+      if (i == -1) {
+        return false;
+      }
+      if ((i >= 0) && (i < paramY.b()))
+      {
+        paramY = I;
+        if ((paramY != null) && (b != -1) && (d >= 1))
+        {
+          b = Integer.MIN_VALUE;
+          a = C;
+          return true;
+        }
+        paramY = Z(C);
+        if (paramY != null)
+        {
+          if (A) {
+            i = H2();
+          } else {
+            i = G2();
+          }
+          a = i;
+          if (D != Integer.MIN_VALUE)
+          {
+            if (c)
+            {
+              b = (u.i() - D - u.d(paramY));
+              return true;
+            }
+            b = (u.m() + D - u.g(paramY));
+            return true;
+          }
+          if (u.e(paramY) > u.n())
+          {
+            if (c) {
+              i = u.i();
+            } else {
+              i = u.m();
+            }
+            b = i;
+            return true;
+          }
+          i = u.g(paramY) - u.m();
+          if (i < 0)
+          {
+            b = (-i);
+            return true;
+          }
+          i = u.i() - u.d(paramY);
+          if (i < 0)
+          {
+            b = i;
+            return true;
+          }
+          b = Integer.MIN_VALUE;
+          return true;
+        }
+        i = C;
+        a = i;
+        int j = D;
+        if (j == Integer.MIN_VALUE)
+        {
+          if (o2(i) == 1) {
+            bool1 = true;
+          }
+          c = bool1;
+          paramB.a();
+        }
+        else
+        {
+          paramB.b(j);
+        }
+        d = true;
+        return true;
+      }
+      C = -1;
+      D = Integer.MIN_VALUE;
+    }
+    return false;
+  }
+  
+  void k3(RecyclerView.y paramY, b paramB)
+  {
+    if (j3(paramY, paramB)) {
+      return;
+    }
+    if (i3(paramY, paramB)) {
+      return;
+    }
+    paramB.a();
+    a = 0;
+  }
+  
+  public void l1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2)
+  {
+    N2(paramInt1, paramInt2, 1);
+  }
+  
+  boolean l2()
+  {
+    int j = t[0].l(Integer.MIN_VALUE);
+    int i = 1;
+    while (i < s)
+    {
+      if (t[i].l(Integer.MIN_VALUE) != j) {
+        return false;
+      }
+      i += 1;
+    }
+    return true;
+  }
+  
+  public void m1(RecyclerView paramRecyclerView)
+  {
+    E.b();
+    O1();
+  }
+  
+  boolean m2()
+  {
+    int j = t[0].p(Integer.MIN_VALUE);
+    int i = 1;
+    while (i < s)
+    {
+      if (t[i].p(Integer.MIN_VALUE) != j) {
+        return false;
+      }
+      i += 1;
+    }
+    return true;
+  }
+  
+  void m3(int paramInt)
+  {
+    x = (paramInt / s);
+    J = View.MeasureSpec.makeMeasureSpec(paramInt, v.k());
+  }
+  
+  public void n1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2, int paramInt3)
+  {
+    N2(paramInt1, paramInt2, 8);
+  }
+  
+  public void o1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2)
+  {
+    N2(paramInt1, paramInt2, 2);
+  }
+  
+  boolean p2()
+  {
+    if ((g0() != 0) && (F != 0))
+    {
+      if (!K0()) {
+        return false;
+      }
+      int i;
+      int j;
+      if (A)
+      {
+        i = H2();
+        j = G2();
+      }
+      else
+      {
+        i = G2();
+        j = H2();
+      }
+      if ((i == 0) && (O2() != null))
+      {
+        E.b();
+        P1();
+        O1();
+        return true;
+      }
+      if (!M) {
+        return false;
+      }
+      int k;
+      if (A) {
+        k = -1;
+      } else {
+        k = 1;
+      }
+      Object localObject = E;
+      j += 1;
+      localObject = ((LazySpanLookup)localObject).e(i, j, k, true);
+      if (localObject == null)
+      {
+        M = false;
+        E.d(j);
+        return false;
+      }
+      StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem localFullSpanItem = E.e(i, b, k * -1, true);
+      if (localFullSpanItem == null) {
+        E.d(b);
+      } else {
+        E.d(b + 1);
+      }
+      P1();
+      O1();
+      return true;
+    }
+    return false;
+  }
+  
+  public void q1(RecyclerView paramRecyclerView, int paramInt1, int paramInt2, Object paramObject)
+  {
+    N2(paramInt1, paramInt2, 4);
+  }
+  
+  public void r1(RecyclerView.u paramU, RecyclerView.y paramY)
+  {
+    T2(paramU, paramY, true);
+  }
+  
+  public void s1(RecyclerView.y paramY)
+  {
+    super.s1(paramY);
+    C = -1;
+    D = Integer.MIN_VALUE;
+    I = null;
+    L.c();
+  }
+  
+  public void w1(Parcelable paramParcelable)
+  {
+    if ((paramParcelable instanceof SavedState))
+    {
+      paramParcelable = (SavedState)paramParcelable;
+      I = paramParcelable;
+      if (C != -1)
+      {
+        paramParcelable.a();
+        I.b();
+      }
+      O1();
+    }
+  }
+  
+  public Parcelable x1()
+  {
+    if (I != null) {
+      return new SavedState(I);
+    }
+    SavedState localSavedState = new SavedState();
+    i = z;
+    j = G;
+    k = H;
+    LazySpanLookup localLazySpanLookup = E;
+    int j = 0;
+    if (localLazySpanLookup != null)
+    {
+      int[] arrayOfInt = a;
+      if (arrayOfInt != null)
+      {
+        g = arrayOfInt;
+        f = arrayOfInt.length;
+        h = b;
+        break label114;
+      }
+    }
+    f = 0;
+    label114:
+    if (g0() > 0)
+    {
+      if (G) {
+        i = H2();
+      } else {
+        i = G2();
+      }
+      b = i;
+      c = C2();
+      int i = s;
+      d = i;
+      e = new int[i];
+      while (j < s)
+      {
+        int k;
+        if (G)
+        {
+          k = t[j].l(Integer.MIN_VALUE);
+          i = k;
+          if (k == Integer.MIN_VALUE) {
+            break label253;
+          }
+          i = u.i();
+        }
+        else
+        {
+          k = t[j].p(Integer.MIN_VALUE);
+          i = k;
+          if (k == Integer.MIN_VALUE) {
+            break label253;
+          }
+          i = u.m();
+        }
+        i = k - i;
+        label253:
+        e[j] = i;
+        j += 1;
+      }
+    }
+    b = -1;
+    c = -1;
+    d = 0;
+    return localSavedState;
+  }
+  
+  public void y1(int paramInt)
+  {
+    if (paramInt == 0) {
+      p2();
+    }
+  }
+  
+  public static class LayoutParams
+    extends RecyclerView.LayoutParams
+  {
+    StaggeredGridLayoutManager.c f;
+    boolean g;
+    
+    public LayoutParams(int paramInt1, int paramInt2)
+    {
+      super(paramInt2);
+    }
+    
+    public LayoutParams(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      super(paramAttributeSet);
+    }
+    
+    public LayoutParams(ViewGroup.LayoutParams paramLayoutParams)
+    {
+      super();
+    }
+    
+    public LayoutParams(ViewGroup.MarginLayoutParams paramMarginLayoutParams)
+    {
+      super();
+    }
+    
+    public boolean e()
+    {
+      return g;
+    }
+  }
+  
+  static class LazySpanLookup
+  {
+    int[] a;
+    List<FullSpanItem> b;
+    
+    LazySpanLookup() {}
+    
+    private int i(int paramInt)
+    {
+      if (b == null) {
+        return -1;
+      }
+      FullSpanItem localFullSpanItem = f(paramInt);
+      if (localFullSpanItem != null) {
+        b.remove(localFullSpanItem);
+      }
+      int j = b.size();
+      int i = 0;
+      while (i < j)
+      {
+        if (b.get(i)).b >= paramInt) {
+          break label82;
+        }
+        i += 1;
+      }
+      i = -1;
+      label82:
+      if (i != -1)
+      {
+        localFullSpanItem = (FullSpanItem)b.get(i);
+        b.remove(i);
+        return b;
+      }
+      return -1;
+    }
+    
+    private void l(int paramInt1, int paramInt2)
+    {
+      Object localObject = b;
+      if (localObject == null) {
+        return;
+      }
+      int i = ((List)localObject).size() - 1;
+      while (i >= 0)
+      {
+        localObject = (FullSpanItem)b.get(i);
+        int j = b;
+        if (j >= paramInt1) {
+          b = (j + paramInt2);
+        }
+        i -= 1;
+      }
+    }
+    
+    private void m(int paramInt1, int paramInt2)
+    {
+      Object localObject = b;
+      if (localObject == null) {
+        return;
+      }
+      int i = ((List)localObject).size() - 1;
+      while (i >= 0)
+      {
+        localObject = (FullSpanItem)b.get(i);
+        int j = b;
+        if (j >= paramInt1) {
+          if (j < paramInt1 + paramInt2) {
+            b.remove(i);
+          } else {
+            b = (j - paramInt2);
+          }
+        }
+        i -= 1;
+      }
+    }
+    
+    public void a(FullSpanItem paramFullSpanItem)
+    {
+      if (b == null) {
+        b = new ArrayList();
+      }
+      int j = b.size();
+      int i = 0;
+      while (i < j)
+      {
+        FullSpanItem localFullSpanItem = (FullSpanItem)b.get(i);
+        if (b == b) {
+          b.remove(i);
+        }
+        if (b >= b)
+        {
+          b.add(i, paramFullSpanItem);
+          return;
+        }
+        i += 1;
+      }
+      b.add(paramFullSpanItem);
+    }
+    
+    void b()
+    {
+      int[] arrayOfInt = a;
+      if (arrayOfInt != null) {
+        Arrays.fill(arrayOfInt, -1);
+      }
+      b = null;
+    }
+    
+    void c(int paramInt)
+    {
+      int[] arrayOfInt1 = a;
+      if (arrayOfInt1 == null)
+      {
+        arrayOfInt1 = new int[Math.max(paramInt, 10) + 1];
+        a = arrayOfInt1;
+        Arrays.fill(arrayOfInt1, -1);
+        return;
+      }
+      if (paramInt >= arrayOfInt1.length)
+      {
+        int[] arrayOfInt2 = new int[o(paramInt)];
+        a = arrayOfInt2;
+        System.arraycopy(arrayOfInt1, 0, arrayOfInt2, 0, arrayOfInt1.length);
+        arrayOfInt2 = a;
+        Arrays.fill(arrayOfInt2, arrayOfInt1.length, arrayOfInt2.length, -1);
+      }
+    }
+    
+    int d(int paramInt)
+    {
+      List localList = b;
+      if (localList != null)
+      {
+        int i = localList.size() - 1;
+        while (i >= 0)
+        {
+          if (b.get(i)).b >= paramInt) {
+            b.remove(i);
+          }
+          i -= 1;
+        }
+      }
+      return h(paramInt);
+    }
+    
+    public FullSpanItem e(int paramInt1, int paramInt2, int paramInt3, boolean paramBoolean)
+    {
+      Object localObject = b;
+      if (localObject == null) {
+        return null;
+      }
+      int j = ((List)localObject).size();
+      int i = 0;
+      while (i < j)
+      {
+        localObject = (FullSpanItem)b.get(i);
+        int k = b;
+        if (k >= paramInt2) {
+          return null;
+        }
+        if ((k >= paramInt1) && ((paramInt3 == 0) || (c == paramInt3) || ((paramBoolean) && (e)))) {
+          return localObject;
+        }
+        i += 1;
+      }
+      return null;
+    }
+    
+    public FullSpanItem f(int paramInt)
+    {
+      Object localObject = b;
+      if (localObject == null) {
+        return null;
+      }
+      int i = ((List)localObject).size() - 1;
+      while (i >= 0)
+      {
+        localObject = (FullSpanItem)b.get(i);
+        if (b == paramInt) {
+          return localObject;
+        }
+        i -= 1;
+      }
+      return null;
+    }
+    
+    int g(int paramInt)
+    {
+      int[] arrayOfInt = a;
+      if ((arrayOfInt != null) && (paramInt < arrayOfInt.length)) {
+        return arrayOfInt[paramInt];
+      }
+      return -1;
+    }
+    
+    int h(int paramInt)
+    {
+      int[] arrayOfInt = a;
+      if (arrayOfInt == null) {
+        return -1;
+      }
+      if (paramInt >= arrayOfInt.length) {
+        return -1;
+      }
+      int i = i(paramInt);
+      if (i == -1)
+      {
+        arrayOfInt = a;
+        Arrays.fill(arrayOfInt, paramInt, arrayOfInt.length, -1);
+        return a.length;
+      }
+      i = Math.min(i + 1, a.length);
+      Arrays.fill(a, paramInt, i, -1);
+      return i;
+    }
+    
+    void j(int paramInt1, int paramInt2)
+    {
+      int[] arrayOfInt = a;
+      if (arrayOfInt != null)
+      {
+        if (paramInt1 >= arrayOfInt.length) {
+          return;
+        }
+        int i = paramInt1 + paramInt2;
+        c(i);
+        arrayOfInt = a;
+        System.arraycopy(arrayOfInt, paramInt1, arrayOfInt, i, arrayOfInt.length - paramInt1 - paramInt2);
+        Arrays.fill(a, paramInt1, i, -1);
+        l(paramInt1, paramInt2);
+      }
+    }
+    
+    void k(int paramInt1, int paramInt2)
+    {
+      int[] arrayOfInt = a;
+      if (arrayOfInt != null)
+      {
+        if (paramInt1 >= arrayOfInt.length) {
+          return;
+        }
+        int i = paramInt1 + paramInt2;
+        c(i);
+        arrayOfInt = a;
+        System.arraycopy(arrayOfInt, i, arrayOfInt, paramInt1, arrayOfInt.length - paramInt1 - paramInt2);
+        arrayOfInt = a;
+        Arrays.fill(arrayOfInt, arrayOfInt.length - paramInt2, arrayOfInt.length, -1);
+        m(paramInt1, paramInt2);
+      }
+    }
+    
+    void n(int paramInt, StaggeredGridLayoutManager.c paramC)
+    {
+      c(paramInt);
+      a[paramInt] = e;
+    }
+    
+    int o(int paramInt)
+    {
+      int i = a.length;
+      while (i <= paramInt) {
+        i *= 2;
+      }
+      return i;
+    }
+    
+    static class FullSpanItem
+      implements Parcelable
+    {
+      public static final Parcelable.Creator<FullSpanItem> CREATOR = new a();
+      int b;
+      int c;
+      int[] d;
+      boolean e;
+      
+      FullSpanItem() {}
+      
+      FullSpanItem(Parcel paramParcel)
+      {
+        b = paramParcel.readInt();
+        c = paramParcel.readInt();
+        int i = paramParcel.readInt();
+        boolean bool = true;
+        if (i != 1) {
+          bool = false;
+        }
+        e = bool;
+        i = paramParcel.readInt();
+        if (i > 0)
+        {
+          int[] arrayOfInt = new int[i];
+          d = arrayOfInt;
+          paramParcel.readIntArray(arrayOfInt);
+        }
+      }
+      
+      int a(int paramInt)
+      {
+        int[] arrayOfInt = d;
+        if (arrayOfInt == null) {
+          return 0;
+        }
+        return arrayOfInt[paramInt];
+      }
+      
+      public int describeContents()
+      {
+        return 0;
+      }
+      
+      public String toString()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("FullSpanItem{mPosition=");
+        localStringBuilder.append(b);
+        localStringBuilder.append(", mGapDir=");
+        localStringBuilder.append(c);
+        localStringBuilder.append(", mHasUnwantedGapAfter=");
+        localStringBuilder.append(e);
+        localStringBuilder.append(", mGapPerSpan=");
+        localStringBuilder.append(Arrays.toString(d));
+        localStringBuilder.append('}');
+        return localStringBuilder.toString();
+      }
+      
+      public void writeToParcel(Parcel paramParcel, int paramInt)
+      {
+        throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+      }
+      
+      class a
+        implements Parcelable.Creator<StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem>
+      {
+        a() {}
+        
+        public StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem a(Parcel paramParcel)
+        {
+          return new StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem(paramParcel);
+        }
+        
+        public StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem[] b(int paramInt)
+        {
+          return new StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem[paramInt];
+        }
+      }
+    }
+  }
+  
+  public static class SavedState
+    implements Parcelable
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    int b;
+    int c;
+    int d;
+    int[] e;
+    int f;
+    int[] g;
+    List<StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem> h;
+    boolean i;
+    boolean j;
+    boolean k;
+    
+    public SavedState() {}
+    
+    SavedState(Parcel paramParcel)
+    {
+      b = paramParcel.readInt();
+      c = paramParcel.readInt();
+      int m = paramParcel.readInt();
+      d = m;
+      int[] arrayOfInt;
+      if (m > 0)
+      {
+        arrayOfInt = new int[m];
+        e = arrayOfInt;
+        paramParcel.readIntArray(arrayOfInt);
+      }
+      m = paramParcel.readInt();
+      f = m;
+      if (m > 0)
+      {
+        arrayOfInt = new int[m];
+        g = arrayOfInt;
+        paramParcel.readIntArray(arrayOfInt);
+      }
+      m = paramParcel.readInt();
+      boolean bool2 = false;
+      if (m == 1) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      i = bool1;
+      if (paramParcel.readInt() == 1) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      j = bool1;
+      boolean bool1 = bool2;
+      if (paramParcel.readInt() == 1) {
+        bool1 = true;
+      }
+      k = bool1;
+      h = paramParcel.readArrayList(StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem.class.getClassLoader());
+    }
+    
+    public SavedState(SavedState paramSavedState)
+    {
+      d = d;
+      b = b;
+      c = c;
+      e = e;
+      f = f;
+      g = g;
+      i = i;
+      j = j;
+      k = k;
+      h = h;
+    }
+    
+    void a()
+    {
+      e = null;
+      d = 0;
+      b = -1;
+      c = -1;
+    }
+    
+    void b()
+    {
+      e = null;
+      d = 0;
+      f = 0;
+      g = null;
+      h = null;
+    }
+    
+    public int describeContents()
+    {
+      return 0;
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    class a
+      implements Parcelable.Creator<StaggeredGridLayoutManager.SavedState>
+    {
+      a() {}
+      
+      public StaggeredGridLayoutManager.SavedState a(Parcel paramParcel)
+      {
+        return new StaggeredGridLayoutManager.SavedState(paramParcel);
+      }
+      
+      public StaggeredGridLayoutManager.SavedState[] b(int paramInt)
+      {
+        return new StaggeredGridLayoutManager.SavedState[paramInt];
+      }
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    public void run()
+    {
+      p2();
+    }
+  }
+  
+  class b
+  {
+    int a;
+    int b;
+    boolean c;
+    boolean d;
+    boolean e;
+    int[] f;
+    
+    b()
+    {
+      c();
+    }
+    
+    void a()
+    {
+      int i;
+      if (c) {
+        i = u.i();
+      } else {
+        i = u.m();
+      }
+      b = i;
+    }
+    
+    void b(int paramInt)
+    {
+      if (c)
+      {
+        b = (u.i() - paramInt);
+        return;
+      }
+      b = (u.m() + paramInt);
+    }
+    
+    void c()
+    {
+      a = -1;
+      b = Integer.MIN_VALUE;
+      c = false;
+      d = false;
+      e = false;
+      int[] arrayOfInt = f;
+      if (arrayOfInt != null) {
+        Arrays.fill(arrayOfInt, -1);
+      }
+    }
+    
+    void d(StaggeredGridLayoutManager.c[] paramArrayOfC)
+    {
+      int j = paramArrayOfC.length;
+      int[] arrayOfInt = f;
+      if ((arrayOfInt == null) || (arrayOfInt.length < j)) {
+        f = new int[t.length];
+      }
+      int i = 0;
+      while (i < j)
+      {
+        f[i] = paramArrayOfC[i].p(Integer.MIN_VALUE);
+        i += 1;
+      }
+    }
+  }
+  
+  class c
+  {
+    ArrayList<View> a = new ArrayList();
+    int b = Integer.MIN_VALUE;
+    int c = Integer.MIN_VALUE;
+    int d = 0;
+    final int e;
+    
+    c(int paramInt)
+    {
+      e = paramInt;
+    }
+    
+    void a(View paramView)
+    {
+      StaggeredGridLayoutManager.LayoutParams localLayoutParams = n(paramView);
+      f = this;
+      a.add(paramView);
+      c = Integer.MIN_VALUE;
+      if (a.size() == 1) {
+        b = Integer.MIN_VALUE;
+      }
+      if ((localLayoutParams.c()) || (localLayoutParams.b())) {
+        d += u.e(paramView);
+      }
+    }
+    
+    void b(boolean paramBoolean, int paramInt)
+    {
+      int i;
+      if (paramBoolean) {
+        i = l(Integer.MIN_VALUE);
+      } else {
+        i = p(Integer.MIN_VALUE);
+      }
+      e();
+      if (i == Integer.MIN_VALUE) {
+        return;
+      }
+      if (((paramBoolean) && (i < u.i())) || ((!paramBoolean) && (i > u.m()))) {
+        return;
+      }
+      int j = i;
+      if (paramInt != Integer.MIN_VALUE) {
+        j = i + paramInt;
+      }
+      c = j;
+      b = j;
+    }
+    
+    void c()
+    {
+      Object localObject = a;
+      localObject = (View)((ArrayList)localObject).get(((ArrayList)localObject).size() - 1);
+      StaggeredGridLayoutManager.LayoutParams localLayoutParams = n((View)localObject);
+      c = u.d((View)localObject);
+      if (g)
+      {
+        localObject = E.f(localLayoutParams.a());
+        if ((localObject != null) && (c == 1)) {
+          c += ((StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem)localObject).a(e);
+        }
+      }
+    }
+    
+    void d()
+    {
+      Object localObject = (View)a.get(0);
+      StaggeredGridLayoutManager.LayoutParams localLayoutParams = n((View)localObject);
+      b = u.g((View)localObject);
+      if (g)
+      {
+        localObject = E.f(localLayoutParams.a());
+        if ((localObject != null) && (c == -1)) {
+          b -= ((StaggeredGridLayoutManager.LazySpanLookup.FullSpanItem)localObject).a(e);
+        }
+      }
+    }
+    
+    void e()
+    {
+      a.clear();
+      q();
+      d = 0;
+    }
+    
+    public int f()
+    {
+      if (z) {
+        return i(a.size() - 1, -1, true);
+      }
+      return i(0, a.size(), true);
+    }
+    
+    public int g()
+    {
+      if (z) {
+        return i(0, a.size(), true);
+      }
+      return i(a.size() - 1, -1, true);
+    }
+    
+    int h(int paramInt1, int paramInt2, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
+    {
+      int m = u.m();
+      int n = u.i();
+      int i;
+      if (paramInt2 > paramInt1) {
+        i = 1;
+      } else {
+        i = -1;
+      }
+      while (paramInt1 != paramInt2)
+      {
+        View localView = (View)a.get(paramInt1);
+        int i1 = u.g(localView);
+        int i2 = u.d(localView);
+        int k = 0;
+        int j;
+        if (paramBoolean3 ? i1 <= n : i1 < n) {
+          j = 1;
+        } else {
+          j = 0;
+        }
+        if (paramBoolean3 ? i2 >= m : i2 > m) {
+          k = 1;
+        }
+        if ((j != 0) && (k != 0)) {
+          if ((paramBoolean1) && (paramBoolean2))
+          {
+            if ((i1 >= m) && (i2 <= n)) {
+              return A0(localView);
+            }
+          }
+          else
+          {
+            if (paramBoolean2) {
+              return A0(localView);
+            }
+            if ((i1 < m) || (i2 > n)) {
+              return A0(localView);
+            }
+          }
+        }
+        paramInt1 += i;
+      }
+      return -1;
+    }
+    
+    int i(int paramInt1, int paramInt2, boolean paramBoolean)
+    {
+      return h(paramInt1, paramInt2, false, false, paramBoolean);
+    }
+    
+    public int j()
+    {
+      return d;
+    }
+    
+    int k()
+    {
+      int i = c;
+      if (i != Integer.MIN_VALUE) {
+        return i;
+      }
+      c();
+      return c;
+    }
+    
+    int l(int paramInt)
+    {
+      int i = c;
+      if (i != Integer.MIN_VALUE) {
+        return i;
+      }
+      if (a.size() == 0) {
+        return paramInt;
+      }
+      c();
+      return c;
+    }
+    
+    public View m(int paramInt1, int paramInt2)
+    {
+      Object localObject2 = null;
+      Object localObject1 = null;
+      View localView;
+      StaggeredGridLayoutManager localStaggeredGridLayoutManager;
+      if (paramInt2 == -1)
+      {
+        int i = a.size();
+        paramInt2 = 0;
+        for (;;)
+        {
+          localObject2 = localObject1;
+          if (paramInt2 >= i) {
+            break;
+          }
+          localView = (View)a.get(paramInt2);
+          localStaggeredGridLayoutManager = StaggeredGridLayoutManager.this;
+          if (z)
+          {
+            localObject2 = localObject1;
+            if (localStaggeredGridLayoutManager.A0(localView) <= paramInt1) {
+              break;
+            }
+          }
+          localObject2 = StaggeredGridLayoutManager.this;
+          if ((!z) && (((RecyclerView.o)localObject2).A0(localView) >= paramInt1)) {
+            return localObject1;
+          }
+          localObject2 = localObject1;
+          if (!localView.hasFocusable()) {
+            break;
+          }
+          paramInt2 += 1;
+          localObject1 = localView;
+        }
+      }
+      paramInt2 = a.size() - 1;
+      for (localObject1 = localObject2;; localObject1 = localView)
+      {
+        localObject2 = localObject1;
+        if (paramInt2 < 0) {
+          break;
+        }
+        localView = (View)a.get(paramInt2);
+        localStaggeredGridLayoutManager = StaggeredGridLayoutManager.this;
+        if (z)
+        {
+          localObject2 = localObject1;
+          if (localStaggeredGridLayoutManager.A0(localView) >= paramInt1) {
+            break;
+          }
+        }
+        localObject2 = StaggeredGridLayoutManager.this;
+        if ((!z) && (((RecyclerView.o)localObject2).A0(localView) <= paramInt1)) {
+          return localObject1;
+        }
+        localObject2 = localObject1;
+        if (!localView.hasFocusable()) {
+          break;
+        }
+        paramInt2 -= 1;
+      }
+      return localObject2;
+    }
+    
+    StaggeredGridLayoutManager.LayoutParams n(View paramView)
+    {
+      return (StaggeredGridLayoutManager.LayoutParams)paramView.getLayoutParams();
+    }
+    
+    int o()
+    {
+      int i = b;
+      if (i != Integer.MIN_VALUE) {
+        return i;
+      }
+      d();
+      return b;
+    }
+    
+    int p(int paramInt)
+    {
+      int i = b;
+      if (i != Integer.MIN_VALUE) {
+        return i;
+      }
+      if (a.size() == 0) {
+        return paramInt;
+      }
+      d();
+      return b;
+    }
+    
+    void q()
+    {
+      b = Integer.MIN_VALUE;
+      c = Integer.MIN_VALUE;
+    }
+    
+    void r(int paramInt)
+    {
+      int i = b;
+      if (i != Integer.MIN_VALUE) {
+        b = (i + paramInt);
+      }
+      i = c;
+      if (i != Integer.MIN_VALUE) {
+        c = (i + paramInt);
+      }
+    }
+    
+    void s()
+    {
+      int i = a.size();
+      View localView = (View)a.remove(i - 1);
+      StaggeredGridLayoutManager.LayoutParams localLayoutParams = n(localView);
+      f = null;
+      if ((localLayoutParams.c()) || (localLayoutParams.b())) {
+        d -= u.e(localView);
+      }
+      if (i == 1) {
+        b = Integer.MIN_VALUE;
+      }
+      c = Integer.MIN_VALUE;
+    }
+    
+    void t()
+    {
+      View localView = (View)a.remove(0);
+      StaggeredGridLayoutManager.LayoutParams localLayoutParams = n(localView);
+      f = null;
+      if (a.size() == 0) {
+        c = Integer.MIN_VALUE;
+      }
+      if ((localLayoutParams.c()) || (localLayoutParams.b())) {
+        d -= u.e(localView);
+      }
+      b = Integer.MIN_VALUE;
+    }
+    
+    void u(View paramView)
+    {
+      StaggeredGridLayoutManager.LayoutParams localLayoutParams = n(paramView);
+      f = this;
+      a.add(0, paramView);
+      b = Integer.MIN_VALUE;
+      if (a.size() == 1) {
+        c = Integer.MIN_VALUE;
+      }
+      if ((localLayoutParams.c()) || (localLayoutParams.b())) {
+        d += u.e(paramView);
+      }
+    }
+    
+    void v(int paramInt)
+    {
+      b = paramInt;
+      c = paramInt;
+    }
+  }
+}

@@ -1,0 +1,278 @@
+package androidx.constraintlayout.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
+import android.util.Log;
+import android.util.SparseArray;
+import android.util.Xml;
+import java.io.IOException;
+import java.util.ArrayList;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+public class a
+{
+  private final ConstraintLayout a;
+  int b = -1;
+  int c = -1;
+  private SparseArray<a> d = new SparseArray();
+  private SparseArray<b> e = new SparseArray();
+  
+  a(Context paramContext, ConstraintLayout paramConstraintLayout, int paramInt)
+  {
+    a = paramConstraintLayout;
+    a(paramContext, paramInt);
+  }
+  
+  private void a(Context paramContext, int paramInt)
+  {
+    XmlResourceParser localXmlResourceParser = paramContext.getResources().getXml(paramInt);
+    Object localObject1 = null;
+    try
+    {
+      paramInt = localXmlResourceParser.getEventType();
+    }
+    catch (IOException paramContext)
+    {
+      Object localObject3;
+      paramContext.printStackTrace();
+      return;
+    }
+    catch (XmlPullParserException paramContext)
+    {
+      paramContext.printStackTrace();
+    }
+    localObject3 = localXmlResourceParser.getName();
+    paramInt = -1;
+    switch (((String)localObject3).hashCode())
+    {
+    case 1901439077: 
+      if (((String)localObject3).equals("Variant")) {
+        paramInt = 3;
+      }
+      break;
+    case 1657696882: 
+      if (((String)localObject3).equals("layoutDescription")) {
+        paramInt = 0;
+      }
+      break;
+    case 1382829617: 
+      if (((String)localObject3).equals("StateSet")) {
+        paramInt = 1;
+      }
+      break;
+    case 80204913: 
+      if (((String)localObject3).equals("State")) {
+        paramInt = 2;
+      }
+      break;
+    case -1349929691: 
+      if (((String)localObject3).equals("ConstraintSet")) {
+        paramInt = 4;
+      }
+      break;
+    }
+    for (;;)
+    {
+      Object localObject2 = localObject1;
+      if (paramInt != 0)
+      {
+        localObject2 = localObject1;
+        if (paramInt != 1) {
+          if (paramInt != 2)
+          {
+            if (paramInt != 3)
+            {
+              if (paramInt != 4)
+              {
+                localObject2 = new StringBuilder();
+                ((StringBuilder)localObject2).append("unknown tag ");
+                ((StringBuilder)localObject2).append((String)localObject3);
+                Log.v("ConstraintLayoutStates", ((StringBuilder)localObject2).toString());
+                localObject2 = localObject1;
+              }
+              else
+              {
+                b(paramContext, localXmlResourceParser);
+                localObject2 = localObject1;
+              }
+            }
+            else
+            {
+              localObject3 = new b(paramContext, localXmlResourceParser);
+              localObject2 = localObject1;
+              if (localObject1 != null)
+              {
+                localObject1.a((b)localObject3);
+                localObject2 = localObject1;
+              }
+            }
+          }
+          else
+          {
+            localObject2 = new a(paramContext, localXmlResourceParser);
+            d.put(a, localObject2);
+            break label316;
+            label305:
+            localXmlResourceParser.getName();
+          }
+        }
+      }
+      for (localObject2 = localObject1;; localObject2 = localObject1)
+      {
+        label316:
+        paramInt = localXmlResourceParser.next();
+        localObject1 = localObject2;
+        while (paramInt == 1) {
+          return;
+        }
+        if (paramInt == 0) {
+          break label305;
+        }
+        if (paramInt == 2) {
+          break;
+        }
+      }
+    }
+  }
+  
+  private void b(Context paramContext, XmlPullParser paramXmlPullParser)
+  {
+    b localB = new b();
+    int j = paramXmlPullParser.getAttributeCount();
+    int i = 0;
+    while (i < j)
+    {
+      if ("id".equals(paramXmlPullParser.getAttributeName(i)))
+      {
+        String str1 = paramXmlPullParser.getAttributeValue(i);
+        if (str1.contains("/"))
+        {
+          String str2 = str1.substring(str1.indexOf('/') + 1);
+          i = paramContext.getResources().getIdentifier(str2, "id", paramContext.getPackageName());
+        }
+        else
+        {
+          i = -1;
+        }
+        j = i;
+        if (i == -1) {
+          if (str1.length() > 1)
+          {
+            j = Integer.parseInt(str1.substring(1));
+          }
+          else
+          {
+            Log.e("ConstraintLayoutStates", "error in parsing id");
+            j = i;
+          }
+        }
+        localB.n(paramContext, paramXmlPullParser);
+        e.put(j, localB);
+        return;
+      }
+      i += 1;
+    }
+  }
+  
+  public void c(c paramC) {}
+  
+  static class a
+  {
+    int a;
+    ArrayList<a.b> b = new ArrayList();
+    int c = -1;
+    b d;
+    
+    public a(Context paramContext, XmlPullParser paramXmlPullParser)
+    {
+      paramXmlPullParser = paramContext.obtainStyledAttributes(Xml.asAttributeSet(paramXmlPullParser), e.F4);
+      int j = paramXmlPullParser.getIndexCount();
+      int i = 0;
+      while (i < j)
+      {
+        int k = paramXmlPullParser.getIndex(i);
+        if (k == e.G4)
+        {
+          a = paramXmlPullParser.getResourceId(k, a);
+        }
+        else if (k == e.H4)
+        {
+          c = paramXmlPullParser.getResourceId(k, c);
+          Object localObject = paramContext.getResources().getResourceTypeName(c);
+          paramContext.getResources().getResourceName(c);
+          if ("layout".equals(localObject))
+          {
+            localObject = new b();
+            d = ((b)localObject);
+            ((b)localObject).f(paramContext, c);
+          }
+        }
+        i += 1;
+      }
+      paramXmlPullParser.recycle();
+    }
+    
+    void a(a.b paramB)
+    {
+      b.add(paramB);
+    }
+  }
+  
+  static class b
+  {
+    float a = NaN.0F;
+    float b = NaN.0F;
+    float c = NaN.0F;
+    float d = NaN.0F;
+    int e = -1;
+    b f;
+    
+    public b(Context paramContext, XmlPullParser paramXmlPullParser)
+    {
+      paramXmlPullParser = paramContext.obtainStyledAttributes(Xml.asAttributeSet(paramXmlPullParser), e.b5);
+      int j = paramXmlPullParser.getIndexCount();
+      int i = 0;
+      while (i < j)
+      {
+        int k = paramXmlPullParser.getIndex(i);
+        if (k == e.c5)
+        {
+          e = paramXmlPullParser.getResourceId(k, e);
+          Object localObject = paramContext.getResources().getResourceTypeName(e);
+          paramContext.getResources().getResourceName(e);
+          if ("layout".equals(localObject))
+          {
+            localObject = new b();
+            f = ((b)localObject);
+            ((b)localObject).f(paramContext, e);
+          }
+        }
+        else if (k == e.d5)
+        {
+          d = paramXmlPullParser.getDimension(k, d);
+        }
+        else if (k == e.e5)
+        {
+          b = paramXmlPullParser.getDimension(k, b);
+        }
+        else if (k == e.f5)
+        {
+          c = paramXmlPullParser.getDimension(k, c);
+        }
+        else if (k == e.g5)
+        {
+          a = paramXmlPullParser.getDimension(k, a);
+        }
+        else
+        {
+          Log.v("ConstraintLayoutStates", "Unknown tag");
+        }
+        i += 1;
+      }
+      paramXmlPullParser.recycle();
+    }
+  }
+}

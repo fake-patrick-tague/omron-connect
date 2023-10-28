@@ -1,0 +1,160 @@
+package androidx.work.impl.n;
+
+import android.database.Cursor;
+import androidx.room.RoomDatabase;
+import androidx.room.k;
+import c.t.a.d;
+import c.t.a.f;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class c
+  implements b
+{
+  private final RoomDatabase a;
+  private final androidx.room.b<a> b;
+  
+  public c(RoomDatabase paramRoomDatabase)
+  {
+    a = paramRoomDatabase;
+    b = new a(paramRoomDatabase);
+  }
+  
+  public void a(a paramA)
+  {
+    a.b();
+    a.c();
+    try
+    {
+      b.h(paramA);
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+    }
+  }
+  
+  public List<String> b(String paramString)
+  {
+    k localK = k.n("SELECT work_spec_id FROM dependency WHERE prerequisite_id=?", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = androidx.room.q.c.b(a, localK, false, null);
+    try
+    {
+      ArrayList localArrayList = new ArrayList(paramString.getCount());
+      while (paramString.moveToNext()) {
+        localArrayList.add(paramString.getString(0));
+      }
+      return localArrayList;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  public boolean c(String paramString)
+  {
+    boolean bool2 = true;
+    k localK = k.n("SELECT COUNT(*)=0 FROM dependency WHERE work_spec_id=? AND prerequisite_id IN (SELECT id FROM workspec WHERE state!=2)", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = a;
+    boolean bool1 = false;
+    paramString = androidx.room.q.c.b(paramString, localK, false, null);
+    try
+    {
+      if (paramString.moveToFirst())
+      {
+        int i = paramString.getInt(0);
+        if (i != 0) {
+          bool1 = bool2;
+        } else {
+          bool1 = false;
+        }
+      }
+      return bool1;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  public boolean d(String paramString)
+  {
+    boolean bool2 = true;
+    k localK = k.n("SELECT COUNT(*)>0 FROM dependency WHERE prerequisite_id=?", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = a;
+    boolean bool1 = false;
+    paramString = androidx.room.q.c.b(paramString, localK, false, null);
+    try
+    {
+      if (paramString.moveToFirst())
+      {
+        int i = paramString.getInt(0);
+        if (i != 0) {
+          bool1 = bool2;
+        } else {
+          bool1 = false;
+        }
+      }
+      return bool1;
+    }
+    finally
+    {
+      paramString.close();
+      localK.release();
+    }
+  }
+  
+  class a
+    extends androidx.room.b<a>
+  {
+    a(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "INSERT OR IGNORE INTO `Dependency` (`work_spec_id`,`prerequisite_id`) VALUES (?,?)";
+    }
+    
+    public void i(f paramF, a paramA)
+    {
+      String str = a;
+      if (str == null) {
+        paramF.bindNull(1);
+      } else {
+        paramF.bindString(1, str);
+      }
+      paramA = b;
+      if (paramA == null)
+      {
+        paramF.bindNull(2);
+        return;
+      }
+      paramF.bindString(2, paramA);
+    }
+  }
+}

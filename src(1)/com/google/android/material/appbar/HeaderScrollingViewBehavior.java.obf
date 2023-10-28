@@ -1,0 +1,150 @@
+package com.google.android.material.appbar;
+
+import android.content.Context;
+import android.graphics.Rect;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.e;
+import c.h.k.a;
+import c.h.q.f0;
+import c.h.q.k;
+import c.h.q.n0;
+import java.util.List;
+
+abstract class HeaderScrollingViewBehavior
+  extends ViewOffsetBehavior<View>
+{
+  final Rect d = new Rect();
+  final Rect e = new Rect();
+  private int f = 0;
+  private int g;
+  
+  public HeaderScrollingViewBehavior() {}
+  
+  public HeaderScrollingViewBehavior(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+  }
+  
+  private static int N(int paramInt)
+  {
+    int i = paramInt;
+    if (paramInt == 0) {
+      i = 8388659;
+    }
+    return i;
+  }
+  
+  protected void F(CoordinatorLayout paramCoordinatorLayout, View paramView, int paramInt)
+  {
+    View localView = H(paramCoordinatorLayout.r(paramView));
+    if (localView != null)
+    {
+      CoordinatorLayout.e localE = (CoordinatorLayout.e)paramView.getLayoutParams();
+      Rect localRect = d;
+      localRect.set(paramCoordinatorLayout.getPaddingLeft() + leftMargin, localView.getBottom() + topMargin, paramCoordinatorLayout.getWidth() - paramCoordinatorLayout.getPaddingRight() - rightMargin, paramCoordinatorLayout.getHeight() + localView.getBottom() - paramCoordinatorLayout.getPaddingBottom() - bottomMargin);
+      n0 localN0 = paramCoordinatorLayout.getLastWindowInsets();
+      if ((localN0 != null) && (f0.A(paramCoordinatorLayout)) && (!f0.A(paramView)))
+      {
+        left += localN0.j();
+        right -= localN0.k();
+      }
+      paramCoordinatorLayout = e;
+      k.a(N(c), paramView.getMeasuredWidth(), paramView.getMeasuredHeight(), localRect, paramCoordinatorLayout, paramInt);
+      paramInt = I(localView);
+      paramView.layout(left, top - paramInt, right, bottom - paramInt);
+      f = (top - localView.getBottom());
+      return;
+    }
+    super.F(paramCoordinatorLayout, paramView, paramInt);
+    f = 0;
+  }
+  
+  abstract View H(List<View> paramList);
+  
+  final int I(View paramView)
+  {
+    if (g == 0) {
+      return 0;
+    }
+    float f1 = J(paramView);
+    int i = g;
+    return a.b((int)(f1 * i), 0, i);
+  }
+  
+  abstract float J(View paramView);
+  
+  public final int K()
+  {
+    return g;
+  }
+  
+  int L(View paramView)
+  {
+    return paramView.getMeasuredHeight();
+  }
+  
+  final int M()
+  {
+    return f;
+  }
+  
+  public final void O(int paramInt)
+  {
+    g = paramInt;
+  }
+  
+  protected boolean P()
+  {
+    return false;
+  }
+  
+  public boolean m(CoordinatorLayout paramCoordinatorLayout, View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    int j = getLayoutParamsheight;
+    if ((j == -1) || (j == -2))
+    {
+      View localView = H(paramCoordinatorLayout.r(paramView));
+      if (localView != null)
+      {
+        int i = View.MeasureSpec.getSize(paramInt3);
+        if (i > 0)
+        {
+          paramInt3 = i;
+          if (f0.A(localView))
+          {
+            n0 localN0 = paramCoordinatorLayout.getLastWindowInsets();
+            paramInt3 = i;
+            if (localN0 != null) {
+              paramInt3 = i + (localN0.l() + localN0.i());
+            }
+          }
+        }
+        else
+        {
+          paramInt3 = paramCoordinatorLayout.getHeight();
+        }
+        paramInt3 += L(localView);
+        i = localView.getMeasuredHeight();
+        if (P()) {
+          paramView.setTranslationY(-i);
+        } else {
+          paramInt3 -= i;
+        }
+        if (j == -1) {
+          i = 1073741824;
+        } else {
+          i = Integer.MIN_VALUE;
+        }
+        paramCoordinatorLayout.J(paramView, paramInt1, paramInt2, View.MeasureSpec.makeMeasureSpec(paramInt3, i), paramInt4);
+        return true;
+      }
+    }
+    return false;
+  }
+}

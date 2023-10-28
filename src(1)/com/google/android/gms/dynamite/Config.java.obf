@@ -1,0 +1,267 @@
+package com.google.android.gms.dynamite;
+
+import android.util.Log;
+
+public final class zzb
+{
+  private static volatile ClassLoader zza;
+  private static volatile Thread zzb;
+  
+  public static ClassLoader zza()
+  {
+    try
+    {
+      if (zza == null) {
+        zza = zzb();
+      }
+      ClassLoader localClassLoader = zza;
+      return localClassLoader;
+    }
+    finally {}
+  }
+  
+  private static ClassLoader zzb()
+  {
+    try
+    {
+      Object localObject3 = zzb;
+      Object localObject1 = null;
+      if (localObject3 == null)
+      {
+        zzb = zzc();
+        localObject3 = zzb;
+        if (localObject3 == null) {
+          return null;
+        }
+      }
+      try
+      {
+        synchronized (zzb)
+        {
+          localObject3 = zzb.getContextClassLoader();
+          localObject1 = localObject3;
+        }
+      }
+      catch (SecurityException localSecurityException)
+      {
+        String str = localSecurityException.getMessage();
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Failed to get thread context classloader ");
+        localStringBuilder.append(str);
+        Log.w("DynamiteLoaderV2CL", localStringBuilder.toString());
+        return localClassLoader;
+      }
+      throw localClassLoader;
+    }
+    finally {}
+  }
+  
+  /* Error */
+  private static Thread zzc()
+  {
+    // Byte code:
+    //   0: ldc 2
+    //   2: monitorenter
+    //   3: invokestatic 61	android/os/Looper:getMainLooper	()Landroid/os/Looper;
+    //   6: invokevirtual 64	android/os/Looper:getThread	()Ljava/lang/Thread;
+    //   9: invokevirtual 68	java/lang/Thread:getThreadGroup	()Ljava/lang/ThreadGroup;
+    //   12: astore 6
+    //   14: aload 6
+    //   16: ifnonnull +8 -> 24
+    //   19: ldc 2
+    //   21: monitorexit
+    //   22: aconst_null
+    //   23: areturn
+    //   24: ldc 70
+    //   26: monitorenter
+    //   27: aload 6
+    //   29: invokevirtual 76	java/lang/ThreadGroup:activeGroupCount	()I
+    //   32: istore_2
+    //   33: iload_2
+    //   34: anewarray 72	java/lang/ThreadGroup
+    //   37: astore 5
+    //   39: aload 6
+    //   41: aload 5
+    //   43: invokevirtual 80	java/lang/ThreadGroup:enumerate	([Ljava/lang/ThreadGroup;)I
+    //   46: pop
+    //   47: iconst_0
+    //   48: istore_1
+    //   49: iconst_0
+    //   50: istore_0
+    //   51: iload_0
+    //   52: iload_2
+    //   53: if_icmpge +252 -> 305
+    //   56: aload 5
+    //   58: iload_0
+    //   59: aaload
+    //   60: astore 4
+    //   62: ldc 82
+    //   64: aload 4
+    //   66: invokevirtual 85	java/lang/ThreadGroup:getName	()Ljava/lang/String;
+    //   69: invokevirtual 91	java/lang/String:equals	(Ljava/lang/Object;)Z
+    //   72: ifeq +226 -> 298
+    //   75: goto +3 -> 78
+    //   78: aload 4
+    //   80: astore 5
+    //   82: aload 4
+    //   84: ifnonnull +16 -> 100
+    //   87: new 72	java/lang/ThreadGroup
+    //   90: dup
+    //   91: aload 6
+    //   93: ldc 82
+    //   95: invokespecial 94	java/lang/ThreadGroup:<init>	(Ljava/lang/ThreadGroup;Ljava/lang/String;)V
+    //   98: astore 5
+    //   100: aload 5
+    //   102: invokevirtual 97	java/lang/ThreadGroup:activeCount	()I
+    //   105: istore_2
+    //   106: iload_2
+    //   107: anewarray 26	java/lang/Thread
+    //   110: astore 6
+    //   112: aload 5
+    //   114: aload 6
+    //   116: invokevirtual 100	java/lang/ThreadGroup:enumerate	([Ljava/lang/Thread;)I
+    //   119: pop
+    //   120: iload_1
+    //   121: istore_0
+    //   122: iload_0
+    //   123: iload_2
+    //   124: if_icmpge +34 -> 158
+    //   127: aload 6
+    //   129: iload_0
+    //   130: aaload
+    //   131: astore 4
+    //   133: ldc 102
+    //   135: aload 4
+    //   137: invokevirtual 103	java/lang/Thread:getName	()Ljava/lang/String;
+    //   140: invokevirtual 91	java/lang/String:equals	(Ljava/lang/Object;)Z
+    //   143: istore_3
+    //   144: iload_3
+    //   145: ifeq +6 -> 151
+    //   148: goto +13 -> 161
+    //   151: iload_0
+    //   152: iconst_1
+    //   153: iadd
+    //   154: istore_0
+    //   155: goto -33 -> 122
+    //   158: aconst_null
+    //   159: astore 4
+    //   161: aload 4
+    //   163: astore 6
+    //   165: aload 4
+    //   167: ifnonnull +108 -> 275
+    //   170: new 105	com/google/android/gms/dynamite/zza
+    //   173: dup
+    //   174: aload 5
+    //   176: ldc 102
+    //   178: invokespecial 106	com/google/android/gms/dynamite/zza:<init>	(Ljava/lang/ThreadGroup;Ljava/lang/String;)V
+    //   181: astore 5
+    //   183: aload 5
+    //   185: aconst_null
+    //   186: invokevirtual 110	java/lang/Thread:setContextClassLoader	(Ljava/lang/ClassLoader;)V
+    //   189: aload 5
+    //   191: invokevirtual 113	java/lang/Thread:start	()V
+    //   194: aload 5
+    //   196: astore 4
+    //   198: goto +113 -> 311
+    //   201: astore 6
+    //   203: aload 5
+    //   205: astore 4
+    //   207: aload 6
+    //   209: astore 5
+    //   211: goto +18 -> 229
+    //   214: astore 5
+    //   216: goto +13 -> 229
+    //   219: astore 4
+    //   221: goto +63 -> 284
+    //   224: astore 5
+    //   226: aconst_null
+    //   227: astore 4
+    //   229: aload 5
+    //   231: invokevirtual 33	java/lang/SecurityException:getMessage	()Ljava/lang/String;
+    //   234: astore 5
+    //   236: new 35	java/lang/StringBuilder
+    //   239: dup
+    //   240: invokespecial 38	java/lang/StringBuilder:<init>	()V
+    //   243: astore 6
+    //   245: aload 6
+    //   247: ldc 115
+    //   249: invokevirtual 44	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   252: pop
+    //   253: aload 6
+    //   255: aload 5
+    //   257: invokevirtual 44	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   260: pop
+    //   261: ldc 46
+    //   263: aload 6
+    //   265: invokevirtual 49	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   268: invokestatic 55	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   271: pop
+    //   272: goto +39 -> 311
+    //   275: ldc 70
+    //   277: monitorexit
+    //   278: ldc 2
+    //   280: monitorexit
+    //   281: aload 6
+    //   283: areturn
+    //   284: ldc 70
+    //   286: monitorexit
+    //   287: aload 4
+    //   289: athrow
+    //   290: astore 4
+    //   292: ldc 2
+    //   294: monitorexit
+    //   295: aload 4
+    //   297: athrow
+    //   298: iload_0
+    //   299: iconst_1
+    //   300: iadd
+    //   301: istore_0
+    //   302: goto -251 -> 51
+    //   305: aconst_null
+    //   306: astore 4
+    //   308: goto -230 -> 78
+    //   311: aload 4
+    //   313: astore 6
+    //   315: goto -40 -> 275
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   50	252	0	i	int
+    //   48	73	1	j	int
+    //   32	93	2	k	int
+    //   143	2	3	bool	boolean
+    //   60	146	4	localObject1	Object
+    //   219	1	4	localObject2	Object
+    //   227	61	4	localObject3	Object
+    //   290	6	4	localObject4	Object
+    //   306	6	4	localObject5	Object
+    //   37	173	5	localObject6	Object
+    //   214	1	5	localSecurityException1	SecurityException
+    //   224	6	5	localSecurityException2	SecurityException
+    //   234	22	5	str	String
+    //   12	152	6	localObject7	Object
+    //   201	7	6	localSecurityException3	SecurityException
+    //   243	71	6	localObject8	Object
+    // Exception table:
+    //   from	to	target	type
+    //   183	194	201	java/lang/SecurityException
+    //   170	183	214	java/lang/SecurityException
+    //   27	47	219	finally
+    //   62	75	219	finally
+    //   87	100	219	finally
+    //   100	120	219	finally
+    //   133	144	219	finally
+    //   170	183	219	finally
+    //   183	194	219	finally
+    //   229	272	219	finally
+    //   275	278	219	finally
+    //   284	287	219	finally
+    //   27	47	224	java/lang/SecurityException
+    //   62	75	224	java/lang/SecurityException
+    //   87	100	224	java/lang/SecurityException
+    //   100	120	224	java/lang/SecurityException
+    //   133	144	224	java/lang/SecurityException
+    //   3	14	290	finally
+    //   24	27	290	finally
+    //   287	290	290	finally
+  }
+}

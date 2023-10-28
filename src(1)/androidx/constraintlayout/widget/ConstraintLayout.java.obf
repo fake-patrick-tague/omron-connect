@@ -1,0 +1,2220 @@
+package androidx.constraintlayout.widget;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import androidx.constraintlayout.solver.widgets.ConstraintAnchor;
+import androidx.constraintlayout.solver.widgets.ConstraintAnchor.Type;
+import androidx.constraintlayout.solver.widgets.ConstraintWidget;
+import androidx.constraintlayout.solver.widgets.ConstraintWidget.DimensionBehaviour;
+import androidx.constraintlayout.solver.widgets.analyzer.b.a;
+import androidx.constraintlayout.solver.widgets.analyzer.b.b;
+import androidx.constraintlayout.solver.widgets.d;
+import androidx.constraintlayout.solver.widgets.h;
+import androidx.constraintlayout.solver.widgets.i;
+import androidx.constraintlayout.solver.widgets.j;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class ConstraintLayout
+  extends ViewGroup
+{
+  SparseArray<View> b = new SparseArray();
+  private ArrayList<ConstraintHelper> c = new ArrayList(4);
+  protected d d = new d();
+  private int e = 0;
+  private int f = 0;
+  private int g = Integer.MAX_VALUE;
+  private int h = Integer.MAX_VALUE;
+  protected boolean i = true;
+  private int j = 257;
+  private b k = null;
+  protected a l = null;
+  private int m = -1;
+  private HashMap<String, Integer> n = new HashMap();
+  private int o = -1;
+  private int p = -1;
+  int q = -1;
+  int r = -1;
+  int s = 0;
+  int t = 0;
+  private SparseArray<ConstraintWidget> u = new SparseArray();
+  b v = new b(this);
+  private int w = 0;
+  private int x = 0;
+  
+  public ConstraintLayout(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+    k(paramAttributeSet, 0, 0);
+  }
+  
+  public ConstraintLayout(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(paramContext, paramAttributeSet, paramInt);
+    k(paramAttributeSet, paramInt, 0);
+  }
+  
+  private int getPaddingWidth()
+  {
+    int i2 = getPaddingLeft();
+    int i1 = 0;
+    i2 = Math.max(0, i2) + Math.max(0, getPaddingRight());
+    if (Build.VERSION.SDK_INT >= 17)
+    {
+      i1 = Math.max(0, getPaddingStart());
+      i1 = Math.max(0, getPaddingEnd()) + i1;
+    }
+    if (i1 > 0) {
+      i2 = i1;
+    }
+    return i2;
+  }
+  
+  private final ConstraintWidget h(int paramInt)
+  {
+    if (paramInt == 0) {
+      return d;
+    }
+    View localView2 = (View)b.get(paramInt);
+    View localView1 = localView2;
+    if (localView2 == null)
+    {
+      localView2 = findViewById(paramInt);
+      localView1 = localView2;
+      if (localView2 != null)
+      {
+        localView1 = localView2;
+        if (localView2 != this)
+        {
+          localView1 = localView2;
+          if (localView2.getParent() == this)
+          {
+            onViewAdded(localView2);
+            localView1 = localView2;
+          }
+        }
+      }
+    }
+    if (localView1 == this) {
+      return d;
+    }
+    if (localView1 == null) {
+      return null;
+    }
+    return getLayoutParamsn0;
+  }
+  
+  private void k(AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    d.l0(this);
+    d.D1(v);
+    b.put(getId(), this);
+    k = null;
+    if (paramAttributeSet != null)
+    {
+      paramAttributeSet = getContext().obtainStyledAttributes(paramAttributeSet, e.a1, paramInt1, paramInt2);
+      paramInt2 = paramAttributeSet.getIndexCount();
+      paramInt1 = 0;
+      while (paramInt1 < paramInt2)
+      {
+        int i1 = paramAttributeSet.getIndex(paramInt1);
+        if (i1 == e.f1)
+        {
+          e = paramAttributeSet.getDimensionPixelOffset(i1, e);
+        }
+        else if (i1 == e.g1)
+        {
+          f = paramAttributeSet.getDimensionPixelOffset(i1, f);
+        }
+        else if (i1 == e.d1)
+        {
+          g = paramAttributeSet.getDimensionPixelOffset(i1, g);
+        }
+        else if (i1 == e.e1)
+        {
+          h = paramAttributeSet.getDimensionPixelOffset(i1, h);
+        }
+        else if (i1 == e.n2)
+        {
+          j = paramAttributeSet.getInt(i1, j);
+        }
+        else if (i1 == e.o1)
+        {
+          i1 = paramAttributeSet.getResourceId(i1, 0);
+          if (i1 == 0) {
+            break label294;
+          }
+        }
+        try
+        {
+          n(i1);
+        }
+        catch (Resources.NotFoundException localNotFoundException1)
+        {
+          for (;;) {}
+        }
+        l = null;
+        break label294;
+        if (i1 == e.l1) {
+          i1 = paramAttributeSet.getResourceId(i1, 0);
+        }
+        try
+        {
+          b localB = new b();
+          k = localB;
+          localB.m(getContext(), i1);
+        }
+        catch (Resources.NotFoundException localNotFoundException2)
+        {
+          for (;;) {}
+        }
+        k = null;
+        m = i1;
+        label294:
+        paramInt1 += 1;
+      }
+      paramAttributeSet.recycle();
+    }
+    d.E1(j);
+  }
+  
+  private void m()
+  {
+    i = true;
+    o = -1;
+    p = -1;
+    q = -1;
+    r = -1;
+    s = 0;
+    t = 0;
+  }
+  
+  private void q()
+  {
+    boolean bool = isInEditMode();
+    int i2 = getChildCount();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      localObject1 = j(getChildAt(i1));
+      if (localObject1 != null) {
+        ((ConstraintWidget)localObject1).h0();
+      }
+      i1 += 1;
+    }
+    Object localObject3;
+    if (bool)
+    {
+      i1 = 0;
+      while (i1 < i2)
+      {
+        localObject3 = getChildAt(i1);
+        try
+        {
+          localObject2 = getResources().getResourceName(((View)localObject3).getId());
+          r(0, localObject2, Integer.valueOf(((View)localObject3).getId()));
+          i3 = ((String)localObject2).indexOf('/');
+          localObject1 = localObject2;
+          if (i3 != -1) {
+            localObject1 = ((String)localObject2).substring(i3 + 1);
+          }
+          h(((View)localObject3).getId()).m0((String)localObject1);
+        }
+        catch (Resources.NotFoundException localNotFoundException)
+        {
+          Object localObject2;
+          int i3;
+          for (;;) {}
+        }
+        i1 += 1;
+      }
+    }
+    if (m != -1)
+    {
+      i1 = 0;
+      while (i1 < i2)
+      {
+        localObject1 = getChildAt(i1);
+        if ((((View)localObject1).getId() == m) && ((localObject1 instanceof Constraints))) {
+          k = ((Constraints)localObject1).getConstraintSet();
+        }
+        i1 += 1;
+      }
+    }
+    Object localObject1 = k;
+    if (localObject1 != null) {
+      ((b)localObject1).d(this, true);
+    }
+    d.d1();
+    i3 = c.size();
+    if (i3 > 0)
+    {
+      i1 = 0;
+      while (i1 < i3)
+      {
+        ((ConstraintHelper)c.get(i1)).m(this);
+        i1 += 1;
+      }
+    }
+    i1 = 0;
+    while (i1 < i2)
+    {
+      localObject1 = getChildAt(i1);
+      if ((localObject1 instanceof Placeholder)) {
+        ((Placeholder)localObject1).b(this);
+      }
+      i1 += 1;
+    }
+    u.clear();
+    u.put(0, d);
+    u.put(getId(), d);
+    i1 = 0;
+    while (i1 < i2)
+    {
+      localObject1 = getChildAt(i1);
+      localObject2 = j((View)localObject1);
+      u.put(((View)localObject1).getId(), localObject2);
+      i1 += 1;
+    }
+    i1 = 0;
+    while (i1 < i2)
+    {
+      localObject1 = getChildAt(i1);
+      localObject2 = j((View)localObject1);
+      if (localObject2 != null)
+      {
+        localObject3 = (LayoutParams)((View)localObject1).getLayoutParams();
+        d.a((ConstraintWidget)localObject2);
+        d(bool, (View)localObject1, (ConstraintWidget)localObject2, (LayoutParams)localObject3, u);
+      }
+      i1 += 1;
+    }
+  }
+  
+  private boolean t()
+  {
+    int i2 = getChildCount();
+    boolean bool2 = false;
+    int i1 = 0;
+    boolean bool1;
+    for (;;)
+    {
+      bool1 = bool2;
+      if (i1 >= i2) {
+        break;
+      }
+      if (getChildAt(i1).isLayoutRequested())
+      {
+        bool1 = true;
+        break;
+      }
+      i1 += 1;
+    }
+    if (bool1) {
+      q();
+    }
+    return bool1;
+  }
+  
+  public void addView(View paramView, int paramInt, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    super.addView(paramView, paramInt, paramLayoutParams);
+    if (Build.VERSION.SDK_INT < 14) {
+      onViewAdded(paramView);
+    }
+  }
+  
+  protected boolean checkLayoutParams(ViewGroup.LayoutParams paramLayoutParams)
+  {
+    return paramLayoutParams instanceof LayoutParams;
+  }
+  
+  protected void d(boolean paramBoolean, View paramView, ConstraintWidget paramConstraintWidget, LayoutParams paramLayoutParams, SparseArray<ConstraintWidget> paramSparseArray)
+  {
+    paramLayoutParams.a();
+    o0 = false;
+    paramConstraintWidget.T0(paramView.getVisibility());
+    if (b0)
+    {
+      paramConstraintWidget.D0(true);
+      paramConstraintWidget.T0(8);
+    }
+    paramConstraintWidget.l0(paramView);
+    if ((paramView instanceof ConstraintHelper)) {
+      ((ConstraintHelper)paramView).i(paramConstraintWidget, d.x1());
+    }
+    int i1;
+    int i2;
+    float f1;
+    if (Z)
+    {
+      paramView = (androidx.constraintlayout.solver.widgets.e)paramConstraintWidget;
+      i1 = k0;
+      i2 = l0;
+      f1 = m0;
+      if (Build.VERSION.SDK_INT < 17)
+      {
+        i1 = a;
+        i2 = b;
+        f1 = c;
+      }
+      if (f1 != -1.0F)
+      {
+        paramView.i1(f1);
+        return;
+      }
+      if (i1 != -1)
+      {
+        paramView.g1(i1);
+        return;
+      }
+      if (i2 != -1) {
+        paramView.h1(i2);
+      }
+    }
+    else
+    {
+      i1 = d0;
+      i2 = e0;
+      int i4 = f0;
+      int i6 = g0;
+      int i3 = h0;
+      int i5 = i0;
+      f1 = j0;
+      if (Build.VERSION.SDK_INT < 17)
+      {
+        i4 = d;
+        i7 = e;
+        i3 = f;
+        int i8 = g;
+        i5 = t;
+        i6 = v;
+        f1 = z;
+        i1 = i4;
+        i2 = i7;
+        if (i4 == -1)
+        {
+          i1 = i4;
+          i2 = i7;
+          if (i7 == -1)
+          {
+            i1 = q;
+            if (i1 != -1)
+            {
+              i2 = i7;
+            }
+            else
+            {
+              int i9 = p;
+              i1 = i4;
+              i2 = i7;
+              if (i9 != -1)
+              {
+                i2 = i9;
+                i1 = i4;
+              }
+            }
+          }
+        }
+        if ((i3 == -1) && (i8 == -1))
+        {
+          i4 = r;
+          if (i4 != -1) {
+            break label417;
+          }
+          i4 = s;
+          if (i4 != -1)
+          {
+            i7 = i3;
+            i3 = i5;
+            i5 = i7;
+            i7 = i4;
+            break label448;
+          }
+        }
+        i4 = i3;
+        label417:
+        i7 = i6;
+        i3 = i5;
+        i6 = i8;
+        i5 = i7;
+      }
+      int i7 = i6;
+      i6 = i5;
+      i5 = i4;
+      label448:
+      i4 = m;
+      if (i4 != -1)
+      {
+        paramView = (ConstraintWidget)paramSparseArray.get(i4);
+        if (paramView != null) {
+          paramConstraintWidget.j(paramView, o, n);
+        }
+      }
+      else
+      {
+        Object localObject;
+        if (i1 != -1)
+        {
+          paramView = (ConstraintWidget)paramSparseArray.get(i1);
+          if (paramView != null)
+          {
+            localObject = ConstraintAnchor.Type.c;
+            paramConstraintWidget.X((ConstraintAnchor.Type)localObject, paramView, (ConstraintAnchor.Type)localObject, leftMargin, i3);
+          }
+        }
+        else if (i2 != -1)
+        {
+          paramView = (ConstraintWidget)paramSparseArray.get(i2);
+          if (paramView != null) {
+            paramConstraintWidget.X(ConstraintAnchor.Type.c, paramView, ConstraintAnchor.Type.e, leftMargin, i3);
+          }
+        }
+        if (i5 != -1)
+        {
+          paramView = (ConstraintWidget)paramSparseArray.get(i5);
+          if (paramView != null) {
+            paramConstraintWidget.X(ConstraintAnchor.Type.e, paramView, ConstraintAnchor.Type.c, rightMargin, i6);
+          }
+        }
+        else if (i7 != -1)
+        {
+          paramView = (ConstraintWidget)paramSparseArray.get(i7);
+          if (paramView != null)
+          {
+            localObject = ConstraintAnchor.Type.e;
+            paramConstraintWidget.X((ConstraintAnchor.Type)localObject, paramView, (ConstraintAnchor.Type)localObject, rightMargin, i6);
+          }
+        }
+        i1 = h;
+        if (i1 != -1)
+        {
+          paramView = (ConstraintWidget)paramSparseArray.get(i1);
+          if (paramView != null)
+          {
+            localObject = ConstraintAnchor.Type.d;
+            paramConstraintWidget.X((ConstraintAnchor.Type)localObject, paramView, (ConstraintAnchor.Type)localObject, topMargin, u);
+          }
+        }
+        else
+        {
+          i1 = i;
+          if (i1 != -1)
+          {
+            paramView = (ConstraintWidget)paramSparseArray.get(i1);
+            if (paramView != null) {
+              paramConstraintWidget.X(ConstraintAnchor.Type.d, paramView, ConstraintAnchor.Type.f, topMargin, u);
+            }
+          }
+        }
+        i1 = j;
+        if (i1 != -1)
+        {
+          paramView = (ConstraintWidget)paramSparseArray.get(i1);
+          if (paramView != null) {
+            paramConstraintWidget.X(ConstraintAnchor.Type.f, paramView, ConstraintAnchor.Type.d, bottomMargin, w);
+          }
+        }
+        else
+        {
+          i1 = k;
+          if (i1 != -1)
+          {
+            paramView = (ConstraintWidget)paramSparseArray.get(i1);
+            if (paramView != null)
+            {
+              localObject = ConstraintAnchor.Type.f;
+              paramConstraintWidget.X((ConstraintAnchor.Type)localObject, paramView, (ConstraintAnchor.Type)localObject, bottomMargin, w);
+            }
+          }
+        }
+        i1 = l;
+        if (i1 != -1)
+        {
+          localObject = (View)b.get(i1);
+          paramView = (ConstraintWidget)paramSparseArray.get(l);
+          if ((paramView != null) && (localObject != null) && ((((View)localObject).getLayoutParams() instanceof LayoutParams)))
+          {
+            paramSparseArray = (LayoutParams)((View)localObject).getLayoutParams();
+            Y = true;
+            Y = true;
+            localObject = ConstraintAnchor.Type.g;
+            paramConstraintWidget.m((ConstraintAnchor.Type)localObject).a(paramView.m((ConstraintAnchor.Type)localObject), 0, -1, true);
+            paramConstraintWidget.u0(true);
+            n0.u0(true);
+            paramConstraintWidget.m(ConstraintAnchor.Type.d).p();
+            paramConstraintWidget.m(ConstraintAnchor.Type.f).p();
+          }
+        }
+        if (f1 >= 0.0F) {
+          paramConstraintWidget.w0(f1);
+        }
+        f1 = A;
+        if (f1 >= 0.0F) {
+          paramConstraintWidget.N0(f1);
+        }
+      }
+      if (paramBoolean)
+      {
+        i1 = Q;
+        if ((i1 != -1) || (R != -1)) {
+          paramConstraintWidget.L0(i1, R);
+        }
+      }
+      if (!W)
+      {
+        if (width == -1)
+        {
+          if (T) {
+            paramConstraintWidget.z0(ConstraintWidget.DimensionBehaviour.d);
+          } else {
+            paramConstraintWidget.z0(ConstraintWidget.DimensionBehaviour.e);
+          }
+          mcg = leftMargin;
+          meg = rightMargin;
+        }
+        else
+        {
+          paramConstraintWidget.z0(ConstraintWidget.DimensionBehaviour.d);
+          paramConstraintWidget.U0(0);
+        }
+      }
+      else
+      {
+        paramConstraintWidget.z0(ConstraintWidget.DimensionBehaviour.b);
+        paramConstraintWidget.U0(width);
+        if (width == -2) {
+          paramConstraintWidget.z0(ConstraintWidget.DimensionBehaviour.c);
+        }
+      }
+      if (!X)
+      {
+        if (height == -1)
+        {
+          if (U) {
+            paramConstraintWidget.Q0(ConstraintWidget.DimensionBehaviour.d);
+          } else {
+            paramConstraintWidget.Q0(ConstraintWidget.DimensionBehaviour.e);
+          }
+          mdg = topMargin;
+          mfg = bottomMargin;
+        }
+        else
+        {
+          paramConstraintWidget.Q0(ConstraintWidget.DimensionBehaviour.d);
+          paramConstraintWidget.v0(0);
+        }
+      }
+      else
+      {
+        paramConstraintWidget.Q0(ConstraintWidget.DimensionBehaviour.b);
+        paramConstraintWidget.v0(height);
+        if (height == -2) {
+          paramConstraintWidget.Q0(ConstraintWidget.DimensionBehaviour.c);
+        }
+      }
+      paramConstraintWidget.n0(B);
+      paramConstraintWidget.B0(E);
+      paramConstraintWidget.S0(F);
+      paramConstraintWidget.x0(G);
+      paramConstraintWidget.O0(H);
+      paramConstraintWidget.A0(I, K, M, O);
+      paramConstraintWidget.R0(J, L, N, P);
+    }
+  }
+  
+  protected void dispatchDraw(Canvas paramCanvas)
+  {
+    Object localObject = c;
+    int i2;
+    int i1;
+    if (localObject != null)
+    {
+      i2 = ((ArrayList)localObject).size();
+      if (i2 > 0)
+      {
+        i1 = 0;
+        while (i1 < i2)
+        {
+          ((ConstraintHelper)c.get(i1)).l(this);
+          i1 += 1;
+        }
+      }
+    }
+    super.dispatchDraw(paramCanvas);
+    if (isInEditMode())
+    {
+      i2 = getChildCount();
+      float f1 = getWidth();
+      float f2 = getHeight();
+      i1 = 0;
+      while (i1 < i2)
+      {
+        localObject = getChildAt(i1);
+        if (((View)localObject).getVisibility() != 8)
+        {
+          localObject = ((View)localObject).getTag();
+          if ((localObject != null) && ((localObject instanceof String)))
+          {
+            localObject = ((String)localObject).split(",");
+            if (localObject.length == 4)
+            {
+              int i4 = Integer.parseInt(localObject[0]);
+              int i6 = Integer.parseInt(localObject[1]);
+              int i5 = Integer.parseInt(localObject[2]);
+              int i3 = Integer.parseInt(localObject[3]);
+              i4 = (int)(i4 / 1080.0F * f1);
+              i6 = (int)(i6 / 1920.0F * f2);
+              i5 = (int)(i5 / 1080.0F * f1);
+              i3 = (int)(i3 / 1920.0F * f2);
+              localObject = new Paint();
+              ((Paint)localObject).setColor(-65536);
+              float f3 = i4;
+              float f4 = i6;
+              float f5 = i4 + i5;
+              paramCanvas.drawLine(f3, f4, f5, f4, (Paint)localObject);
+              float f6 = i6 + i3;
+              paramCanvas.drawLine(f5, f4, f5, f6, (Paint)localObject);
+              paramCanvas.drawLine(f5, f6, f3, f6, (Paint)localObject);
+              paramCanvas.drawLine(f3, f6, f3, f4, (Paint)localObject);
+              ((Paint)localObject).setColor(-16711936);
+              paramCanvas.drawLine(f3, f4, f5, f6, (Paint)localObject);
+              paramCanvas.drawLine(f3, f6, f5, f4, (Paint)localObject);
+            }
+          }
+        }
+        i1 += 1;
+      }
+    }
+  }
+  
+  protected LayoutParams e()
+  {
+    return new LayoutParams(-2, -2);
+  }
+  
+  public LayoutParams f(AttributeSet paramAttributeSet)
+  {
+    return new LayoutParams(getContext(), paramAttributeSet);
+  }
+  
+  public void forceLayout()
+  {
+    m();
+    super.forceLayout();
+  }
+  
+  public Object g(int paramInt, Object paramObject)
+  {
+    if ((paramInt == 0) && ((paramObject instanceof String)))
+    {
+      paramObject = (String)paramObject;
+      HashMap localHashMap = n;
+      if ((localHashMap != null) && (localHashMap.containsKey(paramObject))) {
+        return n.get(paramObject);
+      }
+    }
+    return null;
+  }
+  
+  protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams paramLayoutParams)
+  {
+    return new LayoutParams(paramLayoutParams);
+  }
+  
+  public int getMaxHeight()
+  {
+    return h;
+  }
+  
+  public int getMaxWidth()
+  {
+    return g;
+  }
+  
+  public int getMinHeight()
+  {
+    return f;
+  }
+  
+  public int getMinWidth()
+  {
+    return e;
+  }
+  
+  public int getOptimizationLevel()
+  {
+    return d.s1();
+  }
+  
+  public View i(int paramInt)
+  {
+    return (View)b.get(paramInt);
+  }
+  
+  public final ConstraintWidget j(View paramView)
+  {
+    if (paramView == this) {
+      return d;
+    }
+    if (paramView == null) {
+      return null;
+    }
+    return getLayoutParamsn0;
+  }
+  
+  protected boolean l()
+  {
+    int i1 = Build.VERSION.SDK_INT;
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (i1 >= 17)
+    {
+      if ((getContextgetApplicationInfoflags & 0x400000) != 0) {
+        i1 = 1;
+      } else {
+        i1 = 0;
+      }
+      bool1 = bool2;
+      if (i1 != 0)
+      {
+        bool1 = bool2;
+        if (1 == getLayoutDirection()) {
+          bool1 = true;
+        }
+      }
+    }
+    return bool1;
+  }
+  
+  protected void n(int paramInt)
+  {
+    l = new a(getContext(), this, paramInt);
+  }
+  
+  protected void o(int paramInt1, int paramInt2, int paramInt3, int paramInt4, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    b localB = v;
+    int i1 = e;
+    paramInt3 += d;
+    paramInt4 += i1;
+    if (Build.VERSION.SDK_INT >= 11)
+    {
+      paramInt1 = ViewGroup.resolveSizeAndState(paramInt3, paramInt1, 0);
+      paramInt3 = ViewGroup.resolveSizeAndState(paramInt4, paramInt2, 0);
+      paramInt2 = Math.min(g, paramInt1 & 0xFFFFFF);
+      paramInt3 = Math.min(h, paramInt3 & 0xFFFFFF);
+      paramInt1 = paramInt2;
+      if (paramBoolean1) {
+        paramInt1 = paramInt2 | 0x1000000;
+      }
+      paramInt2 = paramInt3;
+      if (paramBoolean2) {
+        paramInt2 = paramInt3 | 0x1000000;
+      }
+      setMeasuredDimension(paramInt1, paramInt2);
+      o = paramInt1;
+      p = paramInt2;
+      return;
+    }
+    setMeasuredDimension(paramInt3, paramInt4);
+    o = paramInt3;
+    p = paramInt4;
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    paramInt3 = getChildCount();
+    paramBoolean = isInEditMode();
+    paramInt2 = 0;
+    paramInt1 = 0;
+    while (paramInt1 < paramInt3)
+    {
+      View localView = getChildAt(paramInt1);
+      LayoutParams localLayoutParams = (LayoutParams)localView.getLayoutParams();
+      ConstraintWidget localConstraintWidget = n0;
+      if (((localView.getVisibility() != 8) || (Z) || (a0) || (c0) || (paramBoolean)) && (!b0))
+      {
+        paramInt4 = localConstraintWidget.S();
+        int i1 = localConstraintWidget.T();
+        int i2 = localConstraintWidget.R() + paramInt4;
+        int i3 = localConstraintWidget.v() + i1;
+        localView.layout(paramInt4, i1, i2, i3);
+        if ((localView instanceof Placeholder))
+        {
+          localView = ((Placeholder)localView).getContent();
+          if (localView != null)
+          {
+            localView.setVisibility(0);
+            localView.layout(paramInt4, i1, i2, i3);
+          }
+        }
+      }
+      paramInt1 += 1;
+    }
+    paramInt3 = c.size();
+    if (paramInt3 > 0)
+    {
+      paramInt1 = paramInt2;
+      while (paramInt1 < paramInt3)
+      {
+        ((ConstraintHelper)c.get(paramInt1)).j(this);
+        paramInt1 += 1;
+      }
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    int i1;
+    if (!i)
+    {
+      int i2 = getChildCount();
+      i1 = 0;
+      while (i1 < i2)
+      {
+        if (getChildAt(i1).isLayoutRequested())
+        {
+          i = true;
+          break;
+        }
+        i1 += 1;
+      }
+    }
+    if (!i)
+    {
+      i1 = w;
+      if ((i1 == paramInt1) && (x == paramInt2))
+      {
+        o(paramInt1, paramInt2, d.R(), d.v(), d.y1(), d.w1());
+        return;
+      }
+      if ((i1 == paramInt1) && (View.MeasureSpec.getMode(paramInt1) == 1073741824) && (View.MeasureSpec.getMode(paramInt2) == Integer.MIN_VALUE) && (View.MeasureSpec.getMode(x) == Integer.MIN_VALUE) && (View.MeasureSpec.getSize(paramInt2) >= d.v()))
+      {
+        w = paramInt1;
+        x = paramInt2;
+        o(paramInt1, paramInt2, d.R(), d.v(), d.y1(), d.w1());
+        return;
+      }
+    }
+    w = paramInt1;
+    x = paramInt2;
+    d.F1(l());
+    if (i)
+    {
+      i = false;
+      if (t()) {
+        d.H1();
+      }
+    }
+    p(d, j, paramInt1, paramInt2);
+    o(paramInt1, paramInt2, d.R(), d.v(), d.y1(), d.w1());
+  }
+  
+  public void onViewAdded(View paramView)
+  {
+    if (Build.VERSION.SDK_INT >= 14) {
+      super.onViewAdded(paramView);
+    }
+    Object localObject = j(paramView);
+    if (((paramView instanceof Guideline)) && (!(localObject instanceof androidx.constraintlayout.solver.widgets.e)))
+    {
+      localObject = (LayoutParams)paramView.getLayoutParams();
+      androidx.constraintlayout.solver.widgets.e localE = new androidx.constraintlayout.solver.widgets.e();
+      n0 = localE;
+      Z = true;
+      ((androidx.constraintlayout.solver.widgets.e)localE).j1(S);
+    }
+    if ((paramView instanceof ConstraintHelper))
+    {
+      localObject = (ConstraintHelper)paramView;
+      ((ConstraintHelper)localObject).n();
+      getLayoutParamsa0 = true;
+      if (!c.contains(localObject)) {
+        c.add(localObject);
+      }
+    }
+    b.put(paramView.getId(), paramView);
+    i = true;
+  }
+  
+  public void onViewRemoved(View paramView)
+  {
+    if (Build.VERSION.SDK_INT >= 14) {
+      super.onViewRemoved(paramView);
+    }
+    b.remove(paramView.getId());
+    ConstraintWidget localConstraintWidget = j(paramView);
+    d.c1(localConstraintWidget);
+    c.remove(paramView);
+    i = true;
+  }
+  
+  protected void p(d paramD, int paramInt1, int paramInt2, int paramInt3)
+  {
+    int i1 = View.MeasureSpec.getMode(paramInt2);
+    int i6 = View.MeasureSpec.getSize(paramInt2);
+    int i2 = View.MeasureSpec.getMode(paramInt3);
+    int i4 = View.MeasureSpec.getSize(paramInt3);
+    int i3 = Math.max(0, getPaddingTop());
+    int i8 = Math.max(0, getPaddingBottom());
+    int i5 = i3 + i8;
+    int i7 = getPaddingWidth();
+    v.c(paramInt2, paramInt3, i3, i8, i7, i5);
+    if (Build.VERSION.SDK_INT >= 17)
+    {
+      paramInt2 = Math.max(0, getPaddingStart());
+      paramInt3 = Math.max(0, getPaddingEnd());
+      if ((paramInt2 <= 0) && (paramInt3 <= 0)) {
+        paramInt2 = Math.max(0, getPaddingLeft());
+      } else if (l()) {
+        paramInt2 = paramInt3;
+      }
+    }
+    else
+    {
+      paramInt2 = Math.max(0, getPaddingLeft());
+    }
+    paramInt3 = i6 - i7;
+    i4 -= i5;
+    s(paramD, i1, paramInt3, i2, i4);
+    paramD.z1(paramInt1, i1, paramInt3, i2, i4, o, p, paramInt2, i3);
+  }
+  
+  public void r(int paramInt, Object paramObject1, Object paramObject2)
+  {
+    if ((paramInt == 0) && ((paramObject1 instanceof String)) && ((paramObject2 instanceof Integer)))
+    {
+      if (n == null) {
+        n = new HashMap();
+      }
+      String str = (String)paramObject1;
+      paramInt = str.indexOf("/");
+      paramObject1 = str;
+      if (paramInt != -1) {
+        paramObject1 = str.substring(paramInt + 1);
+      }
+      paramInt = ((Integer)paramObject2).intValue();
+      n.put(paramObject1, Integer.valueOf(paramInt));
+    }
+  }
+  
+  public void removeView(View paramView)
+  {
+    super.removeView(paramView);
+    if (Build.VERSION.SDK_INT < 14) {
+      onViewRemoved(paramView);
+    }
+  }
+  
+  public void requestLayout()
+  {
+    m();
+    super.requestLayout();
+  }
+  
+  protected void s(d paramD, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    Object localObject1 = v;
+    int i1 = e;
+    int i2 = d;
+    localObject1 = ConstraintWidget.DimensionBehaviour.b;
+    int i3 = getChildCount();
+    Object localObject2;
+    ConstraintWidget.DimensionBehaviour localDimensionBehaviour;
+    if (paramInt1 != Integer.MIN_VALUE)
+    {
+      if (paramInt1 != 0) {
+        if (paramInt1 != 1073741824) {
+          localObject2 = localObject1;
+        }
+      }
+      do
+      {
+        paramInt2 = 0;
+        break;
+        paramInt2 = Math.min(g - i2, paramInt2);
+        localObject2 = localObject1;
+        break;
+        localDimensionBehaviour = ConstraintWidget.DimensionBehaviour.c;
+        localObject2 = localDimensionBehaviour;
+      } while (i3 != 0);
+      paramInt2 = Math.max(0, e);
+      localObject2 = localDimensionBehaviour;
+    }
+    else
+    {
+      localDimensionBehaviour = ConstraintWidget.DimensionBehaviour.c;
+      localObject2 = localDimensionBehaviour;
+      if (i3 == 0)
+      {
+        paramInt2 = Math.max(0, e);
+        localObject2 = localDimensionBehaviour;
+      }
+    }
+    if (paramInt3 != Integer.MIN_VALUE)
+    {
+      if (paramInt3 != 0) {
+        if (paramInt3 == 1073741824) {}
+      }
+      do
+      {
+        paramInt4 = 0;
+        break;
+        paramInt4 = Math.min(h - i1, paramInt4);
+        break;
+        localDimensionBehaviour = ConstraintWidget.DimensionBehaviour.c;
+        localObject1 = localDimensionBehaviour;
+      } while (i3 != 0);
+      paramInt4 = Math.max(0, f);
+      localObject1 = localDimensionBehaviour;
+    }
+    else
+    {
+      localDimensionBehaviour = ConstraintWidget.DimensionBehaviour.c;
+      localObject1 = localDimensionBehaviour;
+      if (i3 == 0)
+      {
+        paramInt4 = Math.max(0, f);
+        localObject1 = localDimensionBehaviour;
+      }
+    }
+    if ((paramInt2 != paramD.R()) || (paramInt4 != paramD.v())) {
+      paramD.v1();
+    }
+    paramD.V0(0);
+    paramD.W0(0);
+    paramD.H0(g - i2);
+    paramD.G0(h - i1);
+    paramD.K0(0);
+    paramD.J0(0);
+    paramD.z0(localObject2);
+    paramD.U0(paramInt2);
+    paramD.Q0((ConstraintWidget.DimensionBehaviour)localObject1);
+    paramD.v0(paramInt4);
+    paramD.K0(e - i2);
+    paramD.J0(f - i1);
+  }
+  
+  public void setConstraintSet(b paramB)
+  {
+    k = paramB;
+  }
+  
+  public void setId(int paramInt)
+  {
+    b.remove(getId());
+    super.setId(paramInt);
+    b.put(getId(), this);
+  }
+  
+  public void setMaxHeight(int paramInt)
+  {
+    if (paramInt == h) {
+      return;
+    }
+    h = paramInt;
+    requestLayout();
+  }
+  
+  public void setMaxWidth(int paramInt)
+  {
+    if (paramInt == g) {
+      return;
+    }
+    g = paramInt;
+    requestLayout();
+  }
+  
+  public void setMinHeight(int paramInt)
+  {
+    if (paramInt == f) {
+      return;
+    }
+    f = paramInt;
+    requestLayout();
+  }
+  
+  public void setMinWidth(int paramInt)
+  {
+    if (paramInt == e) {
+      return;
+    }
+    e = paramInt;
+    requestLayout();
+  }
+  
+  public void setOnConstraintsChanged(c paramC)
+  {
+    a localA = l;
+    if (localA != null) {
+      localA.c(paramC);
+    }
+  }
+  
+  public void setOptimizationLevel(int paramInt)
+  {
+    j = paramInt;
+    d.E1(paramInt);
+  }
+  
+  public boolean shouldDelayChildPressedState()
+  {
+    return false;
+  }
+  
+  public static class LayoutParams
+    extends ViewGroup.MarginLayoutParams
+  {
+    public float A = 0.5F;
+    public String B = null;
+    float C = 0.0F;
+    int D = 1;
+    public float E = -1.0F;
+    public float F = -1.0F;
+    public int G = 0;
+    public int H = 0;
+    public int I = 0;
+    public int J = 0;
+    public int K = 0;
+    public int L = 0;
+    public int M = 0;
+    public int N = 0;
+    public float O = 1.0F;
+    public float P = 1.0F;
+    public int Q = -1;
+    public int R = -1;
+    public int S = -1;
+    public boolean T = false;
+    public boolean U = false;
+    public String V = null;
+    boolean W = true;
+    boolean X = true;
+    boolean Y = false;
+    boolean Z = false;
+    public int a = -1;
+    boolean a0 = false;
+    public int b = -1;
+    boolean b0 = false;
+    public float c = -1.0F;
+    boolean c0 = false;
+    public int d = -1;
+    int d0 = -1;
+    public int e = -1;
+    int e0 = -1;
+    public int f = -1;
+    int f0 = -1;
+    public int g = -1;
+    int g0 = -1;
+    public int h = -1;
+    int h0 = -1;
+    public int i = -1;
+    int i0 = -1;
+    public int j = -1;
+    float j0 = 0.5F;
+    public int k = -1;
+    int k0;
+    public int l = -1;
+    int l0;
+    public int m = -1;
+    float m0;
+    public int n = 0;
+    ConstraintWidget n0 = new ConstraintWidget();
+    public float o = 0.0F;
+    public boolean o0 = false;
+    public int p = -1;
+    public int q = -1;
+    public int r = -1;
+    public int s = -1;
+    public int t = -1;
+    public int u = -1;
+    public int v = -1;
+    public int w = -1;
+    public int x = -1;
+    public int y = -1;
+    public float z = 0.5F;
+    
+    public LayoutParams(int paramInt1, int paramInt2)
+    {
+      super(paramInt2);
+    }
+    
+    public LayoutParams(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      super(paramAttributeSet);
+      paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, e.a1);
+      int i3 = paramContext.getIndexCount();
+      int i1 = 0;
+      while (i1 < i3)
+      {
+        int i2 = paramContext.getIndex(i1);
+        int i4 = a.a.get(i2);
+        String str;
+        switch (i4)
+        {
+        default: 
+          switch (i4)
+          {
+          default: 
+            break;
+          case 51: 
+            V = paramContext.getString(i2);
+            break;
+          case 50: 
+            R = paramContext.getDimensionPixelOffset(i2, R);
+            break;
+          case 49: 
+            Q = paramContext.getDimensionPixelOffset(i2, Q);
+            break;
+          case 48: 
+            H = paramContext.getInt(i2, 0);
+            break;
+          case 47: 
+            G = paramContext.getInt(i2, 0);
+            break;
+          case 46: 
+            F = paramContext.getFloat(i2, F);
+            break;
+          case 45: 
+            E = paramContext.getFloat(i2, E);
+            break;
+          case 44: 
+            paramAttributeSet = paramContext.getString(i2);
+            B = paramAttributeSet;
+            C = NaN.0F;
+            D = -1;
+            if (paramAttributeSet != null)
+            {
+              i4 = paramAttributeSet.length();
+              i2 = B.indexOf(',');
+              if ((i2 > 0) && (i2 < i4 - 1))
+              {
+                paramAttributeSet = B.substring(0, i2);
+                if (paramAttributeSet.equalsIgnoreCase("W")) {
+                  D = 0;
+                } else if (paramAttributeSet.equalsIgnoreCase("H")) {
+                  D = 1;
+                }
+                i2 += 1;
+              }
+              else
+              {
+                i2 = 0;
+              }
+              int i5 = B.indexOf(':');
+              if ((i5 >= 0) && (i5 < i4 - 1))
+              {
+                paramAttributeSet = B.substring(i2, i5);
+                str = B.substring(i5 + 1);
+                if ((paramAttributeSet.length() <= 0) || (str.length() <= 0)) {
+                  break;
+                }
+              }
+            }
+            break;
+          }
+          break;
+        }
+        try
+        {
+          f1 = Float.parseFloat(paramAttributeSet);
+          float f2 = Float.parseFloat(str);
+          if ((f1 <= 0.0F) || (f2 <= 0.0F)) {
+            break label2087;
+          }
+          if (D == 1) {
+            C = Math.abs(f2 / f1);
+          } else {
+            C = Math.abs(f1 / f2);
+          }
+        }
+        catch (NumberFormatException paramAttributeSet)
+        {
+          float f1;
+          for (;;) {}
+        }
+        paramAttributeSet = B.substring(i2);
+        if (paramAttributeSet.length() > 0)
+        {
+          C = Float.parseFloat(paramAttributeSet);
+          break label2087;
+          P = Math.max(0.0F, paramContext.getFloat(i2, P));
+          J = 2;
+        }
+        try
+        {
+          N = paramContext.getDimensionPixelSize(i2, N);
+        }
+        catch (Exception paramAttributeSet)
+        {
+          label2087:
+          for (;;) {}
+        }
+        if (paramContext.getInt(i2, N) == -2) {
+          N = -2;
+        }
+        try
+        {
+          L = paramContext.getDimensionPixelSize(i2, L);
+        }
+        catch (Exception paramAttributeSet)
+        {
+          for (;;) {}
+        }
+        if (paramContext.getInt(i2, L) == -2)
+        {
+          L = -2;
+          break label2087;
+          O = Math.max(0.0F, paramContext.getFloat(i2, O));
+          I = 2;
+        }
+        try
+        {
+          M = paramContext.getDimensionPixelSize(i2, M);
+        }
+        catch (Exception paramAttributeSet)
+        {
+          for (;;) {}
+        }
+        if (paramContext.getInt(i2, M) == -2) {
+          M = -2;
+        }
+        try
+        {
+          K = paramContext.getDimensionPixelSize(i2, K);
+        }
+        catch (Exception paramAttributeSet)
+        {
+          for (;;) {}
+        }
+        if (paramContext.getInt(i2, K) == -2)
+        {
+          K = -2;
+          break label2087;
+          i2 = paramContext.getInt(i2, 0);
+          J = i2;
+          if (i2 == 1)
+          {
+            Log.e("ConstraintLayout", "layout_constraintHeight_default=\"wrap\" is deprecated.\nUse layout_height=\"WRAP_CONTENT\" and layout_constrainedHeight=\"true\" instead.");
+            break label2087;
+            i2 = paramContext.getInt(i2, 0);
+            I = i2;
+            if (i2 == 1)
+            {
+              Log.e("ConstraintLayout", "layout_constraintWidth_default=\"wrap\" is deprecated.\nUse layout_width=\"WRAP_CONTENT\" and layout_constrainedWidth=\"true\" instead.");
+              break label2087;
+              A = paramContext.getFloat(i2, A);
+              break label2087;
+              z = paramContext.getFloat(i2, z);
+              break label2087;
+              U = paramContext.getBoolean(i2, U);
+              break label2087;
+              T = paramContext.getBoolean(i2, T);
+              break label2087;
+              y = paramContext.getDimensionPixelSize(i2, y);
+              break label2087;
+              x = paramContext.getDimensionPixelSize(i2, x);
+              break label2087;
+              w = paramContext.getDimensionPixelSize(i2, w);
+              break label2087;
+              v = paramContext.getDimensionPixelSize(i2, v);
+              break label2087;
+              u = paramContext.getDimensionPixelSize(i2, u);
+              break label2087;
+              t = paramContext.getDimensionPixelSize(i2, t);
+              break label2087;
+              i4 = paramContext.getResourceId(i2, s);
+              s = i4;
+              if (i4 == -1)
+              {
+                s = paramContext.getInt(i2, -1);
+                break label2087;
+                i4 = paramContext.getResourceId(i2, r);
+                r = i4;
+                if (i4 == -1)
+                {
+                  r = paramContext.getInt(i2, -1);
+                  break label2087;
+                  i4 = paramContext.getResourceId(i2, q);
+                  q = i4;
+                  if (i4 == -1)
+                  {
+                    q = paramContext.getInt(i2, -1);
+                    break label2087;
+                    i4 = paramContext.getResourceId(i2, p);
+                    p = i4;
+                    if (i4 == -1)
+                    {
+                      p = paramContext.getInt(i2, -1);
+                      break label2087;
+                      i4 = paramContext.getResourceId(i2, l);
+                      l = i4;
+                      if (i4 == -1)
+                      {
+                        l = paramContext.getInt(i2, -1);
+                        break label2087;
+                        i4 = paramContext.getResourceId(i2, k);
+                        k = i4;
+                        if (i4 == -1)
+                        {
+                          k = paramContext.getInt(i2, -1);
+                          break label2087;
+                          i4 = paramContext.getResourceId(i2, j);
+                          j = i4;
+                          if (i4 == -1)
+                          {
+                            j = paramContext.getInt(i2, -1);
+                            break label2087;
+                            i4 = paramContext.getResourceId(i2, i);
+                            i = i4;
+                            if (i4 == -1)
+                            {
+                              i = paramContext.getInt(i2, -1);
+                              break label2087;
+                              i4 = paramContext.getResourceId(i2, h);
+                              h = i4;
+                              if (i4 == -1)
+                              {
+                                h = paramContext.getInt(i2, -1);
+                                break label2087;
+                                i4 = paramContext.getResourceId(i2, g);
+                                g = i4;
+                                if (i4 == -1)
+                                {
+                                  g = paramContext.getInt(i2, -1);
+                                  break label2087;
+                                  i4 = paramContext.getResourceId(i2, f);
+                                  f = i4;
+                                  if (i4 == -1)
+                                  {
+                                    f = paramContext.getInt(i2, -1);
+                                    break label2087;
+                                    i4 = paramContext.getResourceId(i2, e);
+                                    e = i4;
+                                    if (i4 == -1)
+                                    {
+                                      e = paramContext.getInt(i2, -1);
+                                      break label2087;
+                                      i4 = paramContext.getResourceId(i2, d);
+                                      d = i4;
+                                      if (i4 == -1)
+                                      {
+                                        d = paramContext.getInt(i2, -1);
+                                        break label2087;
+                                        c = paramContext.getFloat(i2, c);
+                                        break label2087;
+                                        b = paramContext.getDimensionPixelOffset(i2, b);
+                                        break label2087;
+                                        a = paramContext.getDimensionPixelOffset(i2, a);
+                                        break label2087;
+                                        f1 = paramContext.getFloat(i2, o) % 360.0F;
+                                        o = f1;
+                                        if (f1 < 0.0F)
+                                        {
+                                          o = ((360.0F - f1) % 360.0F);
+                                          break label2087;
+                                          n = paramContext.getDimensionPixelSize(i2, n);
+                                          break label2087;
+                                          i4 = paramContext.getResourceId(i2, m);
+                                          m = i4;
+                                          if (i4 == -1)
+                                          {
+                                            m = paramContext.getInt(i2, -1);
+                                            break label2087;
+                                            S = paramContext.getInt(i2, S);
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        i1 += 1;
+      }
+      paramContext.recycle();
+      a();
+    }
+    
+    public LayoutParams(ViewGroup.LayoutParams paramLayoutParams)
+    {
+      super();
+    }
+    
+    public void a()
+    {
+      Z = false;
+      W = true;
+      X = true;
+      int i1 = width;
+      if ((i1 == -2) && (T))
+      {
+        W = false;
+        if (I == 0) {
+          I = 1;
+        }
+      }
+      int i2 = height;
+      if ((i2 == -2) && (U))
+      {
+        X = false;
+        if (J == 0) {
+          J = 1;
+        }
+      }
+      if ((i1 == 0) || (i1 == -1))
+      {
+        W = false;
+        if ((i1 == 0) && (I == 1))
+        {
+          width = -2;
+          T = true;
+        }
+      }
+      if ((i2 == 0) || (i2 == -1))
+      {
+        X = false;
+        if ((i2 == 0) && (J == 1))
+        {
+          height = -2;
+          U = true;
+        }
+      }
+      if ((c != -1.0F) || (a != -1) || (b != -1))
+      {
+        Z = true;
+        W = true;
+        X = true;
+        if (!(n0 instanceof androidx.constraintlayout.solver.widgets.e)) {
+          n0 = new androidx.constraintlayout.solver.widgets.e();
+        }
+        ((androidx.constraintlayout.solver.widgets.e)n0).j1(S);
+      }
+    }
+    
+    public void resolveLayoutDirection(int paramInt)
+    {
+      int i2 = leftMargin;
+      int i3 = rightMargin;
+      int i4 = Build.VERSION.SDK_INT;
+      int i1 = 0;
+      if (i4 >= 17)
+      {
+        super.resolveLayoutDirection(paramInt);
+        if (1 == getLayoutDirection())
+        {
+          paramInt = 1;
+          break label47;
+        }
+      }
+      paramInt = 0;
+      label47:
+      f0 = -1;
+      g0 = -1;
+      d0 = -1;
+      e0 = -1;
+      h0 = -1;
+      i0 = -1;
+      h0 = t;
+      i0 = v;
+      float f1 = z;
+      j0 = f1;
+      i4 = a;
+      k0 = i4;
+      int i5 = b;
+      l0 = i5;
+      float f2 = c;
+      m0 = f2;
+      if (paramInt != 0)
+      {
+        paramInt = p;
+        if (paramInt != -1) {
+          f0 = paramInt;
+        }
+        for (;;)
+        {
+          paramInt = 1;
+          break;
+          int i6 = q;
+          paramInt = i1;
+          if (i6 == -1) {
+            break;
+          }
+          g0 = i6;
+        }
+        i1 = r;
+        if (i1 != -1)
+        {
+          e0 = i1;
+          paramInt = 1;
+        }
+        i1 = s;
+        if (i1 != -1)
+        {
+          d0 = i1;
+          paramInt = 1;
+        }
+        i1 = x;
+        if (i1 != -1) {
+          i0 = i1;
+        }
+        i1 = y;
+        if (i1 != -1) {
+          h0 = i1;
+        }
+        if (paramInt != 0) {
+          j0 = (1.0F - f1);
+        }
+        if ((Z) && (S == 1)) {
+          if (f2 != -1.0F)
+          {
+            m0 = (1.0F - f2);
+            k0 = -1;
+            l0 = -1;
+          }
+          else if (i4 != -1)
+          {
+            l0 = i4;
+            k0 = -1;
+            m0 = -1.0F;
+          }
+          else if (i5 != -1)
+          {
+            k0 = i5;
+            l0 = -1;
+            m0 = -1.0F;
+          }
+        }
+      }
+      else
+      {
+        paramInt = p;
+        if (paramInt != -1) {
+          e0 = paramInt;
+        }
+        paramInt = q;
+        if (paramInt != -1) {
+          d0 = paramInt;
+        }
+        paramInt = r;
+        if (paramInt != -1) {
+          f0 = paramInt;
+        }
+        paramInt = s;
+        if (paramInt != -1) {
+          g0 = paramInt;
+        }
+        paramInt = x;
+        if (paramInt != -1) {
+          h0 = paramInt;
+        }
+        paramInt = y;
+        if (paramInt != -1) {
+          i0 = paramInt;
+        }
+      }
+      if ((r == -1) && (s == -1) && (q == -1) && (p == -1))
+      {
+        paramInt = f;
+        if (paramInt != -1)
+        {
+          f0 = paramInt;
+          if ((rightMargin <= 0) && (i3 > 0)) {
+            rightMargin = i3;
+          }
+        }
+        else
+        {
+          paramInt = g;
+          if (paramInt != -1)
+          {
+            g0 = paramInt;
+            if ((rightMargin <= 0) && (i3 > 0)) {
+              rightMargin = i3;
+            }
+          }
+        }
+        paramInt = d;
+        if (paramInt != -1)
+        {
+          d0 = paramInt;
+          if ((leftMargin <= 0) && (i2 > 0)) {
+            leftMargin = i2;
+          }
+        }
+        else
+        {
+          paramInt = e;
+          if (paramInt != -1)
+          {
+            e0 = paramInt;
+            if ((leftMargin <= 0) && (i2 > 0)) {
+              leftMargin = i2;
+            }
+          }
+        }
+      }
+    }
+    
+    private static class a
+    {
+      public static final SparseIntArray a;
+      
+      static
+      {
+        SparseIntArray localSparseIntArray = new SparseIntArray();
+        a = localSparseIntArray;
+        localSparseIntArray.append(e.N1, 8);
+        localSparseIntArray.append(e.O1, 9);
+        localSparseIntArray.append(e.Q1, 10);
+        localSparseIntArray.append(e.R1, 11);
+        localSparseIntArray.append(e.X1, 12);
+        localSparseIntArray.append(e.W1, 13);
+        localSparseIntArray.append(e.v1, 14);
+        localSparseIntArray.append(e.u1, 15);
+        localSparseIntArray.append(e.s1, 16);
+        localSparseIntArray.append(e.w1, 2);
+        localSparseIntArray.append(e.y1, 3);
+        localSparseIntArray.append(e.x1, 4);
+        localSparseIntArray.append(e.f2, 49);
+        localSparseIntArray.append(e.g2, 50);
+        localSparseIntArray.append(e.C1, 5);
+        localSparseIntArray.append(e.D1, 6);
+        localSparseIntArray.append(e.E1, 7);
+        localSparseIntArray.append(e.b1, 1);
+        localSparseIntArray.append(e.S1, 17);
+        localSparseIntArray.append(e.T1, 18);
+        localSparseIntArray.append(e.B1, 19);
+        localSparseIntArray.append(e.A1, 20);
+        localSparseIntArray.append(e.j2, 21);
+        localSparseIntArray.append(e.m2, 22);
+        localSparseIntArray.append(e.k2, 23);
+        localSparseIntArray.append(e.h2, 24);
+        localSparseIntArray.append(e.l2, 25);
+        localSparseIntArray.append(e.i2, 26);
+        localSparseIntArray.append(e.J1, 29);
+        localSparseIntArray.append(e.Y1, 30);
+        localSparseIntArray.append(e.z1, 44);
+        localSparseIntArray.append(e.L1, 45);
+        localSparseIntArray.append(e.a2, 46);
+        localSparseIntArray.append(e.K1, 47);
+        localSparseIntArray.append(e.Z1, 48);
+        localSparseIntArray.append(e.q1, 27);
+        localSparseIntArray.append(e.p1, 28);
+        localSparseIntArray.append(e.b2, 31);
+        localSparseIntArray.append(e.F1, 32);
+        localSparseIntArray.append(e.d2, 33);
+        localSparseIntArray.append(e.c2, 34);
+        localSparseIntArray.append(e.e2, 35);
+        localSparseIntArray.append(e.H1, 36);
+        localSparseIntArray.append(e.G1, 37);
+        localSparseIntArray.append(e.I1, 38);
+        localSparseIntArray.append(e.M1, 39);
+        localSparseIntArray.append(e.V1, 40);
+        localSparseIntArray.append(e.P1, 41);
+        localSparseIntArray.append(e.t1, 42);
+        localSparseIntArray.append(e.r1, 43);
+        a.append(e.U1, 51);
+      }
+    }
+  }
+  
+  class b
+    implements b.b
+  {
+    ConstraintLayout a;
+    int b;
+    int c;
+    int d;
+    int e;
+    int f;
+    int g;
+    
+    public b(ConstraintLayout paramConstraintLayout)
+    {
+      a = paramConstraintLayout;
+    }
+    
+    private boolean d(int paramInt1, int paramInt2, int paramInt3)
+    {
+      if (paramInt1 == paramInt2) {
+        return true;
+      }
+      int i = View.MeasureSpec.getMode(paramInt1);
+      View.MeasureSpec.getSize(paramInt1);
+      paramInt1 = View.MeasureSpec.getMode(paramInt2);
+      paramInt2 = View.MeasureSpec.getSize(paramInt2);
+      return (paramInt1 == 1073741824) && ((i == Integer.MIN_VALUE) || (i == 0)) && (paramInt3 == paramInt2);
+    }
+    
+    public final void a()
+    {
+      int k = a.getChildCount();
+      int j = 0;
+      int i = 0;
+      while (i < k)
+      {
+        View localView = a.getChildAt(i);
+        if ((localView instanceof Placeholder)) {
+          ((Placeholder)localView).a(a);
+        }
+        i += 1;
+      }
+      k = ConstraintLayout.c(a).size();
+      if (k > 0)
+      {
+        i = j;
+        while (i < k)
+        {
+          ((ConstraintHelper)ConstraintLayout.c(a).get(i)).k(a);
+          i += 1;
+        }
+      }
+    }
+    
+    public final void b(ConstraintWidget paramConstraintWidget, b.a paramA)
+    {
+      if (paramConstraintWidget == null) {
+        return;
+      }
+      if ((paramConstraintWidget.Q() == 8) && (!paramConstraintWidget.a0()))
+      {
+        h = 0;
+        i = 0;
+        j = 0;
+        return;
+      }
+      if (paramConstraintWidget.I() == null) {
+        return;
+      }
+      Object localObject1 = d;
+      Object localObject2 = e;
+      int i = f;
+      int m = g;
+      int n = b + c;
+      int j = d;
+      View localView = (View)paramConstraintWidget.q();
+      Object localObject3 = ConstraintLayout.a.a;
+      int k = localObject3[localObject1.ordinal()];
+      int i1;
+      if (k != 1)
+      {
+        if (k != 2)
+        {
+          if (k != 3)
+          {
+            if (k != 4)
+            {
+              i = 0;
+            }
+            else
+            {
+              k = ViewGroup.getChildMeasureSpec(f, j, -2);
+              if (q == 1) {
+                j = 1;
+              } else {
+                j = 0;
+              }
+              i1 = m;
+              if (i1 != b.a.b)
+              {
+                i = k;
+                if (i1 != b.a.c) {}
+              }
+              else
+              {
+                if (localView.getMeasuredHeight() == paramConstraintWidget.v()) {
+                  i = 1;
+                } else {
+                  i = 0;
+                }
+                if ((m != b.a.c) && (j != 0) && ((j == 0) || (i == 0)) && (!(localView instanceof Placeholder)) && (!paramConstraintWidget.e0())) {
+                  j = 0;
+                } else {
+                  j = 1;
+                }
+                i = k;
+                if (j != 0) {
+                  i = View.MeasureSpec.makeMeasureSpec(paramConstraintWidget.R(), 1073741824);
+                }
+              }
+            }
+          }
+          else {
+            i = ViewGroup.getChildMeasureSpec(f, j + paramConstraintWidget.z(), -1);
+          }
+        }
+        else {
+          i = ViewGroup.getChildMeasureSpec(f, j, -2);
+        }
+      }
+      else {
+        i = View.MeasureSpec.makeMeasureSpec(i, 1073741824);
+      }
+      j = localObject3[localObject2.ordinal()];
+      if (j != 1)
+      {
+        if (j != 2)
+        {
+          if (j != 3)
+          {
+            if (j != 4)
+            {
+              j = 0;
+            }
+            else
+            {
+              m = ViewGroup.getChildMeasureSpec(g, n, -2);
+              if (r == 1) {
+                k = 1;
+              } else {
+                k = 0;
+              }
+              n = m;
+              if (n != b.a.b)
+              {
+                j = m;
+                if (n != b.a.c) {}
+              }
+              else
+              {
+                if (localView.getMeasuredWidth() == paramConstraintWidget.R()) {
+                  j = 1;
+                } else {
+                  j = 0;
+                }
+                if ((m != b.a.c) && (k != 0) && ((k == 0) || (j == 0)) && (!(localView instanceof Placeholder)) && (!paramConstraintWidget.f0())) {
+                  k = 0;
+                } else {
+                  k = 1;
+                }
+                j = m;
+                if (k != 0) {
+                  j = View.MeasureSpec.makeMeasureSpec(paramConstraintWidget.v(), 1073741824);
+                }
+              }
+            }
+          }
+          else {
+            j = ViewGroup.getChildMeasureSpec(g, n + paramConstraintWidget.P(), -1);
+          }
+        }
+        else {
+          j = ViewGroup.getChildMeasureSpec(g, n, -2);
+        }
+      }
+      else {
+        j = View.MeasureSpec.makeMeasureSpec(m, 1073741824);
+      }
+      localObject3 = (d)paramConstraintWidget.I();
+      if ((localObject3 != null) && (h.b(ConstraintLayout.b(ConstraintLayout.this), 256)) && (localView.getMeasuredWidth() == paramConstraintWidget.R()) && (localView.getMeasuredWidth() < ((ConstraintWidget)localObject3).R()) && (localView.getMeasuredHeight() == paramConstraintWidget.v()) && (localView.getMeasuredHeight() < ((ConstraintWidget)localObject3).v()) && (localView.getBaseline() == paramConstraintWidget.n()) && (!paramConstraintWidget.d0()))
+      {
+        if ((d(paramConstraintWidget.A(), i, paramConstraintWidget.R())) && (d(paramConstraintWidget.B(), j, paramConstraintWidget.v()))) {
+          k = 1;
+        } else {
+          k = 0;
+        }
+        if (k != 0)
+        {
+          h = paramConstraintWidget.R();
+          i = paramConstraintWidget.v();
+          j = paramConstraintWidget.n();
+          return;
+        }
+      }
+      localObject3 = ConstraintWidget.DimensionBehaviour.d;
+      if (localObject1 == localObject3) {
+        k = 1;
+      } else {
+        k = 0;
+      }
+      if (localObject2 == localObject3) {
+        m = 1;
+      } else {
+        m = 0;
+      }
+      localObject3 = ConstraintWidget.DimensionBehaviour.e;
+      int i2;
+      if ((localObject2 != localObject3) && (localObject2 != ConstraintWidget.DimensionBehaviour.b)) {
+        i2 = 0;
+      } else {
+        i2 = 1;
+      }
+      int i3;
+      if ((localObject1 != localObject3) && (localObject1 != ConstraintWidget.DimensionBehaviour.b)) {
+        i3 = 0;
+      } else {
+        i3 = 1;
+      }
+      int i4;
+      if ((k != 0) && (X > 0.0F)) {
+        i4 = 1;
+      } else {
+        i4 = 0;
+      }
+      int i5;
+      if ((m != 0) && (X > 0.0F)) {
+        i5 = 1;
+      } else {
+        i5 = 0;
+      }
+      if (localView == null) {
+        return;
+      }
+      localObject1 = (ConstraintLayout.LayoutParams)localView.getLayoutParams();
+      n = m;
+      if ((n != b.a.b) && (n != b.a.c) && (k != 0) && (q == 0) && (m != 0) && (r == 0))
+      {
+        k = 0;
+        i1 = 0;
+        i2 = 0;
+      }
+      else
+      {
+        if (((localView instanceof VirtualLayout)) && ((paramConstraintWidget instanceof i)))
+        {
+          localObject2 = (i)paramConstraintWidget;
+          ((VirtualLayout)localView).o((i)localObject2, i, j);
+        }
+        else
+        {
+          localView.measure(i, j);
+        }
+        paramConstraintWidget.F0(i, j);
+        int i7 = localView.getMeasuredWidth();
+        int i6 = localView.getMeasuredHeight();
+        int i8 = localView.getBaseline();
+        k = t;
+        if (k > 0) {
+          m = Math.max(k, i7);
+        } else {
+          m = i7;
+        }
+        n = u;
+        k = m;
+        if (n > 0) {
+          k = Math.min(n, m);
+        }
+        m = w;
+        if (m > 0) {
+          m = Math.max(m, i6);
+        } else {
+          m = i6;
+        }
+        n = x;
+        i1 = m;
+        if (n > 0) {
+          i1 = Math.min(n, m);
+        }
+        m = i1;
+        n = k;
+        if (!h.b(ConstraintLayout.b(ConstraintLayout.this), 1))
+        {
+          float f1;
+          if ((i4 != 0) && (i2 != 0))
+          {
+            f1 = X;
+            n = (int)(i1 * f1 + 0.5F);
+            m = i1;
+          }
+          else
+          {
+            m = i1;
+            n = k;
+            if (i5 != 0)
+            {
+              m = i1;
+              n = k;
+              if (i3 != 0)
+              {
+                f1 = X;
+                m = (int)(k / f1 + 0.5F);
+                n = k;
+              }
+            }
+          }
+        }
+        if (i7 == n)
+        {
+          k = m;
+          i1 = i8;
+          i2 = n;
+          if (i6 != m) {}
+        }
+        for (;;)
+        {
+          break;
+          if (i7 != n) {
+            i = View.MeasureSpec.makeMeasureSpec(n, 1073741824);
+          }
+          if (i6 != m) {
+            j = View.MeasureSpec.makeMeasureSpec(m, 1073741824);
+          }
+          localView.measure(i, j);
+          paramConstraintWidget.F0(i, j);
+          i2 = localView.getMeasuredWidth();
+          k = localView.getMeasuredHeight();
+          i1 = localView.getBaseline();
+        }
+      }
+      boolean bool1;
+      if (i1 != -1) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      boolean bool2;
+      if ((i2 == f) && (k == g)) {
+        bool2 = false;
+      } else {
+        bool2 = true;
+      }
+      l = bool2;
+      if (Y) {
+        bool1 = true;
+      }
+      if ((bool1) && (i1 != -1) && (paramConstraintWidget.n() != i1)) {
+        l = true;
+      }
+      h = i2;
+      i = k;
+      k = bool1;
+      j = i1;
+    }
+    
+    public void c(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6)
+    {
+      b = paramInt3;
+      c = paramInt4;
+      d = paramInt5;
+      e = paramInt6;
+      f = paramInt1;
+      g = paramInt2;
+    }
+  }
+}

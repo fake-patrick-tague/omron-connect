@@ -1,0 +1,124 @@
+package com.google.android.gms.internal.fitness;
+
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.AbstractCollection;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+
+public abstract class zzfd<E>
+  extends AbstractCollection<E>
+  implements Serializable
+{
+  private static final Object[] zztg = new Object[0];
+  
+  zzfd() {}
+  
+  @Deprecated
+  public final boolean add(E paramE)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Deprecated
+  public final boolean addAll(Collection<? extends E> paramCollection)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Deprecated
+  public final void clear()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public abstract boolean contains(Object paramObject);
+  
+  @Deprecated
+  public final boolean remove(Object paramObject)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Deprecated
+  public final boolean removeAll(Collection<?> paramCollection)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Deprecated
+  public final boolean retainAll(Collection<?> paramCollection)
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  public final Object[] toArray()
+  {
+    return toArray(zztg);
+  }
+  
+  public final <T> T[] toArray(T[] paramArrayOfT)
+  {
+    zzez.checkNotNull(paramArrayOfT);
+    int i = size();
+    Object localObject;
+    if (paramArrayOfT.length < i)
+    {
+      localObject = zzag();
+      if (localObject != null) {
+        return Arrays.copyOfRange((Object[])localObject, zzah(), zzai(), paramArrayOfT.getClass());
+      }
+      localObject = (Object[])Array.newInstance(paramArrayOfT.getClass().getComponentType(), i);
+    }
+    else
+    {
+      localObject = paramArrayOfT;
+      if (paramArrayOfT.length > i)
+      {
+        paramArrayOfT[i] = null;
+        localObject = paramArrayOfT;
+      }
+    }
+    zzb((Object[])localObject, 0);
+    return localObject;
+  }
+  
+  public abstract zzfm<E> zzae();
+  
+  public zzfc<E> zzaf()
+  {
+    if (isEmpty()) {
+      return zzfc.zzad();
+    }
+    return zzfc.zza(toArray());
+  }
+  
+  Object[] zzag()
+  {
+    return null;
+  }
+  
+  int zzah()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  int zzai()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  abstract boolean zzaj();
+  
+  int zzb(Object[] paramArrayOfObject, int paramInt)
+  {
+    zzfm localZzfm = (zzfm)iterator();
+    while (localZzfm.hasNext())
+    {
+      paramArrayOfObject[paramInt] = localZzfm.next();
+      paramInt += 1;
+    }
+    return paramInt;
+  }
+}

@@ -1,0 +1,1142 @@
+package com.braze.managers;
+
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Build.VERSION;
+import bo.app.b5;
+import bo.app.d5;
+import bo.app.h2;
+import bo.app.i3;
+import bo.app.m;
+import bo.app.n;
+import bo.app.o;
+import bo.app.o.b;
+import bo.app.s1;
+import bo.app.z1;
+import com.braze.configuration.BrazeConfigurationProvider;
+import com.braze.models.BrazeGeofence;
+import com.braze.models.IBrazeLocation;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.DateTimeUtils;
+import com.braze.support.PermissionUtils;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import kotlin.t;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.d.j;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public final class BrazeGeofenceManager
+{
+  public static final Companion Companion = new Companion(null);
+  private final Context applicationContext;
+  private final bo.app.l brazeGeofenceApi;
+  private m brazeGeofenceReEligibilityManager;
+  private final List<BrazeGeofence> brazeGeofences;
+  private final n brazeLocationApi;
+  private final z1 brazeManager;
+  private final BrazeConfigurationProvider configurationProvider;
+  private final ReentrantLock geofenceListLock;
+  private IBrazeLocation geofenceRequestLocation;
+  private final SharedPreferences geofenceStorageSharedPreferences;
+  private final PendingIntent geofenceTransitionPendingIntent;
+  private boolean isGeofencesEnabled;
+  private int maxNumToRegister;
+  private final d5 serverConfigStorageProvider;
+  
+  public BrazeGeofenceManager(Context paramContext, String paramString, z1 paramZ1, BrazeConfigurationProvider paramBrazeConfigurationProvider, d5 paramD5, h2 paramH2)
+  {
+    brazeManager = paramZ1;
+    configurationProvider = paramBrazeConfigurationProvider;
+    serverConfigStorageProvider = paramD5;
+    paramZ1 = new bo.app.l();
+    brazeGeofenceApi = paramZ1;
+    brazeLocationApi = new n(paramContext, o.d.a(paramBrazeConfigurationProvider), paramBrazeConfigurationProvider);
+    applicationContext = paramContext.getApplicationContext();
+    geofenceListLock = new ReentrantLock();
+    paramBrazeConfigurationProvider = Companion;
+    Object localObject = paramBrazeConfigurationProvider.getGeofenceSharedPreferencesName(paramString);
+    boolean bool2 = false;
+    localObject = paramContext.getSharedPreferences((String)localObject, 0);
+    kotlin.x.d.i.d(localObject, "context.getSharedPrefere?ontext.MODE_PRIVATE\n    )");
+    geofenceStorageSharedPreferences = ((SharedPreferences)localObject);
+    brazeGeofences = kotlin.collections.i.I(paramBrazeConfigurationProvider.retrieveBrazeGeofencesFromLocalStorage((SharedPreferences)localObject));
+    geofenceTransitionPendingIntent = paramZ1.b(paramContext);
+    brazeGeofenceReEligibilityManager = new m(paramContext, paramString, paramD5, paramH2);
+    boolean bool1 = bool2;
+    if (paramBrazeConfigurationProvider.getGeofencesEnabledFromServerConfig(paramD5))
+    {
+      bool1 = bool2;
+      if (isGeofencesEnabledFromEnvironment(paramContext))
+      {
+        bool1 = bool2;
+        if (paramZ1.a()) {
+          bool1 = true;
+        }
+      }
+    }
+    isGeofencesEnabled = bool1;
+    maxNumToRegister = paramBrazeConfigurationProvider.getMaxNumToRegister(paramD5);
+    if (!paramZ1.a()) {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, a.b, 2, null);
+    }
+    setUpGeofences(true);
+  }
+  
+  public void configureFromServerConfig(b5 paramB5)
+  {
+    kotlin.x.d.i.e(paramB5, "serverConfig");
+    boolean bool = paramB5.k();
+    BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+    BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, new b(bool), 3, null);
+    if (bool)
+    {
+      Context localContext = applicationContext;
+      kotlin.x.d.i.d(localContext, "applicationContext");
+      if ((isGeofencesEnabledFromEnvironment(localContext)) && (brazeGeofenceApi.a()))
+      {
+        bool = true;
+        break label79;
+      }
+    }
+    bool = false;
+    label79:
+    if (bool != isGeofencesEnabled)
+    {
+      isGeofencesEnabled = bool;
+      BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.I, null, new c(this), 2, null);
+      if (isGeofencesEnabled)
+      {
+        setUpGeofences(false);
+        if (configurationProvider.isAutomaticGeofenceRequestsEnabled()) {
+          requestGeofenceRefresh(true);
+        }
+      }
+      else
+      {
+        tearDownGeofences(geofenceTransitionPendingIntent);
+      }
+    }
+    else
+    {
+      BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, new d(bool), 3, null);
+    }
+    int i = paramB5.m();
+    if (i >= 0)
+    {
+      maxNumToRegister = i;
+      BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.I, null, new e(this), 2, null);
+    }
+    brazeGeofenceReEligibilityManager.a(paramB5);
+  }
+  
+  public final List<BrazeGeofence> getBrazeGeofences()
+  {
+    return brazeGeofences;
+  }
+  
+  public final int getMaxNumToRegister()
+  {
+    return maxNumToRegister;
+  }
+  
+  public final boolean isGeofencesEnabled()
+  {
+    return isGeofencesEnabled;
+  }
+  
+  public final boolean isGeofencesEnabledFromEnvironment(Context paramContext)
+  {
+    kotlin.x.d.i.e(paramContext, "context");
+    if (!Companion.getGeofencesEnabledFromConfiguration(configurationProvider))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, h.b, 3, null);
+      return false;
+    }
+    if (!PermissionUtils.hasPermission(paramContext, "android.permission.ACCESS_FINE_LOCATION"))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, i.b, 2, null);
+      return false;
+    }
+    if ((Build.VERSION.SDK_INT >= 29) && (!PermissionUtils.hasPermission(paramContext, "android.permission.ACCESS_BACKGROUND_LOCATION")))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, j.b, 2, null);
+      return false;
+    }
+    if (!s1.a(paramContext))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, k.b, 3, null);
+      return false;
+    }
+    if (!brazeGeofenceApi.a())
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, l.b, 3, null);
+      return false;
+    }
+    try
+    {
+      Class.forName("com.google.android.gms.location.LocationServices", false, BrazeGeofenceManager.class.getClassLoader());
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, n.b, 3, null);
+      return true;
+    }
+    catch (Exception paramContext)
+    {
+      for (;;) {}
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, m.b, 3, null);
+    return false;
+  }
+  
+  public void onLocationRequestComplete(IBrazeLocation paramIBrazeLocation)
+  {
+    if (paramIBrazeLocation != null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new o(paramIBrazeLocation), 3, null);
+      requestGeofenceRefresh(paramIBrazeLocation);
+      brazeGeofenceReEligibilityManager.a(DateTimeUtils.nowInSeconds());
+      return;
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, p.b, 3, null);
+  }
+  
+  public void registerGeofences(List<BrazeGeofence> paramList)
+  {
+    kotlin.x.d.i.e(paramList, "geofenceList");
+    paramList = kotlin.collections.i.I(paramList);
+    if (!isGeofencesEnabled)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, s.b, 2, null);
+      return;
+    }
+    Object localObject2;
+    Object localObject3;
+    if (geofenceRequestLocation != null)
+    {
+      localObject1 = paramList.iterator();
+      while (((Iterator)localObject1).hasNext())
+      {
+        localObject2 = (BrazeGeofence)((Iterator)localObject1).next();
+        localObject3 = geofenceRequestLocation;
+        if (localObject3 != null) {
+          ((BrazeGeofence)localObject2).setDistanceFromGeofenceRefresh(i3.a(((IBrazeLocation)localObject3).getLatitude(), ((IBrazeLocation)localObject3).getLongitude(), ((BrazeGeofence)localObject2).getLatitude(), ((BrazeGeofence)localObject2).getLongitude()));
+        }
+      }
+      kotlin.collections.i.k(paramList);
+    }
+    Object localObject1 = geofenceListLock;
+    ((Lock)localObject1).lock();
+    try
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new t(paramList), 3, null);
+      localObject2 = geofenceStorageSharedPreferences.edit();
+      ((SharedPreferences.Editor)localObject2).clear();
+      brazeGeofences.clear();
+      int i = 0;
+      localObject3 = paramList.iterator();
+      while (((Iterator)localObject3).hasNext())
+      {
+        BrazeGeofence localBrazeGeofence = (BrazeGeofence)((Iterator)localObject3).next();
+        if (i == maxNumToRegister)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new u(this), 3, null);
+          break;
+        }
+        brazeGeofences.add(localBrazeGeofence);
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new v(localBrazeGeofence), 3, null);
+        ((SharedPreferences.Editor)localObject2).putString(localBrazeGeofence.getId(), localBrazeGeofence.forJsonPut().toString());
+        i += 1;
+      }
+      ((SharedPreferences.Editor)localObject2).apply();
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new w(this), 3, null);
+      localObject2 = t.a;
+      ((Lock)localObject1).unlock();
+      brazeGeofenceReEligibilityManager.a(paramList);
+      setUpGeofences(true);
+      return;
+    }
+    finally
+    {
+      ((Lock)localObject1).unlock();
+    }
+  }
+  
+  public final void registerGeofencesWithGooglePlay(List<BrazeGeofence> paramList, PendingIntent paramPendingIntent)
+  {
+    kotlin.x.d.i.e(paramList, "geofenceList");
+    kotlin.x.d.i.e(paramPendingIntent, "geofenceRequestIntent");
+    bo.app.l localL = brazeGeofenceApi;
+    Context localContext = applicationContext;
+    kotlin.x.d.i.d(localContext, "applicationContext");
+    localL.a(localContext, paramList, paramPendingIntent);
+  }
+  
+  public void requestGeofenceRefresh(IBrazeLocation paramIBrazeLocation)
+  {
+    kotlin.x.d.i.e(paramIBrazeLocation, "location");
+    if (!isGeofencesEnabled)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, x.b, 3, null);
+      return;
+    }
+    geofenceRequestLocation = paramIBrazeLocation;
+    if (paramIBrazeLocation != null) {
+      brazeManager.a(paramIBrazeLocation);
+    }
+  }
+  
+  public void requestGeofenceRefresh(boolean paramBoolean)
+  {
+    if (!isGeofencesEnabled)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, y.b, 3, null);
+      return;
+    }
+    if (brazeGeofenceReEligibilityManager.a(paramBoolean, DateTimeUtils.nowInSeconds())) {
+      requestSingleLocationUpdateFromGooglePlay();
+    }
+  }
+  
+  public final void requestSingleLocationUpdateFromGooglePlay()
+  {
+    brazeLocationApi.a(new z(this));
+  }
+  
+  public final void setUpGeofences(boolean paramBoolean)
+  {
+    if (!isGeofencesEnabled)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, a0.b, 3, null);
+      return;
+    }
+    Object localObject1 = geofenceTransitionPendingIntent;
+    if (localObject1 == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, b0.b, 3, null);
+      return;
+    }
+    if (paramBoolean)
+    {
+      ReentrantLock localReentrantLock = geofenceListLock;
+      localReentrantLock.lock();
+      try
+      {
+        registerGeofencesWithGooglePlay(brazeGeofences, (PendingIntent)localObject1);
+        localObject1 = t.a;
+        return;
+      }
+      finally
+      {
+        localReentrantLock.unlock();
+      }
+    }
+  }
+  
+  public final void tearDownGeofences(PendingIntent paramPendingIntent)
+  {
+    Object localObject1 = BrazeLogger.INSTANCE;
+    BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, null, null, c0.b, 3, null);
+    if (paramPendingIntent != null)
+    {
+      BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, null, null, d0.b, 3, null);
+      bo.app.l localL = brazeGeofenceApi;
+      Context localContext = applicationContext;
+      kotlin.x.d.i.d(localContext, "applicationContext");
+      localL.a(localContext, paramPendingIntent);
+    }
+    paramPendingIntent = geofenceListLock;
+    paramPendingIntent.lock();
+    try
+    {
+      BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, null, null, e0.b, 3, null);
+      geofenceStorageSharedPreferences.edit().clear().apply();
+      brazeGeofences.clear();
+      localObject1 = t.a;
+      return;
+    }
+    finally
+    {
+      paramPendingIntent.unlock();
+    }
+  }
+  
+  public void unregisterGeofences()
+  {
+    if (!isGeofencesEnabled)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, f0.b, 3, null);
+      return;
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, g0.b, 3, null);
+    tearDownGeofences(geofenceTransitionPendingIntent);
+  }
+  
+  public static final class Companion
+  {
+    private Companion() {}
+    
+    public final String getGeofenceSharedPreferencesName(String paramString)
+    {
+      kotlin.x.d.i.e(paramString, "apiKey");
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("com.appboy.managers.geofences.storage.");
+      localStringBuilder.append(paramString);
+      return localStringBuilder.toString();
+    }
+    
+    public final boolean getGeofencesEnabledFromConfiguration(BrazeConfigurationProvider paramBrazeConfigurationProvider)
+    {
+      kotlin.x.d.i.e(paramBrazeConfigurationProvider, "configurationProvider");
+      return paramBrazeConfigurationProvider.isGeofencesEnabled();
+    }
+    
+    public final boolean getGeofencesEnabledFromServerConfig(d5 paramD5)
+    {
+      kotlin.x.d.i.e(paramD5, "serverConfigStorageProvider");
+      if (paramD5.s())
+      {
+        if (paramD5.r())
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, a.b, 2, null);
+          return true;
+        }
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, b.b, 2, null);
+        return false;
+      }
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, c.b, 2, null);
+      return false;
+    }
+    
+    public final int getMaxNumToRegister(d5 paramD5)
+    {
+      kotlin.x.d.i.e(paramD5, "serverConfigStorageProvider");
+      if (paramD5.i() > 0) {
+        return paramD5.i();
+      }
+      return 20;
+    }
+    
+    public final List<BrazeGeofence> retrieveBrazeGeofencesFromLocalStorage(SharedPreferences paramSharedPreferences)
+    {
+      kotlin.x.d.i.e(paramSharedPreferences, "sharedPreferences");
+      ArrayList localArrayList = new ArrayList();
+      Object localObject = paramSharedPreferences.getAll();
+      int i;
+      if ((localObject != null) && (!((Map)localObject).isEmpty())) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, d.b, 3, null);
+        return localArrayList;
+      }
+      localObject = ((Map)localObject).keySet();
+      if (((Set)localObject).isEmpty())
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, e.b, 2, null);
+        return localArrayList;
+      }
+      localObject = ((Set)localObject).iterator();
+      String str2;
+      String str1;
+      if (((Iterator)localObject).hasNext())
+      {
+        str2 = (String)((Iterator)localObject).next();
+        str1 = paramSharedPreferences.getString(str2, null);
+        if (str1 == null) {
+          break label282;
+        }
+      }
+      for (;;)
+      {
+        try
+        {
+          if (!g.o(str1)) {
+            continue;
+          }
+        }
+        catch (Exception localException)
+        {
+          continue;
+        }
+        catch (JSONException localJSONException)
+        {
+          continue;
+        }
+        if (i != 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new f(str2), 2, null);
+          break;
+        }
+        localArrayList.add(new BrazeGeofence(new JSONObject(str1)));
+        break;
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, str2, new h(str1));
+        break;
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, str2, new g(str1));
+        break;
+        return localArrayList;
+        i = 0;
+        continue;
+        label282:
+        i = 1;
+      }
+    }
+    
+    static final class a
+      extends j
+      implements a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Geofences enabled in server configuration.";
+      }
+    }
+    
+    static final class b
+      extends j
+      implements a<String>
+    {
+      public static final b b = new b();
+      
+      b()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Geofences explicitly disabled via server configuration.";
+      }
+    }
+    
+    static final class c
+      extends j
+      implements a<String>
+    {
+      public static final c b = new c();
+      
+      c()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Geofences implicitly disabled via server configuration.";
+      }
+    }
+    
+    static final class d
+      extends j
+      implements a<String>
+    {
+      public static final d b = new d();
+      
+      d()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Did not find stored geofences.";
+      }
+    }
+    
+    static final class e
+      extends j
+      implements a<String>
+    {
+      public static final e b = new e();
+      
+      e()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Failed to find stored geofence keys.";
+      }
+    }
+    
+    static final class f
+      extends j
+      implements a<String>
+    {
+      f(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Received null or blank serialized geofence string for geofence id ");
+        localStringBuilder.append(b);
+        localStringBuilder.append(" from shared preferences. Not parsing.");
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class g
+      extends j
+      implements a<String>
+    {
+      g(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Encountered Json exception while parsing stored geofence: ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class h
+      extends j
+      implements a<String>
+    {
+      h(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Encountered unexpected exception while parsing stored geofence: ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+  }
+  
+  static final class a
+    extends j
+    implements a<String>
+  {
+    public static final a b = new a();
+    
+    a()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "***Geofence API not found. Please include the android-sdk-location module***";
+    }
+  }
+  
+  static final class a0
+    extends j
+    implements a<String>
+  {
+    public static final a0 b = new a0();
+    
+    a0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Braze geofences not enabled. Geofences not set up.";
+    }
+  }
+  
+  static final class b
+    extends j
+    implements a<String>
+  {
+    b(boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Geofences enabled server config value ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" received.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class b0
+    extends j
+    implements a<String>
+  {
+    public static final b0 b = new b0();
+    
+    b0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Could not get pending intent to setup geofences";
+    }
+  }
+  
+  static final class c
+    extends j
+    implements a<String>
+  {
+    c(BrazeGeofenceManager paramBrazeGeofenceManager)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Geofences enabled status newly set to ");
+      localStringBuilder.append(b.isGeofencesEnabled());
+      localStringBuilder.append(" during server config update.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class c0
+    extends j
+    implements a<String>
+  {
+    public static final c0 b = new c0();
+    
+    c0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Tearing down geofences.";
+    }
+  }
+  
+  static final class d
+    extends j
+    implements a<String>
+  {
+    d(boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Geofences enabled status of `");
+      localStringBuilder.append(b);
+      localStringBuilder.append("` was unchanged during server config update.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class d0
+    extends j
+    implements a<String>
+  {
+    public static final d0 b = new d0();
+    
+    d0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Unregistering any Braze geofences from Google Play Services.";
+    }
+  }
+  
+  static final class e
+    extends j
+    implements a<String>
+  {
+    e(BrazeGeofenceManager paramBrazeGeofenceManager)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Max number to register newly set to ");
+      localStringBuilder.append(b.getMaxNumToRegister());
+      localStringBuilder.append(" via server config.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class e0
+    extends j
+    implements a<String>
+  {
+    public static final e0 b = new e0();
+    
+    e0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Deleting locally stored geofences.";
+    }
+  }
+  
+  static final class f0
+    extends j
+    implements a<String>
+  {
+    public static final f0 b = new f0();
+    
+    f0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Braze geofences not enabled. Not un-registering geofences.";
+    }
+  }
+  
+  static final class g0
+    extends j
+    implements a<String>
+  {
+    public static final g0 b = new g0();
+    
+    g0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Tearing down all geofences.";
+    }
+  }
+  
+  static final class h
+    extends j
+    implements a<String>
+  {
+    public static final h b = new h();
+    
+    h()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Braze Geofences disabled or Braze location collection disabled in local configuration. Geofences not enabled.";
+    }
+  }
+  
+  static final class i
+    extends j
+    implements a<String>
+  {
+    public static final i b = new i();
+    
+    i()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Fine grained location permissions not found. Geofences not enabled.";
+    }
+  }
+  
+  static final class j
+    extends j
+    implements a<String>
+  {
+    public static final j b = new j();
+    
+    j()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Background location access permission not found. Geofences not enabled.";
+    }
+  }
+  
+  static final class k
+    extends j
+    implements a<String>
+  {
+    public static final k b = new k();
+    
+    k()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Google Play Services not available. Geofences not enabled.";
+    }
+  }
+  
+  static final class l
+    extends j
+    implements a<String>
+  {
+    public static final l b = new l();
+    
+    l()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Braze Geofence API is not available";
+    }
+  }
+  
+  static final class m
+    extends j
+    implements a<String>
+  {
+    public static final m b = new m();
+    
+    m()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Google Play Services Location API not found. Geofences not enabled.";
+    }
+  }
+  
+  static final class n
+    extends j
+    implements a<String>
+  {
+    public static final n b = new n();
+    
+    n()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Location permissions granted and Google Play Services available. Braze Geofencing enabled via config.";
+    }
+  }
+  
+  static final class o
+    extends j
+    implements a<String>
+  {
+    o(IBrazeLocation paramIBrazeLocation)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Single location request was successful, requesting Geofence refresh. Location:\n ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class p
+    extends j
+    implements a<String>
+  {
+    public static final p b = new p();
+    
+    p()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Single location request was unsuccessful, not storing last updated time.";
+    }
+  }
+  
+  static final class s
+    extends j
+    implements a<String>
+  {
+    public static final s b = new s();
+    
+    s()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Braze geofences not enabled. Not adding new geofences to local storage.";
+    }
+  }
+  
+  static final class t
+    extends j
+    implements a<String>
+  {
+    t(List<BrazeGeofence> paramList)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Received new geofence list of size: ");
+      localStringBuilder.append(b.size());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class u
+    extends j
+    implements a<String>
+  {
+    u(BrazeGeofenceManager paramBrazeGeofenceManager)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Reached maximum number of new geofences: ");
+      localStringBuilder.append(b.getMaxNumToRegister());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class v
+    extends j
+    implements a<String>
+  {
+    v(BrazeGeofence paramBrazeGeofence)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Adding new geofence to local storage: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class w
+    extends j
+    implements a<String>
+  {
+    w(BrazeGeofenceManager paramBrazeGeofenceManager)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Added ");
+      localStringBuilder.append(b.getBrazeGeofences().size());
+      localStringBuilder.append(" new geofences to local storage.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class x
+    extends j
+    implements a<String>
+  {
+    public static final x b = new x();
+    
+    x()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Braze geofences not enabled. Not requesting geofences.";
+    }
+  }
+  
+  static final class y
+    extends j
+    implements a<String>
+  {
+    public static final y b = new y();
+    
+    y()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Braze geofences not enabled. Not requesting geofences.";
+    }
+  }
+  
+  static final class z
+    extends j
+    implements kotlin.x.c.l<IBrazeLocation, t>
+  {
+    z(BrazeGeofenceManager paramBrazeGeofenceManager)
+    {
+      super();
+    }
+    
+    public final void a(IBrazeLocation paramIBrazeLocation)
+    {
+      kotlin.x.d.i.e(paramIBrazeLocation, "location");
+      b.onLocationRequestComplete(paramIBrazeLocation);
+    }
+  }
+}

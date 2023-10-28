@@ -1,0 +1,80 @@
+package androidx.viewpager2.widget;
+
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.List;
+
+final class b
+  extends ViewPager2.i
+{
+  private final List<ViewPager2.i> a;
+  
+  b(int paramInt)
+  {
+    a = new ArrayList(paramInt);
+  }
+  
+  private void f(ConcurrentModificationException paramConcurrentModificationException)
+  {
+    throw new IllegalStateException("Adding and removing callbacks during dispatch to callbacks is not supported", paramConcurrentModificationException);
+  }
+  
+  public void a(int paramInt)
+  {
+    try
+    {
+      Iterator localIterator = a.iterator();
+      while (localIterator.hasNext()) {
+        ((ViewPager2.i)localIterator.next()).a(paramInt);
+      }
+      return;
+    }
+    catch (ConcurrentModificationException localConcurrentModificationException)
+    {
+      f(localConcurrentModificationException);
+    }
+  }
+  
+  public void b(int paramInt1, float paramFloat, int paramInt2)
+  {
+    try
+    {
+      Iterator localIterator = a.iterator();
+      while (localIterator.hasNext()) {
+        ((ViewPager2.i)localIterator.next()).b(paramInt1, paramFloat, paramInt2);
+      }
+      return;
+    }
+    catch (ConcurrentModificationException localConcurrentModificationException)
+    {
+      f(localConcurrentModificationException);
+    }
+  }
+  
+  public void c(int paramInt)
+  {
+    try
+    {
+      Iterator localIterator = a.iterator();
+      while (localIterator.hasNext()) {
+        ((ViewPager2.i)localIterator.next()).c(paramInt);
+      }
+      return;
+    }
+    catch (ConcurrentModificationException localConcurrentModificationException)
+    {
+      f(localConcurrentModificationException);
+    }
+  }
+  
+  void d(ViewPager2.i paramI)
+  {
+    a.add(paramI);
+  }
+  
+  void e(ViewPager2.i paramI)
+  {
+    a.remove(paramI);
+  }
+}

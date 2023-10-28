@@ -1,0 +1,37 @@
+package com.google.android.gms.common.api;
+
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+
+public abstract class ResultCallbacks<R extends Result>
+  implements ResultCallback<R>
+{
+  public ResultCallbacks() {}
+  
+  public abstract void onFailure(Status paramStatus);
+  
+  @KeepForSdk
+  public final void onResult(R paramR)
+  {
+    Status localStatus = paramR.getStatus();
+    if (localStatus.isSuccess())
+    {
+      onSuccess(paramR);
+      return;
+    }
+    onFailure(localStatus);
+    if ((paramR instanceof Releasable)) {
+      try
+      {
+        ((Releasable)paramR).release();
+        return;
+      }
+      catch (RuntimeException localRuntimeException)
+      {
+        Log.w("ResultCallbacks", "Unable to release ".concat(String.valueOf(paramR)), localRuntimeException);
+      }
+    }
+  }
+  
+  public abstract void onSuccess(R paramR);
+}

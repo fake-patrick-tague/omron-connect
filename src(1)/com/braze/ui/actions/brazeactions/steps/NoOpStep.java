@@ -1,0 +1,24 @@
+package com.braze.ui.actions.brazeactions.steps;
+
+import android.content.Context;
+import kotlin.x.d.i;
+
+public final class NoOpStep
+  implements IBrazeActionStep
+{
+  public static final NoOpStep INSTANCE = new NoOpStep();
+  
+  private NoOpStep() {}
+  
+  public boolean isValid(StepData paramStepData)
+  {
+    i.e(paramStepData, "data");
+    return false;
+  }
+  
+  public void storeData(Context paramContext, StepData paramStepData)
+  {
+    i.e(paramContext, "context");
+    i.e(paramStepData, "data");
+  }
+}

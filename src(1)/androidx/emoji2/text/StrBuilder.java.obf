@@ -1,0 +1,350 @@
+package androidx.emoji2.text;
+
+import android.os.Build.VERSION;
+import android.text.Editable;
+import android.text.SpanWatcher;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextWatcher;
+import c.h.p.h;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class n
+  extends SpannableStringBuilder
+{
+  private final Class<?> b;
+  private final List<a> c = new ArrayList();
+  
+  n(Class<?> paramClass, CharSequence paramCharSequence)
+  {
+    super(paramCharSequence);
+    h.h(paramClass, "watcherClass cannot be null");
+    b = paramClass;
+  }
+  
+  n(Class<?> paramClass, CharSequence paramCharSequence, int paramInt1, int paramInt2)
+  {
+    super(paramCharSequence, paramInt1, paramInt2);
+    h.h(paramClass, "watcherClass cannot be null");
+    b = paramClass;
+  }
+  
+  private void b()
+  {
+    int i = 0;
+    while (i < c.size())
+    {
+      ((a)c.get(i)).a();
+      i += 1;
+    }
+  }
+  
+  public static n c(Class<?> paramClass, CharSequence paramCharSequence)
+  {
+    return new n(paramClass, paramCharSequence);
+  }
+  
+  private void e()
+  {
+    int i = 0;
+    while (i < c.size())
+    {
+      ((a)c.get(i)).onTextChanged(this, 0, length(), length());
+      i += 1;
+    }
+  }
+  
+  private a f(Object paramObject)
+  {
+    int i = 0;
+    while (i < c.size())
+    {
+      a localA = (a)c.get(i);
+      if (b == paramObject) {
+        return localA;
+      }
+      i += 1;
+    }
+    return null;
+  }
+  
+  private boolean g(Class<?> paramClass)
+  {
+    return b == paramClass;
+  }
+  
+  private boolean h(Object paramObject)
+  {
+    return (paramObject != null) && (g(paramObject.getClass()));
+  }
+  
+  private void i()
+  {
+    int i = 0;
+    while (i < c.size())
+    {
+      ((a)c.get(i)).c();
+      i += 1;
+    }
+  }
+  
+  public void a()
+  {
+    b();
+  }
+  
+  public SpannableStringBuilder append(char paramChar)
+  {
+    super.append(paramChar);
+    return this;
+  }
+  
+  public SpannableStringBuilder append(CharSequence paramCharSequence)
+  {
+    super.append(paramCharSequence);
+    return this;
+  }
+  
+  public SpannableStringBuilder append(CharSequence paramCharSequence, int paramInt1, int paramInt2)
+  {
+    super.append(paramCharSequence, paramInt1, paramInt2);
+    return this;
+  }
+  
+  public SpannableStringBuilder append(CharSequence paramCharSequence, Object paramObject, int paramInt)
+  {
+    super.append(paramCharSequence, paramObject, paramInt);
+    return this;
+  }
+  
+  public void d()
+  {
+    i();
+    e();
+  }
+  
+  public SpannableStringBuilder delete(int paramInt1, int paramInt2)
+  {
+    super.delete(paramInt1, paramInt2);
+    return this;
+  }
+  
+  public int getSpanEnd(Object paramObject)
+  {
+    Object localObject = paramObject;
+    if (h(paramObject))
+    {
+      a localA = f(paramObject);
+      localObject = paramObject;
+      if (localA != null) {
+        localObject = localA;
+      }
+    }
+    return super.getSpanEnd(localObject);
+  }
+  
+  public int getSpanFlags(Object paramObject)
+  {
+    Object localObject = paramObject;
+    if (h(paramObject))
+    {
+      a localA = f(paramObject);
+      localObject = paramObject;
+      if (localA != null) {
+        localObject = localA;
+      }
+    }
+    return super.getSpanFlags(localObject);
+  }
+  
+  public int getSpanStart(Object paramObject)
+  {
+    Object localObject = paramObject;
+    if (h(paramObject))
+    {
+      a localA = f(paramObject);
+      localObject = paramObject;
+      if (localA != null) {
+        localObject = localA;
+      }
+    }
+    return super.getSpanStart(localObject);
+  }
+  
+  public <T> T[] getSpans(int paramInt1, int paramInt2, Class<T> paramClass)
+  {
+    if (g(paramClass))
+    {
+      a[] arrayOfA = (a[])super.getSpans(paramInt1, paramInt2, a.class);
+      paramClass = (Object[])Array.newInstance(paramClass, arrayOfA.length);
+      paramInt1 = 0;
+      while (paramInt1 < arrayOfA.length)
+      {
+        paramClass[paramInt1] = b;
+        paramInt1 += 1;
+      }
+      return paramClass;
+    }
+    return super.getSpans(paramInt1, paramInt2, paramClass);
+  }
+  
+  public SpannableStringBuilder insert(int paramInt, CharSequence paramCharSequence)
+  {
+    super.insert(paramInt, paramCharSequence);
+    return this;
+  }
+  
+  public SpannableStringBuilder insert(int paramInt1, CharSequence paramCharSequence, int paramInt2, int paramInt3)
+  {
+    super.insert(paramInt1, paramCharSequence, paramInt2, paramInt3);
+    return this;
+  }
+  
+  public int nextSpanTransition(int paramInt1, int paramInt2, Class paramClass)
+  {
+    Object localObject;
+    if (paramClass != null)
+    {
+      localObject = paramClass;
+      if (!g(paramClass)) {}
+    }
+    else
+    {
+      localObject = a.class;
+    }
+    return super.nextSpanTransition(paramInt1, paramInt2, (Class)localObject);
+  }
+  
+  public void removeSpan(Object paramObject)
+  {
+    a localA2;
+    if (h(paramObject))
+    {
+      a localA1 = f(paramObject);
+      localA2 = localA1;
+      if (localA1 != null)
+      {
+        paramObject = localA1;
+        localA2 = localA1;
+      }
+    }
+    else
+    {
+      localA2 = null;
+    }
+    super.removeSpan(paramObject);
+    if (localA2 != null) {
+      c.remove(localA2);
+    }
+  }
+  
+  public SpannableStringBuilder replace(int paramInt1, int paramInt2, CharSequence paramCharSequence)
+  {
+    b();
+    super.replace(paramInt1, paramInt2, paramCharSequence);
+    i();
+    return this;
+  }
+  
+  public SpannableStringBuilder replace(int paramInt1, int paramInt2, CharSequence paramCharSequence, int paramInt3, int paramInt4)
+  {
+    b();
+    super.replace(paramInt1, paramInt2, paramCharSequence, paramInt3, paramInt4);
+    i();
+    return this;
+  }
+  
+  public void setSpan(Object paramObject, int paramInt1, int paramInt2, int paramInt3)
+  {
+    Object localObject = paramObject;
+    if (h(paramObject))
+    {
+      localObject = new a(paramObject);
+      c.add(localObject);
+    }
+    super.setSpan(localObject, paramInt1, paramInt2, paramInt3);
+  }
+  
+  public CharSequence subSequence(int paramInt1, int paramInt2)
+  {
+    return new n(b, this, paramInt1, paramInt2);
+  }
+  
+  private static class a
+    implements TextWatcher, SpanWatcher
+  {
+    final Object b;
+    private final AtomicInteger c = new AtomicInteger(0);
+    
+    a(Object paramObject)
+    {
+      b = paramObject;
+    }
+    
+    private boolean b(Object paramObject)
+    {
+      return paramObject instanceof j;
+    }
+    
+    final void a()
+    {
+      c.incrementAndGet();
+    }
+    
+    public void afterTextChanged(Editable paramEditable)
+    {
+      ((TextWatcher)b).afterTextChanged(paramEditable);
+    }
+    
+    public void beforeTextChanged(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3)
+    {
+      ((TextWatcher)b).beforeTextChanged(paramCharSequence, paramInt1, paramInt2, paramInt3);
+    }
+    
+    final void c()
+    {
+      c.decrementAndGet();
+    }
+    
+    public void onSpanAdded(Spannable paramSpannable, Object paramObject, int paramInt1, int paramInt2)
+    {
+      if ((c.get() > 0) && (b(paramObject))) {
+        return;
+      }
+      ((SpanWatcher)b).onSpanAdded(paramSpannable, paramObject, paramInt1, paramInt2);
+    }
+    
+    public void onSpanChanged(Spannable paramSpannable, Object paramObject, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      if ((c.get() > 0) && (b(paramObject))) {
+        return;
+      }
+      if (Build.VERSION.SDK_INT < 28)
+      {
+        if (paramInt1 > paramInt2) {
+          paramInt1 = 0;
+        }
+        if (paramInt3 > paramInt4) {
+          paramInt3 = 0;
+        } else {}
+      }
+      ((SpanWatcher)b).onSpanChanged(paramSpannable, paramObject, paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+    
+    public void onSpanRemoved(Spannable paramSpannable, Object paramObject, int paramInt1, int paramInt2)
+    {
+      if ((c.get() > 0) && (b(paramObject))) {
+        return;
+      }
+      ((SpanWatcher)b).onSpanRemoved(paramSpannable, paramObject, paramInt1, paramInt2);
+    }
+    
+    public void onTextChanged(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3)
+    {
+      ((TextWatcher)b).onTextChanged(paramCharSequence, paramInt1, paramInt2, paramInt3);
+    }
+  }
+}

@@ -1,0 +1,498 @@
+package com.google.android.material.datepicker;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.GridView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.n;
+import androidx.recyclerview.widget.RecyclerView.o;
+import androidx.recyclerview.widget.RecyclerView.s;
+import androidx.recyclerview.widget.RecyclerView.y;
+import androidx.recyclerview.widget.t;
+import androidx.recyclerview.widget.x;
+import c.h.q.f0;
+import c.h.q.p0.c;
+import com.google.android.material.button.MaterialButton;
+import d.c.a.a.g;
+import d.c.a.a.h;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+public final class MaterialCalendar<S>
+  extends k<S>
+{
+  static final Object c = "MONTHS_VIEW_GROUP_TAG";
+  static final Object d = "NAVIGATION_PREV_TAG";
+  static final Object e = "NAVIGATION_NEXT_TAG";
+  static final Object f = "SELECTOR_TOGGLE_TAG";
+  private int g;
+  private DateSelector<S> h;
+  private CalendarConstraints i;
+  private Month j;
+  private CalendarSelector k;
+  private b l;
+  private RecyclerView m;
+  private RecyclerView n;
+  private View o;
+  private View p;
+  
+  public MaterialCalendar() {}
+  
+  public static <T> MaterialCalendar<T> C(DateSelector<T> paramDateSelector, int paramInt, CalendarConstraints paramCalendarConstraints)
+  {
+    MaterialCalendar localMaterialCalendar = new MaterialCalendar();
+    Bundle localBundle = new Bundle();
+    localBundle.putInt("THEME_RES_ID_KEY", paramInt);
+    localBundle.putParcelable("GRID_SELECTOR_KEY", paramDateSelector);
+    localBundle.putParcelable("CALENDAR_CONSTRAINTS_KEY", paramCalendarConstraints);
+    localBundle.putParcelable("CURRENT_MONTH_KEY", paramCalendarConstraints.j());
+    localMaterialCalendar.setArguments(localBundle);
+    return localMaterialCalendar;
+  }
+  
+  private void D(final int paramInt)
+  {
+    n.post(new a(paramInt));
+  }
+  
+  private void t(View paramView, final i paramI)
+  {
+    final MaterialButton localMaterialButton1 = (MaterialButton)paramView.findViewById(d.c.a.a.f.s);
+    localMaterialButton1.setTag(f);
+    f0.p0(localMaterialButton1, new f());
+    MaterialButton localMaterialButton2 = (MaterialButton)paramView.findViewById(d.c.a.a.f.u);
+    localMaterialButton2.setTag(d);
+    MaterialButton localMaterialButton3 = (MaterialButton)paramView.findViewById(d.c.a.a.f.t);
+    localMaterialButton3.setTag(e);
+    o = paramView.findViewById(d.c.a.a.f.C);
+    p = paramView.findViewById(d.c.a.a.f.x);
+    F(CalendarSelector.b);
+    localMaterialButton1.setText(j.h(paramView.getContext()));
+    n.l(new g(paramI, localMaterialButton1));
+    localMaterialButton1.setOnClickListener(new h());
+    localMaterialButton3.setOnClickListener(new i(paramI));
+    localMaterialButton2.setOnClickListener(new j(paramI));
+  }
+  
+  private RecyclerView.n u()
+  {
+    return new e();
+  }
+  
+  static int z(Context paramContext)
+  {
+    return paramContext.getResources().getDimensionPixelSize(d.c.a.a.d.N);
+  }
+  
+  LinearLayoutManager B()
+  {
+    return (LinearLayoutManager)n.getLayoutManager();
+  }
+  
+  void E(Month paramMonth)
+  {
+    i localI = (i)n.getAdapter();
+    int i3 = localI.f(paramMonth);
+    int i4 = i3 - localI.f(j);
+    int i1 = Math.abs(i4);
+    int i2 = 1;
+    if (i1 > 3) {
+      i1 = 1;
+    } else {
+      i1 = 0;
+    }
+    if (i4 <= 0) {
+      i2 = 0;
+    }
+    j = paramMonth;
+    if ((i1 != 0) && (i2 != 0))
+    {
+      n.l1(i3 - 3);
+      D(i3);
+      return;
+    }
+    if (i1 != 0)
+    {
+      n.l1(i3 + 3);
+      D(i3);
+      return;
+    }
+    D(i3);
+  }
+  
+  void F(CalendarSelector paramCalendarSelector)
+  {
+    k = paramCalendarSelector;
+    if (paramCalendarSelector == CalendarSelector.c)
+    {
+      m.getLayoutManager().S1(((o)m.getAdapter()).e(j.d));
+      o.setVisibility(0);
+      p.setVisibility(8);
+      return;
+    }
+    if (paramCalendarSelector == CalendarSelector.b)
+    {
+      o.setVisibility(8);
+      p.setVisibility(0);
+      E(j);
+    }
+  }
+  
+  void G()
+  {
+    CalendarSelector localCalendarSelector1 = k;
+    CalendarSelector localCalendarSelector2 = CalendarSelector.c;
+    if (localCalendarSelector1 == localCalendarSelector2)
+    {
+      F(CalendarSelector.b);
+      return;
+    }
+    if (localCalendarSelector1 == CalendarSelector.b) {
+      F(localCalendarSelector2);
+    }
+  }
+  
+  public boolean i(j<S> paramJ)
+  {
+    return super.i(paramJ);
+  }
+  
+  public void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    Bundle localBundle = paramBundle;
+    if (paramBundle == null) {
+      localBundle = getArguments();
+    }
+    g = localBundle.getInt("THEME_RES_ID_KEY");
+    h = ((DateSelector)localBundle.getParcelable("GRID_SELECTOR_KEY"));
+    i = ((CalendarConstraints)localBundle.getParcelable("CALENDAR_CONSTRAINTS_KEY"));
+    j = ((Month)localBundle.getParcelable("CURRENT_MONTH_KEY"));
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramBundle = new ContextThemeWrapper(getContext(), g);
+    l = new b(paramBundle);
+    paramLayoutInflater = paramLayoutInflater.cloneInContext(paramBundle);
+    Object localObject = i.k();
+    final int i2;
+    if (e.z(paramBundle))
+    {
+      i1 = h.q;
+      i2 = 1;
+    }
+    else
+    {
+      i1 = h.o;
+      i2 = 0;
+    }
+    paramLayoutInflater = paramLayoutInflater.inflate(i1, paramViewGroup, false);
+    paramViewGroup = (GridView)paramLayoutInflater.findViewById(d.c.a.a.f.y);
+    f0.p0(paramViewGroup, new b());
+    paramViewGroup.setAdapter(new d());
+    paramViewGroup.setNumColumns(e);
+    paramViewGroup.setEnabled(false);
+    n = ((RecyclerView)paramLayoutInflater.findViewById(d.c.a.a.f.B));
+    paramViewGroup = new c(getContext(), i2, false, i2);
+    n.setLayoutManager(paramViewGroup);
+    n.setTag(c);
+    paramViewGroup = new i(paramBundle, h, i, new d());
+    n.setAdapter(paramViewGroup);
+    int i1 = paramBundle.getResources().getInteger(g.b);
+    localObject = (RecyclerView)paramLayoutInflater.findViewById(d.c.a.a.f.C);
+    m = ((RecyclerView)localObject);
+    if (localObject != null)
+    {
+      ((RecyclerView)localObject).setHasFixedSize(true);
+      m.setLayoutManager(new GridLayoutManager(paramBundle, i1, 1, false));
+      m.setAdapter(new o(this));
+      m.h(u());
+    }
+    if (paramLayoutInflater.findViewById(d.c.a.a.f.s) != null) {
+      t(paramLayoutInflater, paramViewGroup);
+    }
+    if (!e.z(paramBundle)) {
+      new t().b(n);
+    }
+    n.l1(paramViewGroup.f(j));
+    return paramLayoutInflater;
+  }
+  
+  public void onSaveInstanceState(Bundle paramBundle)
+  {
+    super.onSaveInstanceState(paramBundle);
+    paramBundle.putInt("THEME_RES_ID_KEY", g);
+    paramBundle.putParcelable("GRID_SELECTOR_KEY", h);
+    paramBundle.putParcelable("CALENDAR_CONSTRAINTS_KEY", i);
+    paramBundle.putParcelable("CURRENT_MONTH_KEY", j);
+  }
+  
+  CalendarConstraints v()
+  {
+    return i;
+  }
+  
+  b w()
+  {
+    return l;
+  }
+  
+  Month x()
+  {
+    return j;
+  }
+  
+  public DateSelector<S> y()
+  {
+    return h;
+  }
+  
+  static enum CalendarSelector
+  {
+    static
+    {
+      CalendarSelector localCalendarSelector1 = new CalendarSelector("DAY", 0);
+      b = localCalendarSelector1;
+      CalendarSelector localCalendarSelector2 = new CalendarSelector("YEAR", 1);
+      c = localCalendarSelector2;
+      d = new CalendarSelector[] { localCalendarSelector1, localCalendarSelector2 };
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(int paramInt) {}
+    
+    public void run()
+    {
+      MaterialCalendar.k(MaterialCalendar.this).t1(paramInt);
+    }
+  }
+  
+  class b
+    extends c.h.q.f
+  {
+    b() {}
+    
+    public void g(View paramView, c paramC)
+    {
+      super.g(paramView, paramC);
+      paramC.a0(null);
+    }
+  }
+  
+  class c
+    extends l
+  {
+    c(Context paramContext, int paramInt1, boolean paramBoolean, int paramInt2)
+    {
+      super(paramInt1, paramBoolean);
+    }
+    
+    protected void j2(RecyclerView.y paramY, int[] paramArrayOfInt)
+    {
+      if (i2 == 0)
+      {
+        paramArrayOfInt[0] = MaterialCalendar.k(MaterialCalendar.this).getWidth();
+        paramArrayOfInt[1] = MaterialCalendar.k(MaterialCalendar.this).getWidth();
+        return;
+      }
+      paramArrayOfInt[0] = MaterialCalendar.k(MaterialCalendar.this).getHeight();
+      paramArrayOfInt[1] = MaterialCalendar.k(MaterialCalendar.this).getHeight();
+    }
+  }
+  
+  class d
+    implements MaterialCalendar.k
+  {
+    d() {}
+    
+    public void a(long paramLong)
+    {
+      if (MaterialCalendar.l(MaterialCalendar.this).f().b0(paramLong))
+      {
+        MaterialCalendar.n(MaterialCalendar.this).A0(paramLong);
+        Iterator localIterator = b.iterator();
+        while (localIterator.hasNext()) {
+          ((j)localIterator.next()).a(MaterialCalendar.n(MaterialCalendar.this).n0());
+        }
+        MaterialCalendar.k(MaterialCalendar.this).getAdapter().notifyDataSetChanged();
+        if (MaterialCalendar.p(MaterialCalendar.this) != null) {
+          MaterialCalendar.p(MaterialCalendar.this).getAdapter().notifyDataSetChanged();
+        }
+      }
+    }
+  }
+  
+  class e
+    extends RecyclerView.n
+  {
+    private final Calendar a = n.k();
+    private final Calendar b = n.k();
+    
+    e() {}
+    
+    public void onDraw(Canvas paramCanvas, RecyclerView paramRecyclerView, RecyclerView.y paramY)
+    {
+      if ((paramRecyclerView.getAdapter() instanceof o))
+      {
+        if (!(paramRecyclerView.getLayoutManager() instanceof GridLayoutManager)) {
+          return;
+        }
+        paramY = (o)paramRecyclerView.getAdapter();
+        GridLayoutManager localGridLayoutManager = (GridLayoutManager)paramRecyclerView.getLayoutManager();
+        Iterator localIterator = MaterialCalendar.n(MaterialCalendar.this).p().iterator();
+        while (localIterator.hasNext())
+        {
+          Object localObject1 = (c.h.p.d)localIterator.next();
+          Object localObject2 = a;
+          if ((localObject2 != null) && (b != null))
+          {
+            a.setTimeInMillis(((Long)localObject2).longValue());
+            b.setTimeInMillis(((Long)b).longValue());
+            int j = paramY.e(a.get(1));
+            int i = paramY.e(b.get(1));
+            localObject1 = localGridLayoutManager.Z(j);
+            localObject2 = localGridLayoutManager.Z(i);
+            int m = j / localGridLayoutManager.t3();
+            int n = i / localGridLayoutManager.t3();
+            i = m;
+            while (i <= n)
+            {
+              View localView = localGridLayoutManager.Z(localGridLayoutManager.t3() * i);
+              if (localView != null)
+              {
+                int i1 = localView.getTop();
+                int i2 = qd.c();
+                int i3 = localView.getBottom();
+                int i4 = qd.b();
+                if (i == m) {
+                  j = ((View)localObject1).getLeft() + ((View)localObject1).getWidth() / 2;
+                } else {
+                  j = 0;
+                }
+                int k;
+                if (i == n) {
+                  k = ((View)localObject2).getLeft() + ((View)localObject2).getWidth() / 2;
+                } else {
+                  k = paramRecyclerView.getWidth();
+                }
+                paramCanvas.drawRect(j, i1 + i2, k, i3 - i4, qh);
+              }
+              i += 1;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  class f
+    extends c.h.q.f
+  {
+    f() {}
+    
+    public void g(View paramView, c paramC)
+    {
+      super.g(paramView, paramC);
+      if (MaterialCalendar.r(MaterialCalendar.this).getVisibility() == 0) {
+        paramView = getString(d.c.a.a.j.s);
+      } else {
+        paramView = getString(d.c.a.a.j.q);
+      }
+      paramC.i0(paramView);
+    }
+  }
+  
+  class g
+    extends RecyclerView.s
+  {
+    g(i paramI, MaterialButton paramMaterialButton) {}
+    
+    public void a(RecyclerView paramRecyclerView, int paramInt)
+    {
+      if (paramInt == 0)
+      {
+        CharSequence localCharSequence = localMaterialButton1.getText();
+        if (Build.VERSION.SDK_INT >= 16)
+        {
+          paramRecyclerView.announceForAccessibility(localCharSequence);
+          return;
+        }
+        paramRecyclerView.sendAccessibilityEvent(2048);
+      }
+    }
+    
+    public void b(RecyclerView paramRecyclerView, int paramInt1, int paramInt2)
+    {
+      if (paramInt1 < 0) {
+        paramInt1 = B().w2();
+      } else {
+        paramInt1 = B().z2();
+      }
+      MaterialCalendar.s(MaterialCalendar.this, paramI.d(paramInt1));
+      localMaterialButton1.setText(paramI.e(paramInt1));
+    }
+  }
+  
+  class h
+    implements View.OnClickListener
+  {
+    h() {}
+    
+    public void onClick(View paramView)
+    {
+      G();
+    }
+  }
+  
+  class i
+    implements View.OnClickListener
+  {
+    i(i paramI) {}
+    
+    public void onClick(View paramView)
+    {
+      int i = B().w2() + 1;
+      if (i < MaterialCalendar.k(MaterialCalendar.this).getAdapter().getItemCount()) {
+        E(paramI.d(i));
+      }
+    }
+  }
+  
+  class j
+    implements View.OnClickListener
+  {
+    j(i paramI) {}
+    
+    public void onClick(View paramView)
+    {
+      int i = B().z2() - 1;
+      if (i >= 0) {
+        E(paramI.d(i));
+      }
+    }
+  }
+  
+  static abstract interface k
+  {
+    public abstract void a(long paramLong);
+  }
+}

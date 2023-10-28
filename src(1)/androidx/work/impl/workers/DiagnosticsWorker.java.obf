@@ -1,0 +1,95 @@
+package androidx.work.impl.workers;
+
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.text.TextUtils;
+import androidx.work.ListenableWorker;
+import androidx.work.ListenableWorker.a;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.n.g;
+import androidx.work.impl.n.h;
+import androidx.work.impl.n.k;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.q;
+import androidx.work.impl.n.t;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+public class DiagnosticsWorker
+  extends Worker
+{
+  private static final String h = androidx.work.j.f("DiagnosticsWrkr");
+  
+  public DiagnosticsWorker(Context paramContext, WorkerParameters paramWorkerParameters)
+  {
+    super(paramContext, paramWorkerParameters);
+  }
+  
+  private static String r(p paramP, String paramString1, Integer paramInteger, String paramString2)
+  {
+    return String.format("\n%s\t %s\t %s\t %s\t %s\t %s\t", new Object[] { c, e, paramInteger, d.name(), paramString1, paramString2 });
+  }
+  
+  private static String s(k paramK, t paramT, h paramH, List<p> paramList)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    if (Build.VERSION.SDK_INT >= 23) {
+      localObject1 = "Job Id";
+    } else {
+      localObject1 = "Alarm Id";
+    }
+    localStringBuilder.append(String.format("\n Id \t Class Name\t %s\t State\t Unique Name\t Tags\t", new Object[] { localObject1 }));
+    Object localObject1 = paramList.iterator();
+    while (((Iterator)localObject1).hasNext())
+    {
+      p localP = (p)((Iterator)localObject1).next();
+      paramList = null;
+      Object localObject2 = paramH.c(c);
+      if (localObject2 != null) {
+        paramList = Integer.valueOf(b);
+      }
+      localObject2 = paramK.b(c);
+      List localList = paramT.b(c);
+      localStringBuilder.append(r(localP, TextUtils.join(",", (Iterable)localObject2), paramList, TextUtils.join(",", localList)));
+    }
+    return localStringBuilder.toString();
+  }
+  
+  public ListenableWorker.a q()
+  {
+    Object localObject1 = androidx.work.impl.j.l(a()).p();
+    Object localObject2 = ((WorkDatabase)localObject1).B();
+    k localK = ((WorkDatabase)localObject1).z();
+    t localT = ((WorkDatabase)localObject1).C();
+    localObject1 = ((WorkDatabase)localObject1).y();
+    Object localObject4 = ((q)localObject2).e(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1L));
+    Object localObject3 = ((q)localObject2).j();
+    localObject2 = ((q)localObject2).u(200);
+    Object localObject5;
+    if ((localObject4 != null) && (!((List)localObject4).isEmpty()))
+    {
+      localObject5 = androidx.work.j.c();
+      String str = h;
+      ((androidx.work.j)localObject5).d(str, "Recently completed work:\n\n", new Throwable[0]);
+      androidx.work.j.c().d(str, s(localK, localT, (h)localObject1, (List)localObject4), new Throwable[0]);
+    }
+    if ((localObject3 != null) && (!((List)localObject3).isEmpty()))
+    {
+      localObject4 = androidx.work.j.c();
+      localObject5 = h;
+      ((androidx.work.j)localObject4).d((String)localObject5, "Running work:\n\n", new Throwable[0]);
+      androidx.work.j.c().d((String)localObject5, s(localK, localT, (h)localObject1, (List)localObject3), new Throwable[0]);
+    }
+    if ((localObject2 != null) && (!((List)localObject2).isEmpty()))
+    {
+      localObject3 = androidx.work.j.c();
+      localObject4 = h;
+      ((androidx.work.j)localObject3).d((String)localObject4, "Enqueued work:\n\n", new Throwable[0]);
+      androidx.work.j.c().d((String)localObject4, s(localK, localT, (h)localObject1, (List)localObject2), new Throwable[0]);
+    }
+    return ListenableWorker.a.c();
+  }
+}

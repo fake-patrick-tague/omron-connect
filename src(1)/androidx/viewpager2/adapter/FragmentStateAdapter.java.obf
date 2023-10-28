@@ -1,0 +1,680 @@
+package androidx.viewpager2.adapter;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcelable;
+import android.view.View;
+import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.Fragment.SavedState;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentManager.k;
+import androidx.fragment.app.a0;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.k;
+import androidx.lifecycle.m;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.b0;
+import androidx.recyclerview.widget.RecyclerView.i;
+import androidx.viewpager2.widget.ViewPager2;
+import androidx.viewpager2.widget.ViewPager2.i;
+import c.e.d;
+import c.h.p.h;
+import c.h.q.f0;
+import java.util.Iterator;
+import java.util.Set;
+
+public abstract class FragmentStateAdapter
+  extends RecyclerView.Adapter<a>
+  implements b
+{
+  final Lifecycle a;
+  final FragmentManager b;
+  final d<Fragment> c = new d();
+  private final d<Fragment.SavedState> d = new d();
+  private final d<Integer> e = new d();
+  private FragmentMaxLifecycleEnforcer f;
+  boolean g = false;
+  private boolean h = false;
+  
+  public FragmentStateAdapter(Fragment paramFragment)
+  {
+    this(paramFragment.getChildFragmentManager(), paramFragment.getLifecycle());
+  }
+  
+  public FragmentStateAdapter(FragmentManager paramFragmentManager, Lifecycle paramLifecycle)
+  {
+    b = paramFragmentManager;
+    a = paramLifecycle;
+    super.setHasStableIds(true);
+  }
+  
+  private static String f(String paramString, long paramLong)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(paramString);
+    localStringBuilder.append(paramLong);
+    return localStringBuilder.toString();
+  }
+  
+  private void g(int paramInt)
+  {
+    long l = getItemId(paramInt);
+    if (!c.e(l))
+    {
+      Fragment localFragment = e(paramInt);
+      localFragment.setInitialSavedState((Fragment.SavedState)d.g(l));
+      c.m(l, localFragment);
+    }
+  }
+  
+  private boolean i(long paramLong)
+  {
+    if (e.e(paramLong)) {
+      return true;
+    }
+    Object localObject = (Fragment)c.g(paramLong);
+    if (localObject == null) {
+      return false;
+    }
+    localObject = ((Fragment)localObject).getView();
+    if (localObject == null) {
+      return false;
+    }
+    return ((View)localObject).getParent() != null;
+  }
+  
+  private static boolean j(String paramString1, String paramString2)
+  {
+    return (paramString1.startsWith(paramString2)) && (paramString1.length() > paramString2.length());
+  }
+  
+  private Long k(int paramInt)
+  {
+    Object localObject1 = null;
+    int i = 0;
+    while (i < e.p())
+    {
+      Object localObject2 = localObject1;
+      if (((Integer)e.q(i)).intValue() == paramInt) {
+        if (localObject1 == null) {
+          localObject2 = Long.valueOf(e.l(i));
+        } else {
+          throw new IllegalStateException("Design assumption violated: a ViewHolder can only be bound to one item at a time.");
+        }
+      }
+      i += 1;
+      localObject1 = localObject2;
+    }
+    return localObject1;
+  }
+  
+  private static long q(String paramString1, String paramString2)
+  {
+    return Long.parseLong(paramString1.substring(paramString2.length()));
+  }
+  
+  private void s(long paramLong)
+  {
+    Fragment localFragment = (Fragment)c.g(paramLong);
+    if (localFragment == null) {
+      return;
+    }
+    if (localFragment.getView() != null)
+    {
+      ViewParent localViewParent = localFragment.getView().getParent();
+      if (localViewParent != null) {
+        ((FrameLayout)localViewParent).removeAllViews();
+      }
+    }
+    if (!d(paramLong)) {
+      d.n(paramLong);
+    }
+    if (!localFragment.isAdded())
+    {
+      c.n(paramLong);
+      return;
+    }
+    if (v())
+    {
+      h = true;
+      return;
+    }
+    if ((localFragment.isAdded()) && (d(paramLong))) {
+      d.m(paramLong, b.r1(localFragment));
+    }
+    b.k().o(localFragment).j();
+    c.n(paramLong);
+  }
+  
+  private void t()
+  {
+    final Handler localHandler = new Handler(Looper.getMainLooper());
+    final c localC = new c();
+    a.a(new k()
+    {
+      public void c(m paramAnonymousM, Lifecycle.Event paramAnonymousEvent)
+      {
+        if (paramAnonymousEvent == Lifecycle.Event.ON_DESTROY)
+        {
+          localHandler.removeCallbacks(localC);
+          paramAnonymousM.getLifecycle().c(this);
+        }
+      }
+    });
+    localHandler.postDelayed(localC, 10000L);
+  }
+  
+  private void u(final Fragment paramFragment, final FrameLayout paramFrameLayout)
+  {
+    b.j1(new b(paramFragment, paramFrameLayout), false);
+  }
+  
+  public final Parcelable a()
+  {
+    Bundle localBundle = new Bundle(c.p() + d.p());
+    int k = 0;
+    int i = 0;
+    int j;
+    long l;
+    for (;;)
+    {
+      j = k;
+      if (i >= c.p()) {
+        break;
+      }
+      l = c.l(i);
+      Fragment localFragment = (Fragment)c.g(l);
+      if ((localFragment != null) && (localFragment.isAdded()))
+      {
+        String str = f("f#", l);
+        b.i1(localBundle, str, localFragment);
+      }
+      i += 1;
+    }
+    while (j < d.p())
+    {
+      l = d.l(j);
+      if (d(l)) {
+        localBundle.putParcelable(f("s#", l), (Parcelable)d.g(l));
+      }
+      j += 1;
+    }
+    return localBundle;
+  }
+  
+  public final void b(Parcelable paramParcelable)
+  {
+    if ((d.k()) && (c.k()))
+    {
+      paramParcelable = (Bundle)paramParcelable;
+      if (paramParcelable.getClassLoader() == null) {
+        paramParcelable.setClassLoader(getClass().getClassLoader());
+      }
+      Iterator localIterator = paramParcelable.keySet().iterator();
+      while (localIterator.hasNext())
+      {
+        Object localObject = (String)localIterator.next();
+        long l;
+        if (j((String)localObject, "f#"))
+        {
+          l = q((String)localObject, "f#");
+          localObject = b.n0(paramParcelable, (String)localObject);
+          c.m(l, localObject);
+        }
+        else if (j((String)localObject, "s#"))
+        {
+          l = q((String)localObject, "s#");
+          localObject = (Fragment.SavedState)paramParcelable.getParcelable((String)localObject);
+          if (d(l)) {
+            d.m(l, localObject);
+          }
+        }
+        else
+        {
+          paramParcelable = new StringBuilder();
+          paramParcelable.append("Unexpected key in savedState: ");
+          paramParcelable.append((String)localObject);
+          throw new IllegalArgumentException(paramParcelable.toString());
+        }
+      }
+      if (!c.k())
+      {
+        h = true;
+        g = true;
+        h();
+        t();
+      }
+      return;
+    }
+    throw new IllegalStateException("Expected the adapter to be 'fresh' while restoring state.");
+  }
+  
+  void c(View paramView, FrameLayout paramFrameLayout)
+  {
+    if (paramFrameLayout.getChildCount() <= 1)
+    {
+      if (paramView.getParent() == paramFrameLayout) {
+        return;
+      }
+      if (paramFrameLayout.getChildCount() > 0) {
+        paramFrameLayout.removeAllViews();
+      }
+      if (paramView.getParent() != null) {
+        ((ViewGroup)paramView.getParent()).removeView(paramView);
+      }
+      paramFrameLayout.addView(paramView);
+      return;
+    }
+    throw new IllegalStateException("Design assumption violated.");
+  }
+  
+  public boolean d(long paramLong)
+  {
+    return (paramLong >= 0L) && (paramLong < getItemCount());
+  }
+  
+  public abstract Fragment e(int paramInt);
+  
+  public long getItemId(int paramInt)
+  {
+    return paramInt;
+  }
+  
+  void h()
+  {
+    if (h)
+    {
+      if (v()) {
+        return;
+      }
+      Object localObject = new c.e.b();
+      int j = 0;
+      int i = 0;
+      long l;
+      while (i < c.p())
+      {
+        l = c.l(i);
+        if (!d(l))
+        {
+          ((Set)localObject).add(Long.valueOf(l));
+          e.n(l);
+        }
+        i += 1;
+      }
+      if (!g)
+      {
+        h = false;
+        i = j;
+        while (i < c.p())
+        {
+          l = c.l(i);
+          if (!i(l)) {
+            ((Set)localObject).add(Long.valueOf(l));
+          }
+          i += 1;
+        }
+      }
+      localObject = ((Set)localObject).iterator();
+      while (((Iterator)localObject).hasNext()) {
+        s(((Long)((Iterator)localObject).next()).longValue());
+      }
+    }
+  }
+  
+  public final void l(final a paramA, int paramInt)
+  {
+    long l = paramA.getItemId();
+    int i = paramA.b().getId();
+    Object localObject = k(i);
+    if ((localObject != null) && (((Long)localObject).longValue() != l))
+    {
+      s(((Long)localObject).longValue());
+      e.n(((Long)localObject).longValue());
+    }
+    e.m(l, Integer.valueOf(i));
+    g(paramInt);
+    localObject = paramA.b();
+    if (f0.S((View)localObject)) {
+      if (((FrameLayout)localObject).getParent() == null) {
+        ((FrameLayout)localObject).addOnLayoutChangeListener(new a((FrameLayout)localObject, paramA));
+      } else {
+        throw new IllegalStateException("Design assumption violated.");
+      }
+    }
+    h();
+  }
+  
+  public final a m(ViewGroup paramViewGroup, int paramInt)
+  {
+    return a.a(paramViewGroup);
+  }
+  
+  public final boolean n(a paramA)
+  {
+    return true;
+  }
+  
+  public final void o(a paramA)
+  {
+    r(paramA);
+    h();
+  }
+  
+  public void onAttachedToRecyclerView(RecyclerView paramRecyclerView)
+  {
+    boolean bool;
+    if (f == null) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    h.a(bool);
+    FragmentMaxLifecycleEnforcer localFragmentMaxLifecycleEnforcer = new FragmentMaxLifecycleEnforcer();
+    f = localFragmentMaxLifecycleEnforcer;
+    localFragmentMaxLifecycleEnforcer.b(paramRecyclerView);
+  }
+  
+  public void onDetachedFromRecyclerView(RecyclerView paramRecyclerView)
+  {
+    f.c(paramRecyclerView);
+    f = null;
+  }
+  
+  public final void p(a paramA)
+  {
+    paramA = k(paramA.b().getId());
+    if (paramA != null)
+    {
+      s(paramA.longValue());
+      e.n(paramA.longValue());
+    }
+  }
+  
+  void r(final a paramA)
+  {
+    Fragment localFragment = (Fragment)c.g(paramA.getItemId());
+    if (localFragment != null)
+    {
+      Object localObject1 = paramA.b();
+      Object localObject2 = localFragment.getView();
+      if ((!localFragment.isAdded()) && (localObject2 != null)) {
+        throw new IllegalStateException("Design assumption violated.");
+      }
+      if ((localFragment.isAdded()) && (localObject2 == null))
+      {
+        u(localFragment, (FrameLayout)localObject1);
+        return;
+      }
+      if ((localFragment.isAdded()) && (((View)localObject2).getParent() != null))
+      {
+        if (((View)localObject2).getParent() != localObject1) {
+          c((View)localObject2, (FrameLayout)localObject1);
+        }
+        return;
+      }
+      if (localFragment.isAdded())
+      {
+        c((View)localObject2, (FrameLayout)localObject1);
+        return;
+      }
+      if (!v())
+      {
+        u(localFragment, (FrameLayout)localObject1);
+        localObject1 = b.k();
+        localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append("f");
+        ((StringBuilder)localObject2).append(paramA.getItemId());
+        ((a0)localObject1).e(localFragment, ((StringBuilder)localObject2).toString()).s(localFragment, Lifecycle.State.e).j();
+        f.d(false);
+        return;
+      }
+      if (b.D0()) {
+        return;
+      }
+      a.a(new k()
+      {
+        public void c(m paramAnonymousM, Lifecycle.Event paramAnonymousEvent)
+        {
+          if (v()) {
+            return;
+          }
+          paramAnonymousM.getLifecycle().c(this);
+          if (f0.S(paramA.b())) {
+            r(paramA);
+          }
+        }
+      });
+      return;
+    }
+    throw new IllegalStateException("Design assumption violated.");
+  }
+  
+  boolean v()
+  {
+    return b.K0();
+  }
+  
+  class FragmentMaxLifecycleEnforcer
+  {
+    private ViewPager2.i a;
+    private RecyclerView.i b;
+    private k c;
+    private ViewPager2 d;
+    private long e = -1L;
+    
+    FragmentMaxLifecycleEnforcer() {}
+    
+    private ViewPager2 a(RecyclerView paramRecyclerView)
+    {
+      paramRecyclerView = paramRecyclerView.getParent();
+      if ((paramRecyclerView instanceof ViewPager2)) {
+        return (ViewPager2)paramRecyclerView;
+      }
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Expected ViewPager2 instance. Got: ");
+      localStringBuilder.append(paramRecyclerView);
+      throw new IllegalStateException(localStringBuilder.toString());
+    }
+    
+    void b(RecyclerView paramRecyclerView)
+    {
+      d = a(paramRecyclerView);
+      paramRecyclerView = new a();
+      a = paramRecyclerView;
+      d.g(paramRecyclerView);
+      paramRecyclerView = new b();
+      b = paramRecyclerView;
+      registerAdapterDataObserver(paramRecyclerView);
+      paramRecyclerView = new k()
+      {
+        public void c(m paramAnonymousM, Lifecycle.Event paramAnonymousEvent)
+        {
+          d(false);
+        }
+      };
+      c = paramRecyclerView;
+      a.a(paramRecyclerView);
+    }
+    
+    void c(RecyclerView paramRecyclerView)
+    {
+      a(paramRecyclerView).n(a);
+      unregisterAdapterDataObserver(b);
+      a.c(c);
+      d = null;
+    }
+    
+    void d(boolean paramBoolean)
+    {
+      if (v()) {
+        return;
+      }
+      if (d.getScrollState() != 0) {
+        return;
+      }
+      if (!c.k())
+      {
+        if (getItemCount() == 0) {
+          return;
+        }
+        int i = d.getCurrentItem();
+        if (i >= getItemCount()) {
+          return;
+        }
+        long l = getItemId(i);
+        if ((l == e) && (!paramBoolean)) {
+          return;
+        }
+        Object localObject = (Fragment)c.g(l);
+        if (localObject != null)
+        {
+          if (!((Fragment)localObject).isAdded()) {
+            return;
+          }
+          e = l;
+          a0 localA0 = b.k();
+          localObject = null;
+          i = 0;
+          while (i < c.p())
+          {
+            l = c.l(i);
+            Fragment localFragment = (Fragment)c.q(i);
+            if (localFragment.isAdded())
+            {
+              if (l != e) {
+                localA0.s(localFragment, Lifecycle.State.e);
+              } else {
+                localObject = localFragment;
+              }
+              if (l == e) {
+                paramBoolean = true;
+              } else {
+                paramBoolean = false;
+              }
+              localFragment.setMenuVisibility(paramBoolean);
+            }
+            i += 1;
+          }
+          if (localObject != null) {
+            localA0.s((Fragment)localObject, Lifecycle.State.f);
+          }
+          if (!localA0.n()) {
+            localA0.j();
+          }
+        }
+      }
+    }
+    
+    class a
+      extends ViewPager2.i
+    {
+      a() {}
+      
+      public void a(int paramInt)
+      {
+        d(false);
+      }
+      
+      public void c(int paramInt)
+      {
+        d(false);
+      }
+    }
+    
+    class b
+      extends FragmentStateAdapter.d
+    {
+      b()
+      {
+        super();
+      }
+      
+      public void a()
+      {
+        d(true);
+      }
+    }
+  }
+  
+  class a
+    implements View.OnLayoutChangeListener
+  {
+    a(FrameLayout paramFrameLayout, a paramA) {}
+    
+    public void onLayoutChange(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8)
+    {
+      if (a.getParent() != null)
+      {
+        a.removeOnLayoutChangeListener(this);
+        r(paramA);
+      }
+    }
+  }
+  
+  class b
+    extends FragmentManager.k
+  {
+    b(Fragment paramFragment, FrameLayout paramFrameLayout) {}
+    
+    public void m(FragmentManager paramFragmentManager, Fragment paramFragment, View paramView, Bundle paramBundle)
+    {
+      if (paramFragment == paramFragment)
+      {
+        paramFragmentManager.A1(this);
+        c(paramView, paramFrameLayout);
+      }
+    }
+  }
+  
+  class c
+    implements Runnable
+  {
+    c() {}
+    
+    public void run()
+    {
+      FragmentStateAdapter localFragmentStateAdapter = FragmentStateAdapter.this;
+      g = false;
+      localFragmentStateAdapter.h();
+    }
+  }
+  
+  private static abstract class d
+    extends RecyclerView.i
+  {
+    private d() {}
+    
+    public final void b(int paramInt1, int paramInt2)
+    {
+      a();
+    }
+    
+    public final void c(int paramInt1, int paramInt2, Object paramObject)
+    {
+      a();
+    }
+    
+    public final void d(int paramInt1, int paramInt2)
+    {
+      a();
+    }
+    
+    public final void e(int paramInt1, int paramInt2, int paramInt3)
+    {
+      a();
+    }
+    
+    public final void f(int paramInt1, int paramInt2)
+    {
+      a();
+    }
+  }
+}

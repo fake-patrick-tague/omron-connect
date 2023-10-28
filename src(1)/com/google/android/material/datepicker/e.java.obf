@@ -1,0 +1,71 @@
+package com.google.android.material.datepicker;
+
+import android.os.Bundle;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import androidx.fragment.app.Fragment;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+public final class g<S>
+  extends k<S>
+{
+  private int c;
+  private DateSelector<S> d;
+  private CalendarConstraints e;
+  
+  public g() {}
+  
+  static <T> g<T> k(DateSelector<T> paramDateSelector, int paramInt, CalendarConstraints paramCalendarConstraints)
+  {
+    g localG = new g();
+    Bundle localBundle = new Bundle();
+    localBundle.putInt("THEME_RES_ID_KEY", paramInt);
+    localBundle.putParcelable("DATE_SELECTOR_KEY", paramDateSelector);
+    localBundle.putParcelable("CALENDAR_CONSTRAINTS_KEY", paramCalendarConstraints);
+    localG.setArguments(localBundle);
+    return localG;
+  }
+  
+  public void onCreate(Bundle paramBundle)
+  {
+    super.onCreate(paramBundle);
+    Bundle localBundle = paramBundle;
+    if (paramBundle == null) {
+      localBundle = getArguments();
+    }
+    c = localBundle.getInt("THEME_RES_ID_KEY");
+    d = ((DateSelector)localBundle.getParcelable("DATE_SELECTOR_KEY"));
+    e = ((CalendarConstraints)localBundle.getParcelable("CALENDAR_CONSTRAINTS_KEY"));
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramLayoutInflater = paramLayoutInflater.cloneInContext(new ContextThemeWrapper(getContext(), c));
+    return d.N(paramLayoutInflater, paramViewGroup, paramBundle, e, new a());
+  }
+  
+  public void onSaveInstanceState(Bundle paramBundle)
+  {
+    super.onSaveInstanceState(paramBundle);
+    paramBundle.putInt("THEME_RES_ID_KEY", c);
+    paramBundle.putParcelable("DATE_SELECTOR_KEY", d);
+    paramBundle.putParcelable("CALENDAR_CONSTRAINTS_KEY", e);
+  }
+  
+  class a
+    extends j<S>
+  {
+    a() {}
+    
+    public void a(S paramS)
+    {
+      Iterator localIterator = b.iterator();
+      while (localIterator.hasNext()) {
+        ((j)localIterator.next()).a(paramS);
+      }
+    }
+  }
+}

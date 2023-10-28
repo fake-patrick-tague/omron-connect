@@ -1,0 +1,566 @@
+package androidx.emoji2.text;
+
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import c.e.b;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+public class g
+{
+  private static final Object a = new Object();
+  private static final Object b = new Object();
+  private static volatile g c;
+  private final ReadWriteLock d = new ReentrantReadWriteLock();
+  private final Set<e> e;
+  private volatile int f = 3;
+  private final Handler g;
+  private final b h;
+  final g i;
+  final boolean j;
+  final boolean k;
+  final int[] l;
+  private final boolean m;
+  private final int n;
+  private final int o;
+  private final d p;
+  
+  private g(c paramC)
+  {
+    j = b;
+    k = c;
+    l = d;
+    m = f;
+    n = g;
+    i = a;
+    o = h;
+    p = i;
+    g = new Handler(Looper.getMainLooper());
+    b localB = new b();
+    e = localB;
+    Set localSet = e;
+    if ((localSet != null) && (!localSet.isEmpty())) {
+      localB.addAll(e);
+    }
+    if (Build.VERSION.SDK_INT < 19) {
+      paramC = new b(this);
+    } else {
+      paramC = new a(this);
+    }
+    h = paramC;
+    l();
+  }
+  
+  public static g b()
+  {
+    for (;;)
+    {
+      synchronized (a)
+      {
+        g localG = c;
+        if (localG != null)
+        {
+          bool = true;
+          c.h.p.h.i(bool, "EmojiCompat is not initialized.\n\nYou must initialize EmojiCompat prior to referencing the EmojiCompat instance.\n\nThe most likely cause of this error is disabling the EmojiCompatInitializer\neither explicitly in AndroidManifest.xml, or by including\nandroidx.emoji2:emoji2-bundled.\n\nAutomatic initialization is typically performed by EmojiCompatInitializer. If\nyou are not expecting to initialize EmojiCompat manually in your application,\nplease check to ensure it has not been removed from your APK's manifest. You can\ndo this in Android Studio using Build > Analyze APK.\n\nIn the APK Analyzer, ensure that the startup entry for\nEmojiCompatInitializer and InitializationProvider is present in\n AndroidManifest.xml. If it is missing or contains tools:node=\"remove\", and you\nintend to use automatic configuration, verify:\n\n  1. Your application does not include emoji2-bundled\n  2. All modules do not contain an exclusion manifest rule for\n     EmojiCompatInitializer or InitializationProvider. For more information\n     about manifest exclusions see the documentation for the androidx startup\n     library.\n\nIf you intend to use emoji2-bundled, please call EmojiCompat.init. You can\nlearn more in the documentation for BundledEmojiCompatConfig.\n\nIf you intended to perform manual configuration, it is recommended that you call\nEmojiCompat.init immediately on application startup.\n\nIf you still cannot resolve this issue, please open a bug with your specific\nconfiguration to help improve error message.");
+          return localG;
+        }
+      }
+      boolean bool = false;
+    }
+  }
+  
+  public static boolean e(InputConnection paramInputConnection, Editable paramEditable, int paramInt1, int paramInt2, boolean paramBoolean)
+  {
+    if (Build.VERSION.SDK_INT >= 19) {
+      return i.c(paramInputConnection, paramEditable, paramInt1, paramInt2, paramBoolean);
+    }
+    return false;
+  }
+  
+  public static boolean f(Editable paramEditable, int paramInt, KeyEvent paramKeyEvent)
+  {
+    if (Build.VERSION.SDK_INT >= 19) {
+      return i.d(paramEditable, paramInt, paramKeyEvent);
+    }
+    return false;
+  }
+  
+  public static g g(c paramC)
+  {
+    Object localObject1 = c;
+    if (localObject1 == null) {
+      synchronized (a)
+      {
+        g localG = c;
+        localObject1 = localG;
+        if (localG == null)
+        {
+          localObject1 = new g(paramC);
+          c = (g)localObject1;
+        }
+        return localObject1;
+      }
+    }
+    return localObject1;
+  }
+  
+  public static boolean h()
+  {
+    return c != null;
+  }
+  
+  private boolean j()
+  {
+    return d() == 1;
+  }
+  
+  private void l()
+  {
+    d.writeLock().lock();
+    try
+    {
+      if (o == 0) {
+        f = 0;
+      }
+      d.writeLock().unlock();
+      if (d() == 0) {
+        h.a();
+      }
+      return;
+    }
+    finally
+    {
+      d.writeLock().unlock();
+    }
+  }
+  
+  public int c()
+  {
+    return n;
+  }
+  
+  public int d()
+  {
+    d.readLock().lock();
+    try
+    {
+      int i1 = f;
+      return i1;
+    }
+    finally
+    {
+      d.readLock().unlock();
+    }
+  }
+  
+  public boolean i()
+  {
+    return m;
+  }
+  
+  public void k()
+  {
+    int i1 = o;
+    boolean bool = true;
+    if (i1 != 1) {
+      bool = false;
+    }
+    c.h.p.h.i(bool, "Set metadataLoadStrategy to LOAD_STRATEGY_MANUAL to execute manual loading");
+    if (j()) {
+      return;
+    }
+    d.writeLock().lock();
+    try
+    {
+      i1 = f;
+      if (i1 == 0) {
+        return;
+      }
+      f = 0;
+      d.writeLock().unlock();
+      h.a();
+      return;
+    }
+    finally
+    {
+      d.writeLock().unlock();
+    }
+  }
+  
+  void m(Throwable paramThrowable)
+  {
+    ArrayList localArrayList = new ArrayList();
+    d.writeLock().lock();
+    try
+    {
+      f = 2;
+      localArrayList.addAll(e);
+      e.clear();
+      d.writeLock().unlock();
+      g.post(new f(localArrayList, f, paramThrowable));
+      return;
+    }
+    finally
+    {
+      d.writeLock().unlock();
+    }
+  }
+  
+  void n()
+  {
+    ArrayList localArrayList = new ArrayList();
+    d.writeLock().lock();
+    try
+    {
+      f = 1;
+      localArrayList.addAll(e);
+      e.clear();
+      d.writeLock().unlock();
+      g.post(new f(localArrayList, f));
+      return;
+    }
+    finally
+    {
+      d.writeLock().unlock();
+    }
+  }
+  
+  public CharSequence o(CharSequence paramCharSequence)
+  {
+    int i1;
+    if (paramCharSequence == null) {
+      i1 = 0;
+    } else {
+      i1 = paramCharSequence.length();
+    }
+    return p(paramCharSequence, 0, i1);
+  }
+  
+  public CharSequence p(CharSequence paramCharSequence, int paramInt1, int paramInt2)
+  {
+    return q(paramCharSequence, paramInt1, paramInt2, Integer.MAX_VALUE);
+  }
+  
+  public CharSequence q(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3)
+  {
+    return r(paramCharSequence, paramInt1, paramInt2, paramInt3, 0);
+  }
+  
+  public CharSequence r(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    c.h.p.h.i(j(), "Not initialized yet");
+    c.h.p.h.e(paramInt1, "start cannot be negative");
+    c.h.p.h.e(paramInt2, "end cannot be negative");
+    c.h.p.h.e(paramInt3, "maxEmojiCount cannot be negative");
+    boolean bool2 = false;
+    boolean bool1;
+    if (paramInt1 <= paramInt2) {
+      bool1 = true;
+    } else {
+      bool1 = false;
+    }
+    c.h.p.h.b(bool1, "start should be <= than end");
+    if (paramCharSequence == null) {
+      return null;
+    }
+    if (paramInt1 <= paramCharSequence.length()) {
+      bool1 = true;
+    } else {
+      bool1 = false;
+    }
+    c.h.p.h.b(bool1, "start should be < than charSequence length");
+    if (paramInt2 <= paramCharSequence.length()) {
+      bool1 = true;
+    } else {
+      bool1 = false;
+    }
+    c.h.p.h.b(bool1, "end should be < than charSequence length");
+    CharSequence localCharSequence = paramCharSequence;
+    if (paramCharSequence.length() != 0)
+    {
+      if (paramInt1 == paramInt2) {
+        return paramCharSequence;
+      }
+      if (paramInt4 != 1)
+      {
+        bool1 = bool2;
+        if (paramInt4 != 2) {
+          bool1 = j;
+        }
+      }
+      else
+      {
+        bool1 = true;
+      }
+      localCharSequence = h.b(paramCharSequence, paramInt1, paramInt2, paramInt3, bool1);
+    }
+    return localCharSequence;
+  }
+  
+  public void s(e paramE)
+  {
+    c.h.p.h.h(paramE, "initCallback cannot be null");
+    d.writeLock().lock();
+    try
+    {
+      if ((f != 1) && (f != 2)) {
+        e.add(paramE);
+      } else {
+        g.post(new f(paramE, f));
+      }
+      return;
+    }
+    finally
+    {
+      d.writeLock().unlock();
+    }
+  }
+  
+  public void t(e paramE)
+  {
+    c.h.p.h.h(paramE, "initCallback cannot be null");
+    d.writeLock().lock();
+    try
+    {
+      e.remove(paramE);
+      return;
+    }
+    finally
+    {
+      d.writeLock().unlock();
+    }
+  }
+  
+  public void u(EditorInfo paramEditorInfo)
+  {
+    if (j())
+    {
+      if (paramEditorInfo == null) {
+        return;
+      }
+      if (extras == null) {
+        extras = new Bundle();
+      }
+      h.c(paramEditorInfo);
+    }
+  }
+  
+  private static final class a
+    extends g.b
+  {
+    private volatile i b;
+    private volatile m c;
+    
+    a(g paramG)
+    {
+      super();
+    }
+    
+    void a()
+    {
+      try
+      {
+        a localA = new a();
+        a.i.a(localA);
+        return;
+      }
+      finally
+      {
+        a.m(localThrowable);
+      }
+    }
+    
+    CharSequence b(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3, boolean paramBoolean)
+    {
+      return b.h(paramCharSequence, paramInt1, paramInt2, paramInt3, paramBoolean);
+    }
+    
+    void c(EditorInfo paramEditorInfo)
+    {
+      extras.putInt("android.support.text.emoji.emojiCompat_metadataVersion", c.e());
+      extras.putBoolean("android.support.text.emoji.emojiCompat_replaceAll", a.j);
+    }
+    
+    void d(m paramM)
+    {
+      if (paramM == null)
+      {
+        a.m(new IllegalArgumentException("metadataRepo cannot be null"));
+        return;
+      }
+      c = paramM;
+      paramM = c;
+      g.i localI = new g.i();
+      g.d localD = g.a(a);
+      g localG = a;
+      b = new i(paramM, localI, localD, k, l);
+      a.n();
+    }
+    
+    class a
+      extends g.h
+    {
+      a() {}
+      
+      public void a(Throwable paramThrowable)
+      {
+        a.m(paramThrowable);
+      }
+      
+      public void b(m paramM)
+      {
+        d(paramM);
+      }
+    }
+  }
+  
+  private static class b
+  {
+    final g a;
+    
+    b(g paramG)
+    {
+      a = paramG;
+    }
+    
+    void a()
+    {
+      a.n();
+    }
+    
+    CharSequence b(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3, boolean paramBoolean)
+    {
+      return paramCharSequence;
+    }
+    
+    void c(EditorInfo paramEditorInfo) {}
+  }
+  
+  public static abstract class c
+  {
+    final g.g a;
+    boolean b;
+    boolean c;
+    int[] d;
+    Set<g.e> e;
+    boolean f;
+    int g = -16711936;
+    int h = 0;
+    g.d i = new f();
+    
+    protected c(g.g paramG)
+    {
+      c.h.p.h.h(paramG, "metadataLoader cannot be null.");
+      a = paramG;
+    }
+    
+    protected final g.g a()
+    {
+      return a;
+    }
+    
+    public c b(int paramInt)
+    {
+      h = paramInt;
+      return this;
+    }
+  }
+  
+  public static abstract interface d
+  {
+    public abstract boolean a(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3);
+  }
+  
+  public static abstract class e
+  {
+    public e() {}
+    
+    public void a(Throwable paramThrowable) {}
+    
+    public void b() {}
+  }
+  
+  private static class f
+    implements Runnable
+  {
+    private final List<g.e> b;
+    private final Throwable c;
+    private final int d;
+    
+    f(g.e paramE, int paramInt)
+    {
+      this(Arrays.asList(new g.e[] { (g.e)c.h.p.h.h(paramE, "initCallback cannot be null") }), paramInt, null);
+    }
+    
+    f(Collection<g.e> paramCollection, int paramInt)
+    {
+      this(paramCollection, paramInt, null);
+    }
+    
+    f(Collection<g.e> paramCollection, int paramInt, Throwable paramThrowable)
+    {
+      c.h.p.h.h(paramCollection, "initCallbacks cannot be null");
+      b = new ArrayList(paramCollection);
+      d = paramInt;
+      c = paramThrowable;
+    }
+    
+    public void run()
+    {
+      int k = b.size();
+      int m = d;
+      int i = 0;
+      int j = 0;
+      if (m != 1)
+      {
+        i = j;
+        while (i < k)
+        {
+          ((g.e)b.get(i)).a(c);
+          i += 1;
+        }
+      }
+      while (i < k)
+      {
+        ((g.e)b.get(i)).b();
+        i += 1;
+      }
+    }
+  }
+  
+  public static abstract interface g
+  {
+    public abstract void a(g.h paramH);
+  }
+  
+  public static abstract class h
+  {
+    public h() {}
+    
+    public abstract void a(Throwable paramThrowable);
+    
+    public abstract void b(m paramM);
+  }
+  
+  static class i
+  {
+    i() {}
+    
+    j a(h paramH)
+    {
+      return new o(paramH);
+    }
+  }
+}

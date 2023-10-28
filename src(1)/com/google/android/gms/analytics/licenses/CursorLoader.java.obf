@@ -1,0 +1,73 @@
+package com.google.android.gms.oss.licenses;
+
+import android.content.Context;
+import android.util.Log;
+import androidx.loader.content.a;
+import androidx.loader.content.b;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.internal.oss_licenses.zze;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+final class zzo
+  extends a<List<com.google.android.gms.internal.oss_licenses.zzc>>
+{
+  private final zzc zzo;
+  private List<com.google.android.gms.internal.oss_licenses.zzc> zzw;
+  
+  zzo(Context paramContext, zzc paramZzc)
+  {
+    super(paramContext.getApplicationContext());
+    zzo = paramZzc;
+  }
+  
+  private final void zzb(List<com.google.android.gms.internal.oss_licenses.zzc> paramList)
+  {
+    zzw = paramList;
+    super.deliverResult(paramList);
+  }
+  
+  private final List<com.google.android.gms.internal.oss_licenses.zzc> zzd()
+  {
+    ArrayList localArrayList = zze.zzb(getContext());
+    Object localObject = zzo.zzb();
+    localObject = ((GoogleApi)localObject).doRead(new zzm((zzh)localObject, localArrayList));
+    try
+    {
+      Tasks.await((Task)localObject);
+      if (!((Task)localObject).isSuccessful()) {
+        return localArrayList;
+      }
+      localObject = (List)((Task)localObject).getResult();
+      return localObject;
+    }
+    catch (InterruptedException localInterruptedException) {}catch (ExecutionException localExecutionException) {}
+    String str = String.valueOf(localExecutionException.getMessage());
+    if (str.length() != 0) {
+      str = "Error getting license list from service: ".concat(str);
+    } else {
+      str = new String("Error getting license list from service: ");
+    }
+    Log.w("OssLicensesLoader", str);
+    return localArrayList;
+  }
+  
+  protected final void onStartLoading()
+  {
+    List localList = zzw;
+    if (localList != null)
+    {
+      zzb(localList);
+      return;
+    }
+    forceLoad();
+  }
+  
+  protected final void onStopLoading()
+  {
+    cancelLoad();
+  }
+}

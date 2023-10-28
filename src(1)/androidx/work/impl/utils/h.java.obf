@@ -1,0 +1,58 @@
+package androidx.work.impl.utils;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.n.d;
+import c.t.a.b;
+
+public class e
+{
+  private final WorkDatabase a;
+  
+  public e(WorkDatabase paramWorkDatabase)
+  {
+    a = paramWorkDatabase;
+  }
+  
+  public static void b(Context paramContext, b paramB)
+  {
+    paramContext = paramContext.getSharedPreferences("androidx.work.util.preferences", 0);
+    long l1;
+    long l2;
+    if ((paramContext.contains("reschedule_needed")) || (paramContext.contains("last_cancel_all_time_ms")))
+    {
+      l1 = 0L;
+      l2 = paramContext.getLong("last_cancel_all_time_ms", 0L);
+      if (paramContext.getBoolean("reschedule_needed", false)) {
+        l1 = 1L;
+      }
+      paramB.beginTransaction();
+    }
+    try
+    {
+      paramB.execSQL("INSERT OR REPLACE INTO `Preference` (`key`, `long_value`) VALUES (@key, @long_value)", new Object[] { "last_cancel_all_time_ms", Long.valueOf(l2) });
+      paramB.execSQL("INSERT OR REPLACE INTO `Preference` (`key`, `long_value`) VALUES (@key, @long_value)", new Object[] { "reschedule_needed", Long.valueOf(l1) });
+      paramContext.edit().clear().apply();
+      paramB.setTransactionSuccessful();
+      return;
+    }
+    finally
+    {
+      paramB.endTransaction();
+    }
+  }
+  
+  public boolean a()
+  {
+    Long localLong = a.x().a("reschedule_needed");
+    return (localLong != null) && (localLong.longValue() == 1L);
+  }
+  
+  public void c(boolean paramBoolean)
+  {
+    d localD = new d("reschedule_needed", paramBoolean);
+    a.x().b(localD);
+  }
+}

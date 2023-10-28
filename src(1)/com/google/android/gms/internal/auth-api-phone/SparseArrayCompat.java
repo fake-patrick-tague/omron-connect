@@ -1,0 +1,3 @@
+package com.google.android.gms.internal.auth-api-phone;
+
+abstract interface SparseArrayCompat {}

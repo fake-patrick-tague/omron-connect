@@ -1,0 +1,235 @@
+package com.google.android.gms.fitness.request;
+
+import androidx.annotation.RecentlyNonNull;
+import androidx.annotation.RecentlyNullable;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.fitness.data.DataSource;
+import com.google.android.gms.fitness.data.DataType;
+import java.util.concurrent.TimeUnit;
+
+public class SensorRequest
+{
+  public static final int ACCURACY_MODE_DEFAULT = 2;
+  public static final int ACCURACY_MODE_HIGH = 3;
+  public static final int ACCURACY_MODE_LOW = 1;
+  private final DataType zzkp;
+  private final DataSource zzkq;
+  private final long zzof;
+  private final int zzog;
+  private final long zzru;
+  private final long zzrv;
+  private final long zzry;
+  
+  private SensorRequest(Builder paramBuilder)
+  {
+    zzkq = Builder.zza(paramBuilder);
+    zzkp = Builder.zzb(paramBuilder);
+    zzof = Builder.zzc(paramBuilder);
+    zzrv = Builder.zzd(paramBuilder);
+    zzru = Builder.zze(paramBuilder);
+    zzog = Builder.zzf(paramBuilder);
+    zzry = Builder.zzg(paramBuilder);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof SensorRequest)) {
+      return false;
+    }
+    paramObject = (SensorRequest)paramObject;
+    return (Objects.equal(zzkq, zzkq)) && (Objects.equal(zzkp, zzkp)) && (zzof == zzof) && (zzrv == zzrv) && (zzru == zzru) && (zzog == zzog) && (zzry == zzry);
+  }
+  
+  public int getAccuracyMode()
+  {
+    return zzog;
+  }
+  
+  @RecentlyNullable
+  public DataSource getDataSource()
+  {
+    return zzkq;
+  }
+  
+  @RecentlyNullable
+  public DataType getDataType()
+  {
+    return zzkp;
+  }
+  
+  public long getFastestRate(@RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzrv, TimeUnit.MICROSECONDS);
+  }
+  
+  public long getMaxDeliveryLatency(@RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzru, TimeUnit.MICROSECONDS);
+  }
+  
+  public long getSamplingRate(@RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    return paramTimeUnit.convert(zzof, TimeUnit.MICROSECONDS);
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzkq, zzkp, Long.valueOf(zzof), Long.valueOf(zzrv), Long.valueOf(zzru), Integer.valueOf(zzog), Long.valueOf(zzry) });
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("dataSource", zzkq).add("dataType", zzkp).add("samplingRateMicros", Long.valueOf(zzof)).add("deliveryLatencyMicros", Long.valueOf(zzru)).add("timeOutMicros", Long.valueOf(zzry)).toString();
+  }
+  
+  public final long zzy()
+  {
+    return zzry;
+  }
+  
+  public static class Builder
+  {
+    private DataType zzkp;
+    private DataSource zzkq;
+    private long zzof = -1L;
+    private int zzog = 2;
+    private long zzru = 0L;
+    private long zzrv = 0L;
+    private long zzry = Long.MAX_VALUE;
+    private boolean zzrz = false;
+    
+    public Builder() {}
+    
+    @RecentlyNonNull
+    public SensorRequest build()
+    {
+      Object localObject = zzkq;
+      boolean bool2 = false;
+      if ((localObject == null) && (zzkp == null)) {
+        bool1 = false;
+      } else {
+        bool1 = true;
+      }
+      Preconditions.checkState(bool1, "Must call setDataSource() or setDataType()");
+      localObject = zzkp;
+      if (localObject != null)
+      {
+        DataSource localDataSource = zzkq;
+        if (localDataSource != null)
+        {
+          bool1 = bool2;
+          if (!((DataType)localObject).equals(localDataSource.getDataType())) {
+            break label70;
+          }
+        }
+      }
+      boolean bool1 = true;
+      label70:
+      Preconditions.checkState(bool1, "Specified data type is incompatible with specified data source");
+      return new SensorRequest(this, null);
+    }
+    
+    @RecentlyNonNull
+    public Builder setAccuracyMode(int paramInt)
+    {
+      int i = paramInt;
+      if (paramInt != 1)
+      {
+        i = paramInt;
+        if (paramInt != 3) {
+          i = 2;
+        }
+      }
+      zzog = i;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setDataSource(@RecentlyNonNull DataSource paramDataSource)
+    {
+      zzkq = paramDataSource;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setDataType(@RecentlyNonNull DataType paramDataType)
+    {
+      zzkp = paramDataType;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setFastestRate(int paramInt, @RecentlyNonNull TimeUnit paramTimeUnit)
+    {
+      boolean bool;
+      if (paramInt >= 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Cannot use a negative interval");
+      zzrz = true;
+      zzrv = paramTimeUnit.toMicros(paramInt);
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setMaxDeliveryLatency(int paramInt, @RecentlyNonNull TimeUnit paramTimeUnit)
+    {
+      boolean bool;
+      if (paramInt >= 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Cannot use a negative delivery interval");
+      zzru = paramTimeUnit.toMicros(paramInt);
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setSamplingRate(long paramLong, @RecentlyNonNull TimeUnit paramTimeUnit)
+    {
+      boolean bool;
+      if (paramLong >= 0L) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "Cannot use a negative sampling interval");
+      paramLong = paramTimeUnit.toMicros(paramLong);
+      zzof = paramLong;
+      if (!zzrz) {
+        zzrv = (paramLong / 2L);
+      }
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setTimeout(long paramLong, @RecentlyNonNull TimeUnit paramTimeUnit)
+    {
+      boolean bool2 = true;
+      boolean bool1;
+      if (paramLong > 0L) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      Preconditions.checkArgument(bool1, "Invalid time out value specified: %d", new Object[] { Long.valueOf(paramLong) });
+      if (paramTimeUnit != null) {
+        bool1 = bool2;
+      } else {
+        bool1 = false;
+      }
+      Preconditions.checkArgument(bool1, "Invalid time unit specified");
+      zzry = paramTimeUnit.toMicros(paramLong);
+      return this;
+    }
+  }
+}

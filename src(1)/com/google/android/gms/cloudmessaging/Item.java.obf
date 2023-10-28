@@ -1,0 +1,71 @@
+package com.google.android.gms.cloudmessaging;
+
+import android.os.Bundle;
+import android.util.Log;
+import com.google.android.gms.tasks.TaskCompletionSource;
+
+abstract class zzp<T>
+{
+  final int zza;
+  final TaskCompletionSource<T> zzb = new TaskCompletionSource();
+  final int zzc;
+  final Bundle zzd;
+  
+  zzp(int paramInt1, int paramInt2, Bundle paramBundle)
+  {
+    zza = paramInt1;
+    zzc = paramInt2;
+    zzd = paramBundle;
+  }
+  
+  public final String toString()
+  {
+    int i = zzc;
+    int j = zza;
+    StringBuilder localStringBuilder = new StringBuilder(55);
+    localStringBuilder.append("Request { what=");
+    localStringBuilder.append(i);
+    localStringBuilder.append(" id=");
+    localStringBuilder.append(j);
+    localStringBuilder.append(" oneWay=");
+    localStringBuilder.append(zzb());
+    localStringBuilder.append("}");
+    return localStringBuilder.toString();
+  }
+  
+  abstract void zza(Bundle paramBundle);
+  
+  abstract boolean zzb();
+  
+  final void zzc(zzq paramZzq)
+  {
+    if (Log.isLoggable("MessengerIpcClient", 3))
+    {
+      String str1 = String.valueOf(this);
+      String str2 = String.valueOf(paramZzq);
+      StringBuilder localStringBuilder = new StringBuilder(str1.length() + 14 + str2.length());
+      localStringBuilder.append("Failing ");
+      localStringBuilder.append(str1);
+      localStringBuilder.append(" with ");
+      localStringBuilder.append(str2);
+      Log.d("MessengerIpcClient", localStringBuilder.toString());
+    }
+    zzb.setException(paramZzq);
+  }
+  
+  final void zzd(T paramT)
+  {
+    if (Log.isLoggable("MessengerIpcClient", 3))
+    {
+      String str1 = String.valueOf(this);
+      String str2 = String.valueOf(paramT);
+      StringBuilder localStringBuilder = new StringBuilder(str1.length() + 16 + str2.length());
+      localStringBuilder.append("Finishing ");
+      localStringBuilder.append(str1);
+      localStringBuilder.append(" with ");
+      localStringBuilder.append(str2);
+      Log.d("MessengerIpcClient", localStringBuilder.toString());
+    }
+    zzb.setResult(paramT);
+  }
+}

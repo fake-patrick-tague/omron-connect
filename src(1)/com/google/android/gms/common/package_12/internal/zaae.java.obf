@@ -1,0 +1,76 @@
+package com.google.android.gms.common.api.internal;
+
+import android.app.Activity;
+import c.e.b;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.VisibleForTesting;
+
+public final class zaae
+  extends zap
+{
+  private final b<ApiKey<?>> zad = new b();
+  private final GoogleApiManager zae;
+  
+  @VisibleForTesting
+  zaae(LifecycleFragment paramLifecycleFragment, GoogleApiManager paramGoogleApiManager, GoogleApiAvailability paramGoogleApiAvailability)
+  {
+    super(paramLifecycleFragment, paramGoogleApiAvailability);
+    zae = paramGoogleApiManager;
+    mLifecycleFragment.addCallback("ConnectionlessLifecycleHelper", this);
+  }
+  
+  public static void zad(Activity paramActivity, GoogleApiManager paramGoogleApiManager, ApiKey<?> paramApiKey)
+  {
+    LifecycleFragment localLifecycleFragment = LifecycleCallback.getFragment(paramActivity);
+    zaae localZaae = (zaae)localLifecycleFragment.getCallbackOrNull("ConnectionlessLifecycleHelper", zaae.class);
+    paramActivity = localZaae;
+    if (localZaae == null) {
+      paramActivity = new zaae(localLifecycleFragment, paramGoogleApiManager, GoogleApiAvailability.getInstance());
+    }
+    Preconditions.checkNotNull(paramApiKey, "ApiKey cannot be null");
+    zad.add(paramApiKey);
+    paramGoogleApiManager.zaC(paramActivity);
+  }
+  
+  private final void zae()
+  {
+    if (!zad.isEmpty()) {
+      zae.zaC(this);
+    }
+  }
+  
+  public final void onResume()
+  {
+    super.onResume();
+    zae();
+  }
+  
+  public final void onStart()
+  {
+    super.onStart();
+    zae();
+  }
+  
+  public final void onStop()
+  {
+    super.onStop();
+    zae.zaD(this);
+  }
+  
+  final b<ApiKey<?>> zaa()
+  {
+    return zad;
+  }
+  
+  protected final void zab(ConnectionResult paramConnectionResult, int paramInt)
+  {
+    zae.zaz(paramConnectionResult, paramInt);
+  }
+  
+  protected final void zac()
+  {
+    zae.zaA();
+  }
+}

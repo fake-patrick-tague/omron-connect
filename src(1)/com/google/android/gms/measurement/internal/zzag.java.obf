@@ -1,0 +1,359 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.os.Bundle;
+import android.text.TextUtils;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.ProcessUtils;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.common.wrappers.PackageManagerWrapper;
+import com.google.android.gms.common.wrappers.Wrappers;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+
+public final class zzag
+  extends zzgr
+{
+  private Boolean zza;
+  private zzaf zzb = zzae.zza;
+  private Boolean zzc;
+  
+  zzag(zzfy paramZzfy)
+  {
+    super(paramZzfy);
+  }
+  
+  public static final long zzA()
+  {
+    return ((Long)zzeb.zzC.zza(null)).longValue();
+  }
+  
+  private final String zzB(String paramString1, String paramString2)
+  {
+    try
+    {
+      paramString1 = (String)Class.forName("android.os.SystemProperties").getMethod("get", new Class[] { String.class, String.class }).invoke(null, new Object[] { paramString1, "" });
+      Preconditions.checkNotNull(paramString1);
+      return paramString1;
+    }
+    catch (InvocationTargetException paramString1)
+    {
+      zzs.zzay().zzd().zzb("SystemProperties.get() threw an exception", paramString1);
+      return "";
+    }
+    catch (IllegalAccessException paramString1)
+    {
+      zzs.zzay().zzd().zzb("Could not access SystemProperties.get()", paramString1);
+      return "";
+    }
+    catch (NoSuchMethodException paramString1)
+    {
+      zzs.zzay().zzd().zzb("Could not find SystemProperties.get() method", paramString1);
+      return "";
+    }
+    catch (ClassNotFoundException paramString1)
+    {
+      zzs.zzay().zzd().zzb("Could not find SystemProperties class", paramString1);
+    }
+    return "";
+  }
+  
+  public static final long zzz()
+  {
+    return ((Long)zzeb.zzc.zza(null)).longValue();
+  }
+  
+  public final double zza(String paramString, zzea paramZzea)
+  {
+    if (paramString == null) {
+      return ((Double)paramZzea.zza(null)).doubleValue();
+    }
+    paramString = zzb.zza(paramString, paramZzea.zzb());
+    if (TextUtils.isEmpty(paramString)) {
+      return ((Double)paramZzea.zza(null)).doubleValue();
+    }
+    try
+    {
+      double d = ((Double)paramZzea.zza(Double.valueOf(Double.parseDouble(paramString)))).doubleValue();
+      return d;
+    }
+    catch (NumberFormatException paramString)
+    {
+      for (;;) {}
+    }
+    return ((Double)paramZzea.zza(null)).doubleValue();
+  }
+  
+  final int zzb(String paramString)
+  {
+    return zzf(paramString, zzeb.zzG, 500, 2000);
+  }
+  
+  public final int zzc()
+  {
+    zzlh localZzlh = zzs.zzv();
+    Boolean localBoolean = zzs.zzt().zzj();
+    if ((localZzlh.zzm() < 201500) && ((localBoolean == null) || (localBoolean.booleanValue()))) {
+      return 25;
+    }
+    return 100;
+  }
+  
+  public final int zzd(String paramString)
+  {
+    return zzf(paramString, zzeb.zzH, 25, 100);
+  }
+  
+  public final int zze(String paramString, zzea paramZzea)
+  {
+    if (paramString == null) {
+      return ((Integer)paramZzea.zza(null)).intValue();
+    }
+    paramString = zzb.zza(paramString, paramZzea.zzb());
+    if (TextUtils.isEmpty(paramString)) {
+      return ((Integer)paramZzea.zza(null)).intValue();
+    }
+    try
+    {
+      int i = ((Integer)paramZzea.zza(Integer.valueOf(Integer.parseInt(paramString)))).intValue();
+      return i;
+    }
+    catch (NumberFormatException paramString)
+    {
+      for (;;) {}
+    }
+    return ((Integer)paramZzea.zza(null)).intValue();
+  }
+  
+  public final int zzf(String paramString, zzea paramZzea, int paramInt1, int paramInt2)
+  {
+    return Math.max(Math.min(zze(paramString, paramZzea), paramInt2), paramInt1);
+  }
+  
+  public final long zzh()
+  {
+    zzs.zzaw();
+    return 73000L;
+  }
+  
+  public final long zzi(String paramString, zzea paramZzea)
+  {
+    if (paramString == null) {
+      return ((Long)paramZzea.zza(null)).longValue();
+    }
+    paramString = zzb.zza(paramString, paramZzea.zzb());
+    if (TextUtils.isEmpty(paramString)) {
+      return ((Long)paramZzea.zza(null)).longValue();
+    }
+    try
+    {
+      long l = ((Long)paramZzea.zza(Long.valueOf(Long.parseLong(paramString)))).longValue();
+      return l;
+    }
+    catch (NumberFormatException paramString)
+    {
+      for (;;) {}
+    }
+    return ((Long)paramZzea.zza(null)).longValue();
+  }
+  
+  @VisibleForTesting
+  final Bundle zzj()
+  {
+    try
+    {
+      if (zzs.zzau().getPackageManager() == null)
+      {
+        zzs.zzay().zzd().zza("Failed to load metadata: PackageManager is null");
+        return null;
+      }
+      Object localObject = Wrappers.packageManager(zzs.zzau()).getApplicationInfo(zzs.zzau().getPackageName(), 128);
+      if (localObject == null)
+      {
+        zzs.zzay().zzd().zza("Failed to load metadata: ApplicationInfo is null");
+        return null;
+      }
+      localObject = metaData;
+      return localObject;
+    }
+    catch (PackageManager.NameNotFoundException localNameNotFoundException)
+    {
+      zzs.zzay().zzd().zzb("Failed to load metadata: Package name not found", localNameNotFoundException);
+    }
+    return null;
+  }
+  
+  @VisibleForTesting
+  final Boolean zzk(String paramString)
+  {
+    Preconditions.checkNotEmpty(paramString);
+    Bundle localBundle = zzj();
+    if (localBundle == null)
+    {
+      zzs.zzay().zzd().zza("Failed to load metadata: Metadata bundle is null");
+      return null;
+    }
+    if (!localBundle.containsKey(paramString)) {
+      return null;
+    }
+    return Boolean.valueOf(localBundle.getBoolean(paramString));
+  }
+  
+  public final String zzl()
+  {
+    return zzB("debug.firebase.analytics.app", "");
+  }
+  
+  public final String zzm()
+  {
+    return zzB("debug.deferred.deeplink", "");
+  }
+  
+  final String zzn()
+  {
+    zzs.zzaw();
+    return "FA";
+  }
+  
+  public final String zzo(String paramString, zzea paramZzea)
+  {
+    if (paramString == null) {
+      return (String)paramZzea.zza(null);
+    }
+    return (String)paramZzea.zza(zzb.zza(paramString, paramZzea.zzb()));
+  }
+  
+  @VisibleForTesting
+  final List zzp(String paramString)
+  {
+    Preconditions.checkNotEmpty("analytics.safelisted_events");
+    paramString = zzj();
+    if (paramString == null) {
+      zzs.zzay().zzd().zza("Failed to load metadata: Metadata bundle is null");
+    }
+    while (!paramString.containsKey("analytics.safelisted_events"))
+    {
+      paramString = null;
+      break;
+    }
+    paramString = Integer.valueOf(paramString.getInt("analytics.safelisted_events"));
+    if (paramString != null) {
+      try
+      {
+        paramString = zzs.zzau().getResources().getStringArray(paramString.intValue());
+        if (paramString == null) {
+          return null;
+        }
+        paramString = Arrays.asList(paramString);
+        return paramString;
+      }
+      catch (Resources.NotFoundException paramString)
+      {
+        zzs.zzay().zzd().zzb("Failed to load string array from metadata: resource not found", paramString);
+      }
+    }
+    return null;
+  }
+  
+  final void zzq(zzaf paramZzaf)
+  {
+    zzb = paramZzaf;
+  }
+  
+  public final boolean zzr()
+  {
+    Boolean localBoolean = zzk("google_analytics_adid_collection_enabled");
+    return (localBoolean == null) || (localBoolean.booleanValue());
+  }
+  
+  public final boolean zzs(String paramString, zzea paramZzea)
+  {
+    if (paramString == null) {
+      return ((Boolean)paramZzea.zza(null)).booleanValue();
+    }
+    paramString = zzb.zza(paramString, paramZzea.zzb());
+    if (TextUtils.isEmpty(paramString)) {
+      return ((Boolean)paramZzea.zza(null)).booleanValue();
+    }
+    return ((Boolean)paramZzea.zza(Boolean.valueOf("1".equals(paramString)))).booleanValue();
+  }
+  
+  public final boolean zzt(String paramString)
+  {
+    return "1".equals(zzb.zza(paramString, "gaia_collection_enabled"));
+  }
+  
+  public final boolean zzu()
+  {
+    Boolean localBoolean = zzk("google_analytics_automatic_screen_reporting_enabled");
+    return (localBoolean == null) || (localBoolean.booleanValue());
+  }
+  
+  public final boolean zzv()
+  {
+    zzs.zzaw();
+    Boolean localBoolean = zzk("firebase_analytics_collection_deactivated");
+    return (localBoolean != null) && (localBoolean.booleanValue());
+  }
+  
+  public final boolean zzw(String paramString)
+  {
+    return "1".equals(zzb.zza(paramString, "measurement.event_sampling_enabled"));
+  }
+  
+  final boolean zzx()
+  {
+    if (zza == null)
+    {
+      Boolean localBoolean = zzk("app_measurement_lite");
+      zza = localBoolean;
+      if (localBoolean == null) {
+        zza = Boolean.FALSE;
+      }
+    }
+    return (zza.booleanValue()) || (!zzs.zzN());
+  }
+  
+  @EnsuresNonNull({"this.isMainProcess"})
+  public final boolean zzy()
+  {
+    if (zzc == null) {
+      try
+      {
+        if (zzc == null)
+        {
+          Object localObject2 = zzs.zzau().getApplicationInfo();
+          String str = ProcessUtils.getMyProcessName();
+          if (localObject2 != null)
+          {
+            localObject2 = processName;
+            boolean bool2 = false;
+            boolean bool1 = bool2;
+            if (localObject2 != null)
+            {
+              bool1 = bool2;
+              if (((String)localObject2).equals(str)) {
+                bool1 = true;
+              }
+            }
+            zzc = Boolean.valueOf(bool1);
+          }
+          if (zzc == null)
+          {
+            zzc = Boolean.TRUE;
+            zzs.zzay().zzd().zza("My process not in the list of running processes");
+          }
+        }
+      }
+      finally {}
+    }
+    return zzc.booleanValue();
+  }
+}

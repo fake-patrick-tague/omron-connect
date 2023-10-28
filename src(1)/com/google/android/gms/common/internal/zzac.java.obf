@@ -1,0 +1,59 @@
+package com.google.android.gms.common.internal;
+
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.RemoteException;
+
+final class zzac
+  implements IGmsServiceBroker
+{
+  private final IBinder zza;
+  
+  zzac(IBinder paramIBinder)
+  {
+    zza = paramIBinder;
+  }
+  
+  public final IBinder asBinder()
+  {
+    return zza;
+  }
+  
+  public final void getService(IGmsCallbacks paramIGmsCallbacks, GetServiceRequest paramGetServiceRequest)
+    throws RemoteException
+  {
+    Parcel localParcel1 = Parcel.obtain();
+    Parcel localParcel2 = Parcel.obtain();
+    for (;;)
+    {
+      try
+      {
+        localParcel1.writeInterfaceToken("com.google.android.gms.common.internal.IGmsServiceBroker");
+        if (paramIGmsCallbacks != null)
+        {
+          paramIGmsCallbacks = paramIGmsCallbacks.asBinder();
+          localParcel1.writeStrongBinder(paramIGmsCallbacks);
+          if (paramGetServiceRequest != null)
+          {
+            localParcel1.writeInt(1);
+            zzm.zza(paramGetServiceRequest, localParcel1, 0);
+          }
+          else
+          {
+            localParcel1.writeInt(0);
+          }
+          zza.transact(46, localParcel1, localParcel2, 0);
+          localParcel2.readException();
+          return;
+        }
+      }
+      finally
+      {
+        localParcel2.recycle();
+        localParcel1.recycle();
+      }
+      paramIGmsCallbacks = null;
+    }
+  }
+}

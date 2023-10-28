@@ -1,0 +1,214 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.Looper;
+import android.util.Log;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Releasable;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.ResultCallbacks;
+import com.google.android.gms.common.api.ResultTransform;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.api.TransformedResult;
+import com.google.android.gms.common.internal.Preconditions;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.ExecutorService;
+
+public final class zada<R extends Result>
+  extends TransformedResult<R>
+  implements ResultCallback<R>
+{
+  private ResultTransform<? super R, ? extends Result> zaa = null;
+  private zada<? extends Result> zab = null;
+  private volatile ResultCallbacks<? super R> zac = null;
+  private PendingResult<R> zad = null;
+  private final Object zae = new Object();
+  private Status zaf = null;
+  private final WeakReference<GoogleApiClient> zag;
+  private final zacz zah;
+  private boolean zai = false;
+  
+  public zada(WeakReference<GoogleApiClient> paramWeakReference)
+  {
+    Preconditions.checkNotNull(paramWeakReference, "GoogleApiClient reference must not be null");
+    zag = paramWeakReference;
+    paramWeakReference = (GoogleApiClient)paramWeakReference.get();
+    if (paramWeakReference != null) {
+      paramWeakReference = paramWeakReference.getLooper();
+    } else {
+      paramWeakReference = Looper.getMainLooper();
+    }
+    zah = new zacz(this, paramWeakReference);
+  }
+  
+  private final void zaj(Status paramStatus)
+  {
+    synchronized (zae)
+    {
+      zaf = paramStatus;
+      zal(paramStatus);
+      return;
+    }
+  }
+  
+  private final void zak()
+  {
+    if ((zaa == null) && (zac == null)) {
+      return;
+    }
+    Object localObject = (GoogleApiClient)zag.get();
+    if ((!zai) && (zaa != null) && (localObject != null))
+    {
+      ((GoogleApiClient)localObject).zao(this);
+      zai = true;
+    }
+    localObject = zaf;
+    if (localObject != null)
+    {
+      zal((Status)localObject);
+      return;
+    }
+    localObject = zad;
+    if (localObject != null) {
+      ((PendingResult)localObject).setResultCallback(this);
+    }
+  }
+  
+  private final void zal(Status paramStatus)
+  {
+    synchronized (zae)
+    {
+      ResultTransform localResultTransform = zaa;
+      if (localResultTransform != null)
+      {
+        paramStatus = (Status)Preconditions.checkNotNull(localResultTransform.onFailure(paramStatus), "onFailure must not return null");
+        ((zada)Preconditions.checkNotNull(zab)).zaj(paramStatus);
+      }
+      else if (zam())
+      {
+        ((ResultCallbacks)Preconditions.checkNotNull(zac)).onFailure(paramStatus);
+      }
+      return;
+    }
+  }
+  
+  private final boolean zam()
+  {
+    GoogleApiClient localGoogleApiClient = (GoogleApiClient)zag.get();
+    return (zac != null) && (localGoogleApiClient != null);
+  }
+  
+  private static final void zan(Result paramResult)
+  {
+    if ((paramResult instanceof Releasable)) {
+      try
+      {
+        ((Releasable)paramResult).release();
+        return;
+      }
+      catch (RuntimeException localRuntimeException)
+      {
+        paramResult = String.valueOf(paramResult);
+        paramResult.length();
+        Log.w("TransformedResultImpl", "Unable to release ".concat(paramResult), localRuntimeException);
+      }
+    }
+  }
+  
+  public final void andFinally(ResultCallbacks<? super R> paramResultCallbacks)
+  {
+    for (;;)
+    {
+      synchronized (zae)
+      {
+        ResultCallbacks localResultCallbacks = zac;
+        boolean bool2 = true;
+        if (localResultCallbacks == null)
+        {
+          bool1 = true;
+          Preconditions.checkState(bool1, "Cannot call andFinally() twice.");
+          if (zaa != null) {
+            break label75;
+          }
+          bool1 = bool2;
+          Preconditions.checkState(bool1, "Cannot call then() and andFinally() on the same TransformedResult.");
+          zac = paramResultCallbacks;
+          zak();
+          return;
+        }
+      }
+      boolean bool1 = false;
+      continue;
+      label75:
+      bool1 = false;
+    }
+  }
+  
+  public final void onResult(R paramR)
+  {
+    synchronized (zae)
+    {
+      if (paramR.getStatus().isSuccess())
+      {
+        if (zaa != null) {
+          zaco.zaa().submit(new zacy(this, paramR));
+        } else if (zam()) {
+          ((ResultCallbacks)Preconditions.checkNotNull(zac)).onSuccess(paramR);
+        }
+      }
+      else
+      {
+        zaj(paramR.getStatus());
+        zan(paramR);
+      }
+      return;
+    }
+  }
+  
+  public final <S extends Result> TransformedResult<S> then(ResultTransform<? super R, ? extends S> paramResultTransform)
+  {
+    for (;;)
+    {
+      synchronized (zae)
+      {
+        ResultTransform localResultTransform = zaa;
+        boolean bool2 = true;
+        if (localResultTransform == null)
+        {
+          bool1 = true;
+          Preconditions.checkState(bool1, "Cannot call then() twice.");
+          if (zac != null) {
+            break label93;
+          }
+          bool1 = bool2;
+          Preconditions.checkState(bool1, "Cannot call then() and andFinally() on the same TransformedResult.");
+          zaa = paramResultTransform;
+          paramResultTransform = new zada(zag);
+          zab = paramResultTransform;
+          zak();
+          return paramResultTransform;
+        }
+      }
+      boolean bool1 = false;
+      continue;
+      label93:
+      bool1 = false;
+    }
+  }
+  
+  final void zah()
+  {
+    zac = null;
+  }
+  
+  public final void zai(PendingResult<?> paramPendingResult)
+  {
+    synchronized (zae)
+    {
+      zad = paramPendingResult;
+      zak();
+      return;
+    }
+  }
+}

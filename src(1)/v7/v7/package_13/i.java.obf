@@ -1,0 +1,118 @@
+package c.h.q;
+
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.k;
+import androidx.lifecycle.m;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class p
+{
+  private final Runnable a;
+  private final CopyOnWriteArrayList<r> b = new CopyOnWriteArrayList();
+  private final Map<r, a> c = new HashMap();
+  
+  public p(Runnable paramRunnable)
+  {
+    a = paramRunnable;
+  }
+  
+  public void a(r paramR)
+  {
+    b.add(paramR);
+    a.run();
+  }
+  
+  public void b(r paramR, m paramM)
+  {
+    a(paramR);
+    paramM = paramM.getLifecycle();
+    Object localObject = (a)c.remove(paramR);
+    if (localObject != null) {
+      ((a)localObject).a();
+    }
+    localObject = new b(this, paramR);
+    c.put(paramR, new a(paramM, (k)localObject));
+  }
+  
+  public void c(r paramR, m paramM, Lifecycle.State paramState)
+  {
+    paramM = paramM.getLifecycle();
+    a localA = (a)c.remove(paramR);
+    if (localA != null) {
+      localA.a();
+    }
+    paramState = new a(this, paramState, paramR);
+    c.put(paramR, new a(paramM, paramState));
+  }
+  
+  public void h(Menu paramMenu, MenuInflater paramMenuInflater)
+  {
+    Iterator localIterator = b.iterator();
+    while (localIterator.hasNext()) {
+      ((r)localIterator.next()).c(paramMenu, paramMenuInflater);
+    }
+  }
+  
+  public void i(Menu paramMenu)
+  {
+    Iterator localIterator = b.iterator();
+    while (localIterator.hasNext()) {
+      ((r)localIterator.next()).b(paramMenu);
+    }
+  }
+  
+  public boolean j(MenuItem paramMenuItem)
+  {
+    Iterator localIterator = b.iterator();
+    while (localIterator.hasNext()) {
+      if (((r)localIterator.next()).a(paramMenuItem)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void k(Menu paramMenu)
+  {
+    Iterator localIterator = b.iterator();
+    while (localIterator.hasNext()) {
+      ((r)localIterator.next()).d(paramMenu);
+    }
+  }
+  
+  public void l(r paramR)
+  {
+    b.remove(paramR);
+    paramR = (a)c.remove(paramR);
+    if (paramR != null) {
+      paramR.a();
+    }
+    a.run();
+  }
+  
+  private static class a
+  {
+    final Lifecycle a;
+    private k b;
+    
+    a(Lifecycle paramLifecycle, k paramK)
+    {
+      a = paramLifecycle;
+      b = paramK;
+      paramLifecycle.a(paramK);
+    }
+    
+    void a()
+    {
+      a.c(b);
+      b = null;
+    }
+  }
+}

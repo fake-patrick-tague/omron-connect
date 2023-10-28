@@ -1,0 +1,113 @@
+package androidx.core.widget;
+
+import android.content.ClipData;
+import android.content.ClipData.Item;
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.Spanned;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import c.h.q.a0;
+import c.h.q.h;
+
+public final class j
+  implements a0
+{
+  public j() {}
+  
+  private static CharSequence b(Context paramContext, ClipData.Item paramItem, int paramInt)
+  {
+    if (Build.VERSION.SDK_INT >= 16) {
+      return a.a(paramContext, paramItem, paramInt);
+    }
+    return b.a(paramContext, paramItem, paramInt);
+  }
+  
+  private static void c(Editable paramEditable, CharSequence paramCharSequence)
+  {
+    int j = Selection.getSelectionStart(paramEditable);
+    int k = Selection.getSelectionEnd(paramEditable);
+    int i = Math.max(0, Math.min(j, k));
+    j = Math.max(0, Math.max(j, k));
+    Selection.setSelection(paramEditable, j);
+    paramEditable.replace(i, j, paramCharSequence);
+  }
+  
+  public h a(View paramView, h paramH)
+  {
+    if (Log.isLoggable("ReceiveContent", 3))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("onReceive: ");
+      ((StringBuilder)localObject).append(paramH);
+      Log.d("ReceiveContent", ((StringBuilder)localObject).toString());
+    }
+    if (paramH.d() == 2) {
+      return paramH;
+    }
+    Object localObject = paramH.b();
+    int m = paramH.c();
+    paramH = (TextView)paramView;
+    paramView = (Editable)paramH.getText();
+    paramH = paramH.getContext();
+    int i = 0;
+    int k;
+    for (int j = 0; i < ((ClipData)localObject).getItemCount(); j = k)
+    {
+      CharSequence localCharSequence = b(paramH, ((ClipData)localObject).getItemAt(i), m);
+      k = j;
+      if (localCharSequence != null) {
+        if (j == 0)
+        {
+          c(paramView, localCharSequence);
+          k = 1;
+        }
+        else
+        {
+          paramView.insert(Selection.getSelectionEnd(paramView), "\n");
+          paramView.insert(Selection.getSelectionEnd(paramView), localCharSequence);
+          k = j;
+        }
+      }
+      i += 1;
+    }
+    return null;
+  }
+  
+  private static final class a
+  {
+    static CharSequence a(Context paramContext, ClipData.Item paramItem, int paramInt)
+    {
+      if ((paramInt & 0x1) != 0)
+      {
+        paramItem = paramItem.coerceToText(paramContext);
+        paramContext = paramItem;
+        if ((paramItem instanceof Spanned)) {
+          paramContext = paramItem.toString();
+        }
+        return paramContext;
+      }
+      return paramItem.coerceToStyledText(paramContext);
+    }
+  }
+  
+  private static final class b
+  {
+    static CharSequence a(Context paramContext, ClipData.Item paramItem, int paramInt)
+    {
+      paramItem = paramItem.coerceToText(paramContext);
+      paramContext = paramItem;
+      if ((paramInt & 0x1) != 0)
+      {
+        paramContext = paramItem;
+        if ((paramItem instanceof Spanned)) {
+          paramContext = paramItem.toString();
+        }
+      }
+      return paramContext;
+    }
+  }
+}

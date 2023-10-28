@@ -1,0 +1,56 @@
+package com.google.android.gms.common.api;
+
+import com.google.android.gms.common.api.internal.BasePendingResult;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class Batch
+  extends BasePendingResult<BatchResult>
+{
+  private int zae;
+  private boolean zaf;
+  private boolean zag;
+  private final PendingResult<?>[] zah;
+  private final Object zai;
+  
+  public void cancel()
+  {
+    super.cancel();
+    PendingResult[] arrayOfPendingResult = zah;
+    int j = arrayOfPendingResult.length;
+    int i = 0;
+    while (i < j)
+    {
+      arrayOfPendingResult[i].cancel();
+      i += 1;
+    }
+  }
+  
+  public BatchResult createFailedResult(Status paramStatus)
+  {
+    return new BatchResult(paramStatus, zah);
+  }
+  
+  public static final class Builder
+  {
+    private List<PendingResult<?>> zaa = new ArrayList();
+    private GoogleApiClient zab;
+    
+    public Builder(GoogleApiClient paramGoogleApiClient)
+    {
+      zab = paramGoogleApiClient;
+    }
+    
+    public <R extends Result> BatchResultToken<R> add(PendingResult<R> paramPendingResult)
+    {
+      BatchResultToken localBatchResultToken = new BatchResultToken(zaa.size());
+      zaa.add(paramPendingResult);
+      return localBatchResultToken;
+    }
+    
+    public Batch build()
+    {
+      return new Batch(zaa, zab, null);
+    }
+  }
+}

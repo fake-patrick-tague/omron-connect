@@ -1,0 +1,236 @@
+package com.braze.configuration;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import bo.app.w0;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public final class RuntimeAppConfigurationProvider
+{
+  public static final a Companion = new a(null);
+  private SharedPreferences.Editor editor;
+  private final SharedPreferences storageMap;
+  
+  public RuntimeAppConfigurationProvider(Context paramContext)
+  {
+    paramContext = paramContext.getSharedPreferences("com.appboy.override.configuration.cache", 0);
+    i.d(paramContext, "context.getSharedPrefere?ME, Context.MODE_PRIVATE)");
+    storageMap = paramContext;
+  }
+  
+  private final void putBoolean(String paramString, Boolean paramBoolean)
+  {
+    if (paramBoolean != null)
+    {
+      boolean bool = paramBoolean.booleanValue();
+      paramBoolean = editor;
+      if (paramBoolean != null) {
+        paramBoolean.putBoolean(paramString, bool);
+      }
+    }
+  }
+  
+  private final <T extends Enum<T>> void putEnumSet(EnumSet<T> paramEnumSet, String paramString)
+  {
+    if (paramEnumSet == null) {
+      return;
+    }
+    paramEnumSet = w0.a(paramEnumSet);
+    SharedPreferences.Editor localEditor = editor;
+    if (localEditor != null) {
+      localEditor.putStringSet(paramString, paramEnumSet);
+    }
+  }
+  
+  private final void putInt(String paramString, Integer paramInteger)
+  {
+    if (paramInteger != null)
+    {
+      int i = paramInteger.intValue();
+      paramInteger = editor;
+      if (paramInteger != null) {
+        paramInteger.putInt(paramString, i);
+      }
+    }
+  }
+  
+  public final void applyEdit()
+  {
+    SharedPreferences.Editor localEditor = editor;
+    if (localEditor != null) {
+      localEditor.apply();
+    }
+  }
+  
+  public final void clearAllConfigurationValues()
+  {
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, b.b, 3, null);
+    storageMap.edit().clear().apply();
+  }
+  
+  public final boolean containsKey(String paramString)
+  {
+    i.e(paramString, "key");
+    return storageMap.contains(paramString);
+  }
+  
+  public final boolean getBooleanValue(String paramString, boolean paramBoolean)
+  {
+    i.e(paramString, "key");
+    return storageMap.getBoolean(paramString, paramBoolean);
+  }
+  
+  public final int getIntValue(String paramString, int paramInt)
+  {
+    i.e(paramString, "key");
+    return storageMap.getInt(paramString, paramInt);
+  }
+  
+  public final Set<String> getStringSetValue(String paramString, Set<String> paramSet)
+  {
+    i.e(paramString, "key");
+    return storageMap.getStringSet(paramString, paramSet);
+  }
+  
+  public final String getStringValue(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "key");
+    return storageMap.getString(paramString1, paramString2);
+  }
+  
+  public final void putEnumAsString(String paramString, Enum<?> paramEnum)
+  {
+    i.e(paramString, "key");
+    if (paramEnum != null) {
+      putString(paramString, paramEnum.toString());
+    }
+  }
+  
+  public final void putString(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "key");
+    if (paramString2 != null)
+    {
+      SharedPreferences.Editor localEditor = editor;
+      if (localEditor != null) {
+        localEditor.putString(paramString1, paramString2);
+      }
+    }
+  }
+  
+  public final void setConfiguration(BrazeConfig paramBrazeConfig)
+  {
+    i.e(paramBrazeConfig, "config");
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, new c(paramBrazeConfig), 2, null);
+    startEdit();
+    putString(BrazeConfigurationProvider.b.e.b(), apiKey);
+    putString(BrazeConfigurationProvider.b.f.b(), serverTarget);
+    putEnumAsString(BrazeConfigurationProvider.b.p.b(), sdkFlavor);
+    putBoolean(BrazeConfigurationProvider.b.o.b(), isNewsFeedVisualIndicatorOn);
+    putString(BrazeConfigurationProvider.b.q.b(), customEndpoint);
+    putString(BrazeConfigurationProvider.b.h.b(), smallNotificationIcon);
+    putString(BrazeConfigurationProvider.b.i.b(), largeNotificationIcon);
+    putInt(BrazeConfigurationProvider.b.j.b(), sessionTimeout);
+    putInt(BrazeConfigurationProvider.b.l.b(), defaultNotificationAccentColor);
+    putInt(BrazeConfigurationProvider.b.m.b(), triggerActionMinimumTimeIntervalSeconds);
+    putBoolean(BrazeConfigurationProvider.b.g.b(), isAdmMessagingRegistrationEnabled);
+    putBoolean(BrazeConfigurationProvider.b.n.b(), willHandlePushDeepLinksAutomatically);
+    putBoolean(BrazeConfigurationProvider.b.k.b(), isLocationCollectionEnabled);
+    putInt(BrazeConfigurationProvider.b.P.b(), badNetworkInterval);
+    putInt(BrazeConfigurationProvider.b.Q.b(), goodNetworkInterval);
+    putInt(BrazeConfigurationProvider.b.R.b(), greatNetworkInterval);
+    putString(BrazeConfigurationProvider.b.r.b(), defaultNotificationChannelName);
+    putString(BrazeConfigurationProvider.b.s.b(), defaultNotificationChannelDescription);
+    putBoolean(BrazeConfigurationProvider.b.t.b(), isPushDeepLinkBackStackActivityEnabled);
+    putString(BrazeConfigurationProvider.b.u.b(), pushDeepLinkBackStackActivityClassName);
+    putBoolean(BrazeConfigurationProvider.b.v.b(), isSessionStartBasedTimeoutEnabled);
+    putBoolean(BrazeConfigurationProvider.b.w.b(), isFirebaseCloudMessagingRegistrationEnabled);
+    putString(BrazeConfigurationProvider.b.x.b(), firebaseCloudMessagingSenderIdKey);
+    putBoolean(BrazeConfigurationProvider.b.y.b(), isContentCardsUnreadVisualIndicatorEnabled);
+    putBoolean(BrazeConfigurationProvider.b.z.b(), isDeviceObjectAllowlistEnabled);
+    putBoolean(BrazeConfigurationProvider.b.B.b(), isInAppMessageAccessibilityExclusiveModeEnabled);
+    putBoolean(BrazeConfigurationProvider.b.C.b(), isPushWakeScreenForNotificationEnabled);
+    putBoolean(BrazeConfigurationProvider.b.D.b(), isPushHtmlRenderingEnabled);
+    putBoolean(BrazeConfigurationProvider.b.E.b(), doesPushStoryDismissOnClick);
+    putBoolean(BrazeConfigurationProvider.b.F.b(), areGeofencesEnabled);
+    putBoolean(BrazeConfigurationProvider.b.G.b(), isInAppMessageTestPushEagerDisplayEnabled);
+    putString(BrazeConfigurationProvider.b.I.b(), customHtmlWebViewActivityClassName);
+    putBoolean(BrazeConfigurationProvider.b.J.b(), areAutomaticGeofenceRequestsEnabled);
+    putInt(BrazeConfigurationProvider.b.L.b(), inAppMessageWebViewClientMaxOnPageFinishedWaitMs);
+    putBoolean(BrazeConfigurationProvider.b.M.b(), isFirebaseMessagingServiceOnNewTokenRegistrationEnabled);
+    putBoolean(BrazeConfigurationProvider.b.N.b(), isSdkAuthEnabled);
+    putBoolean(BrazeConfigurationProvider.b.O.b(), isTouchModeRequiredForHtmlInAppMessages);
+    putBoolean(BrazeConfigurationProvider.b.U.b(), isHtmlInAppMessageApplyWindowInsetsEnabled);
+    putEnumSet(deviceObjectAllowlist, BrazeConfigurationProvider.b.A.b());
+    putEnumSet(customLocationProviderNames, BrazeConfigurationProvider.b.K.b());
+    paramBrazeConfig = brazeSdkMetadata;
+    if (paramBrazeConfig != null) {
+      updateEnumSetData(BrazeConfigurationProvider.b.T.b(), paramBrazeConfig);
+    }
+    applyEdit();
+  }
+  
+  public final void startEdit()
+  {
+    editor = storageMap.edit();
+  }
+  
+  public final <T extends Enum<T>> void updateEnumSetData(String paramString, EnumSet<T> paramEnumSet)
+  {
+    i.e(paramString, "key");
+    i.e(paramEnumSet, "updateValue");
+    Set localSet = getStringSetValue(paramString, new HashSet());
+    if (localSet != null) {
+      localSet.addAll(w0.a(paramEnumSet));
+    }
+    storageMap.edit().putStringSet(paramString, localSet).apply();
+  }
+  
+  public static final class a
+  {
+    private a() {}
+  }
+  
+  static final class b
+    extends j
+    implements a<String>
+  {
+    public static final b b = new b();
+    
+    b()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Clearing Braze Override configuration cache";
+    }
+  }
+  
+  static final class c
+    extends j
+    implements a<String>
+  {
+    c(BrazeConfig paramBrazeConfig)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Setting Braze Override configuration with config: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+}

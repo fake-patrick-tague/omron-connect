@@ -1,0 +1,111 @@
+package com.braze.models;
+
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.JsonUtils;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public final class FeatureFlag
+  implements IPutIntoJson<JSONObject>
+{
+  public static final a Companion = new a(null);
+  private final boolean enabled;
+  private final String id;
+  private final JSONObject properties;
+  
+  public FeatureFlag(String paramString, boolean paramBoolean, JSONObject paramJSONObject)
+  {
+    id = paramString;
+    enabled = paramBoolean;
+    properties = paramJSONObject;
+  }
+  
+  public final FeatureFlag deepcopy$android_sdk_base_release()
+  {
+    return new FeatureFlag(id, enabled, JsonUtils.deepcopy(properties));
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof FeatureFlag)) {
+      return false;
+    }
+    paramObject = (FeatureFlag)paramObject;
+    if (!i.a(id, id)) {
+      return false;
+    }
+    if (enabled != enabled) {
+      return false;
+    }
+    return i.a(properties, properties);
+  }
+  
+  public JSONObject forJsonPut()
+  {
+    JSONObject localJSONObject = new JSONObject();
+    try
+    {
+      localJSONObject.put("id", id);
+      localJSONObject.put("enabled", enabled);
+      localJSONObject.put("properties", properties);
+      return localJSONObject;
+    }
+    catch (JSONException localJSONException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, localJSONException, c.b);
+    }
+    return localJSONObject;
+  }
+  
+  public final String getId()
+  {
+    return id;
+  }
+  
+  public int hashCode()
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("FeatureFlag(id=");
+    localStringBuilder.append(id);
+    localStringBuilder.append(", enabled=");
+    localStringBuilder.append(enabled);
+    localStringBuilder.append(", properties=");
+    localStringBuilder.append(properties);
+    localStringBuilder.append(')');
+    return localStringBuilder.toString();
+  }
+  
+  public static final class a
+  {
+    private a() {}
+  }
+  
+  static final class c
+    extends j
+    implements a<String>
+  {
+    public static final c b = new c();
+    
+    c()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Caught exception creating FeatureFlag Json.";
+    }
+  }
+}

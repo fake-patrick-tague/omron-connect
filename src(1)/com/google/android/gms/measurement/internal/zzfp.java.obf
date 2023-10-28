@@ -1,0 +1,793 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.text.TextUtils;
+import c.e.a;
+import c.e.e;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.internal.measurement.zzc;
+import com.google.android.gms.internal.measurement.zzd;
+import com.google.android.gms.internal.measurement.zzfa;
+import com.google.android.gms.internal.measurement.zzfb;
+import com.google.android.gms.internal.measurement.zzfd;
+import com.google.android.gms.internal.measurement.zzfe;
+import com.google.android.gms.internal.measurement.zzfi;
+import com.google.android.gms.internal.measurement.zzgo;
+import com.google.android.gms.internal.measurement.zzgq;
+import com.google.android.gms.internal.measurement.zzgs;
+import com.google.android.gms.internal.measurement.zzin;
+import com.google.android.gms.internal.measurement.zzka;
+import com.google.android.gms.internal.measurement.zzke;
+import com.google.android.gms.internal.measurement.zzko;
+import com.google.android.gms.internal.measurement.zzow;
+import com.google.android.gms.internal.measurement.zzr;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public final class zzfp
+  extends zzkn
+  implements zzaf
+{
+  @VisibleForTesting
+  final Map zza = new a();
+  @VisibleForTesting
+  final Map zzb = new a();
+  @VisibleForTesting
+  final Map zzc = new a();
+  @VisibleForTesting
+  final e zzd = new zzfm(this, 20);
+  final zzr zze = new zzfn(this);
+  private final Map zzg = new a();
+  private final Map zzh = new a();
+  private final Map zzi = new a();
+  private final Map zzj = new a();
+  private final Map zzk = new a();
+  private final Map zzl = new a();
+  
+  zzfp(zzkz paramZzkz)
+  {
+    super(paramZzkz);
+  }
+  
+  private final zzfe zzA(String paramString, byte[] paramArrayOfByte)
+  {
+    if (paramArrayOfByte == null) {
+      return zzfe.zzg();
+    }
+    for (;;)
+    {
+      try
+      {
+        zzfe localZzfe = (zzfe)((zzfd)zzlb.zzl(zzfe.zze(), paramArrayOfByte)).zzaE();
+        zzem localZzem = zzs.zzay().zzj();
+        boolean bool = localZzfe.zzs();
+        String str = null;
+        if (bool)
+        {
+          paramArrayOfByte = Long.valueOf(localZzfe.zzc());
+          if (localZzfe.zzr()) {
+            str = localZzfe.zzh();
+          }
+          localZzem.zzc("Parsed config. version, gmp_app_id", paramArrayOfByte, str);
+          return localZzfe;
+        }
+      }
+      catch (RuntimeException paramArrayOfByte)
+      {
+        zzs.zzay().zzk().zzc("Unable to merge remote config. appId", zzeo.zzn(paramString), paramArrayOfByte);
+        return zzfe.zzg();
+      }
+      catch (zzko paramArrayOfByte)
+      {
+        zzs.zzay().zzk().zzc("Unable to merge remote config. appId", zzeo.zzn(paramString), paramArrayOfByte);
+        return zzfe.zzg();
+      }
+      paramArrayOfByte = null;
+    }
+  }
+  
+  private final void zzB(String paramString, zzfd paramZzfd)
+  {
+    HashSet localHashSet = new HashSet();
+    a localA1 = new a();
+    a localA2 = new a();
+    a localA3 = new a();
+    if (paramZzfd != null)
+    {
+      zzow.zzc();
+      boolean bool = zzs.zzf().zzs(null, zzeb.zzal);
+      int j = 0;
+      int i = j;
+      Object localObject;
+      if (bool)
+      {
+        localObject = paramZzfd.zzg().iterator();
+        for (;;)
+        {
+          i = j;
+          if (!((Iterator)localObject).hasNext()) {
+            break;
+          }
+          localHashSet.add(((zzfa)((Iterator)localObject).next()).zzb());
+        }
+      }
+      while (i < paramZzfd.zza())
+      {
+        localObject = (zzfb)paramZzfd.zzb(i).zzby();
+        if (((zzfb)localObject).zzc().isEmpty())
+        {
+          zzs.zzay().zzk().zza("EventConfig contained null event name");
+        }
+        else
+        {
+          String str1 = ((zzfb)localObject).zzc();
+          String str2 = zzgv.zzb(((zzfb)localObject).zzc());
+          if (!TextUtils.isEmpty(str2))
+          {
+            ((zzfb)localObject).zzb(str2);
+            paramZzfd.zzd(i, (zzfb)localObject);
+          }
+          if ((((zzfb)localObject).zzf()) && (((zzfb)localObject).zzd())) {
+            localA1.put(str1, Boolean.TRUE);
+          }
+          if ((((zzfb)localObject).zzg()) && (((zzfb)localObject).zze())) {
+            localA2.put(((zzfb)localObject).zzc(), Boolean.TRUE);
+          }
+          if (((zzfb)localObject).zzh()) {
+            if ((((zzfb)localObject).zza() >= 2) && (((zzfb)localObject).zza() <= 65535)) {
+              localA3.put(((zzfb)localObject).zzc(), Integer.valueOf(((zzfb)localObject).zza()));
+            } else {
+              zzs.zzay().zzk().zzc("Invalid sampling rate. Event name, sample rate", ((zzfb)localObject).zzc(), Integer.valueOf(((zzfb)localObject).zza()));
+            }
+          }
+        }
+        i += 1;
+      }
+    }
+    zza.put(paramString, localHashSet);
+    zzb.put(paramString, localA1);
+    zzc.put(paramString, localA2);
+    zzi.put(paramString, localA3);
+  }
+  
+  /* Error */
+  private final void zzC(String paramString)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: invokevirtual 271	com/google/android/gms/measurement/internal/zzkn:zzW	()V
+    //   4: aload_0
+    //   5: invokevirtual 273	com/google/android/gms/measurement/internal/zzgr:zzg	()V
+    //   8: aload_1
+    //   9: invokestatic 278	com/google/android/gms/common/internal/Preconditions:checkNotEmpty	(Ljava/lang/String;)Ljava/lang/String;
+    //   12: pop
+    //   13: aload_0
+    //   14: getfield 40	com/google/android/gms/measurement/internal/zzfp:zzh	Ljava/util/Map;
+    //   17: aload_1
+    //   18: invokeinterface 282 2 0
+    //   23: ifnonnull +508 -> 531
+    //   26: aload_0
+    //   27: getfield 287	com/google/android/gms/measurement/internal/zzkm:zzf	Lcom/google/android/gms/measurement/internal/zzkz;
+    //   30: invokevirtual 292	com/google/android/gms/measurement/internal/zzkz:zzi	()Lcom/google/android/gms/measurement/internal/zzam;
+    //   33: astore 5
+    //   35: aload_1
+    //   36: invokestatic 278	com/google/android/gms/common/internal/Preconditions:checkNotEmpty	(Ljava/lang/String;)Ljava/lang/String;
+    //   39: pop
+    //   40: aload 5
+    //   42: invokevirtual 273	com/google/android/gms/measurement/internal/zzgr:zzg	()V
+    //   45: aload 5
+    //   47: invokevirtual 271	com/google/android/gms/measurement/internal/zzkn:zzW	()V
+    //   50: aconst_null
+    //   51: astore_3
+    //   52: aload 5
+    //   54: invokevirtual 297	com/google/android/gms/measurement/internal/zzam:zzh	()Landroid/database/sqlite/SQLiteDatabase;
+    //   57: ldc_w 299
+    //   60: iconst_3
+    //   61: anewarray 210	java/lang/String
+    //   64: dup
+    //   65: iconst_0
+    //   66: ldc_w 301
+    //   69: aastore
+    //   70: dup
+    //   71: iconst_1
+    //   72: ldc_w 303
+    //   75: aastore
+    //   76: dup
+    //   77: iconst_2
+    //   78: ldc_w 305
+    //   81: aastore
+    //   82: ldc_w 307
+    //   85: iconst_1
+    //   86: anewarray 210	java/lang/String
+    //   89: dup
+    //   90: iconst_0
+    //   91: aload_1
+    //   92: aastore
+    //   93: aconst_null
+    //   94: aconst_null
+    //   95: aconst_null
+    //   96: invokevirtual 313	android/database/sqlite/SQLiteDatabase:query	(Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Landroid/database/Cursor;
+    //   99: astore_2
+    //   100: aload_2
+    //   101: astore_3
+    //   102: aload_2
+    //   103: invokeinterface 318 1 0
+    //   108: ifne +6 -> 114
+    //   111: goto +167 -> 278
+    //   114: aload_2
+    //   115: astore_3
+    //   116: aload_2
+    //   117: iconst_0
+    //   118: invokeinterface 322 2 0
+    //   123: astore 6
+    //   125: aload_2
+    //   126: astore_3
+    //   127: aload_2
+    //   128: iconst_1
+    //   129: invokeinterface 326 2 0
+    //   134: astore 7
+    //   136: aload_2
+    //   137: astore_3
+    //   138: aload 5
+    //   140: getfield 96	com/google/android/gms/measurement/internal/zzgr:zzs	Lcom/google/android/gms/measurement/internal/zzfy;
+    //   143: invokevirtual 153	com/google/android/gms/measurement/internal/zzfy:zzf	()Lcom/google/android/gms/measurement/internal/zzag;
+    //   146: aconst_null
+    //   147: getstatic 329	com/google/android/gms/measurement/internal/zzeb:zzaw	Lcom/google/android/gms/measurement/internal/zzea;
+    //   150: invokevirtual 164	com/google/android/gms/measurement/internal/zzag:zzs	(Ljava/lang/String;Lcom/google/android/gms/measurement/internal/zzea;)Z
+    //   153: ifeq +379 -> 532
+    //   156: aload_2
+    //   157: astore_3
+    //   158: aload_2
+    //   159: iconst_2
+    //   160: invokeinterface 326 2 0
+    //   165: astore 4
+    //   167: goto +3 -> 170
+    //   170: aload_2
+    //   171: astore_3
+    //   172: aload_2
+    //   173: invokeinterface 332 1 0
+    //   178: ifeq +360 -> 538
+    //   181: aload_2
+    //   182: astore_3
+    //   183: aload 5
+    //   185: getfield 96	com/google/android/gms/measurement/internal/zzgr:zzs	Lcom/google/android/gms/measurement/internal/zzfy;
+    //   188: invokevirtual 102	com/google/android/gms/measurement/internal/zzfy:zzay	()Lcom/google/android/gms/measurement/internal/zzeo;
+    //   191: invokevirtual 334	com/google/android/gms/measurement/internal/zzeo:zzd	()Lcom/google/android/gms/measurement/internal/zzem;
+    //   194: ldc_w 336
+    //   197: aload_1
+    //   198: invokestatic 140	com/google/android/gms/measurement/internal/zzeo:zzn	(Ljava/lang/String;)Ljava/lang/Object;
+    //   201: invokevirtual 339	com/google/android/gms/measurement/internal/zzem:zzb	(Ljava/lang/String;Ljava/lang/Object;)V
+    //   204: goto +334 -> 538
+    //   207: aload_2
+    //   208: astore_3
+    //   209: new 341	com/google/android/gms/measurement/internal/zzaj
+    //   212: dup
+    //   213: aload 6
+    //   215: aload 7
+    //   217: aload 4
+    //   219: invokespecial 344	com/google/android/gms/measurement/internal/zzaj:<init>	([BLjava/lang/String;Ljava/lang/String;)V
+    //   222: astore 4
+    //   224: aload_2
+    //   225: invokeinterface 347 1 0
+    //   230: aload 4
+    //   232: astore_2
+    //   233: goto +53 -> 286
+    //   236: astore 4
+    //   238: goto +11 -> 249
+    //   241: astore_1
+    //   242: goto +277 -> 519
+    //   245: astore 4
+    //   247: aconst_null
+    //   248: astore_2
+    //   249: aload_2
+    //   250: astore_3
+    //   251: aload 5
+    //   253: getfield 96	com/google/android/gms/measurement/internal/zzgr:zzs	Lcom/google/android/gms/measurement/internal/zzfy;
+    //   256: invokevirtual 102	com/google/android/gms/measurement/internal/zzfy:zzay	()Lcom/google/android/gms/measurement/internal/zzeo;
+    //   259: invokevirtual 334	com/google/android/gms/measurement/internal/zzeo:zzd	()Lcom/google/android/gms/measurement/internal/zzem;
+    //   262: ldc_w 349
+    //   265: aload_1
+    //   266: invokestatic 140	com/google/android/gms/measurement/internal/zzeo:zzn	(Ljava/lang/String;)Ljava/lang/Object;
+    //   269: aload 4
+    //   271: invokevirtual 132	com/google/android/gms/measurement/internal/zzem:zzc	(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+    //   274: aload_2
+    //   275: ifnull +9 -> 284
+    //   278: aload_2
+    //   279: invokeinterface 347 1 0
+    //   284: aconst_null
+    //   285: astore_2
+    //   286: aload_2
+    //   287: ifnonnull +112 -> 399
+    //   290: aload_0
+    //   291: getfield 32	com/google/android/gms/measurement/internal/zzfp:zzg	Ljava/util/Map;
+    //   294: aload_1
+    //   295: aconst_null
+    //   296: invokeinterface 250 3 0
+    //   301: pop
+    //   302: aload_0
+    //   303: getfield 36	com/google/android/gms/measurement/internal/zzfp:zzb	Ljava/util/Map;
+    //   306: aload_1
+    //   307: aconst_null
+    //   308: invokeinterface 250 3 0
+    //   313: pop
+    //   314: aload_0
+    //   315: getfield 34	com/google/android/gms/measurement/internal/zzfp:zza	Ljava/util/Map;
+    //   318: aload_1
+    //   319: aconst_null
+    //   320: invokeinterface 250 3 0
+    //   325: pop
+    //   326: aload_0
+    //   327: getfield 38	com/google/android/gms/measurement/internal/zzfp:zzc	Ljava/util/Map;
+    //   330: aload_1
+    //   331: aconst_null
+    //   332: invokeinterface 250 3 0
+    //   337: pop
+    //   338: aload_0
+    //   339: getfield 40	com/google/android/gms/measurement/internal/zzfp:zzh	Ljava/util/Map;
+    //   342: aload_1
+    //   343: aconst_null
+    //   344: invokeinterface 250 3 0
+    //   349: pop
+    //   350: aload_0
+    //   351: getfield 42	com/google/android/gms/measurement/internal/zzfp:zzj	Ljava/util/Map;
+    //   354: aload_1
+    //   355: aconst_null
+    //   356: invokeinterface 250 3 0
+    //   361: pop
+    //   362: aload_0
+    //   363: getfield 44	com/google/android/gms/measurement/internal/zzfp:zzk	Ljava/util/Map;
+    //   366: aload_1
+    //   367: aconst_null
+    //   368: invokeinterface 250 3 0
+    //   373: pop
+    //   374: aload_0
+    //   375: getfield 46	com/google/android/gms/measurement/internal/zzfp:zzl	Ljava/util/Map;
+    //   378: aload_1
+    //   379: aconst_null
+    //   380: invokeinterface 250 3 0
+    //   385: pop
+    //   386: aload_0
+    //   387: getfield 48	com/google/android/gms/measurement/internal/zzfp:zzi	Ljava/util/Map;
+    //   390: aload_1
+    //   391: aconst_null
+    //   392: invokeinterface 250 3 0
+    //   397: pop
+    //   398: return
+    //   399: aload_0
+    //   400: aload_1
+    //   401: aload_2
+    //   402: getfield 352	com/google/android/gms/measurement/internal/zzaj:zza	[B
+    //   405: invokespecial 354	com/google/android/gms/measurement/internal/zzfp:zzA	(Ljava/lang/String;[B)Lcom/google/android/gms/internal/measurement/zzfe;
+    //   408: invokevirtual 204	com/google/android/gms/internal/measurement/zzke:zzby	()Lcom/google/android/gms/internal/measurement/zzka;
+    //   411: checkcast 84	com/google/android/gms/internal/measurement/zzfd
+    //   414: astore_3
+    //   415: aload_0
+    //   416: aload_1
+    //   417: aload_3
+    //   418: invokespecial 356	com/google/android/gms/measurement/internal/zzfp:zzB	(Ljava/lang/String;Lcom/google/android/gms/internal/measurement/zzfd;)V
+    //   421: aload_0
+    //   422: getfield 32	com/google/android/gms/measurement/internal/zzfp:zzg	Ljava/util/Map;
+    //   425: aload_1
+    //   426: aload_3
+    //   427: invokevirtual 90	com/google/android/gms/internal/measurement/zzka:zzaE	()Lcom/google/android/gms/internal/measurement/zzke;
+    //   430: checkcast 71	com/google/android/gms/internal/measurement/zzfe
+    //   433: invokestatic 360	com/google/android/gms/measurement/internal/zzfp:zzE	(Lcom/google/android/gms/internal/measurement/zzfe;)Ljava/util/Map;
+    //   436: invokeinterface 250 3 0
+    //   441: pop
+    //   442: aload_0
+    //   443: getfield 40	com/google/android/gms/measurement/internal/zzfp:zzh	Ljava/util/Map;
+    //   446: aload_1
+    //   447: aload_3
+    //   448: invokevirtual 90	com/google/android/gms/internal/measurement/zzka:zzaE	()Lcom/google/android/gms/internal/measurement/zzke;
+    //   451: checkcast 71	com/google/android/gms/internal/measurement/zzfe
+    //   454: invokeinterface 250 3 0
+    //   459: pop
+    //   460: aload_0
+    //   461: aload_1
+    //   462: aload_3
+    //   463: invokevirtual 90	com/google/android/gms/internal/measurement/zzka:zzaE	()Lcom/google/android/gms/internal/measurement/zzke;
+    //   466: checkcast 71	com/google/android/gms/internal/measurement/zzfe
+    //   469: invokespecial 364	com/google/android/gms/measurement/internal/zzfp:zzD	(Ljava/lang/String;Lcom/google/android/gms/internal/measurement/zzfe;)V
+    //   472: aload_0
+    //   473: getfield 42	com/google/android/gms/measurement/internal/zzfp:zzj	Ljava/util/Map;
+    //   476: aload_1
+    //   477: aload_3
+    //   478: invokevirtual 366	com/google/android/gms/internal/measurement/zzfd:zze	()Ljava/lang/String;
+    //   481: invokeinterface 250 3 0
+    //   486: pop
+    //   487: aload_0
+    //   488: getfield 44	com/google/android/gms/measurement/internal/zzfp:zzk	Ljava/util/Map;
+    //   491: aload_1
+    //   492: aload_2
+    //   493: getfield 369	com/google/android/gms/measurement/internal/zzaj:zzb	Ljava/lang/String;
+    //   496: invokeinterface 250 3 0
+    //   501: pop
+    //   502: aload_0
+    //   503: getfield 46	com/google/android/gms/measurement/internal/zzfp:zzl	Ljava/util/Map;
+    //   506: aload_1
+    //   507: aload_2
+    //   508: getfield 371	com/google/android/gms/measurement/internal/zzaj:zzc	Ljava/lang/String;
+    //   511: invokeinterface 250 3 0
+    //   516: pop
+    //   517: return
+    //   518: astore_1
+    //   519: aload_3
+    //   520: ifnull +9 -> 529
+    //   523: aload_3
+    //   524: invokeinterface 347 1 0
+    //   529: aload_1
+    //   530: athrow
+    //   531: return
+    //   532: aconst_null
+    //   533: astore 4
+    //   535: goto -365 -> 170
+    //   538: aload 6
+    //   540: ifnonnull -333 -> 207
+    //   543: goto -265 -> 278
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	546	0	this	zzfp
+    //   0	546	1	paramString	String
+    //   99	409	2	localObject1	Object
+    //   51	473	3	localObject2	Object
+    //   165	66	4	localObject3	Object
+    //   236	1	4	localSQLiteException1	SQLiteException
+    //   245	25	4	localSQLiteException2	SQLiteException
+    //   533	1	4	localObject4	Object
+    //   33	219	5	localZzam	zzam
+    //   123	416	6	arrayOfByte	byte[]
+    //   134	82	7	str	String
+    // Exception table:
+    //   from	to	target	type
+    //   102	111	236	android/database/sqlite/SQLiteException
+    //   116	125	236	android/database/sqlite/SQLiteException
+    //   127	136	236	android/database/sqlite/SQLiteException
+    //   138	156	236	android/database/sqlite/SQLiteException
+    //   158	167	236	android/database/sqlite/SQLiteException
+    //   172	181	236	android/database/sqlite/SQLiteException
+    //   183	204	236	android/database/sqlite/SQLiteException
+    //   209	224	236	android/database/sqlite/SQLiteException
+    //   52	100	241	finally
+    //   52	100	245	android/database/sqlite/SQLiteException
+    //   102	111	518	finally
+    //   116	125	518	finally
+    //   127	136	518	finally
+    //   138	156	518	finally
+    //   158	167	518	finally
+    //   172	181	518	finally
+    //   183	204	518	finally
+    //   209	224	518	finally
+    //   251	274	518	finally
+  }
+  
+  private final void zzD(String paramString, zzfe paramZzfe)
+  {
+    if (paramZzfe.zza() != 0)
+    {
+      zzs.zzay().zzj().zzb("EES programs found", Integer.valueOf(paramZzfe.zza()));
+      paramZzfe = (zzgs)paramZzfe.zzm().get(0);
+    }
+    try
+    {
+      Object localObject = new zzc();
+      ((zzc)localObject).zzd("internal.remoteConfig", new zzfj(this, paramString));
+      ((zzc)localObject).zzd("internal.appMetadata", new zzfk(this, paramString));
+      ((zzc)localObject).zzd("internal.logger", new zzfl(this));
+      ((zzc)localObject).zzc(paramZzfe);
+      zzd.put(paramString, localObject);
+      zzs.zzay().zzj().zzc("EES program loaded for appId, activities", paramString, Integer.valueOf(paramZzfe.zza().zza()));
+      paramZzfe = paramZzfe.zza().zzd().iterator();
+      while (paramZzfe.hasNext())
+      {
+        localObject = (zzgq)paramZzfe.next();
+        zzs.zzay().zzj().zzb("EES program activity", ((zzgq)localObject).zzb());
+      }
+      return;
+    }
+    catch (zzd paramZzfe)
+    {
+      for (;;) {}
+    }
+    zzs.zzay().zzd().zzb("Failed to load EES program. appId", paramString);
+    return;
+    zzd.remove(paramString);
+  }
+  
+  private static final Map zzE(zzfe paramZzfe)
+  {
+    a localA = new a();
+    if (paramZzfe != null)
+    {
+      paramZzfe = paramZzfe.zzn().iterator();
+      while (paramZzfe.hasNext())
+      {
+        zzfi localZzfi = (zzfi)paramZzfe.next();
+        localA.put(localZzfi.zzb(), localZzfi.zzc());
+      }
+    }
+    return localA;
+  }
+  
+  public final String zza(String paramString1, String paramString2)
+  {
+    zzg();
+    zzC(paramString1);
+    paramString1 = (Map)zzg.get(paramString1);
+    if (paramString1 != null) {
+      return (String)paramString1.get(paramString2);
+    }
+    return null;
+  }
+  
+  protected final boolean zzb()
+  {
+    return false;
+  }
+  
+  final int zzc(String paramString1, String paramString2)
+  {
+    zzg();
+    zzC(paramString1);
+    paramString1 = (Map)zzi.get(paramString1);
+    if (paramString1 != null)
+    {
+      paramString1 = (Integer)paramString1.get(paramString2);
+      if (paramString1 == null) {
+        return 1;
+      }
+      return paramString1.intValue();
+    }
+    return 1;
+  }
+  
+  protected final zzfe zze(String paramString)
+  {
+    zzW();
+    zzg();
+    Preconditions.checkNotEmpty(paramString);
+    zzC(paramString);
+    return (zzfe)zzh.get(paramString);
+  }
+  
+  protected final String zzf(String paramString)
+  {
+    zzg();
+    return (String)zzl.get(paramString);
+  }
+  
+  protected final String zzh(String paramString)
+  {
+    zzg();
+    return (String)zzk.get(paramString);
+  }
+  
+  final String zzi(String paramString)
+  {
+    zzg();
+    zzC(paramString);
+    return (String)zzj.get(paramString);
+  }
+  
+  final Set zzk(String paramString)
+  {
+    zzg();
+    zzC(paramString);
+    return (Set)zza.get(paramString);
+  }
+  
+  protected final void zzl(String paramString)
+  {
+    zzg();
+    zzk.put(paramString, null);
+  }
+  
+  final void zzm(String paramString)
+  {
+    zzg();
+    zzh.remove(paramString);
+  }
+  
+  final boolean zzn(String paramString)
+  {
+    zzg();
+    paramString = zze(paramString);
+    if (paramString == null) {
+      return false;
+    }
+    return paramString.zzq();
+  }
+  
+  public final boolean zzo(String paramString)
+  {
+    if (TextUtils.isEmpty(paramString)) {
+      return false;
+    }
+    paramString = (zzfe)zzh.get(paramString);
+    if (paramString == null) {
+      return false;
+    }
+    return paramString.zza() != 0;
+  }
+  
+  final boolean zzp(String paramString)
+  {
+    return "1".equals(zza(paramString, "measurement.upload.blacklist_internal"));
+  }
+  
+  final boolean zzq(String paramString1, String paramString2)
+  {
+    zzg();
+    zzC(paramString1);
+    if ("ecommerce_purchase".equals(paramString2)) {
+      return true;
+    }
+    if (!"purchase".equals(paramString2))
+    {
+      if ("refund".equals(paramString2)) {
+        return true;
+      }
+      paramString1 = (Map)zzc.get(paramString1);
+      if (paramString1 != null)
+      {
+        paramString1 = (Boolean)paramString1.get(paramString2);
+        if (paramString1 == null) {
+          return false;
+        }
+        return paramString1.booleanValue();
+      }
+      return false;
+    }
+    return true;
+  }
+  
+  final boolean zzr(String paramString1, String paramString2)
+  {
+    zzg();
+    zzC(paramString1);
+    if ((zzp(paramString1)) && (zzlh.zzah(paramString2))) {
+      return true;
+    }
+    if ((zzs(paramString1)) && (zzlh.zzai(paramString2))) {
+      return true;
+    }
+    paramString1 = (Map)zzb.get(paramString1);
+    if (paramString1 != null)
+    {
+      paramString1 = (Boolean)paramString1.get(paramString2);
+      if (paramString1 == null) {
+        return false;
+      }
+      return paramString1.booleanValue();
+    }
+    return false;
+  }
+  
+  final boolean zzs(String paramString)
+  {
+    return "1".equals(zza(paramString, "measurement.upload.blacklist_public"));
+  }
+  
+  protected final boolean zzt(String paramString1, byte[] paramArrayOfByte, String paramString2, String paramString3)
+  {
+    zzW();
+    zzg();
+    Preconditions.checkNotEmpty(paramString1);
+    zzfd localZzfd = (zzfd)zzA(paramString1, paramArrayOfByte).zzby();
+    if (localZzfd == null) {
+      return false;
+    }
+    zzB(paramString1, localZzfd);
+    zzD(paramString1, (zzfe)localZzfd.zzaE());
+    zzh.put(paramString1, (zzfe)localZzfd.zzaE());
+    zzj.put(paramString1, localZzfd.zze());
+    zzk.put(paramString1, paramString2);
+    zzl.put(paramString1, paramString3);
+    zzg.put(paramString1, zzE((zzfe)localZzfd.zzaE()));
+    zzf.zzi().zzB(paramString1, new ArrayList(localZzfd.zzf()));
+    try
+    {
+      localZzfd.zzc();
+      byte[] arrayOfByte = ((zzfe)localZzfd.zzaE()).zzbv();
+      paramArrayOfByte = arrayOfByte;
+    }
+    catch (RuntimeException localRuntimeException)
+    {
+      zzs.zzay().zzk().zzc("Unable to serialize reduced-size config. Storing full config instead. appId", zzeo.zzn(paramString1), localRuntimeException);
+    }
+    zzam localZzam = zzf.zzi();
+    Preconditions.checkNotEmpty(paramString1);
+    localZzam.zzg();
+    localZzam.zzW();
+    ContentValues localContentValues = new ContentValues();
+    localContentValues.put("remote_config", paramArrayOfByte);
+    localContentValues.put("config_last_modified_time", paramString2);
+    if (zzs.zzf().zzs(null, zzeb.zzaw)) {
+      localContentValues.put("e_tag", paramString3);
+    }
+    try
+    {
+      if (localZzam.zzh().update("apps", localContentValues, "app_id = ?", new String[] { paramString1 }) == 0L) {
+        zzs.zzay().zzd().zzb("Failed to update remote config (got 0). appId", zzeo.zzn(paramString1));
+      }
+    }
+    catch (SQLiteException paramArrayOfByte)
+    {
+      zzs.zzay().zzd().zzc("Error storing remote config. appId", zzeo.zzn(paramString1), paramArrayOfByte);
+    }
+    zzh.put(paramString1, (zzfe)localZzfd.zzaE());
+    return true;
+  }
+  
+  final boolean zzu(String paramString)
+  {
+    zzg();
+    zzC(paramString);
+    return (zza.get(paramString) != null) && (((Set)zza.get(paramString)).contains("app_instance_id"));
+  }
+  
+  final boolean zzv(String paramString)
+  {
+    zzg();
+    zzC(paramString);
+    Object localObject = zza.get(paramString);
+    boolean bool = true;
+    if (localObject != null)
+    {
+      if (((Set)zza.get(paramString)).contains("device_model")) {
+        return bool;
+      }
+      if (((Set)zza.get(paramString)).contains("device_info")) {
+        return true;
+      }
+    }
+    bool = false;
+    return bool;
+  }
+  
+  final boolean zzw(String paramString)
+  {
+    zzg();
+    zzC(paramString);
+    return (zza.get(paramString) != null) && (((Set)zza.get(paramString)).contains("enhanced_user_id"));
+  }
+  
+  final boolean zzx(String paramString)
+  {
+    zzg();
+    zzC(paramString);
+    return (zza.get(paramString) != null) && (((Set)zza.get(paramString)).contains("google_signals"));
+  }
+  
+  final boolean zzy(String paramString)
+  {
+    zzg();
+    zzC(paramString);
+    Object localObject = zza.get(paramString);
+    boolean bool = true;
+    if (localObject != null)
+    {
+      if (((Set)zza.get(paramString)).contains("os_version")) {
+        return bool;
+      }
+      if (((Set)zza.get(paramString)).contains("device_info")) {
+        return true;
+      }
+    }
+    bool = false;
+    return bool;
+  }
+  
+  final boolean zzz(String paramString)
+  {
+    zzg();
+    zzC(paramString);
+    return (zza.get(paramString) != null) && (((Set)zza.get(paramString)).contains("user_id"));
+  }
+}

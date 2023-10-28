@@ -1,0 +1,59 @@
+package c.h.q;
+
+import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnPreDrawListener;
+import java.util.Objects;
+
+public final class c0
+  implements ViewTreeObserver.OnPreDrawListener, View.OnAttachStateChangeListener
+{
+  private final View b;
+  private ViewTreeObserver c;
+  private final Runnable d;
+  
+  private c0(View paramView, Runnable paramRunnable)
+  {
+    b = paramView;
+    c = paramView.getViewTreeObserver();
+    d = paramRunnable;
+  }
+  
+  public static c0 a(View paramView, Runnable paramRunnable)
+  {
+    Objects.requireNonNull(paramView, "view == null");
+    Objects.requireNonNull(paramRunnable, "runnable == null");
+    paramRunnable = new c0(paramView, paramRunnable);
+    paramView.getViewTreeObserver().addOnPreDrawListener(paramRunnable);
+    paramView.addOnAttachStateChangeListener(paramRunnable);
+    return paramRunnable;
+  }
+  
+  public void b()
+  {
+    if (c.isAlive()) {
+      c.removeOnPreDrawListener(this);
+    } else {
+      b.getViewTreeObserver().removeOnPreDrawListener(this);
+    }
+    b.removeOnAttachStateChangeListener(this);
+  }
+  
+  public boolean onPreDraw()
+  {
+    b();
+    d.run();
+    return true;
+  }
+  
+  public void onViewAttachedToWindow(View paramView)
+  {
+    c = paramView.getViewTreeObserver();
+  }
+  
+  public void onViewDetachedFromWindow(View paramView)
+  {
+    b();
+  }
+}

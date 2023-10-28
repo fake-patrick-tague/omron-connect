@@ -1,0 +1,164 @@
+package androidx.versionedparcelable;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import android.text.TextUtils;
+import android.util.SparseIntArray;
+import java.lang.reflect.Method;
+
+class b
+  extends a
+{
+  private final SparseIntArray d = new SparseIntArray();
+  private final Parcel e;
+  private final int f;
+  private final int g;
+  private final String h;
+  private int i = -1;
+  private int j = 0;
+  private int k = -1;
+  
+  b(Parcel paramParcel)
+  {
+    this(paramParcel, paramParcel.dataPosition(), paramParcel.dataSize(), "", new c.e.a(), new c.e.a(), new c.e.a());
+  }
+  
+  private b(Parcel paramParcel, int paramInt1, int paramInt2, String paramString, c.e.a<String, Method> paramA1, c.e.a<String, Method> paramA2, c.e.a<String, Class> paramA)
+  {
+    super(paramA1, paramA2, paramA);
+    e = paramParcel;
+    f = paramInt1;
+    g = paramInt2;
+    j = paramInt1;
+    h = paramString;
+  }
+  
+  public void A(byte[] paramArrayOfByte)
+  {
+    if (paramArrayOfByte != null)
+    {
+      e.writeInt(paramArrayOfByte.length);
+      e.writeByteArray(paramArrayOfByte);
+      return;
+    }
+    e.writeInt(-1);
+  }
+  
+  protected void C(CharSequence paramCharSequence)
+  {
+    TextUtils.writeToParcel(paramCharSequence, e, 0);
+  }
+  
+  public void E(int paramInt)
+  {
+    e.writeInt(paramInt);
+  }
+  
+  public void G(Parcelable paramParcelable)
+  {
+    e.writeParcelable(paramParcelable, 0);
+  }
+  
+  public void I(String paramString)
+  {
+    e.writeString(paramString);
+  }
+  
+  public void a()
+  {
+    int m = i;
+    if (m >= 0)
+    {
+      m = d.get(m);
+      int n = e.dataPosition();
+      e.setDataPosition(m);
+      e.writeInt(n - m);
+      e.setDataPosition(n);
+    }
+  }
+  
+  protected a b()
+  {
+    Parcel localParcel = e;
+    int i1 = localParcel.dataPosition();
+    int n = j;
+    int m = n;
+    if (n == f) {
+      m = g;
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(h);
+    localStringBuilder.append("  ");
+    return new b(localParcel, i1, m, localStringBuilder.toString(), a, b, c);
+  }
+  
+  public boolean g()
+  {
+    return e.readInt() != 0;
+  }
+  
+  public byte[] i()
+  {
+    int m = e.readInt();
+    if (m < 0) {
+      return null;
+    }
+    byte[] arrayOfByte = new byte[m];
+    e.readByteArray(arrayOfByte);
+    return arrayOfByte;
+  }
+  
+  protected CharSequence k()
+  {
+    return (CharSequence)TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(e);
+  }
+  
+  public boolean m(int paramInt)
+  {
+    while (j < g)
+    {
+      int m = k;
+      if (m == paramInt) {
+        return true;
+      }
+      if (String.valueOf(m).compareTo(String.valueOf(paramInt)) > 0) {
+        return false;
+      }
+      e.setDataPosition(j);
+      m = e.readInt();
+      k = e.readInt();
+      j += m;
+    }
+    return k == paramInt;
+  }
+  
+  public int o()
+  {
+    return e.readInt();
+  }
+  
+  public <T extends Parcelable> T q()
+  {
+    return e.readParcelable(b.class.getClassLoader());
+  }
+  
+  public String s()
+  {
+    return e.readString();
+  }
+  
+  public void w(int paramInt)
+  {
+    a();
+    i = paramInt;
+    d.put(paramInt, e.dataPosition());
+    E(0);
+    E(paramInt);
+  }
+  
+  public void y(boolean paramBoolean)
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+}

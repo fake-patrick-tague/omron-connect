@@ -1,0 +1,1235 @@
+package androidx.appcompat.widget;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.database.DataSetObserver;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.BaseSavedState;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.PopupWindow.OnDismissListener;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.ThemedSpinnerAdapter;
+import androidx.appcompat.app.f;
+import androidx.appcompat.app.f.a;
+import androidx.appcompat.app.k;
+import androidx.appcompat.view.menu.p;
+import c.h.p.c;
+import c.h.q.e0;
+import c.h.q.f0;
+
+public class AppCompatSpinner
+  extends Spinner
+  implements e0
+{
+  private static final int[] b = { 16843505 };
+  private final h c;
+  private final Context d;
+  private a0 e;
+  private SpinnerAdapter f;
+  private final boolean g;
+  private i h;
+  int i;
+  final Rect j;
+  
+  public AppCompatSpinner(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, c.a.a.L);
+  }
+  
+  public AppCompatSpinner(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    this(paramContext, paramAttributeSet, paramInt, -1);
+  }
+  
+  public AppCompatSpinner(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    this(paramContext, paramAttributeSet, paramInt1, paramInt2, null);
+  }
+  
+  /* Error */
+  public AppCompatSpinner(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2, final Resources.Theme paramTheme)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: aload_1
+    //   2: aload_2
+    //   3: iload_3
+    //   4: invokespecial 78	android/widget/Spinner:<init>	(Landroid/content/Context;Landroid/util/AttributeSet;I)V
+    //   7: aload_0
+    //   8: new 80	android/graphics/Rect
+    //   11: dup
+    //   12: invokespecial 82	android/graphics/Rect:<init>	()V
+    //   15: putfield 84	androidx/appcompat/widget/AppCompatSpinner:j	Landroid/graphics/Rect;
+    //   18: aload_0
+    //   19: aload_0
+    //   20: invokevirtual 88	android/widget/Spinner:getContext	()Landroid/content/Context;
+    //   23: invokestatic 94	androidx/appcompat/widget/i0:a	(Landroid/view/View;Landroid/content/Context;)V
+    //   26: aload_1
+    //   27: aload_2
+    //   28: getstatic 99	c/a/j:x2	[I
+    //   31: iload_3
+    //   32: iconst_0
+    //   33: invokestatic 105	androidx/appcompat/widget/n0:v	(Landroid/content/Context;Landroid/util/AttributeSet;[III)Landroidx/appcompat/widget/n0;
+    //   36: astore 9
+    //   38: aload_0
+    //   39: new 107	androidx/appcompat/widget/h
+    //   42: dup
+    //   43: aload_0
+    //   44: invokespecial 110	androidx/appcompat/widget/h:<init>	(Landroid/view/View;)V
+    //   47: putfield 112	androidx/appcompat/widget/AppCompatSpinner:c	Landroidx/appcompat/widget/h;
+    //   50: aload 5
+    //   52: ifnull +20 -> 72
+    //   55: aload_0
+    //   56: new 114	c/a/n/d
+    //   59: dup
+    //   60: aload_1
+    //   61: aload 5
+    //   63: invokespecial 117	c/a/n/d:<init>	(Landroid/content/Context;Landroid/content/res/Resources$Theme;)V
+    //   66: putfield 119	androidx/appcompat/widget/AppCompatSpinner:d	Landroid/content/Context;
+    //   69: goto +41 -> 110
+    //   72: aload 9
+    //   74: getstatic 122	c/a/j:C2	I
+    //   77: iconst_0
+    //   78: invokevirtual 126	androidx/appcompat/widget/n0:n	(II)I
+    //   81: istore 6
+    //   83: iload 6
+    //   85: ifeq +20 -> 105
+    //   88: aload_0
+    //   89: new 114	c/a/n/d
+    //   92: dup
+    //   93: aload_1
+    //   94: iload 6
+    //   96: invokespecial 129	c/a/n/d:<init>	(Landroid/content/Context;I)V
+    //   99: putfield 119	androidx/appcompat/widget/AppCompatSpinner:d	Landroid/content/Context;
+    //   102: goto +8 -> 110
+    //   105: aload_0
+    //   106: aload_1
+    //   107: putfield 119	androidx/appcompat/widget/AppCompatSpinner:d	Landroid/content/Context;
+    //   110: aconst_null
+    //   111: astore 7
+    //   113: iload 4
+    //   115: istore 6
+    //   117: iload 4
+    //   119: iconst_m1
+    //   120: if_icmpne +122 -> 242
+    //   123: aload_1
+    //   124: aload_2
+    //   125: getstatic 58	androidx/appcompat/widget/AppCompatSpinner:b	[I
+    //   128: iload_3
+    //   129: iconst_0
+    //   130: invokevirtual 135	android/content/Context:obtainStyledAttributes	(Landroid/util/AttributeSet;[III)Landroid/content/res/TypedArray;
+    //   133: astore 5
+    //   135: iload 4
+    //   137: istore 6
+    //   139: aload 5
+    //   141: astore 8
+    //   143: aload 5
+    //   145: astore 7
+    //   147: aload 5
+    //   149: iconst_0
+    //   150: invokevirtual 141	android/content/res/TypedArray:hasValue	(I)Z
+    //   153: ifeq +20 -> 173
+    //   156: aload 5
+    //   158: astore 7
+    //   160: aload 5
+    //   162: iconst_0
+    //   163: iconst_0
+    //   164: invokevirtual 144	android/content/res/TypedArray:getInt	(II)I
+    //   167: istore 6
+    //   169: aload 5
+    //   171: astore 8
+    //   173: aload 8
+    //   175: invokevirtual 147	android/content/res/TypedArray:recycle	()V
+    //   178: goto +64 -> 242
+    //   181: astore 8
+    //   183: goto +12 -> 195
+    //   186: astore_1
+    //   187: goto +43 -> 230
+    //   190: astore 8
+    //   192: aconst_null
+    //   193: astore 5
+    //   195: aload 5
+    //   197: astore 7
+    //   199: ldc -107
+    //   201: ldc -105
+    //   203: aload 8
+    //   205: invokestatic 156	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    //   208: pop
+    //   209: iload 4
+    //   211: istore 6
+    //   213: aload 5
+    //   215: ifnull +27 -> 242
+    //   218: iload 4
+    //   220: istore 6
+    //   222: aload 5
+    //   224: astore 8
+    //   226: goto -53 -> 173
+    //   229: astore_1
+    //   230: aload 7
+    //   232: ifnull +8 -> 240
+    //   235: aload 7
+    //   237: invokevirtual 147	android/content/res/TypedArray:recycle	()V
+    //   240: aload_1
+    //   241: athrow
+    //   242: iload 6
+    //   244: ifeq +112 -> 356
+    //   247: iload 6
+    //   249: iconst_1
+    //   250: if_icmpeq +6 -> 256
+    //   253: goto +134 -> 387
+    //   256: new 32	androidx/appcompat/widget/AppCompatSpinner$h
+    //   259: dup
+    //   260: aload_0
+    //   261: aload_0
+    //   262: getfield 119	androidx/appcompat/widget/AppCompatSpinner:d	Landroid/content/Context;
+    //   265: aload_2
+    //   266: iload_3
+    //   267: invokespecial 159	androidx/appcompat/widget/AppCompatSpinner$h:<init>	(Landroidx/appcompat/widget/AppCompatSpinner;Landroid/content/Context;Landroid/util/AttributeSet;I)V
+    //   270: astore 5
+    //   272: aload_0
+    //   273: getfield 119	androidx/appcompat/widget/AppCompatSpinner:d	Landroid/content/Context;
+    //   276: aload_2
+    //   277: getstatic 99	c/a/j:x2	[I
+    //   280: iload_3
+    //   281: iconst_0
+    //   282: invokestatic 105	androidx/appcompat/widget/n0:v	(Landroid/content/Context;Landroid/util/AttributeSet;[III)Landroidx/appcompat/widget/n0;
+    //   285: astore 7
+    //   287: aload_0
+    //   288: aload 7
+    //   290: getstatic 162	c/a/j:B2	I
+    //   293: bipush -2
+    //   295: invokevirtual 165	androidx/appcompat/widget/n0:m	(II)I
+    //   298: putfield 167	androidx/appcompat/widget/AppCompatSpinner:i	I
+    //   301: aload 5
+    //   303: aload 7
+    //   305: getstatic 170	c/a/j:z2	I
+    //   308: invokevirtual 173	androidx/appcompat/widget/n0:g	(I)Landroid/graphics/drawable/Drawable;
+    //   311: invokevirtual 178	androidx/appcompat/widget/ListPopupWindow:a	(Landroid/graphics/drawable/Drawable;)V
+    //   314: aload 5
+    //   316: aload 9
+    //   318: getstatic 181	c/a/j:A2	I
+    //   321: invokevirtual 185	androidx/appcompat/widget/n0:o	(I)Ljava/lang/String;
+    //   324: invokevirtual 188	androidx/appcompat/widget/AppCompatSpinner$h:j	(Ljava/lang/CharSequence;)V
+    //   327: aload 7
+    //   329: invokevirtual 191	androidx/appcompat/widget/n0:w	()V
+    //   332: aload_0
+    //   333: aload 5
+    //   335: putfield 193	androidx/appcompat/widget/AppCompatSpinner:h	Landroidx/appcompat/widget/AppCompatSpinner$i;
+    //   338: aload_0
+    //   339: new 13	androidx/appcompat/widget/AppCompatSpinner$a
+    //   342: dup
+    //   343: aload_0
+    //   344: aload_0
+    //   345: aload 5
+    //   347: invokespecial 196	androidx/appcompat/widget/AppCompatSpinner$a:<init>	(Landroidx/appcompat/widget/AppCompatSpinner;Landroid/view/View;Landroidx/appcompat/widget/AppCompatSpinner$h;)V
+    //   350: putfield 198	androidx/appcompat/widget/AppCompatSpinner:e	Landroidx/appcompat/widget/a0;
+    //   353: goto +34 -> 387
+    //   356: new 26	androidx/appcompat/widget/AppCompatSpinner$f
+    //   359: dup
+    //   360: aload_0
+    //   361: invokespecial 201	androidx/appcompat/widget/AppCompatSpinner$f:<init>	(Landroidx/appcompat/widget/AppCompatSpinner;)V
+    //   364: astore 5
+    //   366: aload_0
+    //   367: aload 5
+    //   369: putfield 193	androidx/appcompat/widget/AppCompatSpinner:h	Landroidx/appcompat/widget/AppCompatSpinner$i;
+    //   372: aload 5
+    //   374: aload 9
+    //   376: getstatic 181	c/a/j:A2	I
+    //   379: invokevirtual 185	androidx/appcompat/widget/n0:o	(I)Ljava/lang/String;
+    //   382: invokeinterface 202 2 0
+    //   387: aload 9
+    //   389: getstatic 205	c/a/j:y2	I
+    //   392: invokevirtual 209	androidx/appcompat/widget/n0:q	(I)[Ljava/lang/CharSequence;
+    //   395: astore 5
+    //   397: aload 5
+    //   399: ifnull +28 -> 427
+    //   402: new 211	android/widget/ArrayAdapter
+    //   405: dup
+    //   406: aload_1
+    //   407: ldc -44
+    //   409: aload 5
+    //   411: invokespecial 215	android/widget/ArrayAdapter:<init>	(Landroid/content/Context;I[Ljava/lang/Object;)V
+    //   414: astore_1
+    //   415: aload_1
+    //   416: getstatic 220	c/a/g:t	I
+    //   419: invokevirtual 224	android/widget/ArrayAdapter:setDropDownViewResource	(I)V
+    //   422: aload_0
+    //   423: aload_1
+    //   424: invokevirtual 228	androidx/appcompat/widget/AppCompatSpinner:setAdapter	(Landroid/widget/SpinnerAdapter;)V
+    //   427: aload 9
+    //   429: invokevirtual 191	androidx/appcompat/widget/n0:w	()V
+    //   432: aload_0
+    //   433: iconst_1
+    //   434: putfield 230	androidx/appcompat/widget/AppCompatSpinner:g	Z
+    //   437: aload_0
+    //   438: getfield 232	androidx/appcompat/widget/AppCompatSpinner:f	Landroid/widget/SpinnerAdapter;
+    //   441: astore_1
+    //   442: aload_1
+    //   443: ifnull +13 -> 456
+    //   446: aload_0
+    //   447: aload_1
+    //   448: invokevirtual 228	androidx/appcompat/widget/AppCompatSpinner:setAdapter	(Landroid/widget/SpinnerAdapter;)V
+    //   451: aload_0
+    //   452: aconst_null
+    //   453: putfield 232	androidx/appcompat/widget/AppCompatSpinner:f	Landroid/widget/SpinnerAdapter;
+    //   456: aload_0
+    //   457: getfield 112	androidx/appcompat/widget/AppCompatSpinner:c	Landroidx/appcompat/widget/h;
+    //   460: aload_2
+    //   461: iload_3
+    //   462: invokevirtual 235	androidx/appcompat/widget/h:e	(Landroid/util/AttributeSet;I)V
+    //   465: return
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	466	0	this	AppCompatSpinner
+    //   0	466	1	paramContext	Context
+    //   0	466	2	paramAttributeSet	AttributeSet
+    //   0	466	3	paramInt1	int
+    //   0	466	4	paramInt2	int
+    //   0	466	5	paramTheme	Resources.Theme
+    //   81	170	6	k	int
+    //   111	217	7	localObject	Object
+    //   141	33	8	localTheme1	Resources.Theme
+    //   181	1	8	localException1	Exception
+    //   190	14	8	localException2	Exception
+    //   224	1	8	localTheme2	Resources.Theme
+    //   36	392	9	localN0	n0
+    // Exception table:
+    //   from	to	target	type
+    //   147	156	181	java/lang/Exception
+    //   160	169	181	java/lang/Exception
+    //   123	135	186	finally
+    //   123	135	190	java/lang/Exception
+    //   147	156	229	finally
+    //   160	169	229	finally
+    //   199	209	229	finally
+  }
+  
+  int a(SpinnerAdapter paramSpinnerAdapter, Drawable paramDrawable)
+  {
+    int n = 0;
+    if (paramSpinnerAdapter == null) {
+      return 0;
+    }
+    int i3 = View.MeasureSpec.makeMeasureSpec(getMeasuredWidth(), 0);
+    int i4 = View.MeasureSpec.makeMeasureSpec(getMeasuredHeight(), 0);
+    int k = Math.max(0, getSelectedItemPosition());
+    int i5 = Math.min(paramSpinnerAdapter.getCount(), k + 15);
+    int m = Math.max(0, k - (15 - (i5 - k)));
+    View localView = null;
+    k = 0;
+    while (m < i5)
+    {
+      int i2 = paramSpinnerAdapter.getItemViewType(m);
+      int i1 = n;
+      if (i2 != n)
+      {
+        localView = null;
+        i1 = i2;
+      }
+      localView = paramSpinnerAdapter.getView(m, localView, this);
+      if (localView.getLayoutParams() == null) {
+        localView.setLayoutParams(new ViewGroup.LayoutParams(-2, -2));
+      }
+      localView.measure(i3, i4);
+      k = Math.max(k, localView.getMeasuredWidth());
+      m += 1;
+      n = i1;
+    }
+    m = k;
+    if (paramDrawable != null)
+    {
+      paramDrawable.getPadding(j);
+      paramSpinnerAdapter = j;
+      m = k + (left + right);
+    }
+    return m;
+  }
+  
+  void b()
+  {
+    if (Build.VERSION.SDK_INT >= 17)
+    {
+      h.n(d.b(this), d.a(this));
+      return;
+    }
+    h.n(-1, -1);
+  }
+  
+  protected void drawableStateChanged()
+  {
+    super.drawableStateChanged();
+    h localH = c;
+    if (localH != null) {
+      localH.b();
+    }
+  }
+  
+  public int getDropDownHorizontalOffset()
+  {
+    i localI = h;
+    if (localI != null) {
+      return localI.c();
+    }
+    if (Build.VERSION.SDK_INT >= 16) {
+      return super.getDropDownHorizontalOffset();
+    }
+    return 0;
+  }
+  
+  public int getDropDownVerticalOffset()
+  {
+    i localI = h;
+    if (localI != null) {
+      return localI.o();
+    }
+    if (Build.VERSION.SDK_INT >= 16) {
+      return super.getDropDownVerticalOffset();
+    }
+    return 0;
+  }
+  
+  public int getDropDownWidth()
+  {
+    if (h != null) {
+      return i;
+    }
+    if (Build.VERSION.SDK_INT >= 16) {
+      return super.getDropDownWidth();
+    }
+    return 0;
+  }
+  
+  final i getInternalPopup()
+  {
+    return h;
+  }
+  
+  public Drawable getPopupBackground()
+  {
+    i localI = h;
+    if (localI != null) {
+      return localI.i();
+    }
+    if (Build.VERSION.SDK_INT >= 16) {
+      return super.getPopupBackground();
+    }
+    return null;
+  }
+  
+  public Context getPopupContext()
+  {
+    return d;
+  }
+  
+  public CharSequence getPrompt()
+  {
+    i localI = h;
+    if (localI != null) {
+      return localI.f();
+    }
+    return super.getPrompt();
+  }
+  
+  public ColorStateList getSupportBackgroundTintList()
+  {
+    h localH = c;
+    if (localH != null) {
+      return localH.c();
+    }
+    return null;
+  }
+  
+  public PorterDuff.Mode getSupportBackgroundTintMode()
+  {
+    h localH = c;
+    if (localH != null) {
+      return localH.d();
+    }
+    return null;
+  }
+  
+  protected void onDetachedFromWindow()
+  {
+    super.onDetachedFromWindow();
+    i localI = h;
+    if ((localI != null) && (localI.b())) {
+      h.dismiss();
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    super.onMeasure(paramInt1, paramInt2);
+    if ((h != null) && (View.MeasureSpec.getMode(paramInt1) == Integer.MIN_VALUE)) {
+      setMeasuredDimension(Math.min(Math.max(getMeasuredWidth(), a(getAdapter(), getBackground())), View.MeasureSpec.getSize(paramInt1)), getMeasuredHeight());
+    }
+  }
+  
+  public void onRestoreInstanceState(Parcelable paramParcelable)
+  {
+    paramParcelable = (SavedState)paramParcelable;
+    super.onRestoreInstanceState(paramParcelable.getSuperState());
+    if (b)
+    {
+      paramParcelable = getViewTreeObserver();
+      if (paramParcelable != null) {
+        paramParcelable.addOnGlobalLayoutListener(new b());
+      }
+    }
+  }
+  
+  public Parcelable onSaveInstanceState()
+  {
+    SavedState localSavedState = new SavedState(super.onSaveInstanceState());
+    i localI = h;
+    boolean bool;
+    if ((localI != null) && (localI.b())) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    b = bool;
+    return localSavedState;
+  }
+  
+  public boolean onTouchEvent(MotionEvent paramMotionEvent)
+  {
+    a0 localA0 = e;
+    if ((localA0 != null) && (localA0.onTouch(this, paramMotionEvent))) {
+      return true;
+    }
+    return super.onTouchEvent(paramMotionEvent);
+  }
+  
+  public boolean performClick()
+  {
+    i localI = h;
+    if (localI != null)
+    {
+      if (!localI.b()) {
+        b();
+      }
+      return true;
+    }
+    return super.performClick();
+  }
+  
+  public void setAdapter(SpinnerAdapter paramSpinnerAdapter)
+  {
+    if (!g)
+    {
+      f = paramSpinnerAdapter;
+      return;
+    }
+    super.setAdapter(paramSpinnerAdapter);
+    if (h != null)
+    {
+      Context localContext2 = d;
+      Context localContext1 = localContext2;
+      if (localContext2 == null) {
+        localContext1 = getContext();
+      }
+      h.p(new g(paramSpinnerAdapter, localContext1.getTheme()));
+    }
+  }
+  
+  public void setBackgroundDrawable(Drawable paramDrawable)
+  {
+    super.setBackgroundDrawable(paramDrawable);
+    h localH = c;
+    if (localH != null) {
+      localH.f(paramDrawable);
+    }
+  }
+  
+  public void setBackgroundResource(int paramInt)
+  {
+    super.setBackgroundResource(paramInt);
+    h localH = c;
+    if (localH != null) {
+      localH.g(paramInt);
+    }
+  }
+  
+  public void setDropDownHorizontalOffset(int paramInt)
+  {
+    i localI = h;
+    if (localI != null)
+    {
+      localI.m(paramInt);
+      h.e(paramInt);
+      return;
+    }
+    if (Build.VERSION.SDK_INT >= 16) {
+      super.setDropDownHorizontalOffset(paramInt);
+    }
+  }
+  
+  public void setDropDownVerticalOffset(int paramInt)
+  {
+    i localI = h;
+    if (localI != null)
+    {
+      localI.l(paramInt);
+      return;
+    }
+    if (Build.VERSION.SDK_INT >= 16) {
+      super.setDropDownVerticalOffset(paramInt);
+    }
+  }
+  
+  public void setDropDownWidth(int paramInt)
+  {
+    if (h != null)
+    {
+      i = paramInt;
+      return;
+    }
+    if (Build.VERSION.SDK_INT >= 16) {
+      super.setDropDownWidth(paramInt);
+    }
+  }
+  
+  public void setPopupBackgroundDrawable(Drawable paramDrawable)
+  {
+    i localI = h;
+    if (localI != null)
+    {
+      localI.a(paramDrawable);
+      return;
+    }
+    if (Build.VERSION.SDK_INT >= 16) {
+      super.setPopupBackgroundDrawable(paramDrawable);
+    }
+  }
+  
+  public void setPopupBackgroundResource(int paramInt)
+  {
+    setPopupBackgroundDrawable(c.a.k.a.a.b(getPopupContext(), paramInt));
+  }
+  
+  public void setPrompt(CharSequence paramCharSequence)
+  {
+    i localI = h;
+    if (localI != null)
+    {
+      localI.j(paramCharSequence);
+      return;
+    }
+    super.setPrompt(paramCharSequence);
+  }
+  
+  public void setSupportBackgroundTintList(ColorStateList paramColorStateList)
+  {
+    h localH = c;
+    if (localH != null) {
+      localH.i(paramColorStateList);
+    }
+  }
+  
+  public void setSupportBackgroundTintMode(PorterDuff.Mode paramMode)
+  {
+    h localH = c;
+    if (localH != null) {
+      localH.j(paramMode);
+    }
+  }
+  
+  static class SavedState
+    extends View.BaseSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    boolean b;
+    
+    SavedState(Parcel paramParcel)
+    {
+      super();
+      boolean bool;
+      if (paramParcel.readByte() != 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      b = bool;
+    }
+    
+    SavedState(Parcelable paramParcelable)
+    {
+      super();
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      super.writeToParcel(paramParcel, paramInt);
+      paramParcel.writeByte((byte)b);
+    }
+    
+    class a
+      implements Parcelable.Creator<AppCompatSpinner.SavedState>
+    {
+      a() {}
+      
+      public AppCompatSpinner.SavedState a(Parcel paramParcel)
+      {
+        return new AppCompatSpinner.SavedState(paramParcel);
+      }
+      
+      public AppCompatSpinner.SavedState[] b(int paramInt)
+      {
+        return new AppCompatSpinner.SavedState[paramInt];
+      }
+    }
+  }
+  
+  class a
+    extends a0
+  {
+    a(View paramView, AppCompatSpinner.h paramH)
+    {
+      super();
+    }
+    
+    public p b()
+    {
+      return paramTheme;
+    }
+    
+    public boolean c()
+    {
+      if (!getInternalPopup().b()) {
+        b();
+      }
+      return true;
+    }
+  }
+  
+  class b
+    implements ViewTreeObserver.OnGlobalLayoutListener
+  {
+    b() {}
+    
+    public void onGlobalLayout()
+    {
+      if (!getInternalPopup().b()) {
+        b();
+      }
+      ViewTreeObserver localViewTreeObserver = getViewTreeObserver();
+      if (localViewTreeObserver != null)
+      {
+        if (Build.VERSION.SDK_INT >= 16)
+        {
+          AppCompatSpinner.c.a(localViewTreeObserver, this);
+          return;
+        }
+        localViewTreeObserver.removeGlobalOnLayoutListener(this);
+      }
+    }
+  }
+  
+  private static final class c
+  {
+    static void a(ViewTreeObserver paramViewTreeObserver, ViewTreeObserver.OnGlobalLayoutListener paramOnGlobalLayoutListener)
+    {
+      paramViewTreeObserver.removeOnGlobalLayoutListener(paramOnGlobalLayoutListener);
+    }
+  }
+  
+  private static final class d
+  {
+    static int a(View paramView)
+    {
+      return paramView.getTextAlignment();
+    }
+    
+    static int b(View paramView)
+    {
+      return paramView.getTextDirection();
+    }
+    
+    static void c(View paramView, int paramInt)
+    {
+      paramView.setTextAlignment(paramInt);
+    }
+    
+    static void d(View paramView, int paramInt)
+    {
+      paramView.setTextDirection(paramInt);
+    }
+  }
+  
+  private static final class e
+  {
+    static void a(ThemedSpinnerAdapter paramThemedSpinnerAdapter, Resources.Theme paramTheme)
+    {
+      if (!c.a(paramThemedSpinnerAdapter.getDropDownViewTheme(), paramTheme)) {
+        paramThemedSpinnerAdapter.setDropDownViewTheme(paramTheme);
+      }
+    }
+  }
+  
+  class f
+    implements AppCompatSpinner.i, DialogInterface.OnClickListener
+  {
+    f b;
+    private ListAdapter c;
+    private CharSequence d;
+    
+    f() {}
+    
+    public void a(Drawable paramDrawable)
+    {
+      Log.e("AppCompatSpinner", "Cannot set popup background for MODE_DIALOG, ignoring");
+    }
+    
+    public boolean b()
+    {
+      f localF = b;
+      if (localF != null) {
+        return localF.isShowing();
+      }
+      return false;
+    }
+    
+    public int c()
+    {
+      return 0;
+    }
+    
+    public void dismiss()
+    {
+      f localF = b;
+      if (localF != null)
+      {
+        localF.dismiss();
+        b = null;
+      }
+    }
+    
+    public void e(int paramInt)
+    {
+      Log.e("AppCompatSpinner", "Cannot set horizontal offset for MODE_DIALOG, ignoring");
+    }
+    
+    public CharSequence f()
+    {
+      return d;
+    }
+    
+    public Drawable i()
+    {
+      return null;
+    }
+    
+    public void j(CharSequence paramCharSequence)
+    {
+      d = paramCharSequence;
+    }
+    
+    public void l(int paramInt)
+    {
+      Log.e("AppCompatSpinner", "Cannot set vertical offset for MODE_DIALOG, ignoring");
+    }
+    
+    public void m(int paramInt)
+    {
+      Log.e("AppCompatSpinner", "Cannot set horizontal (original) offset for MODE_DIALOG, ignoring");
+    }
+    
+    public void n(int paramInt1, int paramInt2)
+    {
+      if (c == null) {
+        return;
+      }
+      Object localObject = new f.a(getPopupContext());
+      CharSequence localCharSequence = d;
+      if (localCharSequence != null) {
+        ((f.a)localObject).m(localCharSequence);
+      }
+      localObject = ((f.a)localObject).k(c, getSelectedItemPosition(), this).a();
+      b = ((f)localObject);
+      localObject = ((f)localObject).j();
+      if (Build.VERSION.SDK_INT >= 17)
+      {
+        AppCompatSpinner.d.d((View)localObject, paramInt1);
+        AppCompatSpinner.d.c((View)localObject, paramInt2);
+      }
+      b.show();
+    }
+    
+    public int o()
+    {
+      return 0;
+    }
+    
+    public void onClick(DialogInterface paramDialogInterface, int paramInt)
+    {
+      setSelection(paramInt);
+      if (getOnItemClickListener() != null) {
+        performItemClick(null, paramInt, c.getItemId(paramInt));
+      }
+      dismiss();
+    }
+    
+    public void p(ListAdapter paramListAdapter)
+    {
+      c = paramListAdapter;
+    }
+  }
+  
+  private static class g
+    implements ListAdapter, SpinnerAdapter
+  {
+    private SpinnerAdapter b;
+    private ListAdapter c;
+    
+    public g(SpinnerAdapter paramSpinnerAdapter, Resources.Theme paramTheme)
+    {
+      b = paramSpinnerAdapter;
+      if ((paramSpinnerAdapter instanceof ListAdapter)) {
+        c = ((ListAdapter)paramSpinnerAdapter);
+      }
+      if (paramTheme != null)
+      {
+        if ((Build.VERSION.SDK_INT >= 23) && ((paramSpinnerAdapter instanceof ThemedSpinnerAdapter)))
+        {
+          AppCompatSpinner.e.a((ThemedSpinnerAdapter)paramSpinnerAdapter, paramTheme);
+          return;
+        }
+        if ((paramSpinnerAdapter instanceof j0))
+        {
+          paramSpinnerAdapter = (j0)paramSpinnerAdapter;
+          if (paramSpinnerAdapter.getDropDownViewTheme() == null) {
+            paramSpinnerAdapter.setDropDownViewTheme(paramTheme);
+          }
+        }
+      }
+    }
+    
+    public boolean areAllItemsEnabled()
+    {
+      ListAdapter localListAdapter = c;
+      if (localListAdapter != null) {
+        return localListAdapter.areAllItemsEnabled();
+      }
+      return true;
+    }
+    
+    public int getCount()
+    {
+      SpinnerAdapter localSpinnerAdapter = b;
+      if (localSpinnerAdapter == null) {
+        return 0;
+      }
+      return localSpinnerAdapter.getCount();
+    }
+    
+    public View getDropDownView(int paramInt, View paramView, ViewGroup paramViewGroup)
+    {
+      SpinnerAdapter localSpinnerAdapter = b;
+      if (localSpinnerAdapter == null) {
+        return null;
+      }
+      return localSpinnerAdapter.getDropDownView(paramInt, paramView, paramViewGroup);
+    }
+    
+    public Object getItem(int paramInt)
+    {
+      SpinnerAdapter localSpinnerAdapter = b;
+      if (localSpinnerAdapter == null) {
+        return null;
+      }
+      return localSpinnerAdapter.getItem(paramInt);
+    }
+    
+    public long getItemId(int paramInt)
+    {
+      SpinnerAdapter localSpinnerAdapter = b;
+      if (localSpinnerAdapter == null) {
+        return -1L;
+      }
+      return localSpinnerAdapter.getItemId(paramInt);
+    }
+    
+    public int getItemViewType(int paramInt)
+    {
+      return 0;
+    }
+    
+    public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
+    {
+      return getDropDownView(paramInt, paramView, paramViewGroup);
+    }
+    
+    public int getViewTypeCount()
+    {
+      return 1;
+    }
+    
+    public boolean hasStableIds()
+    {
+      SpinnerAdapter localSpinnerAdapter = b;
+      return (localSpinnerAdapter != null) && (localSpinnerAdapter.hasStableIds());
+    }
+    
+    public boolean isEmpty()
+    {
+      return getCount() == 0;
+    }
+    
+    public boolean isEnabled(int paramInt)
+    {
+      ListAdapter localListAdapter = c;
+      if (localListAdapter != null) {
+        return localListAdapter.isEnabled(paramInt);
+      }
+      return true;
+    }
+    
+    public void registerDataSetObserver(DataSetObserver paramDataSetObserver)
+    {
+      SpinnerAdapter localSpinnerAdapter = b;
+      if (localSpinnerAdapter != null) {
+        localSpinnerAdapter.registerDataSetObserver(paramDataSetObserver);
+      }
+    }
+    
+    public void unregisterDataSetObserver(DataSetObserver paramDataSetObserver)
+    {
+      SpinnerAdapter localSpinnerAdapter = b;
+      if (localSpinnerAdapter != null) {
+        localSpinnerAdapter.unregisterDataSetObserver(paramDataSetObserver);
+      }
+    }
+  }
+  
+  class h
+    extends ListPopupWindow
+    implements AppCompatSpinner.i
+  {
+    private CharSequence K;
+    ListAdapter L;
+    private final Rect P = new Rect();
+    private int Q;
+    
+    public h(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+    {
+      super(paramAttributeSet, paramInt);
+      D(AppCompatSpinner.this);
+      J(true);
+      O(0);
+      L(new a(AppCompatSpinner.this));
+    }
+    
+    void S()
+    {
+      Object localObject = i();
+      int i = 0;
+      if (localObject != null)
+      {
+        ((Drawable)localObject).getPadding(AppCompatSpinner.this.j);
+        if (t0.b(AppCompatSpinner.this)) {
+          i = jright;
+        } else {
+          i = -jleft;
+        }
+      }
+      else
+      {
+        localObject = AppCompatSpinner.this.j;
+        right = 0;
+        left = 0;
+      }
+      int n = getPaddingLeft();
+      int i1 = getPaddingRight();
+      int i2 = getWidth();
+      localObject = AppCompatSpinner.this;
+      int j = i;
+      if (j == -2)
+      {
+        int k = ((AppCompatSpinner)localObject).a((SpinnerAdapter)L, i());
+        j = getContext().getResources().getDisplayMetrics().widthPixels;
+        localObject = AppCompatSpinner.this.j;
+        int m = j - left - right;
+        j = k;
+        if (k > m) {
+          j = m;
+        }
+        F(Math.max(j, i2 - n - i1));
+      }
+      else if (j == -1)
+      {
+        F(i2 - n - i1);
+      }
+      else
+      {
+        F(j);
+      }
+      if (t0.b(AppCompatSpinner.this)) {
+        i += i2 - i1 - z() - T();
+      } else {
+        i += n + T();
+      }
+      e(i);
+    }
+    
+    public int T()
+    {
+      return Q;
+    }
+    
+    boolean U(View paramView)
+    {
+      return (f0.S(paramView)) && (paramView.getGlobalVisibleRect(P));
+    }
+    
+    public CharSequence f()
+    {
+      return K;
+    }
+    
+    public void j(CharSequence paramCharSequence)
+    {
+      K = paramCharSequence;
+    }
+    
+    public void m(int paramInt)
+    {
+      Q = paramInt;
+    }
+    
+    public void n(int paramInt1, int paramInt2)
+    {
+      boolean bool = b();
+      S();
+      I(2);
+      super.h();
+      Object localObject = k();
+      ((ListView)localObject).setChoiceMode(1);
+      if (Build.VERSION.SDK_INT >= 17)
+      {
+        AppCompatSpinner.d.d((View)localObject, paramInt1);
+        AppCompatSpinner.d.c((View)localObject, paramInt2);
+      }
+      P(getSelectedItemPosition());
+      if (bool) {
+        return;
+      }
+      localObject = getViewTreeObserver();
+      if (localObject != null)
+      {
+        final b localB = new b();
+        ((ViewTreeObserver)localObject).addOnGlobalLayoutListener(localB);
+        K(new c(localB));
+      }
+    }
+    
+    public void p(ListAdapter paramListAdapter)
+    {
+      super.p(paramListAdapter);
+      L = paramListAdapter;
+    }
+    
+    class a
+      implements AdapterView.OnItemClickListener
+    {
+      a(AppCompatSpinner paramAppCompatSpinner) {}
+      
+      public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong)
+      {
+        setSelection(paramInt);
+        if (getOnItemClickListener() != null)
+        {
+          paramAdapterView = AppCompatSpinner.h.this;
+          R.performItemClick(paramView, paramInt, L.getItemId(paramInt));
+        }
+        dismiss();
+      }
+    }
+    
+    class b
+      implements ViewTreeObserver.OnGlobalLayoutListener
+    {
+      b() {}
+      
+      public void onGlobalLayout()
+      {
+        AppCompatSpinner.h localH = AppCompatSpinner.h.this;
+        if (!localH.U(R))
+        {
+          dismiss();
+          return;
+        }
+        S();
+        AppCompatSpinner.h.R(AppCompatSpinner.h.this);
+      }
+    }
+    
+    class c
+      implements PopupWindow.OnDismissListener
+    {
+      c(ViewTreeObserver.OnGlobalLayoutListener paramOnGlobalLayoutListener) {}
+      
+      public void onDismiss()
+      {
+        ViewTreeObserver localViewTreeObserver = getViewTreeObserver();
+        if (localViewTreeObserver != null) {
+          localViewTreeObserver.removeGlobalOnLayoutListener(localB);
+        }
+      }
+    }
+  }
+  
+  static abstract interface i
+  {
+    public abstract void a(Drawable paramDrawable);
+    
+    public abstract boolean b();
+    
+    public abstract int c();
+    
+    public abstract void dismiss();
+    
+    public abstract void e(int paramInt);
+    
+    public abstract CharSequence f();
+    
+    public abstract Drawable i();
+    
+    public abstract void j(CharSequence paramCharSequence);
+    
+    public abstract void l(int paramInt);
+    
+    public abstract void m(int paramInt);
+    
+    public abstract void n(int paramInt1, int paramInt2);
+    
+    public abstract int o();
+    
+    public abstract void p(ListAdapter paramListAdapter);
+  }
+}

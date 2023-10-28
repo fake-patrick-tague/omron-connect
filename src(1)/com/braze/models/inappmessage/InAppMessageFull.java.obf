@@ -1,0 +1,78 @@
+package com.braze.models.inappmessage;
+
+import bo.app.w0;
+import bo.app.z1;
+import com.braze.enums.inappmessage.CropType;
+import com.braze.enums.inappmessage.MessageType;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import kotlin.x.d.i;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class InAppMessageFull
+  extends InAppMessageImmersiveBase
+{
+  public InAppMessageFull()
+  {
+    setCropType(CropType.CENTER_CROP);
+  }
+  
+  public InAppMessageFull(JSONObject paramJSONObject, z1 paramZ1)
+  {
+    super(paramJSONObject, paramZ1);
+    paramZ1 = CropType.CENTER_CROP;
+    try
+    {
+      Object localObject = w0.a;
+      paramJSONObject = paramJSONObject.getString("crop_type");
+      i.d(paramJSONObject, "jsonObject.getString(key)");
+      localObject = Locale.US;
+      i.d(localObject, "US");
+      localObject = paramJSONObject.toUpperCase((Locale)localObject);
+      i.d(localObject, "this as java.lang.String).toUpperCase(locale)");
+      CropType[] arrayOfCropType = CropType.values();
+      int i = 0;
+      int j = arrayOfCropType.length;
+      while (i < j)
+      {
+        paramJSONObject = arrayOfCropType[i];
+        i += 1;
+        if (i.a(paramJSONObject.name(), localObject)) {
+          break label119;
+        }
+      }
+      throw new NoSuchElementException("Array contains no element matching the predicate.");
+    }
+    catch (Exception paramJSONObject)
+    {
+      for (;;)
+      {
+        label119:
+        paramJSONObject = paramZ1;
+      }
+    }
+    setCropType(paramJSONObject);
+  }
+  
+  public JSONObject forJsonPut()
+  {
+    JSONObject localJSONObject = getJsonObject();
+    if (localJSONObject != null) {
+      return localJSONObject;
+    }
+    localJSONObject = super.forJsonPut();
+    try
+    {
+      localJSONObject.put("type", getMessageType().name());
+      return localJSONObject;
+    }
+    catch (JSONException localJSONException) {}
+    return localJSONObject;
+  }
+  
+  public MessageType getMessageType()
+  {
+    return MessageType.FULL;
+  }
+}

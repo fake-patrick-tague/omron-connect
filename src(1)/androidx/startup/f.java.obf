@@ -1,0 +1,191 @@
+package androidx.startup;
+
+import android.content.Context;
+import android.os.Bundle;
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public final class a
+{
+  private static volatile a a;
+  private static final Object b = new Object();
+  final Map<Class<?>, Object> c;
+  final Set<Class<? extends b<?>>> d;
+  final Context e;
+  
+  a(Context paramContext)
+  {
+    e = paramContext.getApplicationContext();
+    d = new HashSet();
+    c = new HashMap();
+  }
+  
+  private <T> T d(Class<? extends b<?>> paramClass, Set<Class<?>> paramSet)
+  {
+    if (c.v.a.d()) {}
+    try
+    {
+      c.v.a.a(paramClass.getSimpleName());
+      if (!paramSet.contains(paramClass))
+      {
+        if (!c.containsKey(paramClass))
+        {
+          paramSet.add(paramClass);
+          try
+          {
+            Object localObject1 = (b)paramClass.getDeclaredConstructor(new Class[0]).newInstance(new Object[0]);
+            Object localObject2 = ((b)localObject1).a();
+            if (!((List)localObject2).isEmpty())
+            {
+              localObject2 = ((List)localObject2).iterator();
+              while (((Iterator)localObject2).hasNext())
+              {
+                Class localClass = (Class)((Iterator)localObject2).next();
+                if (!c.containsKey(localClass)) {
+                  d(localClass, paramSet);
+                }
+              }
+            }
+            localObject1 = ((b)localObject1).b(e);
+            paramSet.remove(paramClass);
+            c.put(paramClass, localObject1);
+            paramClass = (Class<? extends b<?>>)localObject1;
+            break label194;
+          }
+          finally {}
+        }
+        paramClass = c.get(paramClass);
+        label194:
+        return paramClass;
+      }
+      throw new IllegalStateException(String.format("Cannot initialize %s. Cycle detected.", new Object[] { paramClass.getName() }));
+    }
+    finally
+    {
+      c.v.a.b();
+    }
+  }
+  
+  public static a e(Context paramContext)
+  {
+    if (a == null) {
+      synchronized (b)
+      {
+        if (a == null) {
+          a = new a(paramContext);
+        }
+      }
+    }
+    return a;
+  }
+  
+  /* Error */
+  void a()
+  {
+    // Byte code:
+    //   0: ldc -102
+    //   2: invokestatic 58	c/v/a:a	(Ljava/lang/String;)V
+    //   5: new 156	android/content/ComponentName
+    //   8: dup
+    //   9: aload_0
+    //   10: getfield 33	androidx/startup/a:e	Landroid/content/Context;
+    //   13: invokevirtual 159	android/content/Context:getPackageName	()Ljava/lang/String;
+    //   16: ldc -95
+    //   18: invokevirtual 135	java/lang/Class:getName	()Ljava/lang/String;
+    //   21: invokespecial 164	android/content/ComponentName:<init>	(Ljava/lang/String;Ljava/lang/String;)V
+    //   24: astore_1
+    //   25: aload_0
+    //   26: aload_0
+    //   27: getfield 33	androidx/startup/a:e	Landroid/content/Context;
+    //   30: invokevirtual 168	android/content/Context:getPackageManager	()Landroid/content/pm/PackageManager;
+    //   33: aload_1
+    //   34: sipush 128
+    //   37: invokevirtual 174	android/content/pm/PackageManager:getProviderInfo	(Landroid/content/ComponentName;I)Landroid/content/pm/ProviderInfo;
+    //   40: getfield 180	android/content/pm/ProviderInfo:metaData	Landroid/os/Bundle;
+    //   43: invokevirtual 183	androidx/startup/a:b	(Landroid/os/Bundle;)V
+    //   46: invokestatic 128	c/v/a:b	()V
+    //   49: return
+    //   50: astore_1
+    //   51: goto +13 -> 64
+    //   54: astore_1
+    //   55: new 119	androidx/startup/d
+    //   58: dup
+    //   59: aload_1
+    //   60: invokespecial 122	androidx/startup/d:<init>	(Ljava/lang/Throwable;)V
+    //   63: athrow
+    //   64: invokestatic 128	c/v/a:b	()V
+    //   67: aload_1
+    //   68: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	69	0	this	a
+    //   24	10	1	localComponentName	android.content.ComponentName
+    //   50	1	1	localObject	Object
+    //   54	14	1	localNameNotFoundException	android.content.pm.PackageManager.NameNotFoundException
+    // Exception table:
+    //   from	to	target	type
+    //   0	46	50	finally
+    //   55	64	50	finally
+    //   0	46	54	android/content/pm/PackageManager$NameNotFoundException
+  }
+  
+  void b(Bundle paramBundle)
+  {
+    String str = e.getString(c.a);
+    if (paramBundle != null) {
+      try
+      {
+        HashSet localHashSet = new HashSet();
+        Iterator localIterator = paramBundle.keySet().iterator();
+        while (localIterator.hasNext())
+        {
+          Object localObject = (String)localIterator.next();
+          if (str.equals(paramBundle.getString((String)localObject, null)))
+          {
+            localObject = Class.forName((String)localObject);
+            if (b.class.isAssignableFrom((Class)localObject)) {
+              d.add(localObject);
+            }
+          }
+        }
+        paramBundle = d.iterator();
+        while (paramBundle.hasNext()) {
+          d((Class)paramBundle.next(), localHashSet);
+        }
+        return;
+      }
+      catch (ClassNotFoundException paramBundle)
+      {
+        throw new d(paramBundle);
+      }
+    }
+  }
+  
+  <T> T c(Class<? extends b<?>> paramClass)
+  {
+    synchronized (b)
+    {
+      Object localObject2 = c.get(paramClass);
+      Object localObject1 = localObject2;
+      if (localObject2 == null) {
+        localObject1 = d(paramClass, new HashSet());
+      }
+      return localObject1;
+    }
+  }
+  
+  public <T> T f(Class<? extends b<T>> paramClass)
+  {
+    return c(paramClass);
+  }
+  
+  public boolean g(Class<? extends b<?>> paramClass)
+  {
+    return d.contains(paramClass);
+  }
+}

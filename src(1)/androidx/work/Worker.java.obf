@@ -1,0 +1,47 @@
+package androidx.work;
+
+import android.content.Context;
+import androidx.annotation.Keep;
+import androidx.work.impl.utils.futures.b;
+import com.google.common.util.concurrent.c;
+import java.util.concurrent.Executor;
+
+public abstract class Worker
+  extends ListenableWorker
+{
+  b<ListenableWorker.a> g;
+  
+  @Keep
+  public Worker(Context paramContext, WorkerParameters paramWorkerParameters)
+  {
+    super(paramContext, paramWorkerParameters);
+  }
+  
+  public final c<ListenableWorker.a> o()
+  {
+    g = b.t();
+    c().execute(new a());
+    return g;
+  }
+  
+  public abstract ListenableWorker.a q();
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    public void run()
+    {
+      try
+      {
+        ListenableWorker.a localA = q();
+        return;
+      }
+      finally
+      {
+        g.q(localThrowable);
+      }
+    }
+  }
+}

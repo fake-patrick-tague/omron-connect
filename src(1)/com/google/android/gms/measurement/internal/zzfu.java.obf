@@ -1,0 +1,123 @@
+package com.google.android.gms.measurement.internal;
+
+import android.os.Process;
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.Semaphore;
+
+final class zzfu
+  extends Thread
+{
+  private final Object zzb;
+  private final BlockingQueue zzc;
+  private boolean zzd = false;
+  
+  public zzfu(zzfv paramZzfv, String paramString, BlockingQueue paramBlockingQueue)
+  {
+    Preconditions.checkNotNull(paramString);
+    Preconditions.checkNotNull(paramBlockingQueue);
+    zzb = new Object();
+    zzc = paramBlockingQueue;
+    setName(paramString);
+  }
+  
+  private final void zzb()
+  {
+    synchronized (zzfv.zzc(zza))
+    {
+      if (!zzd)
+      {
+        zzfv.zzj(zza).release();
+        zzfv.zzc(zza).notifyAll();
+        zzfv localZzfv = zza;
+        if (this == zzfv.zzb(localZzfv)) {
+          zzfv.zzm(localZzfv, null);
+        } else if (this == zzfv.zza(localZzfv)) {
+          zzfv.zzl(localZzfv, null);
+        } else {
+          zzs.zzay().zzd().zza("Current scheduler thread is neither worker nor network");
+        }
+        zzd = true;
+      }
+      return;
+    }
+  }
+  
+  private final void zzc(InterruptedException paramInterruptedException)
+  {
+    zza.zzs.zzay().zzk().zzb(String.valueOf(getName()).concat(" was interrupted"), paramInterruptedException);
+  }
+  
+  public final void run()
+  {
+    int i = 0;
+    while (i == 0) {
+      try
+      {
+        zzfv.zzj(zza).acquire();
+        i = 1;
+      }
+      catch (InterruptedException localInterruptedException1)
+      {
+        zzc(localInterruptedException1);
+      }
+    }
+    for (;;)
+    {
+      try
+      {
+        int j = Process.getThreadPriority(Process.myTid());
+        ??? = (zzft)zzc.poll();
+        if (??? != null)
+        {
+          if (true != zza)
+          {
+            i = 10;
+            Process.setThreadPriority(i);
+            ((FutureTask)???).run();
+          }
+        }
+        else {
+          synchronized (zzb)
+          {
+            if (zzc.peek() == null)
+            {
+              zzfv.zzr(zza);
+              try
+              {
+                zzb.wait(30000L);
+              }
+              catch (InterruptedException localInterruptedException2)
+              {
+                zzc(localInterruptedException2);
+              }
+            }
+            synchronized (zzfv.zzc(zza))
+            {
+              if (zzc.peek() == null)
+              {
+                zzb();
+                return;
+              }
+            }
+          }
+        }
+        i = j;
+      }
+      finally
+      {
+        zzb();
+      }
+    }
+  }
+  
+  public final void zza()
+  {
+    synchronized (zzb)
+    {
+      zzb.notifyAll();
+      return;
+    }
+  }
+}

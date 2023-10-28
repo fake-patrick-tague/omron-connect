@@ -1,0 +1,54 @@
+package androidx.room;
+
+import c.t.a.f;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public abstract class n
+{
+  private final AtomicBoolean a = new AtomicBoolean(false);
+  private final RoomDatabase b;
+  private volatile f c;
+  
+  public n(RoomDatabase paramRoomDatabase)
+  {
+    b = paramRoomDatabase;
+  }
+  
+  private f c()
+  {
+    String str = d();
+    return b.d(str);
+  }
+  
+  private f e(boolean paramBoolean)
+  {
+    if (paramBoolean)
+    {
+      if (c == null) {
+        c = c();
+      }
+      return c;
+    }
+    return c();
+  }
+  
+  public f a()
+  {
+    b();
+    return e(a.compareAndSet(false, true));
+  }
+  
+  protected void b()
+  {
+    b.a();
+  }
+  
+  protected abstract String d();
+  
+  public void f(f paramF)
+  {
+    if (paramF == c) {
+      a.set(false);
+    }
+  }
+}

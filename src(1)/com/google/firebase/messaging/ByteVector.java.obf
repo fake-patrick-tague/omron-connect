@@ -1,0 +1,195 @@
+package com.google.firebase.messaging;
+
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
+import com.google.android.gms.cloudmessaging.Rpc;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.heartbeatinfo.HeartBeatInfo;
+import com.google.firebase.heartbeatinfo.HeartBeatInfo.HeartBeat;
+import com.google.firebase.installations.l;
+import com.google.firebase.k;
+import com.google.firebase.r.b;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutionException;
+
+class o0
+{
+  private final com.google.firebase.i a;
+  private final r0 b;
+  private final Rpc c;
+  private final b<com.google.firebase.t.i> d;
+  private final b<HeartBeatInfo> e;
+  private final com.google.firebase.installations.i f;
+  
+  o0(com.google.firebase.i paramI, r0 paramR0, Rpc paramRpc, b<com.google.firebase.t.i> paramB, b<HeartBeatInfo> paramB1, com.google.firebase.installations.i paramI1)
+  {
+    a = paramI;
+    b = paramR0;
+    c = paramRpc;
+    d = paramB;
+    e = paramB1;
+    f = paramI1;
+  }
+  
+  o0(com.google.firebase.i paramI, r0 paramR0, b<com.google.firebase.t.i> paramB, b<HeartBeatInfo> paramB1, com.google.firebase.installations.i paramI1)
+  {
+    this(paramI, paramR0, new Rpc(paramI.h()), paramB, paramB1, paramI1);
+  }
+  
+  private static String a(byte[] paramArrayOfByte)
+  {
+    return Base64.encodeToString(paramArrayOfByte, 11);
+  }
+  
+  private Task<String> c(Task<Bundle> paramTask)
+  {
+    return paramTask.continueWith(w.b, new u(this));
+  }
+  
+  private String d()
+  {
+    String str = a.j();
+    try
+    {
+      str = a(MessageDigest.getInstance("SHA-1").digest(str.getBytes()));
+      return str;
+    }
+    catch (NoSuchAlgorithmException localNoSuchAlgorithmException)
+    {
+      for (;;) {}
+    }
+    return "[HASH-ERROR]";
+  }
+  
+  private String f(Bundle paramBundle)
+    throws IOException
+  {
+    if (paramBundle != null)
+    {
+      Object localObject = paramBundle.getString("registration_id");
+      if (localObject != null) {
+        return localObject;
+      }
+      localObject = paramBundle.getString("unregistered");
+      if (localObject != null) {
+        return localObject;
+      }
+      localObject = paramBundle.getString("error");
+      if (!"RST".equals(localObject))
+      {
+        if (localObject != null) {
+          throw new IOException((String)localObject);
+        }
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Unexpected response: ");
+        ((StringBuilder)localObject).append(paramBundle);
+        Log.w("FirebaseMessaging", ((StringBuilder)localObject).toString(), new Throwable());
+        throw new IOException("SERVICE_NOT_AVAILABLE");
+      }
+      throw new IOException("INSTANCE_ID_RESET");
+    }
+    throw new IOException("SERVICE_NOT_AVAILABLE");
+  }
+  
+  static boolean g(String paramString)
+  {
+    return ("SERVICE_NOT_AVAILABLE".equals(paramString)) || ("INTERNAL_SERVER_ERROR".equals(paramString)) || ("InternalServerError".equals(paramString));
+  }
+  
+  private void j(String paramString1, String paramString2, Bundle paramBundle)
+    throws ExecutionException, InterruptedException
+  {
+    paramBundle.putString("scope", paramString2);
+    paramBundle.putString("sender", paramString1);
+    paramBundle.putString("subtype", paramString1);
+    paramBundle.putString("gmp_app_id", a.k().c());
+    paramBundle.putString("gmsv", Integer.toString(b.d()));
+    paramBundle.putString("osv", Integer.toString(Build.VERSION.SDK_INT));
+    paramBundle.putString("app_ver", b.a());
+    paramBundle.putString("app_ver_name", b.b());
+    paramBundle.putString("firebase-app-name-hash", d());
+    try
+    {
+      paramString1 = ((l)Tasks.await(f.a(false))).b();
+      if (!TextUtils.isEmpty(paramString1)) {
+        paramBundle.putString("Goog-Firebase-Installations-Auth", paramString1);
+      } else {
+        Log.w("FirebaseMessaging", "FIS auth token is empty");
+      }
+    }
+    catch (InterruptedException paramString1) {}catch (ExecutionException paramString1) {}
+    Log.e("FirebaseMessaging", "Failed to get FIS auth token", paramString1);
+    paramBundle.putString("appid", (String)Tasks.await(f.getId()));
+    paramString1 = new StringBuilder();
+    paramString1.append("fcm-");
+    paramString1.append("23.1.2");
+    paramBundle.putString("cliv", paramString1.toString());
+    paramString2 = (HeartBeatInfo)e.get();
+    paramString1 = (com.google.firebase.t.i)d.get();
+    if ((paramString2 != null) && (paramString1 != null))
+    {
+      paramString2 = paramString2.b("fire-iid");
+      if (paramString2 != HeartBeatInfo.HeartBeat.b)
+      {
+        paramBundle.putString("Firebase-Client-Log-Type", Integer.toString(paramString2.a()));
+        paramBundle.putString("Firebase-Client", paramString1.a());
+      }
+    }
+  }
+  
+  private Task<Bundle> k(String paramString1, String paramString2, Bundle paramBundle)
+  {
+    try
+    {
+      j(paramString1, paramString2, paramBundle);
+      return c.send(paramBundle);
+    }
+    catch (ExecutionException paramString1) {}catch (InterruptedException paramString1) {}
+    return Tasks.forException(paramString1);
+  }
+  
+  Task<?> b()
+  {
+    Bundle localBundle = new Bundle();
+    localBundle.putString("delete", "1");
+    return c(k(r0.c(a), "*", localBundle));
+  }
+  
+  Task<String> e()
+  {
+    return c(k(r0.c(a), "*", new Bundle()));
+  }
+  
+  Task<?> l(String paramString1, String paramString2)
+  {
+    Bundle localBundle = new Bundle();
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("/topics/");
+    localStringBuilder.append(paramString2);
+    localBundle.putString("gcm.topic", localStringBuilder.toString());
+    localStringBuilder = new StringBuilder();
+    localStringBuilder.append("/topics/");
+    localStringBuilder.append(paramString2);
+    return c(k(paramString1, localStringBuilder.toString(), localBundle));
+  }
+  
+  Task<?> m(String paramString1, String paramString2)
+  {
+    Bundle localBundle = new Bundle();
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("/topics/");
+    localStringBuilder.append(paramString2);
+    localBundle.putString("gcm.topic", localStringBuilder.toString());
+    localBundle.putString("delete", "1");
+    localStringBuilder = new StringBuilder();
+    localStringBuilder.append("/topics/");
+    localStringBuilder.append(paramString2);
+    return c(k(paramString1, localStringBuilder.toString(), localBundle));
+  }
+}

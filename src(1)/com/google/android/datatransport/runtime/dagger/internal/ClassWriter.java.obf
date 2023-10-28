@@ -1,0 +1,69 @@
+package com.google.android.datatransport.runtime.dagger.internal;
+
+public final class a<T>
+  implements g.a.a<T>
+{
+  private static final Object a = new Object();
+  private volatile g.a.a<T> b;
+  private volatile Object c = a;
+  
+  private a(g.a.a<T> paramA)
+  {
+    b = paramA;
+  }
+  
+  public static <P extends g.a.a<T>, T> g.a.a<T> a(P paramP)
+  {
+    d.b(paramP);
+    if ((paramP instanceof a)) {
+      return paramP;
+    }
+    return new a(paramP);
+  }
+  
+  public static Object b(Object paramObject1, Object paramObject2)
+  {
+    int i;
+    if (paramObject1 != a) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (i != 0)
+    {
+      if (paramObject1 == paramObject2) {
+        return paramObject2;
+      }
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Scoped provider was invoked recursively returning different results: ");
+      localStringBuilder.append(paramObject1);
+      localStringBuilder.append(" & ");
+      localStringBuilder.append(paramObject2);
+      localStringBuilder.append(". This is likely due to a circular dependency.");
+      throw new IllegalStateException(localStringBuilder.toString());
+    }
+    return paramObject2;
+  }
+  
+  public T get()
+  {
+    Object localObject1 = c;
+    Object localObject3 = a;
+    if (localObject1 == localObject3) {
+      try
+      {
+        Object localObject2 = c;
+        localObject1 = localObject2;
+        if (localObject2 == localObject3)
+        {
+          localObject1 = b.get();
+          c = b(c, localObject1);
+          b = null;
+        }
+        return localObject1;
+      }
+      finally {}
+    }
+    return ?;
+  }
+}

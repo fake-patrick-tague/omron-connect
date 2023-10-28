@@ -1,0 +1,43 @@
+package com.braze.ui.inappmessage.views;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.KeyEvent;
+import android.view.View;
+import android.webkit.WebView;
+import com.braze.ui.inappmessage.BrazeInAppMessageManager;
+import com.braze.ui.inappmessage.BrazeInAppMessageManager.Companion;
+import com.braze.ui.inappmessage.InAppMessageManagerBase;
+import com.braze.ui.inappmessage.utils.InAppMessageViewUtils;
+import kotlin.x.d.i;
+
+public class InAppMessageWebView
+  extends WebView
+{
+  public InAppMessageWebView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+  }
+  
+  public boolean dispatchKeyEvent(KeyEvent paramKeyEvent)
+  {
+    i.e(paramKeyEvent, "event");
+    if ((!isInTouchMode()) && (paramKeyEvent.getKeyCode() == 4) && (BrazeInAppMessageManager.Companion.getInstance().getDoesBackButtonDismissInAppMessageView()))
+    {
+      InAppMessageViewUtils.closeInAppMessageOnKeycodeBack();
+      return true;
+    }
+    return super.dispatchKeyEvent(paramKeyEvent);
+  }
+  
+  public boolean onKeyDown(int paramInt, KeyEvent paramKeyEvent)
+  {
+    i.e(paramKeyEvent, "event");
+    if ((paramInt == 4) && (BrazeInAppMessageManager.Companion.getInstance().getDoesBackButtonDismissInAppMessageView()))
+    {
+      InAppMessageViewUtils.closeInAppMessageOnKeycodeBack();
+      return true;
+    }
+    return super.onKeyDown(paramInt, paramKeyEvent);
+  }
+}

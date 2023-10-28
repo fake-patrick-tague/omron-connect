@@ -1,0 +1,111 @@
+package com.google.android.gms.fitness.result;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Subscription;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+@Deprecated
+@SafeParcelable.Class(creator="ListSubscriptionsResultCreator")
+@SafeParcelable.Reserved({3, 1000})
+public class ListSubscriptionsResult
+  extends AbstractSafeParcelable
+  implements Result
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<ListSubscriptionsResult> CREATOR = new zzg();
+  @SafeParcelable.Field(getter="getStatus", id=2)
+  private final Status zzsv;
+  @SafeParcelable.Field(getter="getSubscriptions", id=1)
+  private final List<Subscription> zzsz;
+  
+  @ShowFirstParty
+  @SafeParcelable.Constructor
+  public ListSubscriptionsResult(@RecentlyNonNull @SafeParcelable.Param(id=1) List<Subscription> paramList, @RecentlyNonNull @SafeParcelable.Param(id=2) Status paramStatus)
+  {
+    zzsz = paramList;
+    zzsv = paramStatus;
+  }
+  
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static ListSubscriptionsResult zzd(@RecentlyNonNull Status paramStatus)
+  {
+    return new ListSubscriptionsResult(Collections.emptyList(), paramStatus);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof ListSubscriptionsResult)) {
+      return false;
+    }
+    paramObject = (ListSubscriptionsResult)paramObject;
+    return (zzsv.equals(zzsv)) && (Objects.equal(zzsz, zzsz));
+  }
+  
+  @RecentlyNonNull
+  public Status getStatus()
+  {
+    return zzsv;
+  }
+  
+  @RecentlyNonNull
+  public List<Subscription> getSubscriptions()
+  {
+    return zzsz;
+  }
+  
+  @RecentlyNonNull
+  public List<Subscription> getSubscriptions(@RecentlyNonNull DataType paramDataType)
+  {
+    ArrayList localArrayList = new ArrayList();
+    Iterator localIterator = zzsz.iterator();
+    while (localIterator.hasNext())
+    {
+      Subscription localSubscription = (Subscription)localIterator.next();
+      if (paramDataType.equals(localSubscription.zzs())) {
+        localArrayList.add(localSubscription);
+      }
+    }
+    return Collections.unmodifiableList(localArrayList);
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzsv, zzsz });
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("status", zzsv).add("subscriptions", zzsz).toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeTypedList(paramParcel, 1, getSubscriptions(), false);
+    SafeParcelWriter.writeParcelable(paramParcel, 2, getStatus(), paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

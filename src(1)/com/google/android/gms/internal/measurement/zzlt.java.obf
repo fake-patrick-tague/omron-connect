@@ -1,0 +1,36 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+final class zzlt
+{
+  private static final zzlt zza = new zzlt();
+  private final zzlx zzb = new zzld();
+  private final ConcurrentMap zzc = new ConcurrentHashMap();
+  
+  private zzlt() {}
+  
+  public static zzlt zza()
+  {
+    return zza;
+  }
+  
+  public final zzlw zzb(Class paramClass)
+  {
+    zzkm.zzf(paramClass, "messageType");
+    zzlw localZzlw = (zzlw)zzc.get(paramClass);
+    if (localZzlw == null)
+    {
+      localZzlw = zzb.zza(paramClass);
+      zzkm.zzf(paramClass, "messageType");
+      zzkm.zzf(localZzlw, "schema");
+      paramClass = (zzlw)zzc.putIfAbsent(paramClass, localZzlw);
+      if (paramClass == null) {
+        return localZzlw;
+      }
+      return paramClass;
+    }
+    return localZzlw;
+  }
+}

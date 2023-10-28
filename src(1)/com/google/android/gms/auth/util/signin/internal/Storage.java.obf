@@ -1,0 +1,187 @@
+package com.google.android.gms.auth.api.signin.internal;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.text.TextUtils;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import org.json.JSONException;
+
+@KeepForSdk
+public class Storage
+{
+  private static final Lock zaa = new ReentrantLock();
+  private static Storage zab;
+  private final Lock zac = new ReentrantLock();
+  private final SharedPreferences zad;
+  
+  @VisibleForTesting
+  Storage(Context paramContext)
+  {
+    zad = paramContext.getSharedPreferences("com.google.android.gms.signin", 0);
+  }
+  
+  @KeepForSdk
+  public static Storage getInstance(Context paramContext)
+  {
+    Preconditions.checkNotNull(paramContext);
+    Lock localLock = zaa;
+    localLock.lock();
+    try
+    {
+      if (zab == null) {
+        zab = new Storage(paramContext.getApplicationContext());
+      }
+      paramContext = zab;
+      localLock.unlock();
+      return paramContext;
+    }
+    finally
+    {
+      zaa.unlock();
+    }
+  }
+  
+  private static final String zae(String paramString1, String paramString2)
+  {
+    int i = String.valueOf(paramString2).length();
+    StringBuilder localStringBuilder = new StringBuilder(paramString1.length() + 1 + i);
+    localStringBuilder.append(paramString1);
+    localStringBuilder.append(":");
+    localStringBuilder.append(paramString2);
+    return localStringBuilder.toString();
+  }
+  
+  @KeepForSdk
+  public void clear()
+  {
+    zac.lock();
+    try
+    {
+      zad.edit().clear().apply();
+      return;
+    }
+    finally
+    {
+      zac.unlock();
+    }
+  }
+  
+  @KeepForSdk
+  public GoogleSignInAccount getSavedDefaultGoogleSignInAccount()
+  {
+    String str = zaa("defaultGoogleSignInAccount");
+    boolean bool = TextUtils.isEmpty(str);
+    GoogleSignInAccount localGoogleSignInAccount = null;
+    if (bool) {
+      return null;
+    }
+    str = zaa(zae("googleSignInAccount", str));
+    if (str != null) {}
+    try
+    {
+      localGoogleSignInAccount = GoogleSignInAccount.zab(str);
+      return localGoogleSignInAccount;
+    }
+    catch (JSONException localJSONException) {}
+    return null;
+  }
+  
+  @KeepForSdk
+  public GoogleSignInOptions getSavedDefaultGoogleSignInOptions()
+  {
+    String str = zaa("defaultGoogleSignInAccount");
+    boolean bool = TextUtils.isEmpty(str);
+    GoogleSignInOptions localGoogleSignInOptions = null;
+    if (bool) {
+      return null;
+    }
+    str = zaa(zae("googleSignInOptions", str));
+    if (str != null) {}
+    try
+    {
+      localGoogleSignInOptions = GoogleSignInOptions.zab(str);
+      return localGoogleSignInOptions;
+    }
+    catch (JSONException localJSONException) {}
+    return null;
+  }
+  
+  @KeepForSdk
+  public String getSavedRefreshToken()
+  {
+    return zaa("refreshToken");
+  }
+  
+  @KeepForSdk
+  public void saveDefaultGoogleSignInAccount(GoogleSignInAccount paramGoogleSignInAccount, GoogleSignInOptions paramGoogleSignInOptions)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    Preconditions.checkNotNull(paramGoogleSignInOptions);
+    zad("defaultGoogleSignInAccount", paramGoogleSignInAccount.zac());
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    Preconditions.checkNotNull(paramGoogleSignInOptions);
+    String str = paramGoogleSignInAccount.zac();
+    zad(zae("googleSignInAccount", str), paramGoogleSignInAccount.zad());
+    zad(zae("googleSignInOptions", str), paramGoogleSignInOptions.zaf());
+  }
+  
+  protected final String zaa(String paramString)
+  {
+    zac.lock();
+    try
+    {
+      paramString = zad.getString(paramString, null);
+      return paramString;
+    }
+    finally
+    {
+      zac.unlock();
+    }
+  }
+  
+  protected final void zab(String paramString)
+  {
+    zac.lock();
+    try
+    {
+      zad.edit().remove(paramString).apply();
+      return;
+    }
+    finally
+    {
+      zac.unlock();
+    }
+  }
+  
+  public final void zac()
+  {
+    String str = zaa("defaultGoogleSignInAccount");
+    zab("defaultGoogleSignInAccount");
+    if (TextUtils.isEmpty(str)) {
+      return;
+    }
+    zab(zae("googleSignInAccount", str));
+    zab(zae("googleSignInOptions", str));
+  }
+  
+  protected final void zad(String paramString1, String paramString2)
+  {
+    zac.lock();
+    try
+    {
+      zad.edit().putString(paramString1, paramString2).apply();
+      return;
+    }
+    finally
+    {
+      zac.unlock();
+    }
+  }
+}

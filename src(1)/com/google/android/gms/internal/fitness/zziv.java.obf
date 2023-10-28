@@ -1,0 +1,41 @@
+package com.google.android.gms.internal.fitness;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+final class zziv
+{
+  private static final zziv zzaat = new zziv();
+  private final zziz zzaau = new zzhx();
+  private final ConcurrentMap<Class<?>, zzja<?>> zzaav = new ConcurrentHashMap();
+  
+  private zziv() {}
+  
+  public static zziv zzcy()
+  {
+    return zzaat;
+  }
+  
+  public final <T> zzja<T> zze(Class<T> paramClass)
+  {
+    zzhc.zza(paramClass, "messageType");
+    zzja localZzja = (zzja)zzaav.get(paramClass);
+    Object localObject = localZzja;
+    if (localZzja == null)
+    {
+      localObject = zzaau.zzd(paramClass);
+      zzhc.zza(paramClass, "messageType");
+      zzhc.zza(localObject, "schema");
+      paramClass = (zzja)zzaav.putIfAbsent(paramClass, localObject);
+      if (paramClass != null) {
+        localObject = paramClass;
+      }
+    }
+    return localObject;
+  }
+  
+  public final <T> zzja<T> zzn(T paramT)
+  {
+    return zze(paramT.getClass());
+  }
+}

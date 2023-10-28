@@ -1,0 +1,344 @@
+package com.google.android.gms.fitness.data;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.annotation.KeepName;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+@SafeParcelable.Class(creator="DataTypeCreator")
+@SafeParcelable.Reserved({1000})
+public final class DataType
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_ACTIVITY_SUMMARY;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_BASAL_METABOLIC_RATE_SUMMARY;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_BODY_FAT_PERCENTAGE_SUMMARY;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_CALORIES_EXPENDED;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_DISTANCE_DELTA;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_HEART_POINTS;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_HEART_RATE_SUMMARY;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_HEIGHT_SUMMARY;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_HYDRATION;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_LOCATION_BOUNDING_BOX;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_MOVE_MINUTES;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_NUTRITION_SUMMARY;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_POWER_SUMMARY;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_SPEED_SUMMARY;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_STEP_COUNT_DELTA;
+  @RecentlyNonNull
+  public static final DataType AGGREGATE_WEIGHT_SUMMARY;
+  @RecentlyNonNull
+  public static final Parcelable.Creator<DataType> CREATOR = new DiscreteSeekBar.CustomState.1();
+  @RecentlyNonNull
+  public static final String MIME_TYPE_PREFIX = "vnd.google.fitness.data_type/";
+  @RecentlyNonNull
+  public static final DataType TYPE_ACTIVITY_SEGMENT;
+  @RecentlyNonNull
+  public static final DataType TYPE_BASAL_METABOLIC_RATE;
+  @RecentlyNonNull
+  public static final DataType TYPE_BODY_FAT_PERCENTAGE;
+  @RecentlyNonNull
+  public static final DataType TYPE_CALORIES_EXPENDED;
+  @RecentlyNonNull
+  public static final DataType TYPE_CYCLING_PEDALING_CADENCE;
+  @RecentlyNonNull
+  public static final DataType TYPE_CYCLING_PEDALING_CUMULATIVE;
+  @RecentlyNonNull
+  public static final DataType TYPE_CYCLING_WHEEL_REVOLUTION;
+  @RecentlyNonNull
+  public static final DataType TYPE_CYCLING_WHEEL_RPM;
+  @RecentlyNonNull
+  public static final DataType TYPE_DISTANCE_DELTA;
+  @RecentlyNonNull
+  public static final DataType TYPE_HEART_POINTS;
+  @RecentlyNonNull
+  public static final DataType TYPE_HEART_RATE_BPM;
+  @RecentlyNonNull
+  public static final DataType TYPE_HEIGHT;
+  @RecentlyNonNull
+  public static final DataType TYPE_HYDRATION;
+  @RecentlyNonNull
+  public static final DataType TYPE_LOCATION_SAMPLE;
+  @Deprecated
+  @RecentlyNonNull
+  public static final DataType TYPE_LOCATION_TRACK;
+  @RecentlyNonNull
+  public static final DataType TYPE_MOVE_MINUTES;
+  @RecentlyNonNull
+  public static final DataType TYPE_NUTRITION;
+  @RecentlyNonNull
+  public static final DataType TYPE_POWER_SAMPLE;
+  @RecentlyNonNull
+  public static final DataType TYPE_SLEEP_SEGMENT;
+  @RecentlyNonNull
+  public static final DataType TYPE_SPEED;
+  @RecentlyNonNull
+  public static final DataType TYPE_STEP_COUNT_CADENCE;
+  @RecentlyNonNull
+  @KeepName
+  @ShowFirstParty
+  public static final DataType TYPE_STEP_COUNT_CUMULATIVE;
+  @RecentlyNonNull
+  public static final DataType TYPE_STEP_COUNT_DELTA;
+  @RecentlyNonNull
+  public static final DataType TYPE_WEIGHT;
+  @RecentlyNonNull
+  public static final DataType TYPE_WORKOUT_EXERCISE;
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static final DataType zzmd;
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static final DataType zzme;
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static final DataType zzmf;
+  @RecentlyNonNull
+  public static final DataType zzmg;
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static final DataType zzmh;
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static final DataType zzmi;
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static final DataType zzmj;
+  @Deprecated
+  @RecentlyNonNull
+  public static final DataType zzmk;
+  @Deprecated
+  @RecentlyNonNull
+  public static final DataType zzml;
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static final DataType zzmm = new DataType("com.google.internal.sleep_attributes", 2, "https://www.googleapis.com/auth/fitness.sleep.read", "https://www.googleapis.com/auth/fitness.sleep.write", new Field[] { Field.zznk });
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static final DataType zzmn = new DataType("com.google.internal.sleep_schedule", 1, "https://www.googleapis.com/auth/fitness.sleep.read", "https://www.googleapis.com/auth/fitness.sleep.write", new Field[] { Field.zznl });
+  @SafeParcelable.Field(getter="getName", id=1)
+  private final String name;
+  @SafeParcelable.Field(getter="getFields", id=2)
+  private final List<Field> zzlz;
+  @SafeParcelable.Field(getter="getReadScope", id=3)
+  private final String zzma;
+  @SafeParcelable.Field(getter="getWriteScope", id=4)
+  private final String zzmb;
+  private final int zzmc;
+  
+  static
+  {
+    Object localObject1 = Field.FIELD_STEPS;
+    TYPE_STEP_COUNT_DELTA = new DataType("com.google.step_count.delta", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localObject1 });
+    TYPE_STEP_COUNT_CUMULATIVE = new DataType("com.google.step_count.cumulative", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localObject1 });
+    Field localField1 = Field.FIELD_RPM;
+    TYPE_STEP_COUNT_CADENCE = new DataType("com.google.step_count.cadence", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localField1 });
+    zzmd = new DataType("com.google.internal.goal", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.zznd });
+    TYPE_ACTIVITY_SEGMENT = new DataType("com.google.activity.segment", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.FIELD_ACTIVITY });
+    TYPE_SLEEP_SEGMENT = new DataType("com.google.sleep.segment", 2, "https://www.googleapis.com/auth/fitness.sleep.read", "https://www.googleapis.com/auth/fitness.sleep.write", new Field[] { Field.FIELD_SLEEP_SEGMENT_TYPE });
+    localObject1 = Field.FIELD_CALORIES;
+    TYPE_CALORIES_EXPENDED = new DataType("com.google.calories.expended", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localObject1 });
+    TYPE_BASAL_METABOLIC_RATE = new DataType("com.google.calories.bmr", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localObject1 });
+    TYPE_POWER_SAMPLE = new DataType("com.google.power.sample", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.FIELD_WATTS });
+    zzme = new DataType("com.google.sensor.events", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.zznf, Field.zzng, Field.zznh });
+    TYPE_HEART_RATE_BPM = new DataType("com.google.heart_rate.bpm", 1, "https://www.googleapis.com/auth/fitness.heart_rate.read", "https://www.googleapis.com/auth/fitness.heart_rate.write", new Field[] { Field.FIELD_BPM });
+    zzmf = new DataType("com.google.respiratory_rate", 1, "https://www.googleapis.com/auth/fitness.respiratory_rate.read", "https://www.googleapis.com/auth/fitness.respiratory_rate.write", new Field[] { Field.zznc });
+    localObject1 = Field.FIELD_LATITUDE;
+    Field localField2 = Field.FIELD_LONGITUDE;
+    Object localObject2 = Field.FIELD_ACCURACY;
+    Field localField3 = Field.FIELD_ALTITUDE;
+    TYPE_LOCATION_SAMPLE = new DataType("com.google.location.sample", 1, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { localObject1, localField2, localObject2, localField3 });
+    TYPE_LOCATION_TRACK = new DataType("com.google.location.track", 2, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { localObject1, localField2, localObject2, localField3 });
+    localField2 = Field.FIELD_DISTANCE;
+    localObject1 = new DataType("com.google.distance.delta", 2, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { localField2 });
+    TYPE_DISTANCE_DELTA = (DataType)localObject1;
+    zzmg = new DataType("com.google.distance.cumulative", 1, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { localField2 });
+    TYPE_SPEED = new DataType("com.google.speed", 1, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { Field.FIELD_SPEED });
+    localField2 = Field.FIELD_REVOLUTIONS;
+    TYPE_CYCLING_WHEEL_REVOLUTION = new DataType("com.google.cycling.wheel_revolution.cumulative", 1, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { localField2 });
+    TYPE_CYCLING_WHEEL_RPM = new DataType("com.google.cycling.wheel_revolution.rpm", 1, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { localField1 });
+    TYPE_CYCLING_PEDALING_CUMULATIVE = new DataType("com.google.cycling.pedaling.cumulative", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localField2 });
+    TYPE_CYCLING_PEDALING_CADENCE = new DataType("com.google.cycling.pedaling.cadence", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localField1 });
+    TYPE_HEIGHT = new DataType("com.google.height", 1, "https://www.googleapis.com/auth/fitness.body.read", "https://www.googleapis.com/auth/fitness.body.write", new Field[] { Field.FIELD_HEIGHT });
+    TYPE_WEIGHT = new DataType("com.google.weight", 1, "https://www.googleapis.com/auth/fitness.body.read", "https://www.googleapis.com/auth/fitness.body.write", new Field[] { Field.FIELD_WEIGHT });
+    TYPE_BODY_FAT_PERCENTAGE = new DataType("com.google.body.fat.percentage", 1, "https://www.googleapis.com/auth/fitness.body.read", "https://www.googleapis.com/auth/fitness.body.write", new Field[] { Field.FIELD_PERCENTAGE });
+    localField1 = Field.FIELD_NUTRIENTS;
+    localField2 = Field.FIELD_MEAL_TYPE;
+    TYPE_NUTRITION = new DataType("com.google.nutrition", 1, "https://www.googleapis.com/auth/fitness.nutrition.read", "https://www.googleapis.com/auth/fitness.nutrition.write", new Field[] { localField1, localField2, Field.FIELD_FOOD_ITEM });
+    localObject2 = new DataType("com.google.hydration", 1, "https://www.googleapis.com/auth/fitness.nutrition.read", "https://www.googleapis.com/auth/fitness.nutrition.write", new Field[] { Field.FIELD_VOLUME });
+    TYPE_HYDRATION = (DataType)localObject2;
+    TYPE_WORKOUT_EXERCISE = new DataType("com.google.activity.exercise", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.FIELD_EXERCISE, Field.FIELD_REPETITIONS, Field.zzmz, Field.FIELD_RESISTANCE_TYPE, Field.FIELD_RESISTANCE });
+    localField3 = Field.FIELD_DURATION;
+    Object localObject3 = new DataType("com.google.active_minutes", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localField3 });
+    TYPE_MOVE_MINUTES = (DataType)localObject3;
+    AGGREGATE_MOVE_MINUTES = (DataType)localObject3;
+    zzmh = new DataType("com.google.device_on_body", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.zznj });
+    zzmi = new DataType("com.google.internal.primary_device", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.zzne });
+    AGGREGATE_ACTIVITY_SUMMARY = new DataType("com.google.activity.summary", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.FIELD_ACTIVITY, localField3, Field.FIELD_NUM_SEGMENTS });
+    localObject3 = Field.FIELD_AVERAGE;
+    Field localField4 = Field.FIELD_MAX;
+    Field localField5 = Field.FIELD_MIN;
+    AGGREGATE_BASAL_METABOLIC_RATE_SUMMARY = new DataType("com.google.calories.bmr.summary", 2, "https://www.googleapis.com/auth/fitness.body.read", "https://www.googleapis.com/auth/fitness.body.write", new Field[] { localObject3, localField4, localField5 });
+    AGGREGATE_STEP_COUNT_DELTA = TYPE_STEP_COUNT_DELTA;
+    AGGREGATE_DISTANCE_DELTA = (DataType)localObject1;
+    AGGREGATE_CALORIES_EXPENDED = TYPE_CALORIES_EXPENDED;
+    localObject1 = Field.FIELD_INTENSITY;
+    TYPE_HEART_POINTS = new DataType("com.google.heart_minutes", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localObject1 });
+    AGGREGATE_HEART_POINTS = new DataType("com.google.heart_minutes.summary", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localObject1, localField3 });
+    AGGREGATE_HEART_RATE_SUMMARY = new DataType("com.google.heart_rate.summary", 2, "https://www.googleapis.com/auth/fitness.heart_rate.read", "https://www.googleapis.com/auth/fitness.heart_rate.write", new Field[] { localObject3, localField4, localField5 });
+    AGGREGATE_LOCATION_BOUNDING_BOX = new DataType("com.google.location.bounding_box", 2, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { Field.FIELD_LOW_LATITUDE, Field.FIELD_LOW_LONGITUDE, Field.FIELD_HIGH_LATITUDE, Field.FIELD_HIGH_LONGITUDE });
+    AGGREGATE_POWER_SUMMARY = new DataType("com.google.power.summary", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { localObject3, localField4, localField5 });
+    AGGREGATE_SPEED_SUMMARY = new DataType("com.google.speed.summary", 2, "https://www.googleapis.com/auth/fitness.location.read", "https://www.googleapis.com/auth/fitness.location.write", new Field[] { localObject3, localField4, localField5 });
+    AGGREGATE_BODY_FAT_PERCENTAGE_SUMMARY = new DataType("com.google.body.fat.percentage.summary", 2, "https://www.googleapis.com/auth/fitness.body.read", "https://www.googleapis.com/auth/fitness.body.write", new Field[] { localObject3, localField4, localField5 });
+    AGGREGATE_WEIGHT_SUMMARY = new DataType("com.google.weight.summary", 2, "https://www.googleapis.com/auth/fitness.body.read", "https://www.googleapis.com/auth/fitness.body.write", new Field[] { localObject3, localField4, localField5 });
+    AGGREGATE_HEIGHT_SUMMARY = new DataType("com.google.height.summary", 2, "https://www.googleapis.com/auth/fitness.body.read", "https://www.googleapis.com/auth/fitness.body.write", new Field[] { localObject3, localField4, localField5 });
+    AGGREGATE_NUTRITION_SUMMARY = new DataType("com.google.nutrition.summary", 2, "https://www.googleapis.com/auth/fitness.nutrition.read", "https://www.googleapis.com/auth/fitness.nutrition.write", new Field[] { localField1, localField2 });
+    AGGREGATE_HYDRATION = (DataType)localObject2;
+    zzmj = new DataType("com.google.activity.samples", 1, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.zzni });
+    localObject1 = new DataType("com.google.calories.consumed", 2, "https://www.googleapis.com/auth/fitness.activity.read", "https://www.googleapis.com/auth/fitness.activity.write", new Field[] { Field.FIELD_CALORIES });
+    zzmk = (DataType)localObject1;
+    zzml = (DataType)localObject1;
+  }
+  
+  public DataType(String paramString1, int paramInt, String paramString2, String paramString3, Field... paramVarArgs)
+  {
+    name = paramString1;
+    zzlz = Collections.unmodifiableList(Arrays.asList(paramVarArgs));
+    zzma = paramString2;
+    zzmb = paramString3;
+    zzmc = paramInt;
+  }
+  
+  DataType(String paramString1, List paramList, String paramString2, String paramString3)
+  {
+    name = paramString1;
+    zzlz = Collections.unmodifiableList(paramList);
+    zzma = paramString2;
+    zzmb = paramString3;
+    zzmc = 0;
+  }
+  
+  public static List getAggregatesForInput(DataType paramDataType)
+  {
+    paramDataType = paramDataType.getAggregateType();
+    if (paramDataType == null) {
+      return Collections.emptyList();
+    }
+    return Collections.singletonList(paramDataType);
+  }
+  
+  public static String getMimeType(DataType paramDataType)
+  {
+    paramDataType = String.valueOf(paramDataType.getName());
+    if (paramDataType.length() != 0) {
+      return "vnd.google.fitness.data_type/".concat(paramDataType);
+    }
+    return new String("vnd.google.fitness.data_type/");
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (!(paramObject instanceof DataType)) {
+      return false;
+    }
+    paramObject = (DataType)paramObject;
+    return (name.equals(name)) && (zzlz.equals(zzlz));
+  }
+  
+  public final String get()
+  {
+    if (name.startsWith("com.google.")) {
+      return name.substring(11);
+    }
+    return name;
+  }
+  
+  public final DataType getAggregateType()
+  {
+    return (DataType)Orientation.1.zzlc.get(this);
+  }
+  
+  public final String getDataType()
+  {
+    return zzmb;
+  }
+  
+  public final List getFields()
+  {
+    return zzlz;
+  }
+  
+  public final String getFolder()
+  {
+    return zzma;
+  }
+  
+  public final String getName()
+  {
+    return name;
+  }
+  
+  public final int hashCode()
+  {
+    return name.hashCode();
+  }
+  
+  public final int indexOf(Field paramField)
+  {
+    int i = zzlz.indexOf(paramField);
+    boolean bool;
+    if (i >= 0) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    Preconditions.checkArgument(bool, "%s not a field of %s", new Object[] { paramField, this });
+    return i;
+  }
+  
+  public final String toString()
+  {
+    return String.format("DataType{%s%s}", new Object[] { name, zzlz });
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeString(paramParcel, 1, getName(), false);
+    SafeParcelWriter.writeTypedList(paramParcel, 2, getFields(), false);
+    SafeParcelWriter.writeString(paramParcel, 3, zzma, false);
+    SafeParcelWriter.writeString(paramParcel, 4, zzmb, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+}

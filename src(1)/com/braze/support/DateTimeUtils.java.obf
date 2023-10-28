@@ -1,0 +1,113 @@
+package com.braze.support;
+
+import com.braze.enums.BrazeDateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public final class DateTimeUtils
+{
+  private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone("UTC");
+  
+  public static final Date createDate(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6)
+  {
+    Object localObject = new GregorianCalendar(paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6);
+    ((Calendar)localObject).setTimeZone(UTC_TIME_ZONE);
+    localObject = ((Calendar)localObject).getTime();
+    i.d(localObject, "calendar.time");
+    return localObject;
+  }
+  
+  public static final Date createDate(long paramLong)
+  {
+    return new Date(paramLong * 1000L);
+  }
+  
+  public static final String formatDate(Date paramDate, BrazeDateFormat paramBrazeDateFormat, TimeZone paramTimeZone)
+  {
+    i.e(paramDate, "<this>");
+    i.e(paramBrazeDateFormat, "dateFormat");
+    i.e(paramTimeZone, "timeZone");
+    paramBrazeDateFormat = new SimpleDateFormat(paramBrazeDateFormat.getFormat(), Locale.US);
+    paramBrazeDateFormat.setTimeZone(paramTimeZone);
+    paramDate = paramBrazeDateFormat.format(paramDate);
+    i.d(paramDate, "simpleDateFormat.format(this)");
+    return paramDate;
+  }
+  
+  public static final String formatDateNow(BrazeDateFormat paramBrazeDateFormat)
+  {
+    i.e(paramBrazeDateFormat, "dateFormat");
+    Date localDate = createDate(nowInSeconds());
+    TimeZone localTimeZone = TimeZone.getDefault();
+    i.d(localTimeZone, "getDefault()");
+    return formatDate(localDate, paramBrazeDateFormat, localTimeZone);
+  }
+  
+  public static final long getTimeFromEpochInSeconds(Date paramDate)
+  {
+    i.e(paramDate, "<this>");
+    return TimeUnit.MILLISECONDS.toSeconds(paramDate.getTime());
+  }
+  
+  public static final long nowInMilliseconds()
+  {
+    return System.currentTimeMillis();
+  }
+  
+  public static final long nowInSeconds()
+  {
+    return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
+  }
+  
+  public static final double nowInSecondsPrecise()
+  {
+    return System.currentTimeMillis() / 1000.0D;
+  }
+  
+  public static final Date parseDate(String paramString, BrazeDateFormat paramBrazeDateFormat)
+  {
+    i.e(paramString, "<this>");
+    i.e(paramBrazeDateFormat, "dateFormat");
+    paramBrazeDateFormat = new SimpleDateFormat(paramBrazeDateFormat.getFormat(), Locale.US);
+    paramBrazeDateFormat.setTimeZone(UTC_TIME_ZONE);
+    try
+    {
+      paramBrazeDateFormat = paramBrazeDateFormat.parse(paramString);
+      i.b(paramBrazeDateFormat);
+      return paramBrazeDateFormat;
+    }
+    catch (Exception paramBrazeDateFormat)
+    {
+      BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+      localBrazeLogger.brazelog(localBrazeLogger.getBrazeLogTag("DateTimeUtils"), BrazeLogger.Priority.E, paramBrazeDateFormat, new a(paramString));
+      throw paramBrazeDateFormat;
+    }
+  }
+  
+  static final class a
+    extends j
+    implements a<String>
+  {
+    a(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Exception parsing date ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(". Returning null");
+      return localStringBuilder.toString();
+    }
+  }
+}

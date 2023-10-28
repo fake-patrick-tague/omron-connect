@@ -1,0 +1,175 @@
+package com.alivecor.ecg.record;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.widget.TextView;
+import android.widget.VideoView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.f0;
+import com.alivecor.alivecorkitlite.R.drawable;
+import com.alivecor.alivecorkitlite.R.id;
+import com.alivecor.alivecorkitlite.R.layout;
+import com.alivecor.alivecorkitlite.R.raw;
+import com.alivecor.alivecorkitlite.R.string;
+import com.alivecor.ecg.core.model.c;
+
+public class SakuraOneIntroFragment
+  extends Fragment
+{
+  TextView helpTxt;
+  TextView keepFingersTxt;
+  View recordingProgressPanel;
+  View recordingProgressView;
+  VideoView videoTexture;
+  
+  public SakuraOneIntroFragment() {}
+  
+  public static SakuraOneIntroFragment create(String paramString, RecordUiConfig paramRecordUiConfig)
+  {
+    SakuraOneIntroFragment localSakuraOneIntroFragment = new SakuraOneIntroFragment();
+    Bundle localBundle = new Bundle();
+    localBundle.putString("com.alivecor.ecg.record.ARG_OVERRIDE_DEVICE_NAME", paramString);
+    localBundle.putSerializable("com.alivecor.ecg.record.ARG_UI_CONFIG", paramRecordUiConfig);
+    localSakuraOneIntroFragment.setArguments(localBundle);
+    return localSakuraOneIntroFragment;
+  }
+  
+  private Uri getVideoUri()
+  {
+    String str = requireContext().getPackageName();
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("android.resource://");
+    localStringBuilder.append(str);
+    localStringBuilder.append("/");
+    localStringBuilder.append(R.raw.complete_instruction);
+    return Uri.parse(localStringBuilder.toString());
+  }
+  
+  private EcgMonitorViewModel getViewModel()
+  {
+    return (EcgMonitorViewModel)new f0(requireActivity()).a(EcgMonitorViewModel.class);
+  }
+  
+  private void handleRecordState(EcgMonitorViewModel.State paramState)
+  {
+    if (paramState == null) {
+      return;
+    }
+    int i = 2.$SwitchMap$com$alivecor$ecg$record$EcgMonitorViewModel$State[paramState.ordinal()];
+    if (i != 1)
+    {
+      if (i != 2) {
+        return;
+      }
+      paramState = recordingProgressPanel;
+      i = 8;
+    }
+    else
+    {
+      recordingProgressPanel.setAlpha(0.0F);
+      recordingProgressPanel.animate().alpha(1.0F).start();
+      paramState = recordingProgressPanel;
+      i = 0;
+    }
+    paramState.setVisibility(i);
+  }
+  
+  private void setUpVideoTextrue()
+  {
+    videoTexture.setVideoURI(getVideoUri());
+    videoTexture.setOnCompletionListener(new m1(this));
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramBundle = paramLayoutInflater.inflate(R.layout.fragment_sakura_intro_hud, paramViewGroup, false);
+    recordingProgressPanel = paramBundle.findViewById(R.id.sakura_intro_first_ecg_panel);
+    recordingProgressView = paramBundle.findViewById(R.id.sakura_intro_first_ecg_progress);
+    helpTxt = ((TextView)paramBundle.findViewById(R.id.sakura_intro_instructions));
+    keepFingersTxt = ((TextView)paramBundle.findViewById(R.id.sakura_intro_first_ecg_keep_fingers));
+    videoTexture = ((VideoView)paramBundle.findViewById(R.id.sakura_intro_texture));
+    RecordUiConfig localRecordUiConfig = (RecordUiConfig)requireArguments().getSerializable("com.alivecor.ecg.record.ARG_UI_CONFIG");
+    paramViewGroup = getArguments().getString("com.alivecor.ecg.record.ARG_OVERRIDE_DEVICE_NAME", null);
+    paramLayoutInflater = paramViewGroup;
+    if (paramViewGroup == null) {
+      paramLayoutInflater = c.d.a();
+    }
+    if ((localRecordUiConfig != null) && (localRecordUiConfig.isOmronCompleteVideo()))
+    {
+      helpTxt.setText(getString(R.string.ecg_realtime_help_sakura_new, new Object[] { paramLayoutInflater }));
+      setUpVideoTextrue();
+    }
+    else
+    {
+      helpTxt.setText(getString(R.string.ecg_realtime_help_sakura_3, new Object[] { paramLayoutInflater }));
+      videoTexture.setVisibility(8);
+    }
+    recordingProgressView.setBackground(new Drawable()
+    {
+      Drawable tile = getResources().getDrawable(R.drawable.img_bkg_progress_first_ecg_48x24);
+      
+      public void draw(Canvas paramAnonymousCanvas)
+      {
+        int j = tile.getIntrinsicWidth();
+        int k = getBounds().width();
+        double d1 = j;
+        double d2 = System.currentTimeMillis() % 1000L / 1000.0D;
+        int m = getBoundsleft - (int)(d1 * d2);
+        int i = 0;
+        for (;;)
+        {
+          int n = i * j + m;
+          if (n >= k) {
+            break;
+          }
+          Drawable localDrawable = tile;
+          int i1 = getBoundstop;
+          i += 1;
+          localDrawable.setBounds(n, i1, i * j + m, getBoundsbottom);
+          tile.draw(paramAnonymousCanvas);
+        }
+        invalidateSelf();
+      }
+      
+      public int getOpacity()
+      {
+        return -3;
+      }
+      
+      public void setAlpha(int paramAnonymousInt) {}
+      
+      public void setColorFilter(ColorFilter paramAnonymousColorFilter) {}
+    });
+    keepFingersTxt.setText(getString(R.string.ecg_realtime_first_ecg_keep_fingers_sakura, new Object[] { paramLayoutInflater }));
+    getViewModel().state().observe(getViewLifecycleOwner(), new l1(this));
+    return paramBundle;
+  }
+  
+  public void onDestroyView()
+  {
+    super.onDestroyView();
+  }
+  
+  public void onStart()
+  {
+    super.onStart();
+    videoTexture.start();
+  }
+  
+  public void onStop()
+  {
+    videoTexture.stopPlayback();
+    super.onStop();
+  }
+}

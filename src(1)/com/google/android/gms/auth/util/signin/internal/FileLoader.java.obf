@@ -1,0 +1,34 @@
+package com.google.android.gms.auth.api.signin.internal;
+
+import android.content.Context;
+import androidx.loader.content.a;
+import androidx.loader.content.b;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.internal.SignInConnectionListener;
+import java.util.Set;
+import java.util.concurrent.Semaphore;
+
+public final class zbc
+  extends a<Void>
+  implements SignInConnectionListener
+{
+  private final Semaphore zba = new Semaphore(0);
+  private final Set<GoogleApiClient> zbb;
+  
+  public zbc(Context paramContext, Set<GoogleApiClient> paramSet)
+  {
+    super(paramContext);
+    zbb = paramSet;
+  }
+  
+  public final void onComplete()
+  {
+    zba.release();
+  }
+  
+  protected final void onStartLoading()
+  {
+    zba.drainPermits();
+    forceLoad();
+  }
+}

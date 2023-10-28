@@ -1,0 +1,229 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.SystemClock;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.BaseGmsClient;
+import com.google.android.gms.common.internal.ConnectionTelemetryConfiguration;
+import com.google.android.gms.common.internal.MethodInvocation;
+import com.google.android.gms.common.internal.RootTelemetryConfigManager;
+import com.google.android.gms.common.internal.RootTelemetryConfiguration;
+import com.google.android.gms.common.util.ArrayUtils;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
+final class zacd<T>
+  implements OnCompleteListener<T>
+{
+  private final GoogleApiManager zaa;
+  private final int zab;
+  private final ApiKey<?> zac;
+  private final long zad;
+  private final long zae;
+  
+  @VisibleForTesting
+  zacd(GoogleApiManager paramGoogleApiManager, int paramInt, ApiKey<?> paramApiKey, long paramLong1, long paramLong2, String paramString1, String paramString2)
+  {
+    zaa = paramGoogleApiManager;
+    zab = paramInt;
+    zac = paramApiKey;
+    zad = paramLong1;
+    zae = paramLong2;
+  }
+  
+  static <T> zacd<T> zaa(GoogleApiManager paramGoogleApiManager, int paramInt, ApiKey<?> paramApiKey)
+  {
+    if (!paramGoogleApiManager.zaF()) {
+      return null;
+    }
+    Object localObject1 = RootTelemetryConfigManager.getInstance().getConfig();
+    boolean bool1;
+    if (localObject1 != null)
+    {
+      if (!((RootTelemetryConfiguration)localObject1).getMethodInvocationTelemetryEnabled()) {
+        return null;
+      }
+      boolean bool2 = ((RootTelemetryConfiguration)localObject1).getMethodTimingTelemetryEnabled();
+      localObject1 = paramGoogleApiManager.zak(paramApiKey);
+      bool1 = bool2;
+      if (localObject1 != null)
+      {
+        if (!(((zabq)localObject1).zaf() instanceof BaseGmsClient)) {
+          return null;
+        }
+        Object localObject2 = (BaseGmsClient)((zabq)localObject1).zaf();
+        bool1 = bool2;
+        if (((BaseGmsClient)localObject2).hasConnectionInfo())
+        {
+          bool1 = bool2;
+          if (!((BaseGmsClient)localObject2).isConnecting())
+          {
+            localObject2 = zab((zabq)localObject1, (BaseGmsClient)localObject2, paramInt);
+            if (localObject2 == null) {
+              return null;
+            }
+            ((zabq)localObject1).zaq();
+            bool1 = ((ConnectionTelemetryConfiguration)localObject2).getMethodTimingTelemetryEnabled();
+          }
+        }
+      }
+    }
+    else
+    {
+      bool1 = true;
+    }
+    long l1;
+    if (bool1) {
+      l1 = System.currentTimeMillis();
+    } else {
+      l1 = 0L;
+    }
+    long l2;
+    if (bool1) {
+      l2 = SystemClock.elapsedRealtime();
+    } else {
+      l2 = 0L;
+    }
+    return new zacd(paramGoogleApiManager, paramInt, paramApiKey, l1, l2, null, null);
+  }
+  
+  private static ConnectionTelemetryConfiguration zab(zabq<?> paramZabq, BaseGmsClient<?> paramBaseGmsClient, int paramInt)
+  {
+    paramBaseGmsClient = paramBaseGmsClient.getTelemetryConfiguration();
+    if ((paramBaseGmsClient != null) && (paramBaseGmsClient.getMethodInvocationTelemetryEnabled()))
+    {
+      int[] arrayOfInt = paramBaseGmsClient.getMethodInvocationMethodKeyAllowlist();
+      if (arrayOfInt == null)
+      {
+        arrayOfInt = paramBaseGmsClient.getMethodInvocationMethodKeyDisallowlist();
+        if ((arrayOfInt != null) && (ArrayUtils.contains(arrayOfInt, paramInt))) {
+          return null;
+        }
+      }
+      else if (!ArrayUtils.contains(arrayOfInt, paramInt))
+      {
+        return null;
+      }
+      if (paramZabq.zac() < paramBaseGmsClient.getMaxMethodInvocationsLogged()) {
+        return paramBaseGmsClient;
+      }
+    }
+    return null;
+  }
+  
+  public final void onComplete(Task<T> paramTask)
+  {
+    if (!zaa.zaF()) {
+      return;
+    }
+    Object localObject = RootTelemetryConfigManager.getInstance().getConfig();
+    if ((localObject != null) && (!((RootTelemetryConfiguration)localObject).getMethodInvocationTelemetryEnabled())) {
+      return;
+    }
+    zabq localZabq = zaa.zak(zac);
+    if (localZabq != null)
+    {
+      if (!(localZabq.zaf() instanceof BaseGmsClient)) {
+        return;
+      }
+      BaseGmsClient localBaseGmsClient = (BaseGmsClient)localZabq.zaf();
+      long l1 = zad;
+      int n = 1;
+      int i3 = 0;
+      int i;
+      if (l1 > 0L) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+      int i5 = localBaseGmsClient.getGCoreServiceId();
+      int i1;
+      int m;
+      int k;
+      int j;
+      if (localObject != null)
+      {
+        i1 = i & ((RootTelemetryConfiguration)localObject).getMethodTimingTelemetryEnabled();
+        m = ((RootTelemetryConfiguration)localObject).getBatchPeriodMillis();
+        int i4 = ((RootTelemetryConfiguration)localObject).getMaxMethodInvocationsInBatch();
+        k = ((RootTelemetryConfiguration)localObject).getVersion();
+        i = i1;
+        j = i4;
+        if (localBaseGmsClient.hasConnectionInfo())
+        {
+          i = i1;
+          j = i4;
+          if (!localBaseGmsClient.isConnecting())
+          {
+            localObject = zab(localZabq, localBaseGmsClient, zab);
+            if (localObject == null) {
+              return;
+            }
+            if ((((ConnectionTelemetryConfiguration)localObject).getMethodTimingTelemetryEnabled()) && (zad > 0L)) {
+              i = n;
+            } else {
+              i = 0;
+            }
+            j = ((ConnectionTelemetryConfiguration)localObject).getMaxMethodInvocationsLogged();
+          }
+        }
+        n = j;
+        i1 = i;
+      }
+      else
+      {
+        k = 0;
+        n = 100;
+        m = 5000;
+        i1 = i;
+      }
+      localObject = zaa;
+      if (paramTask.isSuccessful())
+      {
+        j = 0;
+        i = i3;
+      }
+      else
+      {
+        if (paramTask.isCanceled()) {}
+        for (i = 100;; i = 101)
+        {
+          j = -1;
+          break;
+          paramTask = paramTask.getException();
+          if ((paramTask instanceof ApiException))
+          {
+            paramTask = ((ApiException)paramTask).getStatus();
+            i3 = paramTask.getStatusCode();
+            paramTask = paramTask.getConnectionResult();
+            if (paramTask == null) {
+              i = -1;
+            } else {
+              i = paramTask.getErrorCode();
+            }
+            j = i;
+            i = i3;
+            break;
+          }
+        }
+      }
+      long l2;
+      int i2;
+      if (i1 != 0)
+      {
+        l1 = zad;
+        l2 = System.currentTimeMillis();
+        i2 = (int)(SystemClock.elapsedRealtime() - zae);
+      }
+      else
+      {
+        l1 = 0L;
+        l2 = l1;
+        i2 = -1;
+      }
+      ((GoogleApiManager)localObject).zay(new MethodInvocation(zab, i, j, l1, l2, null, null, i5, i2), k, m, n);
+    }
+  }
+}

@@ -1,0 +1,210 @@
+package com.google.android.gms.common.internal;
+
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.IBinder;
+import com.google.android.gms.common.stats.ConnectionTracker;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+final class zzo
+  implements ServiceConnection, zzs
+{
+  private final Map zzb;
+  private int zzc;
+  private boolean zzd;
+  private IBinder zze;
+  private final zzn zzf;
+  private ComponentName zzg;
+  
+  public zzo(zzr paramZzr, zzn paramZzn)
+  {
+    zzf = paramZzn;
+    zzb = new HashMap();
+    zzc = 2;
+  }
+  
+  public final void onServiceConnected(ComponentName paramComponentName, IBinder paramIBinder)
+  {
+    synchronized (zzr.zzh(zza))
+    {
+      zzr.zzf(zza).removeMessages(1, zzf);
+      zze = paramIBinder;
+      zzg = paramComponentName;
+      Iterator localIterator = zzb.values().iterator();
+      while (localIterator.hasNext()) {
+        ((ServiceConnection)localIterator.next()).onServiceConnected(paramComponentName, paramIBinder);
+      }
+      zzc = 1;
+      return;
+    }
+  }
+  
+  public final void onServiceDisconnected(ComponentName paramComponentName)
+  {
+    synchronized (zzr.zzh(zza))
+    {
+      zzr.zzf(zza).removeMessages(1, zzf);
+      zze = null;
+      zzg = paramComponentName;
+      Iterator localIterator = zzb.values().iterator();
+      while (localIterator.hasNext()) {
+        ((ServiceConnection)localIterator.next()).onServiceDisconnected(paramComponentName);
+      }
+      zzc = 2;
+      return;
+    }
+  }
+  
+  public final int zza()
+  {
+    return zzc;
+  }
+  
+  public final ComponentName zzb()
+  {
+    return zzg;
+  }
+  
+  public final IBinder zzc()
+  {
+    return zze;
+  }
+  
+  public final void zzd(ServiceConnection paramServiceConnection1, ServiceConnection paramServiceConnection2, String paramString)
+  {
+    zzb.put(paramServiceConnection1, paramServiceConnection2);
+  }
+  
+  /* Error */
+  public final void zze(String paramString, java.util.concurrent.Executor paramExecutor)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: iconst_3
+    //   2: putfield 38	com/google/android/gms/common/internal/zzo:zzc	I
+    //   5: invokestatic 105	android/os/StrictMode:getVmPolicy	()Landroid/os/StrictMode$VmPolicy;
+    //   8: astore 4
+    //   10: invokestatic 110	com/google/android/gms/common/util/PlatformVersion:isAtLeastS	()Z
+    //   13: ifeq +21 -> 34
+    //   16: new 112	android/os/StrictMode$VmPolicy$Builder
+    //   19: dup
+    //   20: aload 4
+    //   22: invokespecial 115	android/os/StrictMode$VmPolicy$Builder:<init>	(Landroid/os/StrictMode$VmPolicy;)V
+    //   25: invokevirtual 119	android/os/StrictMode$VmPolicy$Builder:permitUnsafeIntentLaunch	()Landroid/os/StrictMode$VmPolicy$Builder;
+    //   28: invokevirtual 122	android/os/StrictMode$VmPolicy$Builder:build	()Landroid/os/StrictMode$VmPolicy;
+    //   31: invokestatic 125	android/os/StrictMode:setVmPolicy	(Landroid/os/StrictMode$VmPolicy;)V
+    //   34: aload_0
+    //   35: getfield 26	com/google/android/gms/common/internal/zzo:zza	Lcom/google/android/gms/common/internal/zzr;
+    //   38: astore 5
+    //   40: aload 5
+    //   42: invokestatic 128	com/google/android/gms/common/internal/zzr:zzg	(Lcom/google/android/gms/common/internal/zzr;)Lcom/google/android/gms/common/stats/ConnectionTracker;
+    //   45: aload 5
+    //   47: invokestatic 131	com/google/android/gms/common/internal/zzr:zze	(Lcom/google/android/gms/common/internal/zzr;)Landroid/content/Context;
+    //   50: aload_1
+    //   51: aload_0
+    //   52: getfield 31	com/google/android/gms/common/internal/zzo:zzf	Lcom/google/android/gms/common/internal/zzn;
+    //   55: aload 5
+    //   57: invokestatic 131	com/google/android/gms/common/internal/zzr:zze	(Lcom/google/android/gms/common/internal/zzr;)Landroid/content/Context;
+    //   60: invokevirtual 136	com/google/android/gms/common/internal/zzn:zzc	(Landroid/content/Context;)Landroid/content/Intent;
+    //   63: aload_0
+    //   64: aload_0
+    //   65: getfield 31	com/google/android/gms/common/internal/zzo:zzf	Lcom/google/android/gms/common/internal/zzn;
+    //   68: invokevirtual 138	com/google/android/gms/common/internal/zzn:zza	()I
+    //   71: aload_2
+    //   72: invokevirtual 143	com/google/android/gms/common/stats/ConnectionTracker:zza	(Landroid/content/Context;Ljava/lang/String;Landroid/content/Intent;Landroid/content/ServiceConnection;ILjava/util/concurrent/Executor;)Z
+    //   75: istore_3
+    //   76: aload_0
+    //   77: iload_3
+    //   78: putfield 145	com/google/android/gms/common/internal/zzo:zzd	Z
+    //   81: iload_3
+    //   82: ifeq +41 -> 123
+    //   85: aload_0
+    //   86: getfield 26	com/google/android/gms/common/internal/zzo:zza	Lcom/google/android/gms/common/internal/zzr;
+    //   89: invokestatic 50	com/google/android/gms/common/internal/zzr:zzf	(Lcom/google/android/gms/common/internal/zzr;)Landroid/os/Handler;
+    //   92: iconst_1
+    //   93: aload_0
+    //   94: getfield 31	com/google/android/gms/common/internal/zzo:zzf	Lcom/google/android/gms/common/internal/zzn;
+    //   97: invokevirtual 149	android/os/Handler:obtainMessage	(ILjava/lang/Object;)Landroid/os/Message;
+    //   100: astore_1
+    //   101: aload_0
+    //   102: getfield 26	com/google/android/gms/common/internal/zzo:zza	Lcom/google/android/gms/common/internal/zzr;
+    //   105: invokestatic 50	com/google/android/gms/common/internal/zzr:zzf	(Lcom/google/android/gms/common/internal/zzr;)Landroid/os/Handler;
+    //   108: aload_1
+    //   109: aload_0
+    //   110: getfield 26	com/google/android/gms/common/internal/zzo:zza	Lcom/google/android/gms/common/internal/zzr;
+    //   113: invokestatic 152	com/google/android/gms/common/internal/zzr:zzd	(Lcom/google/android/gms/common/internal/zzr;)J
+    //   116: invokevirtual 156	android/os/Handler:sendMessageDelayed	(Landroid/os/Message;J)Z
+    //   119: pop
+    //   120: goto +25 -> 145
+    //   123: aload_0
+    //   124: iconst_2
+    //   125: putfield 38	com/google/android/gms/common/internal/zzo:zzc	I
+    //   128: aload_0
+    //   129: getfield 26	com/google/android/gms/common/internal/zzo:zza	Lcom/google/android/gms/common/internal/zzr;
+    //   132: astore_1
+    //   133: aload_1
+    //   134: invokestatic 128	com/google/android/gms/common/internal/zzr:zzg	(Lcom/google/android/gms/common/internal/zzr;)Lcom/google/android/gms/common/stats/ConnectionTracker;
+    //   137: aload_1
+    //   138: invokestatic 131	com/google/android/gms/common/internal/zzr:zze	(Lcom/google/android/gms/common/internal/zzr;)Landroid/content/Context;
+    //   141: aload_0
+    //   142: invokevirtual 160	com/google/android/gms/common/stats/ConnectionTracker:unbindService	(Landroid/content/Context;Landroid/content/ServiceConnection;)V
+    //   145: aload 4
+    //   147: invokestatic 125	android/os/StrictMode:setVmPolicy	(Landroid/os/StrictMode$VmPolicy;)V
+    //   150: return
+    //   151: astore_1
+    //   152: aload 4
+    //   154: invokestatic 125	android/os/StrictMode:setVmPolicy	(Landroid/os/StrictMode$VmPolicy;)V
+    //   157: aload_1
+    //   158: athrow
+    //   159: astore_1
+    //   160: goto -15 -> 145
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	163	0	this	zzo
+    //   0	163	1	paramString	String
+    //   0	163	2	paramExecutor	java.util.concurrent.Executor
+    //   75	7	3	bool	boolean
+    //   8	145	4	localVmPolicy	android.os.StrictMode.VmPolicy
+    //   38	18	5	localZzr	zzr
+    // Exception table:
+    //   from	to	target	type
+    //   34	81	151	finally
+    //   85	120	151	finally
+    //   123	128	151	finally
+    //   128	145	151	finally
+    //   128	145	159	java/lang/IllegalArgumentException
+  }
+  
+  public final void zzf(ServiceConnection paramServiceConnection, String paramString)
+  {
+    zzb.remove(paramServiceConnection);
+  }
+  
+  public final void zzg(String paramString)
+  {
+    zzr.zzf(zza).removeMessages(1, zzf);
+    paramString = zza;
+    zzr.zzg(paramString).unbindService(zzr.zze(paramString), this);
+    zzd = false;
+    zzc = 2;
+  }
+  
+  public final boolean zzh(ServiceConnection paramServiceConnection)
+  {
+    return zzb.containsKey(paramServiceConnection);
+  }
+  
+  public final boolean zzi()
+  {
+    return zzb.isEmpty();
+  }
+  
+  public final boolean zzj()
+  {
+    return zzd;
+  }
+}

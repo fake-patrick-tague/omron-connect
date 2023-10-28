@@ -1,0 +1,143 @@
+package com.google.android.material.datepicker;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
+import androidx.recyclerview.widget.RecyclerView.b0;
+import c.h.q.f0;
+import d.c.a.a.f;
+
+class i
+  extends RecyclerView.Adapter<b>
+{
+  private final Context a;
+  private final CalendarConstraints b;
+  private final DateSelector<?> c;
+  private final MaterialCalendar.k d;
+  private final int e;
+  
+  i(Context paramContext, DateSelector<?> paramDateSelector, CalendarConstraints paramCalendarConstraints, MaterialCalendar.k paramK)
+  {
+    Month localMonth1 = paramCalendarConstraints.k();
+    Month localMonth2 = paramCalendarConstraints.g();
+    Month localMonth3 = paramCalendarConstraints.j();
+    if (localMonth1.a(localMonth3) <= 0)
+    {
+      if (localMonth3.a(localMonth2) <= 0)
+      {
+        int j = h.b;
+        int k = MaterialCalendar.z(paramContext);
+        int i;
+        if (e.z(paramContext)) {
+          i = MaterialCalendar.z(paramContext);
+        } else {
+          i = 0;
+        }
+        a = paramContext;
+        e = (j * k + i);
+        b = paramCalendarConstraints;
+        c = paramDateSelector;
+        d = paramK;
+        setHasStableIds(true);
+        return;
+      }
+      throw new IllegalArgumentException("currentPage cannot be after lastPage");
+    }
+    throw new IllegalArgumentException("firstPage cannot be after currentPage");
+  }
+  
+  Month d(int paramInt)
+  {
+    return b.k().k(paramInt);
+  }
+  
+  CharSequence e(int paramInt)
+  {
+    return d(paramInt).h(a);
+  }
+  
+  int f(Month paramMonth)
+  {
+    return b.k().l(paramMonth);
+  }
+  
+  public void g(final b paramB, int paramInt)
+  {
+    Month localMonth = b.k().k(paramInt);
+    a.setText(localMonth.h(itemView.getContext()));
+    paramB = (MaterialCalendarGridView)b.findViewById(f.r);
+    if ((paramB.b() != null) && (localMonth.equals(bc)))
+    {
+      paramB.invalidate();
+      paramB.b().m(paramB);
+    }
+    else
+    {
+      h localH = new h(localMonth, c, b);
+      paramB.setNumColumns(e);
+      paramB.setAdapter(localH);
+    }
+    paramB.setOnItemClickListener(new a(paramB));
+  }
+  
+  public int getItemCount()
+  {
+    return b.h();
+  }
+  
+  public long getItemId(int paramInt)
+  {
+    return b.k().k(paramInt).j();
+  }
+  
+  public b h(ViewGroup paramViewGroup, int paramInt)
+  {
+    LinearLayout localLinearLayout = (LinearLayout)LayoutInflater.from(paramViewGroup.getContext()).inflate(d.c.a.a.h.p, paramViewGroup, false);
+    if (e.z(paramViewGroup.getContext()))
+    {
+      localLinearLayout.setLayoutParams(new RecyclerView.LayoutParams(-1, e));
+      return new b(localLinearLayout, true);
+    }
+    return new b(localLinearLayout, false);
+  }
+  
+  class a
+    implements AdapterView.OnItemClickListener
+  {
+    a(MaterialCalendarGridView paramMaterialCalendarGridView) {}
+    
+    public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong)
+    {
+      if (paramB.b().n(paramInt)) {
+        i.c(i.this).a(paramB.b().c(paramInt).longValue());
+      }
+    }
+  }
+  
+  public static class b
+    extends RecyclerView.b0
+  {
+    final TextView a;
+    final MaterialCalendarGridView b;
+    
+    b(LinearLayout paramLinearLayout, boolean paramBoolean)
+    {
+      super();
+      TextView localTextView = (TextView)paramLinearLayout.findViewById(f.v);
+      a = localTextView;
+      f0.q0(localTextView, true);
+      b = ((MaterialCalendarGridView)paramLinearLayout.findViewById(f.r));
+      if (!paramBoolean) {
+        localTextView.setVisibility(8);
+      }
+    }
+  }
+}

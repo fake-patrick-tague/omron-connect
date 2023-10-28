@@ -1,0 +1,205 @@
+package androidx.appcompat.view.menu;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.os.Build.VERSION;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.PopupWindow.OnDismissListener;
+import c.h.q.f0;
+
+public class l
+{
+  private final Context a;
+  private final g b;
+  private final boolean c;
+  private final int d;
+  private final int e;
+  private View f;
+  private int g = 8388611;
+  private boolean h;
+  private m.a i;
+  private k j;
+  private PopupWindow.OnDismissListener k;
+  private final PopupWindow.OnDismissListener l = new a();
+  
+  public l(Context paramContext, g paramG, View paramView, boolean paramBoolean, int paramInt)
+  {
+    this(paramContext, paramG, paramView, paramBoolean, paramInt, 0);
+  }
+  
+  public l(Context paramContext, g paramG, View paramView, boolean paramBoolean, int paramInt1, int paramInt2)
+  {
+    a = paramContext;
+    b = paramG;
+    f = paramView;
+    c = paramBoolean;
+    d = paramInt1;
+    e = paramInt2;
+  }
+  
+  private k a()
+  {
+    Object localObject = ((WindowManager)a.getSystemService("window")).getDefaultDisplay();
+    Point localPoint = new Point();
+    if (Build.VERSION.SDK_INT >= 17) {
+      b.a((Display)localObject, localPoint);
+    } else {
+      ((Display)localObject).getSize(localPoint);
+    }
+    int m;
+    if (Math.min(x, y) >= a.getResources().getDimensionPixelSize(c.a.d.c)) {
+      m = 1;
+    } else {
+      m = 0;
+    }
+    if (m != 0) {
+      localObject = new d(a, f, d, e, c);
+    } else {
+      localObject = new q(a, b, f, d, e, c);
+    }
+    ((k)localObject).n(b);
+    ((k)localObject).w(l);
+    ((k)localObject).r(f);
+    ((m)localObject).g(i);
+    ((k)localObject).t(h);
+    ((k)localObject).u(g);
+    return localObject;
+  }
+  
+  private void l(int paramInt1, int paramInt2, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    k localK = c();
+    localK.x(paramBoolean2);
+    if (paramBoolean1)
+    {
+      int m = paramInt1;
+      if ((c.h.q.k.b(g, f0.D(f)) & 0x7) == 5) {
+        m = paramInt1 - f.getWidth();
+      }
+      localK.v(m);
+      localK.y(paramInt2);
+      paramInt1 = (int)(a.getResources().getDisplayMetrics().density * 48.0F / 2.0F);
+      localK.s(new Rect(m - paramInt1, paramInt2 - paramInt1, m + paramInt1, paramInt2 + paramInt1));
+    }
+    localK.h();
+  }
+  
+  public void b()
+  {
+    if (d()) {
+      j.dismiss();
+    }
+  }
+  
+  public k c()
+  {
+    if (j == null) {
+      j = a();
+    }
+    return j;
+  }
+  
+  public boolean d()
+  {
+    k localK = j;
+    return (localK != null) && (localK.b());
+  }
+  
+  protected void e()
+  {
+    j = null;
+    PopupWindow.OnDismissListener localOnDismissListener = k;
+    if (localOnDismissListener != null) {
+      localOnDismissListener.onDismiss();
+    }
+  }
+  
+  public void f(View paramView)
+  {
+    f = paramView;
+  }
+  
+  public void g(boolean paramBoolean)
+  {
+    h = paramBoolean;
+    k localK = j;
+    if (localK != null) {
+      localK.t(paramBoolean);
+    }
+  }
+  
+  public void h(int paramInt)
+  {
+    g = paramInt;
+  }
+  
+  public void i(PopupWindow.OnDismissListener paramOnDismissListener)
+  {
+    k = paramOnDismissListener;
+  }
+  
+  public void j(m.a paramA)
+  {
+    i = paramA;
+    k localK = j;
+    if (localK != null) {
+      localK.g(paramA);
+    }
+  }
+  
+  public void k()
+  {
+    if (m()) {
+      return;
+    }
+    throw new IllegalStateException("MenuPopupHelper cannot be used without an anchor");
+  }
+  
+  public boolean m()
+  {
+    if (d()) {
+      return true;
+    }
+    if (f == null) {
+      return false;
+    }
+    l(0, 0, false, false);
+    return true;
+  }
+  
+  public boolean n(int paramInt1, int paramInt2)
+  {
+    if (d()) {
+      return true;
+    }
+    if (f == null) {
+      return false;
+    }
+    l(paramInt1, paramInt2, true, true);
+    return true;
+  }
+  
+  class a
+    implements PopupWindow.OnDismissListener
+  {
+    a() {}
+    
+    public void onDismiss()
+    {
+      e();
+    }
+  }
+  
+  static class b
+  {
+    static void a(Display paramDisplay, Point paramPoint)
+    {
+      paramDisplay.getRealSize(paramPoint);
+    }
+  }
+}

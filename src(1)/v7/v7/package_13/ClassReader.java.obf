@@ -1,0 +1,165 @@
+package c.h.q;
+
+import android.os.Build.VERSION;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowInsetsController;
+import android.view.WindowInsetsController.OnControllableInsetsChangedListener;
+import c.e.g;
+
+public final class o0
+{
+  private final e a;
+  
+  public o0(Window paramWindow, View paramView)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 30)
+    {
+      a = new d(paramWindow, this);
+      return;
+    }
+    if (i >= 26)
+    {
+      a = new c(paramWindow, paramView);
+      return;
+    }
+    if (i >= 23)
+    {
+      a = new b(paramWindow, paramView);
+      return;
+    }
+    if (i >= 20)
+    {
+      a = new a(paramWindow, paramView);
+      return;
+    }
+    a = new e();
+  }
+  
+  public void a(boolean paramBoolean)
+  {
+    a.a(paramBoolean);
+  }
+  
+  private static class a
+    extends o0.e
+  {
+    protected final Window a;
+    private final View b;
+    
+    a(Window paramWindow, View paramView)
+    {
+      a = paramWindow;
+      b = paramView;
+    }
+    
+    protected void b(int paramInt)
+    {
+      View localView = a.getDecorView();
+      localView.setSystemUiVisibility(paramInt | localView.getSystemUiVisibility());
+    }
+    
+    protected void c(int paramInt)
+    {
+      a.addFlags(paramInt);
+    }
+    
+    protected void d(int paramInt)
+    {
+      View localView = a.getDecorView();
+      localView.setSystemUiVisibility(paramInt & localView.getSystemUiVisibility());
+    }
+    
+    protected void e(int paramInt)
+    {
+      a.clearFlags(paramInt);
+    }
+  }
+  
+  private static class b
+    extends o0.a
+  {
+    b(Window paramWindow, View paramView)
+    {
+      super(paramView);
+    }
+    
+    public void a(boolean paramBoolean)
+    {
+      if (paramBoolean)
+      {
+        e(67108864);
+        c(Integer.MIN_VALUE);
+        b(8192);
+        return;
+      }
+      d(8192);
+    }
+  }
+  
+  private static class c
+    extends o0.b
+  {
+    c(Window paramWindow, View paramView)
+    {
+      super(paramView);
+    }
+  }
+  
+  private static class d
+    extends o0.e
+  {
+    final o0 a;
+    final WindowInsetsController b;
+    private final g<?, WindowInsetsController.OnControllableInsetsChangedListener> c = new g();
+    protected Window d;
+    
+    d(Window paramWindow, o0 paramO0)
+    {
+      this(paramWindow.getInsetsController(), paramO0);
+      d = paramWindow;
+    }
+    
+    d(WindowInsetsController paramWindowInsetsController, o0 paramO0)
+    {
+      b = paramWindowInsetsController;
+      a = paramO0;
+    }
+    
+    public void a(boolean paramBoolean)
+    {
+      if (paramBoolean)
+      {
+        if (d != null) {
+          b(8192);
+        }
+        b.setSystemBarsAppearance(8, 8);
+        return;
+      }
+      if (d != null) {
+        c(8192);
+      }
+      b.setSystemBarsAppearance(0, 8);
+    }
+    
+    protected void b(int paramInt)
+    {
+      View localView = d.getDecorView();
+      localView.setSystemUiVisibility(paramInt | localView.getSystemUiVisibility());
+    }
+    
+    protected void c(int paramInt)
+    {
+      View localView = d.getDecorView();
+      localView.setSystemUiVisibility(paramInt & localView.getSystemUiVisibility());
+    }
+  }
+  
+  private static class e
+  {
+    e() {}
+    
+    public void a(boolean paramBoolean) {}
+  }
+}

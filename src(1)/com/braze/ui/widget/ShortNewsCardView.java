@@ -1,0 +1,60 @@
+package com.braze.ui.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.TextView;
+import com.braze.models.cards.ShortNewsCard;
+import com.braze.support.BrazeLogger;
+import com.braze.ui.R.drawable;
+import com.braze.ui.R.id;
+import com.braze.ui.R.layout;
+import com.braze.ui.actions.IAction;
+import com.braze.ui.feed.view.BaseFeedCardView;
+
+public class ShortNewsCardView
+  extends BaseFeedCardView<ShortNewsCard>
+{
+  private static final String NOTIFICATION_URI = BrazeLogger.getBrazeLogTag(ShortNewsCardView.class);
+  private final float mAspectRatio = 1.0F;
+  private IAction mCardAction;
+  private final TextView mDescription = (TextView)findViewById(R.id.com_braze_short_news_card_description);
+  private final TextView mDomain = (TextView)findViewById(R.id.com_braze_short_news_card_domain);
+  private final ImageView mImage;
+  private final TextView mTitle = (TextView)findViewById(R.id.com_braze_short_news_card_title);
+  
+  public ShortNewsCardView(Context paramContext)
+  {
+    this(paramContext, null);
+  }
+  
+  public ShortNewsCardView(Context paramContext, ShortNewsCard paramShortNewsCard)
+  {
+    super(paramContext);
+    paramContext = (ImageView)getProperViewFromInflatedStub(R.id.com_braze_short_news_card_imageview_stub);
+    mImage = paramContext;
+    paramContext.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    paramContext.setAdjustViewBounds(true);
+    if (paramShortNewsCard != null) {
+      setCard(paramShortNewsCard);
+    }
+    setBackground(getResources().getDrawable(R.drawable.com_braze_card_background));
+  }
+  
+  protected int getLayoutResource()
+  {
+    return R.layout.com_braze_short_news_card;
+  }
+  
+  public void onSetCard(ShortNewsCard paramShortNewsCard)
+  {
+    mDescription.setText(paramShortNewsCard.getDescription());
+    setOptionalTextView(mTitle, paramShortNewsCard.getTitle());
+    setOptionalTextView(mDomain, paramShortNewsCard.getDomain());
+    mCardAction = BaseCardView.getUriActionForCard(paramShortNewsCard);
+    setOnClickListener(new b(this, paramShortNewsCard));
+    setImageViewToUrl(mImage, paramShortNewsCard.getImageUrl(), 1.0F, paramShortNewsCard);
+  }
+}

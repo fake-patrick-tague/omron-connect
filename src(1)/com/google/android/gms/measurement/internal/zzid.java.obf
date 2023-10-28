@@ -1,0 +1,1107 @@
+package com.google.android.gms.measurement.internal;
+
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.text.TextUtils;
+import c.e.a;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.Clock;
+import com.google.android.gms.common.util.CollectionUtils;
+import com.google.android.gms.common.util.Strings;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.internal.measurement.zznv;
+import com.google.android.gms.internal.measurement.zzoe;
+import com.google.android.gms.internal.measurement.zzoz;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+
+public final class zzid
+  extends zzf
+{
+  @VisibleForTesting
+  protected zzic zza;
+  final zzs zzb;
+  @VisibleForTesting
+  protected boolean zzc = true;
+  private zzgy zzd;
+  private final Set zze = new CopyOnWriteArraySet();
+  private boolean zzf;
+  private final AtomicReference zzg = new AtomicReference();
+  private final Object zzh = new Object();
+  private zzai zzi = new zzai(null, null);
+  private int zzj = 100;
+  private final AtomicLong zzk = new AtomicLong(0L);
+  private long zzl = -1L;
+  private int zzm = 100;
+  private final zzlg zzn = new zzhr(this);
+  
+  protected zzid(zzfy paramZzfy)
+  {
+    super(paramZzfy);
+    zzb = new zzs(paramZzfy);
+  }
+  
+  private final void zzaa(Boolean paramBoolean, boolean paramBoolean1)
+  {
+    zzg();
+    zza();
+    zzs.zzay().zzc().zzb("Setting app measurement enabled (FE)", paramBoolean);
+    zzs.zzm().zzh(paramBoolean);
+    if (paramBoolean1)
+    {
+      Object localObject = zzs.zzm();
+      zzfy localZzfy = zzs;
+      ((zzgr)localObject).zzg();
+      localObject = ((zzfd)localObject).zza().edit();
+      if (paramBoolean != null) {
+        ((SharedPreferences.Editor)localObject).putBoolean("measurement_enabled_from_api", paramBoolean.booleanValue());
+      } else {
+        ((SharedPreferences.Editor)localObject).remove("measurement_enabled_from_api");
+      }
+      ((SharedPreferences.Editor)localObject).apply();
+    }
+    if ((!zzs.zzK()) && ((paramBoolean == null) || (paramBoolean.booleanValue()))) {
+      return;
+    }
+    zzab();
+  }
+  
+  private final void zzab()
+  {
+    zzg();
+    String str = zzs.zzm().zzh.zza();
+    if (str != null) {
+      if ("unset".equals(str))
+      {
+        zzY("app", "_npa", null, zzs.zzav().currentTimeMillis());
+      }
+      else
+      {
+        long l;
+        if (true != "true".equals(str)) {
+          l = 0L;
+        } else {
+          l = 1L;
+        }
+        zzY("app", "_npa", Long.valueOf(l), zzs.zzav().currentTimeMillis());
+      }
+    }
+    if ((zzs.zzJ()) && (zzc))
+    {
+      zzs.zzay().zzc().zza("Recording app launch after enabling measurement for the first time (FE)");
+      zzz();
+      zzoe.zzc();
+      if (zzs.zzf().zzs(null, zzeb.zzad)) {
+        zzs.zzu().zza.zza();
+      }
+      zzs.zzaz().zzp(new zzhg(this));
+      return;
+    }
+    zzs.zzay().zzc().zza("Updating Scion state (FE)");
+    zzs.zzt().zzI();
+  }
+  
+  public final void zzA(String paramString1, String paramString2, Bundle paramBundle)
+  {
+    long l = zzs.zzav().currentTimeMillis();
+    Preconditions.checkNotEmpty(paramString1);
+    Bundle localBundle = new Bundle();
+    localBundle.putString("name", paramString1);
+    localBundle.putLong("creation_timestamp", l);
+    if (paramString2 != null)
+    {
+      localBundle.putString("expired_event_name", paramString2);
+      localBundle.putBundle("expired_event_params", paramBundle);
+    }
+    zzs.zzaz().zzp(new zzhn(this, localBundle));
+  }
+  
+  public final void zzB()
+  {
+    if (((zzs.zzau().getApplicationContext() instanceof Application)) && (zza != null)) {
+      ((Application)zzs.zzau().getApplicationContext()).unregisterActivityLifecycleCallbacks(zza);
+    }
+  }
+  
+  public final void zzD(String paramString1, String paramString2, Bundle paramBundle)
+  {
+    zzE(paramString1, paramString2, paramBundle, true, true, zzs.zzav().currentTimeMillis());
+  }
+  
+  public final void zzE(String paramString1, String paramString2, Bundle paramBundle, boolean paramBoolean1, boolean paramBoolean2, long paramLong)
+  {
+    if (paramString1 == null) {
+      paramString1 = "app";
+    }
+    if (paramBundle == null) {
+      paramBundle = new Bundle();
+    }
+    if ((paramString2 != "screen_view") && ((paramString2 == null) || (!paramString2.equals("screen_view"))))
+    {
+      boolean bool2 = true;
+      boolean bool1 = bool2;
+      if (paramBoolean2)
+      {
+        bool1 = bool2;
+        if (zzd != null) {
+          if (zzlh.zzah(paramString2)) {
+            bool1 = bool2;
+          } else {
+            bool1 = false;
+          }
+        }
+      }
+      zzM(paramString1, paramString2, paramLong, paramBundle, paramBoolean2, bool1, paramBoolean1, null);
+      return;
+    }
+    zzs.zzs().zzx(paramBundle, paramLong);
+  }
+  
+  public final void zzF(String paramString1, String paramString2, Bundle paramBundle, String paramString3)
+  {
+    zzfy.zzO();
+    zzM("auto", paramString2, zzs.zzav().currentTimeMillis(), paramBundle, false, true, true, paramString3);
+  }
+  
+  final void zzG(String paramString1, String paramString2, Bundle paramBundle)
+  {
+    zzg();
+    zzH(paramString1, paramString2, zzs.zzav().currentTimeMillis(), paramBundle);
+  }
+  
+  final void zzH(String paramString1, String paramString2, long paramLong, Bundle paramBundle)
+  {
+    zzg();
+    boolean bool;
+    if ((zzd != null) && (!zzlh.zzah(paramString2))) {
+      bool = false;
+    } else {
+      bool = true;
+    }
+    zzI(paramString1, paramString2, paramLong, paramBundle, true, bool, true, null);
+  }
+  
+  protected final void zzI(String paramString1, String paramString2, long paramLong, Bundle paramBundle, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3, String paramString3)
+  {
+    Preconditions.checkNotEmpty(paramString1);
+    Preconditions.checkNotNull(paramBundle);
+    zzg();
+    zza();
+    Object localObject1;
+    int j;
+    int k;
+    if (zzs.zzJ())
+    {
+      localObject1 = zzs.zzh().zzn();
+      if ((localObject1 != null) && (!((List)localObject1).contains(paramString2)))
+      {
+        zzs.zzay().zzc().zzc("Dropping non-safelisted event. event name, origin", paramString2, paramString1);
+        return;
+      }
+      bool1 = zzf;
+      j = 0;
+      k = 0;
+      if (!bool1) {
+        zzf = true;
+      }
+    }
+    try
+    {
+      if (!zzs.zzN()) {
+        localObject1 = Class.forName("com.google.android.gms.tagmanager.TagManagerService", true, zzs.zzau().getClassLoader());
+      } else {
+        localObject1 = Class.forName("com.google.android.gms.tagmanager.TagManagerService");
+      }
+      try
+      {
+        ((Class)localObject1).getDeclaredMethod("initialize", new Class[] { Context.class }).invoke(null, new Object[] { zzs.zzau() });
+      }
+      catch (Exception localException)
+      {
+        zzs.zzay().zzk().zzb("Failed to invoke Tag Manager's initialize() method", localException);
+      }
+    }
+    catch (ClassNotFoundException localClassNotFoundException)
+    {
+      Object localObject2;
+      int i;
+      boolean bool2;
+      Bundle localBundle;
+      long l1;
+      long l2;
+      Object localObject3;
+      for (;;) {}
+    }
+    zzs.zzay().zzi().zza("Tag Manager is not found and thus will not be used");
+    if (("_cmp".equals(paramString2)) && (paramBundle.containsKey("gclid")))
+    {
+      zzs.zzaw();
+      zzY("auto", "_lgclid", paramBundle.getString("gclid"), zzs.zzav().currentTimeMillis());
+    }
+    zzs.zzaw();
+    if ((paramBoolean1) && (zzlh.zzal(paramString2))) {
+      zzs.zzv().zzL(paramBundle, zzs.zzm().zzr.zza());
+    }
+    if (!paramBoolean3)
+    {
+      zzs.zzaw();
+      if (!"_iap".equals(paramString2))
+      {
+        localObject2 = zzs.zzv();
+        bool1 = ((zzlh)localObject2).zzac("event", paramString2);
+        i = 2;
+        if (bool1) {
+          if (!((zzlh)localObject2).zzZ("event", zzgv.zza, zzgv.zzb, paramString2))
+          {
+            i = 13;
+          }
+          else
+          {
+            zzs.zzf();
+            if (((zzlh)localObject2).zzY("event", 40, paramString2)) {
+              i = 0;
+            }
+          }
+        }
+        if (i != 0)
+        {
+          zzs.zzay().zze().zzb("Invalid public event name. Event will not be logged (FE)", zzs.zzj().zzd(paramString2));
+          paramString1 = zzs.zzv();
+          zzs.zzf();
+          paramString1 = paramString1.zzD(paramString2, 40, true);
+          j = k;
+          if (paramString2 != null) {
+            j = paramString2.length();
+          }
+          zzs.zzv().zzN(zzn, null, i, "_ev", paramString1, j);
+          return;
+        }
+      }
+    }
+    zzs.zzaw();
+    localObject2 = zzs.zzs().zzj(false);
+    if ((localObject2 != null) && (!paramBundle.containsKey("_sc"))) {
+      zzd = true;
+    }
+    if ((paramBoolean1) && (!paramBoolean3)) {
+      bool1 = true;
+    } else {
+      bool1 = false;
+    }
+    zzlh.zzK((zzik)localObject2, paramBundle, bool1);
+    boolean bool1 = "am".equals(paramString1);
+    bool2 = zzlh.zzah(paramString2);
+    if ((paramBoolean1) && (zzd != null) && (!bool2))
+    {
+      if (bool1)
+      {
+        paramBoolean1 = true;
+      }
+      else
+      {
+        zzs.zzay().zzc().zzc("Passing event to registered event handler (FE)", zzs.zzj().zzd(paramString2), zzs.zzj().zzb(paramBundle));
+        Preconditions.checkNotNull(zzd);
+        zzd.interceptEvent(paramString1, paramString2, paramBundle, paramLong);
+      }
+    }
+    else {
+      paramBoolean1 = bool1;
+    }
+    if (zzs.zzM())
+    {
+      k = zzs.zzv().zzh(paramString2);
+      if (k != 0)
+      {
+        zzs.zzay().zze().zzb("Invalid event name. Event will not be logged (FE)", zzs.zzj().zzd(paramString2));
+        paramString1 = zzs.zzv();
+        zzs.zzf();
+        paramString1 = paramString1.zzD(paramString2, 40, true);
+        i = j;
+        if (paramString2 != null) {
+          i = paramString2.length();
+        }
+        zzs.zzv().zzN(zzn, paramString3, k, "_ev", paramString1, i);
+        return;
+      }
+      localObject2 = CollectionUtils.listOf(new String[] { "_o", "_sn", "_sc", "_si" });
+      localBundle = zzs.zzv().zzy(paramString3, paramString2, paramBundle, (List)localObject2, paramBoolean3);
+      Preconditions.checkNotNull(localBundle);
+      zzs.zzaw();
+      if ((zzs.zzs().zzj(false) != null) && ("_ae".equals(paramString2)))
+      {
+        paramBundle = zzs.zzu().zzb;
+        l1 = zzc.zzs.zzav().elapsedRealtime();
+        l2 = l1 - zzb;
+        zzb = l1;
+        if (l2 > 0L) {
+          zzs.zzv().zzI(localBundle, l2);
+        }
+      }
+      zznv.zzc();
+      if (zzs.zzf().zzs(null, zzeb.zzac)) {
+        if ((!"auto".equals(paramString1)) && ("_ssr".equals(paramString2)))
+        {
+          localObject3 = zzs.zzv();
+          localObject2 = localBundle.getString("_ffr");
+          if (Strings.isEmptyOrWhitespace((String)localObject2))
+          {
+            paramBundle = null;
+          }
+          else
+          {
+            paramBundle = (Bundle)localObject2;
+            if (localObject2 != null) {
+              paramBundle = ((String)localObject2).trim();
+            }
+          }
+          if (!zzlf.zza(paramBundle, zzs.zzm().zzo.zza())) {
+            zzs.zzm().zzo.zzb(paramBundle);
+          } else {
+            zzs.zzay().zzc().zza("Not logging duplicate session_start_with_rollout event");
+          }
+        }
+        else if ("_ae".equals(paramString2))
+        {
+          paramBundle = zzs.zzv().zzs.zzm().zzo.zza();
+          if (!TextUtils.isEmpty(paramBundle)) {
+            localBundle.putString("_ffr", paramBundle);
+          }
+        }
+      }
+      localObject3 = new ArrayList();
+      ((List)localObject3).add(localBundle);
+      if ((zzs.zzm().zzj.zza() > 0L) && (zzs.zzm().zzk(paramLong)) && (zzs.zzm().zzl.zzb()))
+      {
+        zzs.zzay().zzj().zza("Current session is expired, remove the session number, ID, and engagement time");
+        zzY("auto", "_sid", null, zzs.zzav().currentTimeMillis());
+        zzY("auto", "_sno", null, zzs.zzav().currentTimeMillis());
+        zzY("auto", "_se", null, zzs.zzav().currentTimeMillis());
+      }
+      if (localBundle.getLong("extend_session", 0L) == 1L)
+      {
+        zzs.zzay().zzj().zza("EXTEND_SESSION param attached: initiate a new session or extend the current active session");
+        zzs.zzu().zza.zzb(paramLong, true);
+      }
+      localObject2 = new ArrayList(localBundle.keySet());
+      Collections.sort((List)localObject2);
+      j = ((List)localObject2).size();
+      i = 0;
+      while (i < j)
+      {
+        String str = (String)((List)localObject2).get(i);
+        if (str != null)
+        {
+          zzs.zzv();
+          Object localObject4 = localBundle.get(str);
+          if ((localObject4 instanceof Bundle))
+          {
+            paramBundle = new Bundle[1];
+            paramBundle[0] = ((Bundle)localObject4);
+          }
+          else if ((localObject4 instanceof Parcelable[]))
+          {
+            paramBundle = (Parcelable[])localObject4;
+            paramBundle = (Bundle[])Arrays.copyOf(paramBundle, paramBundle.length, [Landroid.os.Bundle.class);
+          }
+          else if ((localObject4 instanceof ArrayList))
+          {
+            paramBundle = (ArrayList)localObject4;
+            paramBundle = (Bundle[])paramBundle.toArray(new Bundle[paramBundle.size()]);
+          }
+          else
+          {
+            paramBundle = null;
+          }
+          if (paramBundle != null) {
+            localBundle.putParcelableArray(str, paramBundle);
+          }
+        }
+        i += 1;
+      }
+      i = 0;
+      while (i < ((List)localObject3).size())
+      {
+        localBundle = (Bundle)((List)localObject3).get(i);
+        if (i != 0) {
+          localObject2 = "_ep";
+        } else {
+          localObject2 = paramString2;
+        }
+        localBundle.putString("_o", paramString1);
+        paramBundle = localBundle;
+        if (paramBoolean2) {
+          paramBundle = zzs.zzv().zzt(localBundle);
+        }
+        localObject2 = new zzaw((String)localObject2, new zzau(paramBundle), paramString1, paramLong);
+        zzs.zzt().zzA((zzaw)localObject2, paramString3);
+        if (!paramBoolean1)
+        {
+          localObject2 = zze.iterator();
+          while (((Iterator)localObject2).hasNext()) {
+            ((zzgz)((Iterator)localObject2).next()).onEvent(paramString1, paramString2, new Bundle(paramBundle), paramLong);
+          }
+        }
+        i += 1;
+      }
+      zzs.zzaw();
+      if ((zzs.zzs().zzj(false) != null) && ("_ae".equals(paramString2)))
+      {
+        paramString1 = zzs.zzu();
+        paramLong = zzs.zzav().elapsedRealtime();
+        zzb.zzd(true, true, paramLong);
+      }
+    }
+    return;
+    zzs.zzay().zzc().zza("Event not sent since app measurement is disabled");
+  }
+  
+  public final void zzJ(zzgz paramZzgz)
+  {
+    zza();
+    Preconditions.checkNotNull(paramZzgz);
+    if (!zze.add(paramZzgz)) {
+      zzs.zzay().zzk().zza("OnEventListener already registered");
+    }
+  }
+  
+  public final void zzK(long paramLong)
+  {
+    zzg.set(null);
+    zzs.zzaz().zzp(new zzhl(this, paramLong));
+  }
+  
+  final void zzL(long paramLong, boolean paramBoolean)
+  {
+    zzg();
+    zza();
+    zzs.zzay().zzc().zza("Resetting analytics data (FE)");
+    Object localObject = zzs.zzu();
+    ((zzgr)localObject).zzg();
+    zzb.zza();
+    zzoz.zzc();
+    if (zzs.zzf().zzs(null, zzeb.zzas)) {
+      zzs.zzh().zzo();
+    }
+    boolean bool = zzs.zzJ();
+    localObject = zzs.zzm();
+    zzc.zzb(paramLong);
+    if (!TextUtils.isEmpty(zzs.zzm().zzo.zza())) {
+      zzo.zzb(null);
+    }
+    zzoe.zzc();
+    zzag localZzag = zzs.zzf();
+    zzea localZzea = zzeb.zzad;
+    if (localZzag.zzs(null, localZzea)) {
+      zzj.zzb(0L);
+    }
+    if (!zzs.zzf().zzv()) {
+      ((zzfd)localObject).zzi(bool ^ true);
+    }
+    zzp.zzb(null);
+    zzq.zzb(0L);
+    zzr.zzb(null);
+    if (paramBoolean) {
+      zzs.zzt().zzC();
+    }
+    zzoe.zzc();
+    if (zzs.zzf().zzs(null, localZzea)) {
+      zzs.zzu().zza.zza();
+    }
+    zzc = (bool ^ true);
+  }
+  
+  protected final void zzM(String paramString1, String paramString2, long paramLong, Bundle paramBundle, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3, String paramString3)
+  {
+    paramBundle = new Bundle(paramBundle);
+    Iterator localIterator = paramBundle.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      Object localObject1 = (String)localIterator.next();
+      Object localObject2 = paramBundle.get((String)localObject1);
+      if ((localObject2 instanceof Bundle))
+      {
+        paramBundle.putBundle((String)localObject1, new Bundle((Bundle)localObject2));
+      }
+      else
+      {
+        boolean bool = localObject2 instanceof Parcelable[];
+        int j = 0;
+        int i = 0;
+        if (bool)
+        {
+          localObject1 = (Parcelable[])localObject2;
+          while (i < localObject1.length)
+          {
+            localObject2 = localObject1[i];
+            if ((localObject2 instanceof Bundle)) {
+              localObject1[i] = new Bundle((Bundle)localObject2);
+            }
+            i += 1;
+          }
+        }
+        else if ((localObject2 instanceof List))
+        {
+          localObject1 = (List)localObject2;
+          i = j;
+          while (i < ((List)localObject1).size())
+          {
+            localObject2 = ((List)localObject1).get(i);
+            if ((localObject2 instanceof Bundle)) {
+              ((List)localObject1).set(i, new Bundle((Bundle)localObject2));
+            }
+            i += 1;
+          }
+        }
+      }
+    }
+    zzs.zzaz().zzp(new zzhi(this, paramString1, paramString2, paramLong, paramBundle, paramBoolean1, paramBoolean2, paramBoolean3, paramString3));
+  }
+  
+  final void zzN(String paramString1, String paramString2, long paramLong, Object paramObject)
+  {
+    zzs.zzaz().zzp(new zzhj(this, paramString1, paramString2, paramObject, paramLong));
+  }
+  
+  final void zzO(String paramString)
+  {
+    zzg.set(paramString);
+  }
+  
+  public final void zzP(Bundle paramBundle)
+  {
+    zzQ(paramBundle, zzs.zzav().currentTimeMillis());
+  }
+  
+  public final void zzQ(Bundle paramBundle, long paramLong)
+  {
+    Preconditions.checkNotNull(paramBundle);
+    paramBundle = new Bundle(paramBundle);
+    if (!TextUtils.isEmpty(paramBundle.getString("app_id"))) {
+      zzs.zzay().zzk().zza("Package name should be null when calling setConditionalUserProperty");
+    }
+    paramBundle.remove("app_id");
+    Preconditions.checkNotNull(paramBundle);
+    zzgu.zza(paramBundle, "app_id", String.class, null);
+    zzgu.zza(paramBundle, "origin", String.class, null);
+    zzgu.zza(paramBundle, "name", String.class, null);
+    zzgu.zza(paramBundle, "value", Object.class, null);
+    zzgu.zza(paramBundle, "trigger_event_name", String.class, null);
+    Object localObject1 = Long.valueOf(0L);
+    zzgu.zza(paramBundle, "trigger_timeout", Long.class, localObject1);
+    zzgu.zza(paramBundle, "timed_out_event_name", String.class, null);
+    zzgu.zza(paramBundle, "timed_out_event_params", Bundle.class, null);
+    zzgu.zza(paramBundle, "triggered_event_name", String.class, null);
+    zzgu.zza(paramBundle, "triggered_event_params", Bundle.class, null);
+    zzgu.zza(paramBundle, "time_to_live", Long.class, localObject1);
+    zzgu.zza(paramBundle, "expired_event_name", String.class, null);
+    zzgu.zza(paramBundle, "expired_event_params", Bundle.class, null);
+    Preconditions.checkNotEmpty(paramBundle.getString("name"));
+    Preconditions.checkNotEmpty(paramBundle.getString("origin"));
+    Preconditions.checkNotNull(paramBundle.get("value"));
+    paramBundle.putLong("creation_timestamp", paramLong);
+    localObject1 = paramBundle.getString("name");
+    Object localObject2 = paramBundle.get("value");
+    if (zzs.zzv().zzl((String)localObject1) == 0)
+    {
+      if (zzs.zzv().zzd((String)localObject1, localObject2) == 0)
+      {
+        Object localObject3 = zzs.zzv().zzB((String)localObject1, localObject2);
+        if (localObject3 == null)
+        {
+          zzs.zzay().zzd().zzc("Unable to normalize conditional user property value", zzs.zzj().zzf((String)localObject1), localObject2);
+          return;
+        }
+        zzgu.zzb(paramBundle, localObject3);
+        paramLong = paramBundle.getLong("trigger_timeout");
+        if (!TextUtils.isEmpty(paramBundle.getString("trigger_event_name")))
+        {
+          zzs.zzf();
+          if ((paramLong > 15552000000L) || (paramLong < 1L))
+          {
+            zzs.zzay().zzd().zzc("Invalid conditional user property timeout", zzs.zzj().zzf((String)localObject1), Long.valueOf(paramLong));
+            return;
+          }
+        }
+        paramLong = paramBundle.getLong("time_to_live");
+        zzs.zzf();
+        if ((paramLong <= 15552000000L) && (paramLong >= 1L))
+        {
+          zzs.zzaz().zzp(new zzhm(this, paramBundle));
+          return;
+        }
+        zzs.zzay().zzd().zzc("Invalid conditional user property time to live", zzs.zzj().zzf((String)localObject1), Long.valueOf(paramLong));
+        return;
+      }
+      zzs.zzay().zzd().zzc("Invalid conditional user property value", zzs.zzj().zzf((String)localObject1), localObject2);
+      return;
+    }
+    zzs.zzay().zzd().zzb("Invalid conditional user property name", zzs.zzj().zzf((String)localObject1));
+  }
+  
+  public final void zzR(Bundle paramBundle, int paramInt, long paramLong)
+  {
+    zza();
+    String str = zzai.zzg(paramBundle);
+    if (str != null)
+    {
+      zzs.zzay().zzl().zzb("Ignoring invalid consent setting", str);
+      zzs.zzay().zzl().zza("Valid consent values are 'granted', 'denied'");
+    }
+    zzS(zzai.zza(paramBundle), paramInt, paramLong);
+  }
+  
+  public final void zzS(zzai arg1, int paramInt, long paramLong)
+  {
+    zzai localZzai1 = ???;
+    zza();
+    if ((paramInt != -10) && (???.zze() == null) && (???.zzf() == null))
+    {
+      zzs.zzay().zzl().zza("Discarding empty consent settings");
+      return;
+    }
+    for (;;)
+    {
+      synchronized (zzh)
+      {
+        zzai localZzai2 = zzi;
+        bool1 = zzai.zzj(paramInt, zzj);
+        boolean bool4 = true;
+        boolean bool3 = false;
+        bool2 = false;
+        if (bool1)
+        {
+          bool3 = localZzai1.zzk(zzi);
+          zzah localZzah = zzah.zzb;
+          bool1 = bool2;
+          if (localZzai1.zzi(localZzah))
+          {
+            bool1 = bool2;
+            if (!zzi.zzi(localZzah)) {
+              bool1 = true;
+            }
+          }
+          localZzai1 = localZzai1.zzd(zzi);
+          zzi = localZzai1;
+          zzj = paramInt;
+          bool2 = bool1;
+          bool1 = bool4;
+          if (!bool1)
+          {
+            zzs.zzay().zzi().zzb("Ignoring lower-priority consent settings, proposed settings", localZzai1);
+            return;
+          }
+          long l = zzk.getAndIncrement();
+          if (bool3)
+          {
+            zzg.set(null);
+            zzs.zzaz().zzq(new zzhx(this, localZzai1, paramLong, paramInt, l, bool2, localZzai2));
+            return;
+          }
+          ??? = new zzhy(this, localZzai1, paramInt, l, bool2, localZzai2);
+          if ((paramInt != 30) && (paramInt != -10))
+          {
+            zzs.zzaz().zzp(???);
+            return;
+          }
+          zzs.zzaz().zzq(???);
+          return;
+        }
+      }
+      boolean bool1 = false;
+      boolean bool2 = bool1;
+    }
+  }
+  
+  public final void zzT(zzgy paramZzgy)
+  {
+    zzg();
+    zza();
+    if (paramZzgy != null)
+    {
+      zzgy localZzgy = zzd;
+      if (paramZzgy != localZzgy)
+      {
+        boolean bool;
+        if (localZzgy == null) {
+          bool = true;
+        } else {
+          bool = false;
+        }
+        Preconditions.checkState(bool, "EventInterceptor already set.");
+      }
+    }
+    zzd = paramZzgy;
+  }
+  
+  public final void zzU(Boolean paramBoolean)
+  {
+    zza();
+    zzs.zzaz().zzp(new zzhw(this, paramBoolean));
+  }
+  
+  final void zzV(zzai paramZzai)
+  {
+    zzg();
+    boolean bool;
+    if (((paramZzai.zzi(zzah.zzb)) && (paramZzai.zzi(zzah.zza))) || (zzs.zzt().zzM())) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    if (bool != zzs.zzK())
+    {
+      zzs.zzG(bool);
+      paramZzai = zzs.zzm();
+      zzfy localZzfy = zzs;
+      paramZzai.zzg();
+      if (paramZzai.zza().contains("measurement_enabled_from_api")) {
+        paramZzai = Boolean.valueOf(paramZzai.zza().getBoolean("measurement_enabled_from_api", true));
+      } else {
+        paramZzai = null;
+      }
+      if ((!bool) || (paramZzai == null) || (paramZzai.booleanValue())) {
+        zzaa(Boolean.valueOf(bool), false);
+      }
+    }
+  }
+  
+  public final void zzW(String paramString1, String paramString2, Object paramObject, boolean paramBoolean)
+  {
+    zzX("auto", "_ldl", paramObject, true, zzs.zzav().currentTimeMillis());
+  }
+  
+  public final void zzX(String paramString1, String paramString2, Object paramObject, boolean paramBoolean, long paramLong)
+  {
+    if (paramString1 == null) {
+      paramString1 = "app";
+    }
+    int i = 6;
+    int j = 0;
+    int k = 0;
+    if (paramBoolean) {
+      i = zzs.zzv().zzl(paramString2);
+    }
+    for (;;)
+    {
+      break;
+      zzlh localZzlh = zzs.zzv();
+      if (localZzlh.zzac("user property", paramString2))
+      {
+        do
+        {
+          if (!localZzlh.zzZ("user property", zzgx.zza, null, paramString2))
+          {
+            i = 15;
+            break;
+          }
+          zzs.zzf();
+        } while (!localZzlh.zzY("user property", 24, paramString2));
+        i = 0;
+      }
+    }
+    if (i != 0)
+    {
+      paramString1 = zzs.zzv();
+      zzs.zzf();
+      paramString1 = paramString1.zzD(paramString2, 24, true);
+      j = k;
+      if (paramString2 != null) {
+        j = paramString2.length();
+      }
+      zzs.zzv().zzN(zzn, null, i, "_ev", paramString1, j);
+      return;
+    }
+    if (paramObject != null)
+    {
+      k = zzs.zzv().zzd(paramString2, paramObject);
+      if (k != 0)
+      {
+        paramString1 = zzs.zzv();
+        zzs.zzf();
+        paramString1 = paramString1.zzD(paramString2, 24, true);
+        if (!(paramObject instanceof String))
+        {
+          i = j;
+          if (!(paramObject instanceof CharSequence)) {}
+        }
+        else
+        {
+          i = paramObject.toString().length();
+        }
+        zzs.zzv().zzN(zzn, null, k, "_ev", paramString1, i);
+        return;
+      }
+      paramObject = zzs.zzv().zzB(paramString2, paramObject);
+      if (paramObject != null) {
+        zzN(paramString1, paramString2, paramLong, paramObject);
+      }
+      return;
+    }
+    zzN(paramString1, paramString2, paramLong, null);
+  }
+  
+  final void zzY(String paramString1, String paramString2, Object paramObject, long paramLong)
+  {
+    Preconditions.checkNotEmpty(paramString1);
+    Preconditions.checkNotEmpty(paramString2);
+    zzg();
+    zza();
+    if ("allow_personalized_ads".equals(paramString2))
+    {
+      if ((paramObject instanceof String))
+      {
+        Object localObject = (String)paramObject;
+        if (!TextUtils.isEmpty((CharSequence)localObject))
+        {
+          paramObject = ((String)localObject).toLowerCase(Locale.ENGLISH);
+          paramString2 = "false";
+          long l;
+          if (true != "false".equals(paramObject)) {
+            l = 0L;
+          } else {
+            l = 1L;
+          }
+          paramObject = Long.valueOf(l);
+          localObject = zzs.zzm().zzh;
+          if (paramObject.longValue() == 1L) {
+            paramString2 = "true";
+          }
+          ((zzfc)localObject).zzb(paramString2);
+          break label140;
+        }
+      }
+      if (paramObject == null)
+      {
+        zzs.zzm().zzh.zzb("unset");
+        label140:
+        paramString2 = "_npa";
+      }
+    }
+    if (!zzs.zzJ())
+    {
+      zzs.zzay().zzj().zza("User property not set since app measurement is disabled");
+      return;
+    }
+    if (!zzs.zzM()) {
+      return;
+    }
+    paramString1 = new zzlc(paramString2, paramLong, paramObject, paramString1);
+    zzs.zzt().zzK(paramString1);
+  }
+  
+  public final void zzZ(zzgz paramZzgz)
+  {
+    zza();
+    Preconditions.checkNotNull(paramZzgz);
+    if (!zze.remove(paramZzgz)) {
+      zzs.zzay().zzk().zza("OnEventListener had not been registered");
+    }
+  }
+  
+  protected final boolean zzf()
+  {
+    return false;
+  }
+  
+  public final int zzh(String paramString)
+  {
+    Preconditions.checkNotEmpty(paramString);
+    zzs.zzf();
+    return 25;
+  }
+  
+  public final Boolean zzi()
+  {
+    AtomicReference localAtomicReference = new AtomicReference();
+    return (Boolean)zzs.zzaz().zzd(localAtomicReference, 15000L, "boolean test flag value", new zzhp(this, localAtomicReference));
+  }
+  
+  public final Double zzj()
+  {
+    AtomicReference localAtomicReference = new AtomicReference();
+    return (Double)zzs.zzaz().zzd(localAtomicReference, 15000L, "double test flag value", new zzhv(this, localAtomicReference));
+  }
+  
+  public final Integer zzl()
+  {
+    AtomicReference localAtomicReference = new AtomicReference();
+    return (Integer)zzs.zzaz().zzd(localAtomicReference, 15000L, "int test flag value", new zzhu(this, localAtomicReference));
+  }
+  
+  public final Long zzm()
+  {
+    AtomicReference localAtomicReference = new AtomicReference();
+    return (Long)zzs.zzaz().zzd(localAtomicReference, 15000L, "long test flag value", new zzht(this, localAtomicReference));
+  }
+  
+  public final String zzo()
+  {
+    return (String)zzg.get();
+  }
+  
+  public final String zzp()
+  {
+    zzik localZzik = zzs.zzs().zzi();
+    if (localZzik != null) {
+      return zzb;
+    }
+    return null;
+  }
+  
+  public final String zzq()
+  {
+    zzik localZzik = zzs.zzs().zzi();
+    if (localZzik != null) {
+      return zza;
+    }
+    return null;
+  }
+  
+  public final String zzr()
+  {
+    AtomicReference localAtomicReference = new AtomicReference();
+    return (String)zzs.zzaz().zzd(localAtomicReference, 15000L, "String test flag value", new zzhs(this, localAtomicReference));
+  }
+  
+  public final ArrayList zzs(String paramString1, String paramString2)
+  {
+    if (zzs.zzaz().zzs())
+    {
+      zzs.zzay().zzd().zza("Cannot get conditional user properties from analytics worker thread");
+      return new ArrayList(0);
+    }
+    zzs.zzaw();
+    if (zzab.zza())
+    {
+      zzs.zzay().zzd().zza("Cannot get conditional user properties from main thread");
+      return new ArrayList(0);
+    }
+    AtomicReference localAtomicReference = new AtomicReference();
+    zzs.zzaz().zzd(localAtomicReference, 5000L, "get conditional user properties", new zzho(this, localAtomicReference, null, paramString1, paramString2));
+    paramString1 = (List)localAtomicReference.get();
+    if (paramString1 == null)
+    {
+      zzs.zzay().zzd().zzb("Timed out waiting for get conditional user properties", null);
+      return new ArrayList();
+    }
+    return zzlh.zzH(paramString1);
+  }
+  
+  public final List zzt(boolean paramBoolean)
+  {
+    zza();
+    zzs.zzay().zzj().zza("Getting user properties (FE)");
+    if (!zzs.zzaz().zzs())
+    {
+      zzs.zzaw();
+      if (zzab.zza())
+      {
+        zzs.zzay().zzd().zza("Cannot get all user properties from main thread");
+        return Collections.emptyList();
+      }
+      Object localObject = new AtomicReference();
+      zzs.zzaz().zzd((AtomicReference)localObject, 5000L, "get user properties", new zzhk(this, (AtomicReference)localObject, paramBoolean));
+      localObject = (List)((AtomicReference)localObject).get();
+      if (localObject == null)
+      {
+        zzs.zzay().zzd().zzb("Timed out waiting for get user properties, includeInternal", Boolean.valueOf(paramBoolean));
+        return Collections.emptyList();
+      }
+      return localObject;
+    }
+    zzs.zzay().zzd().zza("Cannot get all user properties from analytics worker thread");
+    return Collections.emptyList();
+  }
+  
+  public final Map zzu(String paramString1, String paramString2, boolean paramBoolean)
+  {
+    if (zzs.zzaz().zzs())
+    {
+      zzs.zzay().zzd().zza("Cannot get user properties from analytics worker thread");
+      return Collections.emptyMap();
+    }
+    zzs.zzaw();
+    if (zzab.zza())
+    {
+      zzs.zzay().zzd().zza("Cannot get user properties from main thread");
+      return Collections.emptyMap();
+    }
+    Object localObject1 = new AtomicReference();
+    zzs.zzaz().zzd((AtomicReference)localObject1, 5000L, "get user properties", new zzhq(this, (AtomicReference)localObject1, null, paramString1, paramString2, paramBoolean));
+    paramString2 = (List)((AtomicReference)localObject1).get();
+    if (paramString2 == null)
+    {
+      zzs.zzay().zzd().zzb("Timed out waiting for handle get user properties, includeInternal", Boolean.valueOf(paramBoolean));
+      return Collections.emptyMap();
+    }
+    paramString1 = new a(paramString2.size());
+    paramString2 = paramString2.iterator();
+    while (paramString2.hasNext())
+    {
+      localObject1 = (zzlc)paramString2.next();
+      Object localObject2 = ((zzlc)localObject1).zza();
+      if (localObject2 != null) {
+        paramString1.put(zzb, localObject2);
+      }
+    }
+    return paramString1;
+  }
+  
+  public final void zzz()
+  {
+    zzg();
+    zza();
+    if (zzs.zzM())
+    {
+      if (zzs.zzf().zzs(null, zzeb.zzX))
+      {
+        localObject1 = zzs.zzf();
+        zzs.zzaw();
+        localObject1 = ((zzag)localObject1).zzk("google_analytics_deferred_deep_link_enabled");
+        if ((localObject1 != null) && (((Boolean)localObject1).booleanValue()))
+        {
+          zzs.zzay().zzc().zza("Deferred Deep Link feature enabled.");
+          zzs.zzaz().zzp(new zzhf(this));
+        }
+      }
+      zzs.zzt().zzq();
+      zzc = false;
+      Object localObject3 = zzs.zzm();
+      ((zzgr)localObject3).zzg();
+      Object localObject1 = ((zzfd)localObject3).zza().getString("previous_os_version", null);
+      zzs.zzg().zzu();
+      Object localObject2 = Build.VERSION.RELEASE;
+      if ((!TextUtils.isEmpty((CharSequence)localObject2)) && (!((String)localObject2).equals(localObject1)))
+      {
+        localObject3 = ((zzfd)localObject3).zza().edit();
+        ((SharedPreferences.Editor)localObject3).putString("previous_os_version", (String)localObject2);
+        ((SharedPreferences.Editor)localObject3).apply();
+      }
+      if (!TextUtils.isEmpty((CharSequence)localObject1))
+      {
+        zzs.zzg().zzu();
+        if (!((String)localObject1).equals(localObject2))
+        {
+          localObject2 = new Bundle();
+          ((Bundle)localObject2).putString("_po", (String)localObject1);
+          zzG("auto", "_ou", (Bundle)localObject2);
+        }
+      }
+    }
+  }
+}

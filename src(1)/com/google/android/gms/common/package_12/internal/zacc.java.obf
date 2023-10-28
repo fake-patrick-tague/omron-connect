@@ -1,0 +1,76 @@
+package com.google.android.gms.common.api.internal;
+
+import android.app.Activity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import java.util.concurrent.CancellationException;
+
+public final class zacc
+  extends zap
+{
+  private TaskCompletionSource<Void> zad = new TaskCompletionSource();
+  
+  private zacc(LifecycleFragment paramLifecycleFragment)
+  {
+    super(paramLifecycleFragment, GoogleApiAvailability.getInstance());
+    mLifecycleFragment.addCallback("GmsAvailabilityHelper", this);
+  }
+  
+  public static zacc zaa(Activity paramActivity)
+  {
+    paramActivity = LifecycleCallback.getFragment(paramActivity);
+    zacc localZacc = (zacc)paramActivity.getCallbackOrNull("GmsAvailabilityHelper", zacc.class);
+    if (localZacc != null)
+    {
+      if (zad.getTask().isComplete()) {
+        zad = new TaskCompletionSource();
+      }
+      return localZacc;
+    }
+    return new zacc(paramActivity);
+  }
+  
+  public final void onDestroy()
+  {
+    super.onDestroy();
+    zad.trySetException(new CancellationException("Host activity was destroyed before Google Play services could be made available."));
+  }
+  
+  protected final void zab(ConnectionResult paramConnectionResult, int paramInt)
+  {
+    String str2 = paramConnectionResult.getErrorMessage();
+    String str1 = str2;
+    if (str2 == null) {
+      str1 = "Error connecting to Google Play services";
+    }
+    zad.setException(new ApiException(new Status(paramConnectionResult, str1, paramConnectionResult.getErrorCode())));
+  }
+  
+  protected final void zac()
+  {
+    Activity localActivity = mLifecycleFragment.getLifecycleActivity();
+    if (localActivity == null)
+    {
+      zad.trySetException(new ApiException(new Status(8)));
+      return;
+    }
+    int i = zac.isGooglePlayServicesAvailable(localActivity);
+    if (i == 0)
+    {
+      zad.trySetResult(null);
+      return;
+    }
+    if (!zad.getTask().isComplete()) {
+      zah(new ConnectionResult(i, null), 0);
+    }
+  }
+  
+  public final Task<Void> zad()
+  {
+    return zad.getTask();
+  }
+}

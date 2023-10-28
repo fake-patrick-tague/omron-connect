@@ -1,0 +1,28 @@
+package com.google.android.gms.dynamite;
+
+import android.content.Context;
+
+final class zzf
+  implements DynamiteModule.VersionPolicy
+{
+  zzf() {}
+  
+  public final DynamiteModule.VersionPolicy.SelectionResult selectModule(Context paramContext, String paramString, DynamiteModule.VersionPolicy.IVersions paramIVersions)
+    throws DynamiteModule.LoadingException
+  {
+    DynamiteModule.VersionPolicy.SelectionResult localSelectionResult = new DynamiteModule.VersionPolicy.SelectionResult();
+    int i = paramIVersions.zzb(paramContext, paramString, true);
+    remoteVersion = i;
+    if (i != 0)
+    {
+      selection = 1;
+      return localSelectionResult;
+    }
+    i = paramIVersions.zza(paramContext, paramString);
+    localVersion = i;
+    if (i != 0) {
+      selection = -1;
+    }
+    return localSelectionResult;
+  }
+}

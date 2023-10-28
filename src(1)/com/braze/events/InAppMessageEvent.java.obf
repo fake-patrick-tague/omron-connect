@@ -1,0 +1,81 @@
+package com.braze.events;
+
+import bo.app.t2;
+import bo.app.y2;
+import com.braze.models.IPutIntoJson;
+import com.braze.models.inappmessage.IInAppMessage;
+import com.braze.support.JsonUtils;
+import kotlin.x.d.i;
+import org.json.JSONObject;
+
+public final class InAppMessageEvent
+{
+  private final IInAppMessage inAppMessage;
+  private final y2 triggerAction;
+  private final t2 triggerEvent;
+  private final String userId;
+  
+  public InAppMessageEvent(t2 paramT2, y2 paramY2, IInAppMessage paramIInAppMessage, String paramString)
+  {
+    triggerEvent = paramT2;
+    triggerAction = paramY2;
+    inAppMessage = paramIInAppMessage;
+    userId = paramString;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof InAppMessageEvent)) {
+      return false;
+    }
+    paramObject = (InAppMessageEvent)paramObject;
+    if (!i.a(triggerEvent, triggerEvent)) {
+      return false;
+    }
+    if (!i.a(triggerAction, triggerAction)) {
+      return false;
+    }
+    if (!i.a(inAppMessage, inAppMessage)) {
+      return false;
+    }
+    return i.a(userId, userId);
+  }
+  
+  public final IInAppMessage getInAppMessage()
+  {
+    return inAppMessage;
+  }
+  
+  public final y2 getTriggerAction()
+  {
+    return triggerAction;
+  }
+  
+  public final t2 getTriggerEvent()
+  {
+    return triggerEvent;
+  }
+  
+  public int hashCode()
+  {
+    int j = triggerEvent.hashCode();
+    int k = triggerAction.hashCode();
+    int m = inAppMessage.hashCode();
+    String str = userId;
+    int i;
+    if (str == null) {
+      i = 0;
+    } else {
+      i = str.hashCode();
+    }
+    return ((j * 31 + k) * 31 + m) * 31 + i;
+  }
+  
+  public String toString()
+  {
+    return JsonUtils.getPrettyPrintedString((JSONObject)inAppMessage.forJsonPut());
+  }
+}

@@ -1,0 +1,528 @@
+package com.google.android.gms.measurement.internal;
+
+import android.app.Activity;
+import android.app.Application.ActivityLifecycleCallbacks;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.text.TextUtils;
+import c.e.a;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.DynamiteApi;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.dynamic.IObjectWrapper;
+import com.google.android.gms.dynamic.ObjectWrapper;
+import com.google.android.gms.internal.measurement.zzcb;
+import com.google.android.gms.internal.measurement.zzcf;
+import com.google.android.gms.internal.measurement.zzci;
+import com.google.android.gms.internal.measurement.zzck;
+import com.google.android.gms.internal.measurement.zzcl;
+import java.util.Map;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+
+@DynamiteApi
+public class AppMeasurementDynamiteService
+  extends zzcb
+{
+  @VisibleForTesting
+  zzfy zza = null;
+  private final Map zzb = new a();
+  
+  public AppMeasurementDynamiteService() {}
+  
+  @EnsuresNonNull({"scion"})
+  private final void zzb()
+  {
+    if (zza != null) {
+      return;
+    }
+    throw new IllegalStateException("Attempting to perform action before initialize.");
+  }
+  
+  private final void zzc(zzcf paramZzcf, String paramString)
+  {
+    zzb();
+    zza.zzv().zzV(paramZzcf, paramString);
+  }
+  
+  public void beginAdUnitExposure(String paramString, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzd().zzd(paramString, paramLong);
+  }
+  
+  public void clearConditionalUserProperty(String paramString1, String paramString2, Bundle paramBundle)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzq().zzA(paramString1, paramString2, paramBundle);
+  }
+  
+  public void clearMeasurementEnabled(long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzq().zzU(null);
+  }
+  
+  public void endAdUnitExposure(String paramString, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzd().zze(paramString, paramLong);
+  }
+  
+  public void generateEventId(zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    long l = zza.zzv().zzq();
+    zzb();
+    zza.zzv().zzU(paramZzcf, l);
+  }
+  
+  public void getAppInstanceId(zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzaz().zzp(new zzi(this, paramZzcf));
+  }
+  
+  public void getCachedAppInstanceId(zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zzc(paramZzcf, zza.zzq().zzo());
+  }
+  
+  public void getConditionalUserProperties(String paramString1, String paramString2, zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzaz().zzp(new zzm(this, paramZzcf, paramString1, paramString2));
+  }
+  
+  public void getCurrentScreenClass(zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zzc(paramZzcf, zza.zzq().zzp());
+  }
+  
+  public void getCurrentScreenName(zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zzc(paramZzcf, zza.zzq().zzq());
+  }
+  
+  public void getGmpAppId(zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zzid localZzid = zza.zzq();
+    String str1;
+    String str2;
+    if (zzs.zzw() != null) {
+      str1 = zzs.zzw();
+    } else {
+      try
+      {
+        str1 = zzij.zzc(zzs.zzau(), "google_app_id", zzs.zzz());
+      }
+      catch (IllegalStateException localIllegalStateException)
+      {
+        zzs.zzay().zzd().zzb("getGoogleAppId failed with exception", localIllegalStateException);
+        str2 = null;
+      }
+    }
+    zzc(paramZzcf, str2);
+  }
+  
+  public void getMaxUserProperties(String paramString, zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzq().zzh(paramString);
+    zzb();
+    zza.zzv().zzT(paramZzcf, 25);
+  }
+  
+  public void getTestFlag(zzcf paramZzcf, int paramInt)
+    throws RemoteException
+  {
+    zzb();
+    if (paramInt != 0)
+    {
+      if (paramInt != 1)
+      {
+        if (paramInt != 2)
+        {
+          if (paramInt != 3)
+          {
+            if (paramInt != 4) {
+              return;
+            }
+            zza.zzv().zzP(paramZzcf, zza.zzq().zzi().booleanValue());
+            return;
+          }
+          zza.zzv().zzT(paramZzcf, zza.zzq().zzl().intValue());
+          return;
+        }
+        zzlh localZzlh = zza.zzv();
+        double d = zza.zzq().zzj().doubleValue();
+        Bundle localBundle = new Bundle();
+        localBundle.putDouble("r", d);
+        try
+        {
+          paramZzcf.zzd(localBundle);
+          return;
+        }
+        catch (RemoteException paramZzcf)
+        {
+          zzs.zzay().zzk().zzb("Error returning double value to wrapper", paramZzcf);
+          return;
+        }
+      }
+      zza.zzv().zzU(paramZzcf, zza.zzq().zzm().longValue());
+      return;
+    }
+    zza.zzv().zzV(paramZzcf, zza.zzq().zzr());
+  }
+  
+  public void getUserProperties(String paramString1, String paramString2, boolean paramBoolean, zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzaz().zzp(new zzk(this, paramZzcf, paramString1, paramString2, paramBoolean));
+  }
+  
+  public void initForTests(Map paramMap)
+    throws RemoteException
+  {
+    zzb();
+  }
+  
+  public void initialize(IObjectWrapper paramIObjectWrapper, zzcl paramZzcl, long paramLong)
+    throws RemoteException
+  {
+    zzfy localZzfy = zza;
+    if (localZzfy == null)
+    {
+      zza = zzfy.zzp((Context)Preconditions.checkNotNull((Context)ObjectWrapper.unwrap(paramIObjectWrapper)), paramZzcl, Long.valueOf(paramLong));
+      return;
+    }
+    localZzfy.zzay().zzk().zza("Attempting to initialize multiple times");
+  }
+  
+  public void isDataCollectionEnabled(zzcf paramZzcf)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzaz().zzp(new zzn(this, paramZzcf));
+  }
+  
+  public void logEvent(String paramString1, String paramString2, Bundle paramBundle, boolean paramBoolean1, boolean paramBoolean2, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzq().zzE(paramString1, paramString2, paramBundle, paramBoolean1, paramBoolean2, paramLong);
+  }
+  
+  public void logEventAndBundle(String paramString1, String paramString2, Bundle paramBundle, zzcf paramZzcf, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    Preconditions.checkNotEmpty(paramString2);
+    Bundle localBundle;
+    if (paramBundle != null) {
+      localBundle = new Bundle(paramBundle);
+    } else {
+      localBundle = new Bundle();
+    }
+    localBundle.putString("_o", "app");
+    paramString2 = new zzaw(paramString2, new zzau(paramBundle), "app", paramLong);
+    zza.zzaz().zzp(new zzj(this, paramZzcf, paramString2, paramString1));
+  }
+  
+  public void logHealthData(int paramInt, String paramString, IObjectWrapper paramIObjectWrapper1, IObjectWrapper paramIObjectWrapper2, IObjectWrapper paramIObjectWrapper3)
+    throws RemoteException
+  {
+    zzb();
+    Object localObject = null;
+    if (paramIObjectWrapper1 == null) {
+      paramIObjectWrapper1 = null;
+    } else {
+      paramIObjectWrapper1 = ObjectWrapper.unwrap(paramIObjectWrapper1);
+    }
+    if (paramIObjectWrapper2 == null) {
+      paramIObjectWrapper2 = null;
+    } else {
+      paramIObjectWrapper2 = ObjectWrapper.unwrap(paramIObjectWrapper2);
+    }
+    if (paramIObjectWrapper3 == null) {
+      paramIObjectWrapper3 = localObject;
+    } else {
+      paramIObjectWrapper3 = ObjectWrapper.unwrap(paramIObjectWrapper3);
+    }
+    zza.zzay().zzt(paramInt, true, false, paramString, paramIObjectWrapper1, paramIObjectWrapper2, paramIObjectWrapper3);
+  }
+  
+  public void onActivityCreated(IObjectWrapper paramIObjectWrapper, Bundle paramBundle, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zzic localZzic = zza.zzq().zza;
+    if (localZzic != null)
+    {
+      zza.zzq().zzB();
+      localZzic.onActivityCreated((Activity)ObjectWrapper.unwrap(paramIObjectWrapper), paramBundle);
+    }
+  }
+  
+  public void onActivityDestroyed(IObjectWrapper paramIObjectWrapper, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zzic localZzic = zza.zzq().zza;
+    if (localZzic != null)
+    {
+      zza.zzq().zzB();
+      localZzic.onActivityDestroyed((Activity)ObjectWrapper.unwrap(paramIObjectWrapper));
+    }
+  }
+  
+  public void onActivityPaused(IObjectWrapper paramIObjectWrapper, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zzic localZzic = zza.zzq().zza;
+    if (localZzic != null)
+    {
+      zza.zzq().zzB();
+      localZzic.onActivityPaused((Activity)ObjectWrapper.unwrap(paramIObjectWrapper));
+    }
+  }
+  
+  public void onActivityResumed(IObjectWrapper paramIObjectWrapper, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zzic localZzic = zza.zzq().zza;
+    if (localZzic != null)
+    {
+      zza.zzq().zzB();
+      localZzic.onActivityResumed((Activity)ObjectWrapper.unwrap(paramIObjectWrapper));
+    }
+  }
+  
+  public void onActivitySaveInstanceState(IObjectWrapper paramIObjectWrapper, zzcf paramZzcf, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zzic localZzic = zza.zzq().zza;
+    Bundle localBundle = new Bundle();
+    if (localZzic != null)
+    {
+      zza.zzq().zzB();
+      localZzic.onActivitySaveInstanceState((Activity)ObjectWrapper.unwrap(paramIObjectWrapper), localBundle);
+    }
+    try
+    {
+      paramZzcf.zzd(localBundle);
+      return;
+    }
+    catch (RemoteException paramIObjectWrapper)
+    {
+      zza.zzay().zzk().zzb("Error returning bundle value to wrapper", paramIObjectWrapper);
+    }
+  }
+  
+  public void onActivityStarted(IObjectWrapper paramIObjectWrapper, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    if (zza.zzq().zza != null)
+    {
+      zza.zzq().zzB();
+      paramIObjectWrapper = (Activity)ObjectWrapper.unwrap(paramIObjectWrapper);
+    }
+  }
+  
+  public void onActivityStopped(IObjectWrapper paramIObjectWrapper, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    if (zza.zzq().zza != null)
+    {
+      zza.zzq().zzB();
+      paramIObjectWrapper = (Activity)ObjectWrapper.unwrap(paramIObjectWrapper);
+    }
+  }
+  
+  public void performAction(Bundle paramBundle, zzcf paramZzcf, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    paramZzcf.zzd(null);
+  }
+  
+  public void registerOnMeasurementEventListener(zzci paramZzci)
+    throws RemoteException
+  {
+    zzb();
+    synchronized (zzb)
+    {
+      zzgz localZzgz = (zzgz)zzb.get(Integer.valueOf(paramZzci.zzd()));
+      Object localObject = localZzgz;
+      if (localZzgz == null)
+      {
+        localObject = new zzp(this, paramZzci);
+        zzb.put(Integer.valueOf(paramZzci.zzd()), localObject);
+      }
+      zza.zzq().zzJ((zzgz)localObject);
+      return;
+    }
+  }
+  
+  public void resetAnalyticsData(long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzq().zzK(paramLong);
+  }
+  
+  public void setConditionalUserProperty(Bundle paramBundle, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    if (paramBundle == null)
+    {
+      zza.zzay().zzd().zza("Conditional user property must not be null");
+      return;
+    }
+    zza.zzq().zzQ(paramBundle, paramLong);
+  }
+  
+  public void setConsent(Bundle paramBundle, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zzid localZzid = zza.zzq();
+    zzs.zzaz().zzq(new zzhc(localZzid, paramBundle, paramLong));
+  }
+  
+  public void setConsentThirdParty(Bundle paramBundle, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzq().zzR(paramBundle, -20, paramLong);
+  }
+  
+  public void setCurrentScreen(IObjectWrapper paramIObjectWrapper, String paramString1, String paramString2, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzs().zzw((Activity)ObjectWrapper.unwrap(paramIObjectWrapper), paramString1, paramString2);
+  }
+  
+  public void setDataCollectionEnabled(boolean paramBoolean)
+    throws RemoteException
+  {
+    zzb();
+    zzid localZzid = zza.zzq();
+    localZzid.zza();
+    zzs.zzaz().zzp(new zzhz(localZzid, paramBoolean));
+  }
+  
+  public void setDefaultEventParameters(Bundle paramBundle)
+  {
+    zzb();
+    zzid localZzid = zza.zzq();
+    if (paramBundle == null) {
+      paramBundle = null;
+    } else {
+      paramBundle = new Bundle(paramBundle);
+    }
+    zzs.zzaz().zzp(new zzhd(localZzid, paramBundle));
+  }
+  
+  public void setEventInterceptor(zzci paramZzci)
+    throws RemoteException
+  {
+    zzb();
+    paramZzci = new zzo(this, paramZzci);
+    if (zza.zzaz().zzs())
+    {
+      zza.zzq().zzT(paramZzci);
+      return;
+    }
+    zza.zzaz().zzp(new zzl(this, paramZzci));
+  }
+  
+  public void setInstanceIdProvider(zzck paramZzck)
+    throws RemoteException
+  {
+    zzb();
+  }
+  
+  public void setMeasurementEnabled(boolean paramBoolean, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zza.zzq().zzU(Boolean.valueOf(paramBoolean));
+  }
+  
+  public void setMinimumSessionDuration(long paramLong)
+    throws RemoteException
+  {
+    zzb();
+  }
+  
+  public void setSessionTimeoutDuration(long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zzid localZzid = zza.zzq();
+    zzs.zzaz().zzp(new zzhh(localZzid, paramLong));
+  }
+  
+  public void setUserId(String paramString, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    zzid localZzid = zza.zzq();
+    if ((paramString != null) && (TextUtils.isEmpty(paramString)))
+    {
+      zzs.zzay().zzk().zza("User ID must be non-empty or null");
+      return;
+    }
+    zzs.zzaz().zzp(new zzhe(localZzid, paramString));
+    localZzid.zzX(null, "_id", paramString, true, paramLong);
+  }
+  
+  public void setUserProperty(String paramString1, String paramString2, IObjectWrapper paramIObjectWrapper, boolean paramBoolean, long paramLong)
+    throws RemoteException
+  {
+    zzb();
+    paramIObjectWrapper = ObjectWrapper.unwrap(paramIObjectWrapper);
+    zza.zzq().zzX(paramString1, paramString2, paramIObjectWrapper, paramBoolean, paramLong);
+  }
+  
+  public void unregisterOnMeasurementEventListener(zzci paramZzci)
+    throws RemoteException
+  {
+    zzb();
+    synchronized (zzb)
+    {
+      zzgz localZzgz = (zzgz)zzb.remove(Integer.valueOf(paramZzci.zzd()));
+      ??? = localZzgz;
+      if (localZzgz == null) {
+        ??? = new zzp(this, paramZzci);
+      }
+      zza.zzq().zzZ((zzgz)???);
+      return;
+    }
+  }
+}

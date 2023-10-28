@@ -1,0 +1,123 @@
+package com.google.android.datatransport.h;
+
+import com.google.android.datatransport.Priority;
+import java.util.Arrays;
+import java.util.Objects;
+
+final class e
+  extends p
+{
+  private final String a;
+  private final byte[] b;
+  private final Priority c;
+  
+  private e(String paramString, byte[] paramArrayOfByte, Priority paramPriority)
+  {
+    a = paramString;
+    b = paramArrayOfByte;
+    c = paramPriority;
+  }
+  
+  public String b()
+  {
+    return a;
+  }
+  
+  public byte[] c()
+  {
+    return b;
+  }
+  
+  public Priority d()
+  {
+    return c;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if ((paramObject instanceof p))
+    {
+      p localP = (p)paramObject;
+      if (a.equals(localP.b()))
+      {
+        byte[] arrayOfByte = b;
+        if ((localP instanceof e)) {
+          paramObject = b;
+        } else {
+          paramObject = localP.c();
+        }
+        if ((Arrays.equals(arrayOfByte, paramObject)) && (c.equals(localP.d()))) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return false;
+  }
+  
+  public int hashCode()
+  {
+    return ((a.hashCode() ^ 0xF4243) * 1000003 ^ Arrays.hashCode(b)) * 1000003 ^ c.hashCode();
+  }
+  
+  static final class b
+    extends p.a
+  {
+    private String a;
+    private byte[] b;
+    private Priority c;
+    
+    b() {}
+    
+    public p a()
+    {
+      Object localObject2 = a;
+      Object localObject1 = "";
+      if (localObject2 == null)
+      {
+        localObject1 = new StringBuilder();
+        ((StringBuilder)localObject1).append("");
+        ((StringBuilder)localObject1).append(" backendName");
+        localObject1 = ((StringBuilder)localObject1).toString();
+      }
+      localObject2 = localObject1;
+      if (c == null)
+      {
+        localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append((String)localObject1);
+        ((StringBuilder)localObject2).append(" priority");
+        localObject2 = ((StringBuilder)localObject2).toString();
+      }
+      if (((String)localObject2).isEmpty()) {
+        return new e(a, b, c, null);
+      }
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("Missing required properties:");
+      ((StringBuilder)localObject1).append((String)localObject2);
+      throw new IllegalStateException(((StringBuilder)localObject1).toString());
+    }
+    
+    public p.a b(String paramString)
+    {
+      Objects.requireNonNull(paramString, "Null backendName");
+      a = paramString;
+      return this;
+    }
+    
+    public p.a c(byte[] paramArrayOfByte)
+    {
+      b = paramArrayOfByte;
+      return this;
+    }
+    
+    public p.a d(Priority paramPriority)
+    {
+      Objects.requireNonNull(paramPriority, "Null priority");
+      c = paramPriority;
+      return this;
+    }
+  }
+}

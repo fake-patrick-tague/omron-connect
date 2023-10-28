@@ -1,0 +1,113 @@
+package androidx.work.impl.utils;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import androidx.room.RoomDatabase;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.n.d;
+import androidx.work.impl.n.e;
+import c.t.a.b;
+
+public class c
+{
+  private final WorkDatabase a;
+  
+  public c(WorkDatabase paramWorkDatabase)
+  {
+    a = paramWorkDatabase;
+  }
+  
+  public static void a(Context paramContext, b paramB)
+  {
+    paramContext = paramContext.getSharedPreferences("androidx.work.util.id", 0);
+    int i;
+    int j;
+    if ((paramContext.contains("next_job_scheduler_id")) || (paramContext.contains("next_job_scheduler_id")))
+    {
+      i = paramContext.getInt("next_job_scheduler_id", 0);
+      j = paramContext.getInt("next_alarm_manager_id", 0);
+      paramB.beginTransaction();
+    }
+    try
+    {
+      paramB.execSQL("INSERT OR REPLACE INTO `Preference` (`key`, `long_value`) VALUES (@key, @long_value)", new Object[] { "next_job_scheduler_id", Integer.valueOf(i) });
+      paramB.execSQL("INSERT OR REPLACE INTO `Preference` (`key`, `long_value`) VALUES (@key, @long_value)", new Object[] { "next_alarm_manager_id", Integer.valueOf(j) });
+      paramContext.edit().clear().apply();
+      paramB.setTransactionSuccessful();
+      return;
+    }
+    finally
+    {
+      paramB.endTransaction();
+    }
+  }
+  
+  private int c(String paramString)
+  {
+    a.c();
+    for (;;)
+    {
+      int j;
+      try
+      {
+        Long localLong = a.x().a(paramString);
+        j = 0;
+        if (localLong == null) {
+          break label70;
+        }
+        i = localLong.intValue();
+      }
+      finally
+      {
+        a.g();
+      }
+      e(paramString, j);
+      a.r();
+      a.g();
+      return i;
+      label70:
+      int i = 0;
+      if (i != Integer.MAX_VALUE) {
+        j = i + 1;
+      }
+    }
+  }
+  
+  private void e(String paramString, int paramInt)
+  {
+    a.x().b(new d(paramString, paramInt));
+  }
+  
+  public int b()
+  {
+    try
+    {
+      int i = c("next_alarm_manager_id");
+      return i;
+    }
+    finally {}
+  }
+  
+  public int d(int paramInt1, int paramInt2)
+  {
+    for (;;)
+    {
+      int i;
+      try
+      {
+        i = c("next_job_scheduler_id");
+        if (i >= paramInt1) {
+          if (i <= paramInt2) {
+            break label45;
+          }
+        }
+        e("next_job_scheduler_id", paramInt1 + 1);
+        return paramInt1;
+      }
+      finally {}
+      label45:
+      paramInt1 = i;
+    }
+  }
+}

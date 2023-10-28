@@ -1,0 +1,151 @@
+package com.google.android.gms.auth.api;
+
+import android.os.Bundle;
+import androidx.annotation.RecentlyNonNull;
+import androidx.annotation.RecentlyNullable;
+import com.google.android.gms.auth.api.credentials.CredentialsApi;
+import com.google.android.gms.auth.api.proxy.ProxyApi;
+import com.google.android.gms.auth.api.signin.GoogleSignInApi;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.internal.zbd;
+import com.google.android.gms.auth.api.signin.internal.zbe;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.Api.AbstractClientBuilder;
+import com.google.android.gms.common.api.Api.ApiOptions.Optional;
+import com.google.android.gms.common.api.Api.ClientKey;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.internal.auth-api.zbl;
+import com.google.android.gms.internal.auth-api.zbo;
+
+public final class Auth
+{
+  @RecentlyNonNull
+  public static final Api<AuthCredentialsOptions> CREDENTIALS_API;
+  @RecentlyNonNull
+  public static final CredentialsApi CredentialsApi = new zbl();
+  @RecentlyNonNull
+  public static final Api<GoogleSignInOptions> GOOGLE_SIGN_IN_API;
+  @RecentlyNonNull
+  public static final GoogleSignInApi GoogleSignInApi = new zbd();
+  @Deprecated
+  @RecentlyNonNull
+  @KeepForSdk
+  @ShowFirstParty
+  public static final Api<AuthProxyOptions> PROXY_API;
+  @Deprecated
+  @RecentlyNonNull
+  @KeepForSdk
+  @ShowFirstParty
+  public static final ProxyApi ProxyApi;
+  @RecentlyNonNull
+  public static final Api.ClientKey<zbo> zba;
+  @RecentlyNonNull
+  public static final Api.ClientKey<zbe> zbb;
+  private static final Api.AbstractClientBuilder<zbo, AuthCredentialsOptions> zbc;
+  private static final Api.AbstractClientBuilder<zbe, GoogleSignInOptions> zbd;
+  
+  static
+  {
+    Api.ClientKey localClientKey1 = new Api.ClientKey();
+    zba = localClientKey1;
+    Api.ClientKey localClientKey2 = new Api.ClientKey();
+    zbb = localClientKey2;
+    zba localZba = new zba();
+    zbc = localZba;
+    zbb localZbb = new zbb();
+    zbd = localZbb;
+    PROXY_API = AuthProxy.API;
+    CREDENTIALS_API = new Api("Auth.CREDENTIALS_API", localZba, localClientKey1);
+    GOOGLE_SIGN_IN_API = new Api("Auth.GOOGLE_SIGN_IN_API", localZbb, localClientKey2);
+    ProxyApi = AuthProxy.ProxyApi;
+  }
+  
+  private Auth() {}
+  
+  @Deprecated
+  public static class AuthCredentialsOptions
+    implements Api.ApiOptions.Optional
+  {
+    @RecentlyNonNull
+    public static final AuthCredentialsOptions zba = new AuthCredentialsOptions(new Builder());
+    private final String zbb = null;
+    private final boolean zbc;
+    private final String zbd;
+    
+    public AuthCredentialsOptions(@RecentlyNonNull Builder paramBuilder)
+    {
+      zbc = zba.booleanValue();
+      zbd = zbb;
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (paramObject == this) {
+        return true;
+      }
+      if (!(paramObject instanceof AuthCredentialsOptions)) {
+        return false;
+      }
+      paramObject = (AuthCredentialsOptions)paramObject;
+      String str = zbb;
+      return (Objects.equal(null, null)) && (zbc == zbc) && (Objects.equal(zbd, zbd));
+    }
+    
+    public int hashCode()
+    {
+      return Objects.hashCode(new Object[] { null, Boolean.valueOf(zbc), zbd });
+    }
+    
+    @RecentlyNonNull
+    public final Bundle zba()
+    {
+      Bundle localBundle = new Bundle();
+      localBundle.putString("consumer_package", null);
+      localBundle.putBoolean("force_save_dialog", zbc);
+      localBundle.putString("log_session_id", zbd);
+      return localBundle;
+    }
+    
+    @RecentlyNullable
+    public final String zbd()
+    {
+      return zbd;
+    }
+    
+    @Deprecated
+    public static class Builder
+    {
+      @RecentlyNonNull
+      protected Boolean zba = Boolean.FALSE;
+      @RecentlyNullable
+      protected String zbb;
+      
+      public Builder() {}
+      
+      @ShowFirstParty
+      public Builder(@RecentlyNonNull Auth.AuthCredentialsOptions paramAuthCredentialsOptions)
+      {
+        Auth.AuthCredentialsOptions.zbb(paramAuthCredentialsOptions);
+        zba = Boolean.valueOf(Auth.AuthCredentialsOptions.zbe(paramAuthCredentialsOptions));
+        zbb = Auth.AuthCredentialsOptions.zbc(paramAuthCredentialsOptions);
+      }
+      
+      @RecentlyNonNull
+      public Builder forceEnableSaveDialog()
+      {
+        zba = Boolean.TRUE;
+        return this;
+      }
+      
+      @RecentlyNonNull
+      @ShowFirstParty
+      public final Builder zba(@RecentlyNonNull String paramString)
+      {
+        zbb = paramString;
+        return this;
+      }
+    }
+  }
+}

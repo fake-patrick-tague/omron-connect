@@ -1,0 +1,155 @@
+package androidx.work.impl.background.systemjob;
+
+import android.app.Application;
+import android.app.job.JobParameters;
+import android.app.job.JobService;
+import android.os.Build.VERSION;
+import android.os.PersistableBundle;
+import android.text.TextUtils;
+import androidx.work.WorkerParameters.a;
+import androidx.work.impl.b;
+import androidx.work.impl.d;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+public class SystemJobService
+  extends JobService
+  implements b
+{
+  private static final String b = androidx.work.j.f("SystemJobService");
+  private androidx.work.impl.j c;
+  private final Map<String, JobParameters> d = new HashMap();
+  
+  public SystemJobService() {}
+  
+  private static String a(JobParameters paramJobParameters)
+  {
+    try
+    {
+      paramJobParameters = paramJobParameters.getExtras();
+      if ((paramJobParameters != null) && (paramJobParameters.containsKey("EXTRA_WORK_SPEC_ID")))
+      {
+        paramJobParameters = paramJobParameters.getString("EXTRA_WORK_SPEC_ID");
+        return paramJobParameters;
+      }
+    }
+    catch (NullPointerException paramJobParameters)
+    {
+      for (;;) {}
+    }
+    return null;
+  }
+  
+  public void d(String paramString, boolean paramBoolean)
+  {
+    androidx.work.j.c().a(b, String.format("%s executed on JobScheduler", new Object[] { paramString }), new Throwable[0]);
+    synchronized (d)
+    {
+      paramString = (JobParameters)d.remove(paramString);
+      if (paramString != null) {
+        jobFinished(paramString, paramBoolean);
+      }
+      return;
+    }
+  }
+  
+  public void onCreate()
+  {
+    super.onCreate();
+    try
+    {
+      androidx.work.impl.j localJ = androidx.work.impl.j.l(getApplicationContext());
+      c = localJ;
+      localJ.n().c(this);
+      return;
+    }
+    catch (IllegalStateException localIllegalStateException)
+    {
+      for (;;) {}
+    }
+    if (Application.class.equals(getApplication().getClass()))
+    {
+      androidx.work.j.c().h(b, "Could not find WorkManager instance; this may be because an auto-backup is in progress. Ignoring JobScheduler commands for now. Please make sure that you are initializing WorkManager if you have manually disabled WorkManagerInitializer.", new Throwable[0]);
+      return;
+    }
+    throw new IllegalStateException("WorkManager needs to be initialized via a ContentProvider#onCreate() or an Application#onCreate().");
+  }
+  
+  public void onDestroy()
+  {
+    super.onDestroy();
+    androidx.work.impl.j localJ = c;
+    if (localJ != null) {
+      localJ.n().i(this);
+    }
+  }
+  
+  public boolean onStartJob(JobParameters paramJobParameters)
+  {
+    if (c == null)
+    {
+      androidx.work.j.c().a(b, "WorkManager is not initialized; requesting retry.", new Throwable[0]);
+      jobFinished(paramJobParameters, true);
+      return false;
+    }
+    String str = a(paramJobParameters);
+    if (TextUtils.isEmpty(str))
+    {
+      androidx.work.j.c().b(b, "WorkSpec id not found!", new Throwable[0]);
+      return false;
+    }
+    synchronized (d)
+    {
+      if (d.containsKey(str))
+      {
+        androidx.work.j.c().a(b, String.format("Job is already being executed by SystemJobService: %s", new Object[] { str }), new Throwable[0]);
+        return false;
+      }
+      androidx.work.j.c().a(b, String.format("onStartJob for %s", new Object[] { str }), new Throwable[0]);
+      d.put(str, paramJobParameters);
+      ??? = null;
+      int i = Build.VERSION.SDK_INT;
+      if (i >= 24)
+      {
+        WorkerParameters.a localA = new WorkerParameters.a();
+        if (paramJobParameters.getTriggeredContentUris() != null) {
+          b = Arrays.asList(paramJobParameters.getTriggeredContentUris());
+        }
+        if (paramJobParameters.getTriggeredContentAuthorities() != null) {
+          a = Arrays.asList(paramJobParameters.getTriggeredContentAuthorities());
+        }
+        ??? = localA;
+        if (i >= 28)
+        {
+          c = paramJobParameters.getNetwork();
+          ??? = localA;
+        }
+      }
+      c.w(str, (WorkerParameters.a)???);
+      return true;
+    }
+  }
+  
+  public boolean onStopJob(JobParameters arg1)
+  {
+    if (c == null)
+    {
+      androidx.work.j.c().a(b, "WorkManager is not initialized; requesting retry.", new Throwable[0]);
+      return true;
+    }
+    String str = a(???);
+    if (TextUtils.isEmpty(str))
+    {
+      androidx.work.j.c().b(b, "WorkSpec id not found!", new Throwable[0]);
+      return false;
+    }
+    androidx.work.j.c().a(b, String.format("onStopJob for %s", new Object[] { str }), new Throwable[0]);
+    synchronized (d)
+    {
+      d.remove(str);
+      c.y(str);
+      return c.n().f(str) ^ true;
+    }
+  }
+}

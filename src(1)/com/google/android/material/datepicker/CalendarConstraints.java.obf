@@ -1,0 +1,173 @@
+package com.google.android.material.datepicker;
+
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import c.h.p.c;
+import java.util.Arrays;
+
+public final class CalendarConstraints
+  implements Parcelable
+{
+  public static final Parcelable.Creator<CalendarConstraints> CREATOR = new a();
+  private final Month b;
+  private final Month c;
+  private final DateValidator d;
+  private Month e;
+  private final int f;
+  private final int g;
+  
+  private CalendarConstraints(Month paramMonth1, Month paramMonth2, DateValidator paramDateValidator, Month paramMonth3)
+  {
+    b = paramMonth1;
+    c = paramMonth2;
+    e = paramMonth3;
+    d = paramDateValidator;
+    if ((paramMonth3 != null) && (paramMonth1.a(paramMonth3) > 0)) {
+      throw new IllegalArgumentException("start Month cannot be after current Month");
+    }
+    if ((paramMonth3 != null) && (paramMonth3.a(paramMonth2) > 0)) {
+      throw new IllegalArgumentException("current Month cannot be after end Month");
+    }
+    g = (paramMonth1.l(paramMonth2) + 1);
+    f = (d - d + 1);
+  }
+  
+  public int describeContents()
+  {
+    return 0;
+  }
+  
+  Month e(Month paramMonth)
+  {
+    if (paramMonth.a(b) < 0) {
+      return b;
+    }
+    Month localMonth = paramMonth;
+    if (paramMonth.a(c) > 0) {
+      localMonth = c;
+    }
+    return localMonth;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof CalendarConstraints)) {
+      return false;
+    }
+    paramObject = (CalendarConstraints)paramObject;
+    return (b.equals(b)) && (c.equals(c)) && (c.a(e, e)) && (d.equals(d));
+  }
+  
+  public DateValidator f()
+  {
+    return d;
+  }
+  
+  Month g()
+  {
+    return c;
+  }
+  
+  int h()
+  {
+    return g;
+  }
+  
+  public int hashCode()
+  {
+    return Arrays.hashCode(new Object[] { b, c, e, d });
+  }
+  
+  Month j()
+  {
+    return e;
+  }
+  
+  Month k()
+  {
+    return b;
+  }
+  
+  int l()
+  {
+    return f;
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramParcel.writeParcelable(b, 0);
+    paramParcel.writeParcelable(c, 0);
+    paramParcel.writeParcelable(e, 0);
+    paramParcel.writeParcelable(d, 0);
+  }
+  
+  public static abstract interface DateValidator
+    extends Parcelable
+  {
+    public abstract boolean b0(long paramLong);
+  }
+  
+  static final class a
+    implements Parcelable.Creator<CalendarConstraints>
+  {
+    a() {}
+    
+    public CalendarConstraints a(Parcel paramParcel)
+    {
+      Month localMonth1 = (Month)paramParcel.readParcelable(Month.class.getClassLoader());
+      Month localMonth2 = (Month)paramParcel.readParcelable(Month.class.getClassLoader());
+      Month localMonth3 = (Month)paramParcel.readParcelable(Month.class.getClassLoader());
+      return new CalendarConstraints(localMonth1, localMonth2, (CalendarConstraints.DateValidator)paramParcel.readParcelable(CalendarConstraints.DateValidator.class.getClassLoader()), localMonth3, null);
+    }
+    
+    public CalendarConstraints[] b(int paramInt)
+    {
+      return new CalendarConstraints[paramInt];
+    }
+  }
+  
+  public static final class b
+  {
+    static final long a = n.a(b19000g);
+    static final long b = n.a(b210011g);
+    private long c = a;
+    private long d = b;
+    private Long e;
+    private CalendarConstraints.DateValidator f = DateValidatorPointForward.a(Long.MIN_VALUE);
+    
+    b(CalendarConstraints paramCalendarConstraints)
+    {
+      c = ag;
+      d = bg;
+      e = Long.valueOf(cg);
+      f = CalendarConstraints.d(paramCalendarConstraints);
+    }
+    
+    public CalendarConstraints a()
+    {
+      Object localObject = new Bundle();
+      ((Bundle)localObject).putParcelable("DEEP_COPY_VALIDATOR_KEY", f);
+      Month localMonth1 = Month.c(c);
+      Month localMonth2 = Month.c(d);
+      CalendarConstraints.DateValidator localDateValidator = (CalendarConstraints.DateValidator)((Bundle)localObject).getParcelable("DEEP_COPY_VALIDATOR_KEY");
+      localObject = e;
+      if (localObject == null) {
+        localObject = null;
+      } else {
+        localObject = Month.c(((Long)localObject).longValue());
+      }
+      return new CalendarConstraints(localMonth1, localMonth2, localDateValidator, (Month)localObject, null);
+    }
+    
+    public b b(long paramLong)
+    {
+      e = Long.valueOf(paramLong);
+      return this;
+    }
+  }
+}

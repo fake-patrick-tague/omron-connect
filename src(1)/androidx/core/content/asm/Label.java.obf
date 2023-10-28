@@ -1,0 +1,476 @@
+package androidx.core.content.g;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.content.res.Resources.Theme;
+import android.content.res.XmlResourceParser;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.util.SparseArray;
+import android.util.TypedValue;
+import c.h.p.c;
+import c.h.p.h;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.WeakHashMap;
+import org.xmlpull.v1.XmlPullParserException;
+
+public final class j
+{
+  private static final ThreadLocal<TypedValue> a = new ThreadLocal();
+  private static final WeakHashMap<e, SparseArray<d>> b = new WeakHashMap(0);
+  private static final Object c = new Object();
+  
+  private static void a(e paramE, int paramInt, ColorStateList paramColorStateList, Resources.Theme paramTheme)
+  {
+    synchronized (c)
+    {
+      WeakHashMap localWeakHashMap = b;
+      SparseArray localSparseArray2 = (SparseArray)localWeakHashMap.get(paramE);
+      SparseArray localSparseArray1 = localSparseArray2;
+      if (localSparseArray2 == null)
+      {
+        localSparseArray1 = new SparseArray();
+        localWeakHashMap.put(paramE, localSparseArray1);
+      }
+      localSparseArray1.append(paramInt, new d(paramColorStateList, a.getConfiguration(), paramTheme));
+      return;
+    }
+  }
+  
+  private static ColorStateList b(e paramE, int paramInt)
+  {
+    synchronized (c)
+    {
+      SparseArray localSparseArray = (SparseArray)b.get(paramE);
+      if ((localSparseArray != null) && (localSparseArray.size() > 0))
+      {
+        d localD = (d)localSparseArray.get(paramInt);
+        if (localD != null)
+        {
+          if (b.equals(a.getConfiguration()))
+          {
+            paramE = b;
+            if (((paramE == null) && (c == 0)) || ((paramE != null) && (c == paramE.hashCode())))
+            {
+              paramE = a;
+              return paramE;
+            }
+          }
+          localSparseArray.remove(paramInt);
+        }
+      }
+      return null;
+    }
+  }
+  
+  public static int c(Resources paramResources, int paramInt, Resources.Theme paramTheme)
+    throws Resources.NotFoundException
+  {
+    if (Build.VERSION.SDK_INT >= 23) {
+      return c.a(paramResources, paramInt, paramTheme);
+    }
+    return paramResources.getColor(paramInt);
+  }
+  
+  public static ColorStateList d(Resources paramResources, int paramInt, Resources.Theme paramTheme)
+    throws Resources.NotFoundException
+  {
+    e localE = new e(paramResources, paramTheme);
+    ColorStateList localColorStateList = b(localE, paramInt);
+    if (localColorStateList != null) {
+      return localColorStateList;
+    }
+    localColorStateList = k(paramResources, paramInt, paramTheme);
+    if (localColorStateList != null)
+    {
+      a(localE, paramInt, localColorStateList, paramTheme);
+      return localColorStateList;
+    }
+    if (Build.VERSION.SDK_INT >= 23) {
+      return c.b(paramResources, paramInt, paramTheme);
+    }
+    return paramResources.getColorStateList(paramInt);
+  }
+  
+  public static Drawable e(Resources paramResources, int paramInt, Resources.Theme paramTheme)
+    throws Resources.NotFoundException
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      return b.a(paramResources, paramInt, paramTheme);
+    }
+    return paramResources.getDrawable(paramInt);
+  }
+  
+  public static Drawable f(Resources paramResources, int paramInt1, int paramInt2, Resources.Theme paramTheme)
+    throws Resources.NotFoundException
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 21) {
+      return b.b(paramResources, paramInt1, paramInt2, paramTheme);
+    }
+    if (i >= 15) {
+      return a.a(paramResources, paramInt1, paramInt2);
+    }
+    return paramResources.getDrawable(paramInt1);
+  }
+  
+  public static Typeface g(Context paramContext, int paramInt)
+    throws Resources.NotFoundException
+  {
+    if (paramContext.isRestricted()) {
+      return null;
+    }
+    return m(paramContext, paramInt, new TypedValue(), 0, null, null, false, false);
+  }
+  
+  public static Typeface h(Context paramContext, int paramInt1, TypedValue paramTypedValue, int paramInt2, f paramF)
+    throws Resources.NotFoundException
+  {
+    if (paramContext.isRestricted()) {
+      return null;
+    }
+    return m(paramContext, paramInt1, paramTypedValue, paramInt2, paramF, null, true, false);
+  }
+  
+  public static void i(Context paramContext, int paramInt, f paramF, Handler paramHandler)
+    throws Resources.NotFoundException
+  {
+    h.g(paramF);
+    if (paramContext.isRestricted())
+    {
+      paramF.a(-4, paramHandler);
+      return;
+    }
+    m(paramContext, paramInt, new TypedValue(), 0, paramF, paramHandler, false, false);
+  }
+  
+  private static TypedValue j()
+  {
+    ThreadLocal localThreadLocal = a;
+    TypedValue localTypedValue2 = (TypedValue)localThreadLocal.get();
+    TypedValue localTypedValue1 = localTypedValue2;
+    if (localTypedValue2 == null)
+    {
+      localTypedValue1 = new TypedValue();
+      localThreadLocal.set(localTypedValue1);
+    }
+    return localTypedValue1;
+  }
+  
+  private static ColorStateList k(Resources paramResources, int paramInt, Resources.Theme paramTheme)
+  {
+    if (l(paramResources, paramInt)) {
+      return null;
+    }
+    XmlResourceParser localXmlResourceParser = paramResources.getXml(paramInt);
+    try
+    {
+      paramResources = e.a(paramResources, localXmlResourceParser, paramTheme);
+      return paramResources;
+    }
+    catch (Exception paramResources)
+    {
+      Log.w("ResourcesCompat", "Failed to inflate ColorStateList, leaving it to the framework", paramResources);
+    }
+    return null;
+  }
+  
+  private static boolean l(Resources paramResources, int paramInt)
+  {
+    TypedValue localTypedValue = j();
+    paramResources.getValue(paramInt, localTypedValue, true);
+    paramInt = type;
+    return (paramInt >= 28) && (paramInt <= 31);
+  }
+  
+  private static Typeface m(Context paramContext, int paramInt1, TypedValue paramTypedValue, int paramInt2, f paramF, Handler paramHandler, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    Resources localResources = paramContext.getResources();
+    localResources.getValue(paramInt1, paramTypedValue, true);
+    paramContext = n(paramContext, localResources, paramTypedValue, paramInt1, paramInt2, paramF, paramHandler, paramBoolean1, paramBoolean2);
+    if ((paramContext == null) && (paramF == null))
+    {
+      if (paramBoolean2) {
+        return paramContext;
+      }
+      paramContext = new StringBuilder();
+      paramContext.append("Font resource ID #0x");
+      paramContext.append(Integer.toHexString(paramInt1));
+      paramContext.append(" could not be retrieved.");
+      throw new Resources.NotFoundException(paramContext.toString());
+    }
+    return paramContext;
+  }
+  
+  private static Typeface n(Context paramContext, Resources paramResources, TypedValue paramTypedValue, int paramInt1, int paramInt2, f paramF, Handler paramHandler, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    Object localObject1 = string;
+    if (localObject1 != null)
+    {
+      localObject1 = ((CharSequence)localObject1).toString();
+      if (!((String)localObject1).startsWith("res/"))
+      {
+        if (paramF != null) {
+          paramF.a(-3, paramHandler);
+        }
+        return null;
+      }
+      Object localObject2 = androidx.core.graphics.e.f(paramResources, paramInt1, (String)localObject1, assetCookie, paramInt2);
+      if (localObject2 != null)
+      {
+        if (paramF != null) {
+          paramF.b((Typeface)localObject2, paramHandler);
+        }
+        return localObject2;
+      }
+      if (paramBoolean2) {
+        return null;
+      }
+      try
+      {
+        if (((String)localObject1).toLowerCase().endsWith(".xml"))
+        {
+          localObject2 = g.b(paramResources.getXml(paramInt1), paramResources);
+          if (localObject2 == null)
+          {
+            Log.e("ResourcesCompat", "Failed to find font-family tag");
+            if (paramF == null) {
+              break label372;
+            }
+            paramF.a(-3, paramHandler);
+            return null;
+          }
+          return androidx.core.graphics.e.c(paramContext, (g.b)localObject2, paramResources, paramInt1, (String)localObject1, assetCookie, paramInt2, paramF, paramHandler, paramBoolean1);
+        }
+        paramContext = androidx.core.graphics.e.d(paramContext, paramResources, paramInt1, (String)localObject1, assetCookie, paramInt2);
+        if (paramF != null)
+        {
+          if (paramContext != null)
+          {
+            paramF.b(paramContext, paramHandler);
+            return paramContext;
+          }
+          paramF.a(-3, paramHandler);
+        }
+        return paramContext;
+      }
+      catch (IOException paramContext)
+      {
+        paramResources = new StringBuilder();
+        paramResources.append("Failed to read xml resource ");
+        paramResources.append((String)localObject1);
+        Log.e("ResourcesCompat", paramResources.toString(), paramContext);
+      }
+      catch (XmlPullParserException paramContext)
+      {
+        paramResources = new StringBuilder();
+        paramResources.append("Failed to parse xml resource ");
+        paramResources.append((String)localObject1);
+        Log.e("ResourcesCompat", paramResources.toString(), paramContext);
+      }
+      if (paramF != null) {
+        paramF.a(-3, paramHandler);
+      }
+      return null;
+    }
+    paramContext = new StringBuilder();
+    paramContext.append("Resource \"");
+    paramContext.append(paramResources.getResourceName(paramInt1));
+    paramContext.append("\" (");
+    paramContext.append(Integer.toHexString(paramInt1));
+    paramContext.append(") is not a Font: ");
+    paramContext.append(paramTypedValue);
+    throw new Resources.NotFoundException(paramContext.toString());
+    label372:
+    return null;
+  }
+  
+  static class a
+  {
+    static Drawable a(Resources paramResources, int paramInt1, int paramInt2)
+    {
+      return paramResources.getDrawableForDensity(paramInt1, paramInt2);
+    }
+  }
+  
+  static class b
+  {
+    static Drawable a(Resources paramResources, int paramInt, Resources.Theme paramTheme)
+    {
+      return paramResources.getDrawable(paramInt, paramTheme);
+    }
+    
+    static Drawable b(Resources paramResources, int paramInt1, int paramInt2, Resources.Theme paramTheme)
+    {
+      return paramResources.getDrawableForDensity(paramInt1, paramInt2, paramTheme);
+    }
+  }
+  
+  static class c
+  {
+    static int a(Resources paramResources, int paramInt, Resources.Theme paramTheme)
+    {
+      return paramResources.getColor(paramInt, paramTheme);
+    }
+    
+    static ColorStateList b(Resources paramResources, int paramInt, Resources.Theme paramTheme)
+    {
+      return paramResources.getColorStateList(paramInt, paramTheme);
+    }
+  }
+  
+  private static class d
+  {
+    final ColorStateList a;
+    final Configuration b;
+    final int c;
+    
+    d(ColorStateList paramColorStateList, Configuration paramConfiguration, Resources.Theme paramTheme)
+    {
+      a = paramColorStateList;
+      b = paramConfiguration;
+      int i;
+      if (paramTheme == null) {
+        i = 0;
+      } else {
+        i = paramTheme.hashCode();
+      }
+      c = i;
+    }
+  }
+  
+  private static final class e
+  {
+    final Resources a;
+    final Resources.Theme b;
+    
+    e(Resources paramResources, Resources.Theme paramTheme)
+    {
+      a = paramResources;
+      b = paramTheme;
+    }
+    
+    public boolean equals(Object paramObject)
+    {
+      if (this == paramObject) {
+        return true;
+      }
+      if (paramObject != null)
+      {
+        if (e.class != paramObject.getClass()) {
+          return false;
+        }
+        paramObject = (e)paramObject;
+        return (a.equals(a)) && (c.a(b, b));
+      }
+      return false;
+    }
+    
+    public int hashCode()
+    {
+      return c.b(new Object[] { a, b });
+    }
+  }
+  
+  public static abstract class f
+  {
+    public f() {}
+    
+    public static Handler c(Handler paramHandler)
+    {
+      Handler localHandler = paramHandler;
+      if (paramHandler == null) {
+        localHandler = new Handler(Looper.getMainLooper());
+      }
+      return localHandler;
+    }
+    
+    public final void a(int paramInt, Handler paramHandler)
+    {
+      c(paramHandler).post(new a(this, paramInt));
+    }
+    
+    public final void b(Typeface paramTypeface, Handler paramHandler)
+    {
+      c(paramHandler).post(new b(this, paramTypeface));
+    }
+    
+    public abstract void h(int paramInt);
+    
+    public abstract void i(Typeface paramTypeface);
+  }
+  
+  public static final class g
+  {
+    public static void a(Resources.Theme paramTheme)
+    {
+      int i = Build.VERSION.SDK_INT;
+      if (i >= 29)
+      {
+        b.a(paramTheme);
+        return;
+      }
+      if (i >= 23) {
+        a.a(paramTheme);
+      }
+    }
+    
+    static class a
+    {
+      private static final Object a = new Object();
+      private static Method b;
+      private static boolean c;
+      
+      static void a(Resources.Theme paramTheme)
+      {
+        synchronized (a)
+        {
+          boolean bool = c;
+          if (!bool)
+          {
+            try
+            {
+              Method localMethod1 = Resources.Theme.class.getDeclaredMethod("rebase", new Class[0]);
+              b = localMethod1;
+              localMethod1.setAccessible(true);
+            }
+            catch (NoSuchMethodException localNoSuchMethodException)
+            {
+              Log.i("ResourcesCompat", "Failed to retrieve rebase() method", localNoSuchMethodException);
+            }
+            c = true;
+          }
+          Method localMethod2 = b;
+          if (localMethod2 != null)
+          {
+            try
+            {
+              localMethod2.invoke(paramTheme, new Object[0]);
+            }
+            catch (InvocationTargetException paramTheme) {}catch (IllegalAccessException paramTheme) {}
+            Log.i("ResourcesCompat", "Failed to invoke rebase() method via reflection", paramTheme);
+            b = null;
+          }
+          return;
+        }
+      }
+    }
+    
+    static class b
+    {
+      static void a(Resources.Theme paramTheme)
+      {
+        paramTheme.rebase();
+      }
+    }
+  }
+}

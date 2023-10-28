@@ -1,0 +1,23 @@
+package com.google.android.gms.common.stats;
+
+import android.os.PowerManager.WakeLock;
+import android.os.Process;
+import android.text.TextUtils;
+import com.google.android.gms.common.annotation.KeepForSdk;
+
+@Deprecated
+@KeepForSdk
+public class StatsUtils
+{
+  public StatsUtils() {}
+  
+  public static String getEventKey(PowerManager.WakeLock paramWakeLock, String paramString)
+  {
+    long l1 = Process.myPid();
+    long l2 = System.identityHashCode(paramWakeLock);
+    if (true == TextUtils.isEmpty(paramString)) {
+      paramString = "";
+    }
+    return String.valueOf(String.valueOf(l1 << 32 | l2)).concat(String.valueOf(paramString));
+  }
+}

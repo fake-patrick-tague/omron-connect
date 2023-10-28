@@ -1,0 +1,172 @@
+package com.google.firebase.messaging;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
+import com.google.android.gms.common.util.PlatformVersion;
+import com.google.firebase.i;
+import com.google.firebase.k;
+import java.util.List;
+
+class r0
+{
+  private final Context a;
+  private String b;
+  private String c;
+  private int d;
+  private int e = 0;
+  
+  r0(Context paramContext)
+  {
+    a = paramContext;
+  }
+  
+  static String c(i paramI)
+  {
+    String str = paramI.k().d();
+    if (str != null) {
+      return str;
+    }
+    paramI = paramI.k().c();
+    if (!paramI.startsWith("1:")) {
+      return paramI;
+    }
+    paramI = paramI.split(":");
+    if (paramI.length < 2) {
+      return null;
+    }
+    paramI = paramI[1];
+    if (paramI.isEmpty()) {
+      return null;
+    }
+    return paramI;
+  }
+  
+  private PackageInfo f(String paramString)
+  {
+    try
+    {
+      paramString = a.getPackageManager().getPackageInfo(paramString, 0);
+      return paramString;
+    }
+    catch (PackageManager.NameNotFoundException paramString)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to find package ");
+      localStringBuilder.append(paramString);
+      Log.w("FirebaseMessaging", localStringBuilder.toString());
+    }
+    return null;
+  }
+  
+  private void h()
+  {
+    try
+    {
+      PackageInfo localPackageInfo = f(a.getPackageName());
+      if (localPackageInfo != null)
+      {
+        b = Integer.toString(versionCode);
+        c = versionName;
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  String a()
+  {
+    try
+    {
+      if (b == null) {
+        h();
+      }
+      String str = b;
+      return str;
+    }
+    finally {}
+  }
+  
+  String b()
+  {
+    try
+    {
+      if (c == null) {
+        h();
+      }
+      String str = c;
+      return str;
+    }
+    finally {}
+  }
+  
+  int d()
+  {
+    try
+    {
+      if (d == 0)
+      {
+        PackageInfo localPackageInfo = f("com.google.android.gms");
+        if (localPackageInfo != null) {
+          d = versionCode;
+        }
+      }
+      int i = d;
+      return i;
+    }
+    finally {}
+  }
+  
+  int e()
+  {
+    try
+    {
+      int i = e;
+      if (i != 0) {
+        return i;
+      }
+      Object localObject1 = a.getPackageManager();
+      if (((PackageManager)localObject1).checkPermission("com.google.android.c2dm.permission.SEND", "com.google.android.gms") == -1)
+      {
+        Log.e("FirebaseMessaging", "Google Play services missing or without correct permission.");
+        return 0;
+      }
+      if (!PlatformVersion.isAtLeastO())
+      {
+        localObject3 = new Intent("com.google.android.c2dm.intent.REGISTER");
+        ((Intent)localObject3).setPackage("com.google.android.gms");
+        localObject3 = ((PackageManager)localObject1).queryIntentServices((Intent)localObject3, 0);
+        if ((localObject3 != null) && (((List)localObject3).size() > 0))
+        {
+          e = 1;
+          return 1;
+        }
+      }
+      Object localObject3 = new Intent("com.google.iid.TOKEN_REQUEST");
+      ((Intent)localObject3).setPackage("com.google.android.gms");
+      localObject1 = ((PackageManager)localObject1).queryBroadcastReceivers((Intent)localObject3, 0);
+      if ((localObject1 != null) && (((List)localObject1).size() > 0))
+      {
+        e = 2;
+        return 2;
+      }
+      Log.w("FirebaseMessaging", "Failed to resolve IID implementation package, falling back");
+      if (PlatformVersion.isAtLeastO()) {
+        e = 2;
+      } else {
+        e = 1;
+      }
+      i = e;
+      return i;
+    }
+    finally {}
+  }
+  
+  boolean g()
+  {
+    return e() != 0;
+  }
+}

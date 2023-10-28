@@ -1,0 +1,105 @@
+package androidx.lifecycle;
+
+import android.os.Bundle;
+import androidx.savedstate.c;
+import androidx.savedstate.c.c;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import kotlin.g;
+import kotlin.h;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public final class z
+  implements c.c
+{
+  private final c a;
+  private boolean b;
+  private Bundle c;
+  private final g d;
+  
+  public z(c paramC, j0 paramJ0)
+  {
+    a = paramC;
+    d = h.b(new a(paramJ0));
+  }
+  
+  private final a0 c()
+  {
+    return (a0)d.getValue();
+  }
+  
+  public Bundle a()
+  {
+    Bundle localBundle = new Bundle();
+    Object localObject1 = c;
+    if (localObject1 != null) {
+      localBundle.putAll((Bundle)localObject1);
+    }
+    localObject1 = c().a().entrySet().iterator();
+    while (((Iterator)localObject1).hasNext())
+    {
+      Object localObject2 = (Map.Entry)((Iterator)localObject1).next();
+      String str = (String)((Map.Entry)localObject2).getKey();
+      localObject2 = ((x)((Map.Entry)localObject2).getValue()).d().a();
+      if (!i.a(localObject2, Bundle.EMPTY)) {
+        localBundle.putBundle(str, (Bundle)localObject2);
+      }
+    }
+    b = false;
+    return localBundle;
+  }
+  
+  public final Bundle b(String paramString)
+  {
+    i.e(paramString, "key");
+    d();
+    Bundle localBundle1 = c;
+    if (localBundle1 != null) {
+      localBundle1 = localBundle1.getBundle(paramString);
+    } else {
+      localBundle1 = null;
+    }
+    Bundle localBundle2 = c;
+    if (localBundle2 != null) {
+      localBundle2.remove(paramString);
+    }
+    paramString = c;
+    int i = 1;
+    if ((paramString == null) || (paramString.isEmpty() != true)) {
+      i = 0;
+    }
+    if (i != 0) {
+      c = null;
+    }
+    return localBundle1;
+  }
+  
+  public final void d()
+  {
+    if (!b)
+    {
+      c = a.a("androidx.lifecycle.internal.SavedStateHandlesProvider");
+      b = true;
+      c();
+    }
+  }
+  
+  static final class a
+    extends j
+    implements a<a0>
+  {
+    a(j0 paramJ0)
+    {
+      super();
+    }
+    
+    public final a0 c()
+    {
+      return y.e(b);
+    }
+  }
+}

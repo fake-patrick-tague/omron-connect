@@ -1,0 +1,47 @@
+package androidx.fragment.app;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import java.util.List;
+
+class BackStackState
+  implements Parcelable
+{
+  public static final Parcelable.Creator<BackStackState> CREATOR = new a();
+  final List<String> b;
+  final List<BackStackRecordState> c;
+  
+  BackStackState(Parcel paramParcel)
+  {
+    b = paramParcel.createStringArrayList();
+    c = paramParcel.createTypedArrayList(BackStackRecordState.CREATOR);
+  }
+  
+  public int describeContents()
+  {
+    return 0;
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramParcel.writeStringList(b);
+    paramParcel.writeTypedList(c);
+  }
+  
+  class a
+    implements Parcelable.Creator<BackStackState>
+  {
+    a() {}
+    
+    public BackStackState a(Parcel paramParcel)
+    {
+      return new BackStackState(paramParcel);
+    }
+    
+    public BackStackState[] b(int paramInt)
+    {
+      return new BackStackState[paramInt];
+    }
+  }
+}

@@ -1,0 +1,59 @@
+package com.google.android.gms.internal.fitness;
+
+import android.app.PendingIntent;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.PendingResults;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.fitness.SensorsApi;
+import com.google.android.gms.fitness.data.zzv;
+import com.google.android.gms.fitness.request.DataSourcesRequest;
+import com.google.android.gms.fitness.request.OnDataPointListener;
+import com.google.android.gms.fitness.request.SensorRequest;
+import com.google.android.gms.fitness.request.zzan;
+import com.google.android.gms.fitness.result.DataSourcesResult;
+
+public final class zzdx
+  implements SensorsApi
+{
+  public zzdx() {}
+  
+  private final PendingResult<Status> zza(GoogleApiClient paramGoogleApiClient, zzv paramZzv, PendingIntent paramPendingIntent)
+  {
+    return paramGoogleApiClient.execute(new zzdy(this, paramGoogleApiClient, paramZzv, paramPendingIntent));
+  }
+  
+  private final PendingResult<Status> zza(GoogleApiClient paramGoogleApiClient, SensorRequest paramSensorRequest, zzv paramZzv, PendingIntent paramPendingIntent)
+  {
+    return paramGoogleApiClient.enqueue(new zzdz(this, paramGoogleApiClient, paramSensorRequest, paramZzv, paramPendingIntent));
+  }
+  
+  public final PendingResult<Status> add(GoogleApiClient paramGoogleApiClient, SensorRequest paramSensorRequest, PendingIntent paramPendingIntent)
+  {
+    return zza(paramGoogleApiClient, paramSensorRequest, null, paramPendingIntent);
+  }
+  
+  public final PendingResult<Status> add(GoogleApiClient paramGoogleApiClient, SensorRequest paramSensorRequest, OnDataPointListener paramOnDataPointListener)
+  {
+    return zza(paramGoogleApiClient, paramSensorRequest, zzan.zzx().zza(paramOnDataPointListener, paramGoogleApiClient.getLooper()), null);
+  }
+  
+  public final PendingResult<DataSourcesResult> findDataSources(GoogleApiClient paramGoogleApiClient, DataSourcesRequest paramDataSourcesRequest)
+  {
+    return paramGoogleApiClient.enqueue(new zzdw(this, paramGoogleApiClient, paramDataSourcesRequest));
+  }
+  
+  public final PendingResult<Status> remove(GoogleApiClient paramGoogleApiClient, PendingIntent paramPendingIntent)
+  {
+    return zza(paramGoogleApiClient, null, paramPendingIntent);
+  }
+  
+  public final PendingResult<Status> remove(GoogleApiClient paramGoogleApiClient, OnDataPointListener paramOnDataPointListener)
+  {
+    paramOnDataPointListener = zzan.zzx().zzb(paramOnDataPointListener, paramGoogleApiClient.getLooper());
+    if (paramOnDataPointListener == null) {
+      return PendingResults.immediatePendingResult(Status.RESULT_SUCCESS, paramGoogleApiClient);
+    }
+    return zza(paramGoogleApiClient, paramOnDataPointListener, null);
+  }
+}

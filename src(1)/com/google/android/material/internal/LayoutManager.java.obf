@@ -1,0 +1,90 @@
+package com.google.android.material.internal;
+
+import android.animation.Animator;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import androidx.transition.Transition;
+import androidx.transition.m;
+import java.util.Map;
+
+public class g
+  extends Transition
+{
+  public g() {}
+  
+  private void g0(m paramM)
+  {
+    Object localObject = b;
+    if ((localObject instanceof TextView))
+    {
+      localObject = (TextView)localObject;
+      a.put("android:textscale:scale", Float.valueOf(((TextView)localObject).getScaleX()));
+    }
+  }
+  
+  public void i(m paramM)
+  {
+    g0(paramM);
+  }
+  
+  public void l(m paramM)
+  {
+    g0(paramM);
+  }
+  
+  public Animator p(ViewGroup paramViewGroup, m paramM1, m paramM2)
+  {
+    final TextView localTextView = null;
+    paramViewGroup = localTextView;
+    if (paramM1 != null)
+    {
+      paramViewGroup = localTextView;
+      if (paramM2 != null)
+      {
+        paramViewGroup = localTextView;
+        if ((b instanceof TextView))
+        {
+          paramViewGroup = b;
+          if (!(paramViewGroup instanceof TextView)) {
+            return null;
+          }
+          localTextView = (TextView)paramViewGroup;
+          paramViewGroup = a;
+          paramM1 = a;
+          paramM2 = paramViewGroup.get("android:textscale:scale");
+          float f2 = 1.0F;
+          float f1;
+          if (paramM2 != null) {
+            f1 = ((Float)paramViewGroup.get("android:textscale:scale")).floatValue();
+          } else {
+            f1 = 1.0F;
+          }
+          if (paramM1.get("android:textscale:scale") != null) {
+            f2 = ((Float)paramM1.get("android:textscale:scale")).floatValue();
+          }
+          if (f1 == f2) {
+            return null;
+          }
+          paramViewGroup = ValueAnimator.ofFloat(new float[] { f1, f2 });
+          paramViewGroup.addUpdateListener(new a(localTextView));
+        }
+      }
+    }
+    return paramViewGroup;
+  }
+  
+  class a
+    implements ValueAnimator.AnimatorUpdateListener
+  {
+    a(TextView paramTextView) {}
+    
+    public void onAnimationUpdate(ValueAnimator paramValueAnimator)
+    {
+      float f = ((Float)paramValueAnimator.getAnimatedValue()).floatValue();
+      localTextView.setScaleX(f);
+      localTextView.setScaleY(f);
+    }
+  }
+}

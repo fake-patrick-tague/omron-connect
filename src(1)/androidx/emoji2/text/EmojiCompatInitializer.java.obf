@@ -1,0 +1,153 @@
+package androidx.emoji2.text;
+
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.Handler;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ProcessLifecycleInitializer;
+import androidx.startup.a;
+import androidx.startup.b;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+
+public class EmojiCompatInitializer
+  implements b<Boolean>
+{
+  public EmojiCompatInitializer() {}
+  
+  public List<Class<? extends b<?>>> a()
+  {
+    return Collections.singletonList(ProcessLifecycleInitializer.class);
+  }
+  
+  public Boolean c(Context paramContext)
+  {
+    if (Build.VERSION.SDK_INT >= 19)
+    {
+      g.g(new a(paramContext));
+      d(paramContext);
+      return Boolean.TRUE;
+    }
+    return Boolean.FALSE;
+  }
+  
+  void d(final Context paramContext)
+  {
+    paramContext = ((androidx.lifecycle.m)a.e(paramContext).f(ProcessLifecycleInitializer.class)).getLifecycle();
+    paramContext.a(new androidx.lifecycle.e()
+    {
+      public void a(androidx.lifecycle.m paramAnonymousM)
+      {
+        e();
+        paramContext.c(this);
+      }
+    });
+  }
+  
+  void e()
+  {
+    d.c().postDelayed(new c(), 500L);
+  }
+  
+  static class a
+    extends g.c
+  {
+    protected a(Context paramContext)
+    {
+      super();
+      b(1);
+    }
+  }
+  
+  static class b
+    implements g.g
+  {
+    private final Context a;
+    
+    b(Context paramContext)
+    {
+      a = paramContext.getApplicationContext();
+    }
+    
+    public void a(g.h paramH)
+    {
+      ThreadPoolExecutor localThreadPoolExecutor = d.a("EmojiCompatInitializer");
+      localThreadPoolExecutor.execute(new c(this, paramH, localThreadPoolExecutor));
+    }
+    
+    void b(final g.h paramH, final ThreadPoolExecutor paramThreadPoolExecutor)
+    {
+      try
+      {
+        k localK = e.a(a);
+        if (localK != null)
+        {
+          localK.c(paramThreadPoolExecutor);
+          localK.a().a(new a(paramH, paramThreadPoolExecutor));
+          return;
+        }
+        throw new RuntimeException("EmojiCompat font provider not available on this device.");
+      }
+      finally
+      {
+        paramH.a(localThrowable);
+        paramThreadPoolExecutor.shutdown();
+      }
+    }
+    
+    class a
+      extends g.h
+    {
+      a(g.h paramH, ThreadPoolExecutor paramThreadPoolExecutor) {}
+      
+      public void a(Throwable paramThrowable)
+      {
+        try
+        {
+          paramH.a(paramThrowable);
+          return;
+        }
+        finally
+        {
+          paramThreadPoolExecutor.shutdown();
+        }
+      }
+      
+      public void b(m paramM)
+      {
+        try
+        {
+          paramH.b(paramM);
+          return;
+        }
+        finally
+        {
+          paramThreadPoolExecutor.shutdown();
+        }
+      }
+    }
+  }
+  
+  static class c
+    implements Runnable
+  {
+    c() {}
+    
+    public void run()
+    {
+      try
+      {
+        c.h.m.m.a("EmojiCompat.EmojiCompatInitializer.run");
+        if (g.h()) {
+          g.b().k();
+        }
+        return;
+      }
+      finally
+      {
+        c.h.m.m.b();
+      }
+    }
+  }
+}

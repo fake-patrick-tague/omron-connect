@@ -1,0 +1,126 @@
+package com.google.android.material.internal;
+
+import android.content.Context;
+import android.graphics.Typeface;
+import android.text.TextPaint;
+import d.c.a.a.u.d;
+import java.lang.ref.WeakReference;
+
+public class f
+{
+  private final TextPaint a = new TextPaint(1);
+  private final d.c.a.a.u.f b = new a();
+  private float c;
+  private boolean d = true;
+  private WeakReference<b> e = new WeakReference(null);
+  private d f;
+  
+  public f(b paramB)
+  {
+    g(paramB);
+  }
+  
+  private float c(CharSequence paramCharSequence)
+  {
+    if (paramCharSequence == null) {
+      return 0.0F;
+    }
+    return a.measureText(paramCharSequence, 0, paramCharSequence.length());
+  }
+  
+  public d d()
+  {
+    return f;
+  }
+  
+  public TextPaint e()
+  {
+    return a;
+  }
+  
+  public float f(String paramString)
+  {
+    if (!d) {
+      return c;
+    }
+    float f1 = c(paramString);
+    c = f1;
+    d = false;
+    return f1;
+  }
+  
+  public void g(b paramB)
+  {
+    e = new WeakReference(paramB);
+  }
+  
+  public void h(d paramD, Context paramContext)
+  {
+    if (f != paramD)
+    {
+      f = paramD;
+      if (paramD != null)
+      {
+        paramD.k(paramContext, a, b);
+        b localB = (b)e.get();
+        if (localB != null) {
+          a.drawableState = localB.getState();
+        }
+        paramD.j(paramContext, a, b);
+        d = true;
+      }
+      paramD = (b)e.get();
+      if (paramD != null)
+      {
+        paramD.a();
+        paramD.onStateChange(paramD.getState());
+      }
+    }
+  }
+  
+  public void i(boolean paramBoolean)
+  {
+    d = paramBoolean;
+  }
+  
+  public void j(Context paramContext)
+  {
+    f.j(paramContext, a, b);
+  }
+  
+  class a
+    extends d.c.a.a.u.f
+  {
+    a() {}
+    
+    public void a(int paramInt)
+    {
+      f.a(f.this, true);
+      f.b localB = (f.b)f.b(f.this).get();
+      if (localB != null) {
+        localB.a();
+      }
+    }
+    
+    public void b(Typeface paramTypeface, boolean paramBoolean)
+    {
+      if (paramBoolean) {
+        return;
+      }
+      f.a(f.this, true);
+      paramTypeface = (f.b)f.b(f.this).get();
+      if (paramTypeface != null) {
+        paramTypeface.a();
+      }
+    }
+  }
+  
+  public static abstract interface b
+  {
+    public abstract void a();
+    
+    public abstract int[] getState();
+    
+    public abstract boolean onStateChange(int[] paramArrayOfInt);
+  }
+}

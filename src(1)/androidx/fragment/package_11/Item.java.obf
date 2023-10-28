@@ -1,0 +1,257 @@
+package androidx.fragment.app;
+
+import android.view.ViewGroup;
+import androidx.fragment.app.strictmode.FragmentStrictMode;
+import androidx.lifecycle.Lifecycle.State;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+
+public abstract class a0
+{
+  private final q a;
+  private final ClassLoader b;
+  ArrayList<a> c = new ArrayList();
+  int d;
+  int e;
+  int f;
+  int g;
+  int h;
+  boolean i;
+  boolean j = true;
+  String k;
+  int l;
+  CharSequence m;
+  int n;
+  CharSequence o;
+  ArrayList<String> p;
+  ArrayList<String> q;
+  boolean r = false;
+  ArrayList<Runnable> s;
+  
+  a0(q paramQ, ClassLoader paramClassLoader)
+  {
+    a = paramQ;
+    b = paramClassLoader;
+  }
+  
+  public a0 b(int paramInt, Fragment paramFragment)
+  {
+    m(paramInt, paramFragment, null, 1);
+    return this;
+  }
+  
+  public a0 c(int paramInt, Fragment paramFragment, String paramString)
+  {
+    m(paramInt, paramFragment, paramString, 1);
+    return this;
+  }
+  
+  a0 d(ViewGroup paramViewGroup, Fragment paramFragment, String paramString)
+  {
+    mContainer = paramViewGroup;
+    return c(paramViewGroup.getId(), paramFragment, paramString);
+  }
+  
+  public a0 e(Fragment paramFragment, String paramString)
+  {
+    m(0, paramFragment, paramString, 1);
+    return this;
+  }
+  
+  void f(a paramA)
+  {
+    c.add(paramA);
+    d = d;
+    e = e;
+    f = f;
+    g = g;
+  }
+  
+  public a0 g(String paramString)
+  {
+    if (j)
+    {
+      i = true;
+      k = paramString;
+      return this;
+    }
+    throw new IllegalStateException("This FragmentTransaction is not allowed to be added to the back stack.");
+  }
+  
+  public abstract int h();
+  
+  public abstract int i();
+  
+  public abstract void j();
+  
+  public abstract void k();
+  
+  public a0 l()
+  {
+    if (!i)
+    {
+      j = false;
+      return this;
+    }
+    throw new IllegalStateException("This transaction is already being added to the back stack");
+  }
+  
+  void m(int paramInt1, Fragment paramFragment, String paramString, int paramInt2)
+  {
+    Object localObject = mPreviousWho;
+    if (localObject != null) {
+      FragmentStrictMode.h(paramFragment, (String)localObject);
+    }
+    localObject = paramFragment.getClass();
+    int i1 = ((Class)localObject).getModifiers();
+    if ((!((Class)localObject).isAnonymousClass()) && (Modifier.isPublic(i1)) && ((!((Class)localObject).isMemberClass()) || (Modifier.isStatic(i1))))
+    {
+      if (paramString != null)
+      {
+        localObject = mTag;
+        if ((localObject != null) && (!paramString.equals(localObject)))
+        {
+          localObject = new StringBuilder();
+          ((StringBuilder)localObject).append("Can't change tag of fragment ");
+          ((StringBuilder)localObject).append(paramFragment);
+          ((StringBuilder)localObject).append(": was ");
+          ((StringBuilder)localObject).append(mTag);
+          ((StringBuilder)localObject).append(" now ");
+          ((StringBuilder)localObject).append(paramString);
+          throw new IllegalStateException(((StringBuilder)localObject).toString());
+        }
+        mTag = paramString;
+      }
+      if (paramInt1 != 0) {
+        if (paramInt1 != -1)
+        {
+          i1 = mFragmentId;
+          if ((i1 != 0) && (i1 != paramInt1))
+          {
+            paramString = new StringBuilder();
+            paramString.append("Can't change container ID of fragment ");
+            paramString.append(paramFragment);
+            paramString.append(": was ");
+            paramString.append(mFragmentId);
+            paramString.append(" now ");
+            paramString.append(paramInt1);
+            throw new IllegalStateException(paramString.toString());
+          }
+          mFragmentId = paramInt1;
+          mContainerId = paramInt1;
+        }
+        else
+        {
+          localObject = new StringBuilder();
+          ((StringBuilder)localObject).append("Can't add fragment ");
+          ((StringBuilder)localObject).append(paramFragment);
+          ((StringBuilder)localObject).append(" with tag ");
+          ((StringBuilder)localObject).append(paramString);
+          ((StringBuilder)localObject).append(" to container view with no id");
+          throw new IllegalArgumentException(((StringBuilder)localObject).toString());
+        }
+      }
+      f(new a(paramInt2, paramFragment));
+      return;
+    }
+    paramFragment = new StringBuilder();
+    paramFragment.append("Fragment ");
+    paramFragment.append(((Class)localObject).getCanonicalName());
+    paramFragment.append(" must be a public static class to be  properly recreated from instance state.");
+    throw new IllegalStateException(paramFragment.toString());
+  }
+  
+  public abstract boolean n();
+  
+  public a0 o(Fragment paramFragment)
+  {
+    f(new a(3, paramFragment));
+    return this;
+  }
+  
+  public a0 p(int paramInt, Fragment paramFragment)
+  {
+    return q(paramInt, paramFragment, null);
+  }
+  
+  public a0 q(int paramInt, Fragment paramFragment, String paramString)
+  {
+    if (paramInt != 0)
+    {
+      m(paramInt, paramFragment, paramString, 2);
+      return this;
+    }
+    throw new IllegalArgumentException("Must use non-zero containerViewId");
+  }
+  
+  public a0 r(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    d = paramInt1;
+    e = paramInt2;
+    f = paramInt3;
+    g = paramInt4;
+    return this;
+  }
+  
+  public a0 s(Fragment paramFragment, Lifecycle.State paramState)
+  {
+    f(new a(10, paramFragment, paramState));
+    return this;
+  }
+  
+  public a0 t(boolean paramBoolean)
+  {
+    r = paramBoolean;
+    return this;
+  }
+  
+  public a0 u(int paramInt)
+  {
+    h = paramInt;
+    return this;
+  }
+  
+  static final class a
+  {
+    int a;
+    Fragment b;
+    boolean c;
+    int d;
+    int e;
+    int f;
+    int g;
+    Lifecycle.State h;
+    Lifecycle.State i;
+    
+    a() {}
+    
+    a(int paramInt, Fragment paramFragment)
+    {
+      a = paramInt;
+      b = paramFragment;
+      c = false;
+      paramFragment = Lifecycle.State.f;
+      h = paramFragment;
+      i = paramFragment;
+    }
+    
+    a(int paramInt, Fragment paramFragment, Lifecycle.State paramState)
+    {
+      a = paramInt;
+      b = paramFragment;
+      c = false;
+      h = mMaxState;
+      i = paramState;
+    }
+    
+    a(int paramInt, Fragment paramFragment, boolean paramBoolean)
+    {
+      a = paramInt;
+      b = paramFragment;
+      c = paramBoolean;
+      paramFragment = Lifecycle.State.f;
+      h = paramFragment;
+      i = paramFragment;
+    }
+  }
+}

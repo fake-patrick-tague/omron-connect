@@ -1,0 +1,100 @@
+package com.google.android.gms.fitness;
+
+import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelableSerializer;
+import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.fitness.request.SessionInsertRequest;
+import com.google.android.gms.fitness.request.SessionReadRequest;
+import com.google.android.gms.fitness.result.SessionReadResult;
+import com.google.android.gms.fitness.result.SessionStopResult;
+
+@Deprecated
+public abstract interface SessionsApi
+{
+  @RecentlyNonNull
+  public abstract PendingResult<Status> insertSession(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull SessionInsertRequest paramSessionInsertRequest);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<SessionReadResult> readSession(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull SessionReadRequest paramSessionReadRequest);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<Status> registerForSessions(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull PendingIntent paramPendingIntent);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<Status> startSession(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull Session paramSession);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<SessionStopResult> stopSession(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, String paramString);
+  
+  @RecentlyNonNull
+  public abstract PendingResult<Status> unregisterForSessions(@RecentlyNonNull GoogleApiClient paramGoogleApiClient, @RecentlyNonNull PendingIntent paramPendingIntent);
+  
+  public static class ViewIntentBuilder
+  {
+    private final Context zzko;
+    private String zzkt;
+    private Session zzky;
+    private boolean zzkz = false;
+    
+    public ViewIntentBuilder(@RecentlyNonNull Context paramContext)
+    {
+      zzko = paramContext;
+    }
+    
+    @RecentlyNonNull
+    public Intent build()
+    {
+      boolean bool;
+      if (zzky != null) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkState(bool, "Session must be set");
+      Intent localIntent1 = new Intent("vnd.google.fitness.VIEW");
+      localIntent1.setType(Session.getMimeType(zzky.getActivity()));
+      SafeParcelableSerializer.serializeToIntentExtra(zzky, localIntent1, "vnd.google.fitness.session");
+      if (!zzkz) {
+        zzkt = zzky.getAppPackageName();
+      }
+      String str = zzkt;
+      if (str != null)
+      {
+        Intent localIntent2 = new Intent(localIntent1).setPackage(str);
+        ResolveInfo localResolveInfo = zzko.getPackageManager().resolveActivity(localIntent2, 0);
+        if (localResolveInfo != null)
+        {
+          localIntent2.setComponent(new ComponentName(str, activityInfo.name));
+          return localIntent2;
+        }
+      }
+      return localIntent1;
+    }
+    
+    @RecentlyNonNull
+    public ViewIntentBuilder setPreferredApplication(String paramString)
+    {
+      zzkt = paramString;
+      zzkz = true;
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public ViewIntentBuilder setSession(@RecentlyNonNull Session paramSession)
+    {
+      zzky = paramSession;
+      return this;
+    }
+  }
+}

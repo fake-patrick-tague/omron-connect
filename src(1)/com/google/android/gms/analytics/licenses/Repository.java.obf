@@ -1,0 +1,65 @@
+package com.google.android.gms.oss.licenses;
+
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
+import android.util.Log;
+
+public final class zzc
+{
+  private static zzc zzd;
+  private zzh zze;
+  private final Context zzf;
+  
+  private zzc(Context paramContext)
+  {
+    zzf = paramContext.getApplicationContext();
+  }
+  
+  public static int zza(zze paramZze)
+  {
+    return zzg.getIdentifier("libraries_social_licenses_license", "layout", packageName);
+  }
+  
+  public static zzc zza(Context paramContext)
+  {
+    if (zzd == null)
+    {
+      paramContext = new zzc(paramContext);
+      zzd = paramContext;
+      zze = new zzh(zzf);
+    }
+    return zzd;
+  }
+  
+  public static zze zza(Context paramContext, String paramString)
+  {
+    try
+    {
+      localObject = new zze(paramContext.getPackageManager().getResourcesForApplication(paramString), paramString, null);
+      return localObject;
+    }
+    catch (PackageManager.NameNotFoundException localNameNotFoundException)
+    {
+      Object localObject;
+      for (;;) {}
+    }
+    localObject = new StringBuilder(String.valueOf(paramString).length() + 52);
+    ((StringBuilder)localObject).append("Unable to get resources for ");
+    ((StringBuilder)localObject).append(paramString);
+    ((StringBuilder)localObject).append(", using local resources.");
+    Log.w("OssLicenses", ((StringBuilder)localObject).toString());
+    return new zze(paramContext.getResources(), paramContext.getPackageName(), null);
+  }
+  
+  public static int zzb(zze paramZze)
+  {
+    return zzg.getIdentifier("license", "id", packageName);
+  }
+  
+  public final zzh zzb()
+  {
+    return zze;
+  }
+}

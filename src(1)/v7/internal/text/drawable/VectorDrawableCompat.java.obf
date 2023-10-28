@@ -1,0 +1,645 @@
+package c.a.l.a;
+
+import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.util.StateSet;
+import androidx.appcompat.widget.d0;
+import androidx.core.content.g.k;
+import c.a.m.c;
+import c.a.m.e;
+import java.io.IOException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+public class a
+  extends d
+  implements androidx.core.graphics.drawable.b
+{
+  private static final String p = a.class.getSimpleName();
+  private c q;
+  private g r;
+  private int s = -1;
+  private int t = -1;
+  private boolean u;
+  
+  public a()
+  {
+    this(null, null);
+  }
+  
+  a(c paramC, Resources paramResources)
+  {
+    super(null);
+    h(new c(paramC, this, paramResources));
+    onStateChange(getState());
+    jumpToCurrentState();
+  }
+  
+  public static a m(Context paramContext, Resources paramResources, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    throws IOException, XmlPullParserException
+  {
+    Object localObject = paramXmlPullParser.getName();
+    if (((String)localObject).equals("animated-selector"))
+    {
+      localObject = new a();
+      ((a)localObject).n(paramContext, paramResources, paramXmlPullParser, paramAttributeSet, paramTheme);
+      return localObject;
+    }
+    paramContext = new StringBuilder();
+    paramContext.append(paramXmlPullParser.getPositionDescription());
+    paramContext.append(": invalid animated-selector tag ");
+    paramContext.append((String)localObject);
+    throw new XmlPullParserException(paramContext.toString());
+  }
+  
+  private void o(Context paramContext, Resources paramResources, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    throws XmlPullParserException, IOException
+  {
+    int i = paramXmlPullParser.getDepth() + 1;
+    for (;;)
+    {
+      int j = paramXmlPullParser.next();
+      if (j == 1) {
+        break;
+      }
+      int k = paramXmlPullParser.getDepth();
+      if ((k < i) && (j == 3)) {
+        break;
+      }
+      if ((j == 2) && (k <= i)) {
+        if (paramXmlPullParser.getName().equals("item")) {
+          q(paramContext, paramResources, paramXmlPullParser, paramAttributeSet, paramTheme);
+        } else if (paramXmlPullParser.getName().equals("transition")) {
+          r(paramContext, paramResources, paramXmlPullParser, paramAttributeSet, paramTheme);
+        }
+      }
+    }
+  }
+  
+  private void p()
+  {
+    onStateChange(getState());
+  }
+  
+  private int q(Context paramContext, Resources paramResources, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    throws XmlPullParserException, IOException
+  {
+    Object localObject = k.k(paramResources, paramTheme, paramAttributeSet, e.h);
+    int i = ((TypedArray)localObject).getResourceId(e.i, 0);
+    int j = ((TypedArray)localObject).getResourceId(e.j, -1);
+    Drawable localDrawable;
+    if (j > 0) {
+      localDrawable = d0.h().j(paramContext, j);
+    } else {
+      localDrawable = null;
+    }
+    ((TypedArray)localObject).recycle();
+    localObject = k(paramAttributeSet);
+    paramContext = localDrawable;
+    if (localDrawable == null)
+    {
+      do
+      {
+        j = paramXmlPullParser.next();
+      } while (j == 4);
+      if (j == 2)
+      {
+        if (paramXmlPullParser.getName().equals("vector")) {
+          paramContext = c.w.a.a.h.c(paramResources, paramXmlPullParser, paramAttributeSet, paramTheme);
+        } else if (Build.VERSION.SDK_INT >= 21) {
+          paramContext = c.a(paramResources, paramXmlPullParser, paramAttributeSet, paramTheme);
+        } else {
+          paramContext = Drawable.createFromXmlInner(paramResources, paramXmlPullParser, paramAttributeSet);
+        }
+      }
+      else
+      {
+        paramContext = new StringBuilder();
+        paramContext.append(paramXmlPullParser.getPositionDescription());
+        paramContext.append(": <item> tag requires a 'drawable' attribute or child tag defining a drawable");
+        throw new XmlPullParserException(paramContext.toString());
+      }
+    }
+    if (paramContext != null) {
+      return q.B((int[])localObject, paramContext, i);
+    }
+    paramContext = new StringBuilder();
+    paramContext.append(paramXmlPullParser.getPositionDescription());
+    paramContext.append(": <item> tag requires a 'drawable' attribute or child tag defining a drawable");
+    throw new XmlPullParserException(paramContext.toString());
+  }
+  
+  private int r(Context paramContext, Resources paramResources, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    throws XmlPullParserException, IOException
+  {
+    Object localObject = k.k(paramResources, paramTheme, paramAttributeSet, e.k);
+    int i = ((TypedArray)localObject).getResourceId(e.n, -1);
+    int j = ((TypedArray)localObject).getResourceId(e.m, -1);
+    int k = ((TypedArray)localObject).getResourceId(e.l, -1);
+    Drawable localDrawable;
+    if (k > 0) {
+      localDrawable = d0.h().j(paramContext, k);
+    } else {
+      localDrawable = null;
+    }
+    boolean bool = ((TypedArray)localObject).getBoolean(e.o, false);
+    ((TypedArray)localObject).recycle();
+    localObject = localDrawable;
+    if (localDrawable == null)
+    {
+      do
+      {
+        k = paramXmlPullParser.next();
+      } while (k == 4);
+      if (k == 2)
+      {
+        if (paramXmlPullParser.getName().equals("animated-vector")) {
+          localObject = c.w.a.a.b.a(paramContext, paramResources, paramXmlPullParser, paramAttributeSet, paramTheme);
+        } else if (Build.VERSION.SDK_INT >= 21) {
+          localObject = c.a(paramResources, paramXmlPullParser, paramAttributeSet, paramTheme);
+        } else {
+          localObject = Drawable.createFromXmlInner(paramResources, paramXmlPullParser, paramAttributeSet);
+        }
+      }
+      else
+      {
+        paramContext = new StringBuilder();
+        paramContext.append(paramXmlPullParser.getPositionDescription());
+        paramContext.append(": <transition> tag requires a 'drawable' attribute or child tag defining a drawable");
+        throw new XmlPullParserException(paramContext.toString());
+      }
+    }
+    if (localObject != null)
+    {
+      if ((i != -1) && (j != -1)) {
+        return q.C(i, j, (Drawable)localObject, bool);
+      }
+      paramContext = new StringBuilder();
+      paramContext.append(paramXmlPullParser.getPositionDescription());
+      paramContext.append(": <transition> tag requires 'fromId' & 'toId' attributes");
+      throw new XmlPullParserException(paramContext.toString());
+    }
+    paramContext = new StringBuilder();
+    paramContext.append(paramXmlPullParser.getPositionDescription());
+    paramContext.append(": <transition> tag requires a 'drawable' attribute or child tag defining a drawable");
+    throw new XmlPullParserException(paramContext.toString());
+  }
+  
+  private boolean s(int paramInt)
+  {
+    Object localObject = r;
+    int i;
+    if (localObject != null)
+    {
+      if (paramInt == s) {
+        return true;
+      }
+      if ((paramInt == t) && (((g)localObject).a()))
+      {
+        ((g)localObject).b();
+        s = t;
+        t = paramInt;
+        return true;
+      }
+      i = s;
+      ((g)localObject).d();
+    }
+    else
+    {
+      i = c();
+    }
+    r = null;
+    t = -1;
+    s = -1;
+    localObject = q;
+    int j = ((c)localObject).E(i);
+    int k = ((c)localObject).E(paramInt);
+    if (k != 0)
+    {
+      if (j == 0) {
+        return false;
+      }
+      int m = ((c)localObject).G(j, k);
+      if (m < 0) {
+        return false;
+      }
+      boolean bool1 = ((c)localObject).I(j, k);
+      g(m);
+      Drawable localDrawable = getCurrent();
+      if ((localDrawable instanceof AnimationDrawable))
+      {
+        boolean bool2 = ((c)localObject).H(j, k);
+        localObject = new e((AnimationDrawable)localDrawable, bool2, bool1);
+      }
+      else if ((localDrawable instanceof c.w.a.a.b))
+      {
+        localObject = new d((c.w.a.a.b)localDrawable);
+      }
+      else
+      {
+        if (!(localDrawable instanceof Animatable)) {
+          break label271;
+        }
+        localObject = new b((Animatable)localDrawable);
+      }
+      ((g)localObject).c();
+      r = ((g)localObject);
+      t = i;
+      s = paramInt;
+      return true;
+    }
+    label271:
+    return false;
+  }
+  
+  private void t(TypedArray paramTypedArray)
+  {
+    c localC = q;
+    if (Build.VERSION.SDK_INT >= 21) {
+      d |= c.b(paramTypedArray);
+    }
+    localC.x(paramTypedArray.getBoolean(e.d, i));
+    localC.t(paramTypedArray.getBoolean(e.e, l));
+    localC.u(paramTypedArray.getInt(e.f, A));
+    localC.v(paramTypedArray.getInt(e.g, B));
+    setDither(paramTypedArray.getBoolean(e.b, x));
+  }
+  
+  void h(b.d paramD)
+  {
+    super.h(paramD);
+    if ((paramD instanceof c)) {
+      q = ((c)paramD);
+    }
+  }
+  
+  public boolean isStateful()
+  {
+    return true;
+  }
+  
+  public void jumpToCurrentState()
+  {
+    super.jumpToCurrentState();
+    g localG = r;
+    if (localG != null)
+    {
+      localG.d();
+      r = null;
+      g(s);
+      s = -1;
+      t = -1;
+    }
+  }
+  
+  c l()
+  {
+    return new c(q, this, null);
+  }
+  
+  public Drawable mutate()
+  {
+    if ((!u) && (super.mutate() == this))
+    {
+      q.r();
+      u = true;
+    }
+    return this;
+  }
+  
+  public void n(Context paramContext, Resources paramResources, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    throws XmlPullParserException, IOException
+  {
+    TypedArray localTypedArray = k.k(paramResources, paramTheme, paramAttributeSet, e.a);
+    setVisible(localTypedArray.getBoolean(e.c, true), true);
+    t(localTypedArray);
+    i(paramResources);
+    localTypedArray.recycle();
+    o(paramContext, paramResources, paramXmlPullParser, paramAttributeSet, paramTheme);
+    p();
+  }
+  
+  protected boolean onStateChange(int[] paramArrayOfInt)
+  {
+    int i = q.F(paramArrayOfInt);
+    boolean bool1;
+    if ((i != c()) && ((s(i)) || (g(i)))) {
+      bool1 = true;
+    } else {
+      bool1 = false;
+    }
+    Drawable localDrawable = getCurrent();
+    boolean bool2 = bool1;
+    if (localDrawable != null) {
+      bool2 = bool1 | localDrawable.setState(paramArrayOfInt);
+    }
+    return bool2;
+  }
+  
+  public boolean setVisible(boolean paramBoolean1, boolean paramBoolean2)
+  {
+    boolean bool = super.setVisible(paramBoolean1, paramBoolean2);
+    g localG = r;
+    if ((localG != null) && ((bool) || (paramBoolean2)))
+    {
+      if (paramBoolean1)
+      {
+        localG.c();
+        return bool;
+      }
+      jumpToCurrentState();
+    }
+    return bool;
+  }
+  
+  private static class b
+    extends a.g
+  {
+    private final Animatable a;
+    
+    b(Animatable paramAnimatable)
+    {
+      super();
+      a = paramAnimatable;
+    }
+    
+    public void c()
+    {
+      a.start();
+    }
+    
+    public void d()
+    {
+      a.stop();
+    }
+  }
+  
+  static class c
+    extends d.a
+  {
+    c.e.d<Long> K;
+    c.e.h<Integer> L;
+    
+    c(c paramC, a paramA, Resources paramResources)
+    {
+      super(paramA, paramResources);
+      if (paramC != null)
+      {
+        K = K;
+        L = L;
+        return;
+      }
+      K = new c.e.d();
+      L = new c.e.h();
+    }
+    
+    private static long D(int paramInt1, int paramInt2)
+    {
+      long l = paramInt1;
+      return paramInt2 | l << 32;
+    }
+    
+    int B(int[] paramArrayOfInt, Drawable paramDrawable, int paramInt)
+    {
+      int i = super.z(paramArrayOfInt, paramDrawable);
+      L.k(i, Integer.valueOf(paramInt));
+      return i;
+    }
+    
+    int C(int paramInt1, int paramInt2, Drawable paramDrawable, boolean paramBoolean)
+    {
+      int i = super.a(paramDrawable);
+      long l2 = D(paramInt1, paramInt2);
+      long l1;
+      if (paramBoolean) {
+        l1 = 8589934592L;
+      } else {
+        l1 = 0L;
+      }
+      paramDrawable = K;
+      long l3 = i;
+      paramDrawable.b(l2, Long.valueOf(l3 | l1));
+      if (paramBoolean)
+      {
+        l2 = D(paramInt2, paramInt1);
+        K.b(l2, Long.valueOf(0x100000000 | l3 | l1));
+      }
+      return i;
+    }
+    
+    int E(int paramInt)
+    {
+      if (paramInt < 0) {
+        return 0;
+      }
+      return ((Integer)L.g(paramInt, Integer.valueOf(0))).intValue();
+    }
+    
+    int F(int[] paramArrayOfInt)
+    {
+      int i = super.A(paramArrayOfInt);
+      if (i >= 0) {
+        return i;
+      }
+      return super.A(StateSet.WILD_CARD);
+    }
+    
+    int G(int paramInt1, int paramInt2)
+    {
+      long l = D(paramInt1, paramInt2);
+      return (int)((Long)K.i(l, Long.valueOf(-1L))).longValue();
+    }
+    
+    boolean H(int paramInt1, int paramInt2)
+    {
+      long l = D(paramInt1, paramInt2);
+      return (((Long)K.i(l, Long.valueOf(-1L))).longValue() & 0x100000000) != 0L;
+    }
+    
+    boolean I(int paramInt1, int paramInt2)
+    {
+      long l = D(paramInt1, paramInt2);
+      return (((Long)K.i(l, Long.valueOf(-1L))).longValue() & 0x200000000) != 0L;
+    }
+    
+    public Drawable newDrawable()
+    {
+      return new a(this, null);
+    }
+    
+    public Drawable newDrawable(Resources paramResources)
+    {
+      return new a(this, paramResources);
+    }
+    
+    void r()
+    {
+      K = K.d();
+      L = L.d();
+    }
+  }
+  
+  private static class d
+    extends a.g
+  {
+    private final c.w.a.a.b a;
+    
+    d(c.w.a.a.b paramB)
+    {
+      super();
+      a = paramB;
+    }
+    
+    public void c()
+    {
+      a.start();
+    }
+    
+    public void d()
+    {
+      a.stop();
+    }
+  }
+  
+  private static class e
+    extends a.g
+  {
+    private final ObjectAnimator a;
+    private final boolean b;
+    
+    e(AnimationDrawable paramAnimationDrawable, boolean paramBoolean1, boolean paramBoolean2)
+    {
+      super();
+      int j = paramAnimationDrawable.getNumberOfFrames();
+      int i;
+      if (paramBoolean1) {
+        i = j - 1;
+      } else {
+        i = 0;
+      }
+      if (paramBoolean1) {
+        j = 0;
+      } else {
+        j -= 1;
+      }
+      a.f localF = new a.f(paramAnimationDrawable, paramBoolean1);
+      paramAnimationDrawable = ObjectAnimator.ofInt(paramAnimationDrawable, "currentIndex", new int[] { i, j });
+      if (Build.VERSION.SDK_INT >= 18) {
+        c.a.m.b.a(paramAnimationDrawable, true);
+      }
+      paramAnimationDrawable.setDuration(localF.a());
+      paramAnimationDrawable.setInterpolator(localF);
+      b = paramBoolean2;
+      a = paramAnimationDrawable;
+    }
+    
+    public boolean a()
+    {
+      return b;
+    }
+    
+    public void b()
+    {
+      a.reverse();
+    }
+    
+    public void c()
+    {
+      a.start();
+    }
+    
+    public void d()
+    {
+      a.cancel();
+    }
+  }
+  
+  private static class f
+    implements TimeInterpolator
+  {
+    private int[] a;
+    private int b;
+    private int c;
+    
+    f(AnimationDrawable paramAnimationDrawable, boolean paramBoolean)
+    {
+      b(paramAnimationDrawable, paramBoolean);
+    }
+    
+    int a()
+    {
+      return c;
+    }
+    
+    int b(AnimationDrawable paramAnimationDrawable, boolean paramBoolean)
+    {
+      int m = paramAnimationDrawable.getNumberOfFrames();
+      b = m;
+      int[] arrayOfInt = a;
+      if ((arrayOfInt == null) || (arrayOfInt.length < m)) {
+        a = new int[m];
+      }
+      arrayOfInt = a;
+      int i = 0;
+      int j = 0;
+      while (i < m)
+      {
+        if (paramBoolean) {
+          k = m - i - 1;
+        } else {
+          k = i;
+        }
+        int k = paramAnimationDrawable.getDuration(k);
+        arrayOfInt[i] = k;
+        j += k;
+        i += 1;
+      }
+      c = j;
+      return j;
+    }
+    
+    public float getInterpolation(float paramFloat)
+    {
+      int j = (int)(paramFloat * c + 0.5F);
+      int k = b;
+      int[] arrayOfInt = a;
+      int i = 0;
+      while ((i < k) && (j >= arrayOfInt[i]))
+      {
+        j -= arrayOfInt[i];
+        i += 1;
+      }
+      if (i < k) {
+        paramFloat = j / c;
+      } else {
+        paramFloat = 0.0F;
+      }
+      return i / k + paramFloat;
+    }
+  }
+  
+  private static abstract class g
+  {
+    private g() {}
+    
+    public boolean a()
+    {
+      return false;
+    }
+    
+    public void b() {}
+    
+    public abstract void c();
+    
+    public abstract void d();
+  }
+}

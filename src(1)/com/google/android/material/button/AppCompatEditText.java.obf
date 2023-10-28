@@ -1,0 +1,400 @@
+package com.google.android.material.button;
+
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build.VERSION;
+import android.widget.Button;
+import c.h.q.f0;
+import com.google.android.material.internal.j;
+import d.c.a.a.l;
+import d.c.a.a.u.c;
+import d.c.a.a.x.g;
+import d.c.a.a.x.k;
+import d.c.a.a.x.n;
+
+class a
+{
+  private static final boolean a;
+  private final MaterialButton b;
+  private k c;
+  private int d;
+  private int e;
+  private int f;
+  private int g;
+  private int h;
+  private int i;
+  private PorterDuff.Mode j;
+  private ColorStateList k;
+  private ColorStateList l;
+  private ColorStateList m;
+  private Drawable n;
+  private boolean o = false;
+  private boolean p = false;
+  private boolean q = false;
+  private boolean r;
+  private LayerDrawable s;
+  private int t;
+  
+  static
+  {
+    boolean bool;
+    if (Build.VERSION.SDK_INT >= 21) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    a = bool;
+  }
+  
+  a(MaterialButton paramMaterialButton, k paramK)
+  {
+    b = paramMaterialButton;
+    c = paramK;
+  }
+  
+  private void E(int paramInt1, int paramInt2)
+  {
+    int i1 = f0.I(b);
+    int i2 = b.getPaddingTop();
+    int i3 = f0.H(b);
+    int i4 = b.getPaddingBottom();
+    int i5 = f;
+    int i6 = g;
+    g = paramInt2;
+    f = paramInt1;
+    if (!p) {
+      F();
+    }
+    f0.D0(b, i1, i2 + paramInt1 - i5, i3, i4 + paramInt2 - i6);
+  }
+  
+  private void F()
+  {
+    b.setInternalBackground(a());
+    g localG = f();
+    if (localG != null) {
+      localG.W(t);
+    }
+  }
+  
+  private void G(k paramK)
+  {
+    if (f() != null) {
+      f().setShapeAppearanceModel(paramK);
+    }
+    if (n() != null) {
+      n().setShapeAppearanceModel(paramK);
+    }
+    if (e() != null) {
+      e().setShapeAppearanceModel(paramK);
+    }
+  }
+  
+  private void I()
+  {
+    g localG1 = f();
+    g localG2 = n();
+    if (localG1 != null)
+    {
+      localG1.e0(i, l);
+      if (localG2 != null)
+      {
+        float f1 = i;
+        int i1;
+        if (o) {
+          i1 = d.c.a.a.o.a.c(b, d.c.a.a.b.o);
+        } else {
+          i1 = 0;
+        }
+        localG2.d0(f1, i1);
+      }
+    }
+  }
+  
+  private InsetDrawable J(Drawable paramDrawable)
+  {
+    return new InsetDrawable(paramDrawable, d, f, e, g);
+  }
+  
+  private Drawable a()
+  {
+    Object localObject1 = new g(c);
+    ((g)localObject1).M(b.getContext());
+    androidx.core.graphics.drawable.a.o((Drawable)localObject1, k);
+    Object localObject2 = j;
+    if (localObject2 != null) {
+      androidx.core.graphics.drawable.a.p((Drawable)localObject1, (PorterDuff.Mode)localObject2);
+    }
+    ((g)localObject1).e0(i, l);
+    localObject2 = new g(c);
+    ((g)localObject2).setTint(0);
+    float f1 = i;
+    int i1;
+    if (o) {
+      i1 = d.c.a.a.o.a.c(b, d.c.a.a.b.o);
+    } else {
+      i1 = 0;
+    }
+    ((g)localObject2).d0(f1, i1);
+    if (a)
+    {
+      localObject3 = new g(c);
+      n = ((Drawable)localObject3);
+      androidx.core.graphics.drawable.a.n((Drawable)localObject3, -1);
+      localObject1 = new RippleDrawable(d.c.a.a.v.b.d(m), J(new LayerDrawable(new Drawable[] { localObject2, localObject1 })), n);
+      s = ((LayerDrawable)localObject1);
+      return localObject1;
+    }
+    Object localObject3 = new d.c.a.a.v.a(c);
+    n = ((Drawable)localObject3);
+    androidx.core.graphics.drawable.a.o((Drawable)localObject3, d.c.a.a.v.b.d(m));
+    localObject1 = new LayerDrawable(new Drawable[] { localObject2, localObject1, n });
+    s = ((LayerDrawable)localObject1);
+    return J((Drawable)localObject1);
+  }
+  
+  private g g(boolean paramBoolean)
+  {
+    LayerDrawable localLayerDrawable = s;
+    if ((localLayerDrawable != null) && (localLayerDrawable.getNumberOfLayers() > 0))
+    {
+      if (a) {
+        return (g)((LayerDrawable)((InsetDrawable)s.getDrawable(0)).getDrawable()).getDrawable(paramBoolean ^ true);
+      }
+      return (g)s.getDrawable(paramBoolean ^ true);
+    }
+    return null;
+  }
+  
+  private g n()
+  {
+    return g(true);
+  }
+  
+  void A(ColorStateList paramColorStateList)
+  {
+    if (l != paramColorStateList)
+    {
+      l = paramColorStateList;
+      I();
+    }
+  }
+  
+  void B(int paramInt)
+  {
+    if (i != paramInt)
+    {
+      i = paramInt;
+      I();
+    }
+  }
+  
+  void C(ColorStateList paramColorStateList)
+  {
+    if (k != paramColorStateList)
+    {
+      k = paramColorStateList;
+      if (f() != null) {
+        androidx.core.graphics.drawable.a.o(f(), k);
+      }
+    }
+  }
+  
+  void D(PorterDuff.Mode paramMode)
+  {
+    if (j != paramMode)
+    {
+      j = paramMode;
+      if ((f() != null) && (j != null)) {
+        androidx.core.graphics.drawable.a.p(f(), j);
+      }
+    }
+  }
+  
+  void H(int paramInt1, int paramInt2)
+  {
+    Drawable localDrawable = n;
+    if (localDrawable != null) {
+      localDrawable.setBounds(d, f, paramInt2 - e, paramInt1 - g);
+    }
+  }
+  
+  int b()
+  {
+    return h;
+  }
+  
+  public int c()
+  {
+    return g;
+  }
+  
+  public int d()
+  {
+    return f;
+  }
+  
+  public n e()
+  {
+    LayerDrawable localLayerDrawable = s;
+    if ((localLayerDrawable != null) && (localLayerDrawable.getNumberOfLayers() > 1))
+    {
+      if (s.getNumberOfLayers() > 2) {
+        return (n)s.getDrawable(2);
+      }
+      return (n)s.getDrawable(1);
+    }
+    return null;
+  }
+  
+  g f()
+  {
+    return g(false);
+  }
+  
+  ColorStateList h()
+  {
+    return m;
+  }
+  
+  k i()
+  {
+    return c;
+  }
+  
+  ColorStateList j()
+  {
+    return l;
+  }
+  
+  int k()
+  {
+    return i;
+  }
+  
+  ColorStateList l()
+  {
+    return k;
+  }
+  
+  PorterDuff.Mode m()
+  {
+    return j;
+  }
+  
+  boolean o()
+  {
+    return p;
+  }
+  
+  boolean p()
+  {
+    return r;
+  }
+  
+  void q(TypedArray paramTypedArray)
+  {
+    d = paramTypedArray.getDimensionPixelOffset(l.Y2, 0);
+    e = paramTypedArray.getDimensionPixelOffset(l.Z2, 0);
+    f = paramTypedArray.getDimensionPixelOffset(l.a3, 0);
+    g = paramTypedArray.getDimensionPixelOffset(l.b3, 0);
+    int i1 = l.f3;
+    if (paramTypedArray.hasValue(i1))
+    {
+      i1 = paramTypedArray.getDimensionPixelSize(i1, -1);
+      h = i1;
+      y(c.w(i1));
+      q = true;
+    }
+    i = paramTypedArray.getDimensionPixelSize(l.p3, 0);
+    j = j.e(paramTypedArray.getInt(l.e3, -1), PorterDuff.Mode.SRC_IN);
+    k = c.a(b.getContext(), paramTypedArray, l.d3);
+    l = c.a(b.getContext(), paramTypedArray, l.o3);
+    m = c.a(b.getContext(), paramTypedArray, l.n3);
+    r = paramTypedArray.getBoolean(l.c3, false);
+    t = paramTypedArray.getDimensionPixelSize(l.g3, 0);
+    i1 = f0.I(b);
+    int i2 = b.getPaddingTop();
+    int i3 = f0.H(b);
+    int i4 = b.getPaddingBottom();
+    if (paramTypedArray.hasValue(l.X2)) {
+      s();
+    } else {
+      F();
+    }
+    f0.D0(b, i1 + d, i2 + f, i3 + e, i4 + g);
+  }
+  
+  void r(int paramInt)
+  {
+    if (f() != null) {
+      f().setTint(paramInt);
+    }
+  }
+  
+  void s()
+  {
+    p = true;
+    b.setSupportBackgroundTintList(k);
+    b.setSupportBackgroundTintMode(j);
+  }
+  
+  void t(boolean paramBoolean)
+  {
+    r = paramBoolean;
+  }
+  
+  void u(int paramInt)
+  {
+    if ((!q) || (h != paramInt))
+    {
+      h = paramInt;
+      q = true;
+      y(c.w(paramInt));
+    }
+  }
+  
+  public void v(int paramInt)
+  {
+    E(f, paramInt);
+  }
+  
+  public void w(int paramInt)
+  {
+    E(paramInt, g);
+  }
+  
+  void x(ColorStateList paramColorStateList)
+  {
+    if (m != paramColorStateList)
+    {
+      m = paramColorStateList;
+      boolean bool = a;
+      if ((bool) && ((b.getBackground() instanceof RippleDrawable)))
+      {
+        ((RippleDrawable)b.getBackground()).setColor(d.c.a.a.v.b.d(paramColorStateList));
+        return;
+      }
+      if ((!bool) && ((b.getBackground() instanceof d.c.a.a.v.a))) {
+        ((d.c.a.a.v.a)b.getBackground()).setTintList(d.c.a.a.v.b.d(paramColorStateList));
+      }
+    }
+  }
+  
+  void y(k paramK)
+  {
+    c = paramK;
+    G(paramK);
+  }
+  
+  void z(boolean paramBoolean)
+  {
+    o = paramBoolean;
+    I();
+  }
+}

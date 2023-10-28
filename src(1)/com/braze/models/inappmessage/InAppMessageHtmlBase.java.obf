@@ -1,0 +1,223 @@
+package com.braze.models.inappmessage;
+
+import bo.app.b3;
+import bo.app.j.a;
+import bo.app.x1;
+import bo.app.z1;
+import com.braze.enums.inappmessage.MessageType;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import org.json.JSONObject;
+
+public abstract class InAppMessageHtmlBase
+  extends InAppMessageBase
+  implements IInAppMessageHtml
+{
+  private String buttonIdClicked;
+  private String localAssetsDirectoryUrl;
+  private boolean wasButtonClickLogged;
+  
+  protected InAppMessageHtmlBase()
+  {
+    setOpenUriInWebView(true);
+  }
+  
+  public InAppMessageHtmlBase(JSONObject paramJSONObject, z1 paramZ1)
+  {
+    super(paramJSONObject, paramZ1, false, false, 12, null);
+    setOpenUriInWebView(paramJSONObject.optBoolean("use_webview", true));
+  }
+  
+  public String getLocalAssetsDirectoryUrl()
+  {
+    return localAssetsDirectoryUrl;
+  }
+  
+  public boolean logButtonClick(String paramString)
+  {
+    i.e(paramString, "buttonId");
+    final String str = getTriggerId();
+    z1 localZ1 = getBrazeManager();
+    int i;
+    if ((str != null) && (str.length() != 0)) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if (i != 0)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new a(paramString), 3, null);
+      return false;
+    }
+    if (g.o(paramString))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, b.b, 2, null);
+      return false;
+    }
+    if ((wasButtonClickLogged) && (getMessageType() != MessageType.HTML))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, c.b, 2, null);
+      return false;
+    }
+    if (localZ1 == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, d.b, 2, null);
+      return false;
+    }
+    x1 localX1 = bo.app.j.h.d(str, paramString);
+    if (localX1 != null) {
+      localZ1.a(localX1);
+    }
+    buttonIdClicked = paramString;
+    wasButtonClickLogged = true;
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new e(paramString, str), 3, null);
+    return true;
+  }
+  
+  public void onAfterClosed()
+  {
+    super.onAfterClosed();
+    if (wasButtonClickLogged)
+    {
+      Object localObject = getTriggerId();
+      int j = 0;
+      int i;
+      if ((localObject != null) && (!g.o((CharSequence)localObject))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i == 0)
+      {
+        localObject = buttonIdClicked;
+        if (localObject != null)
+        {
+          i = j;
+          if (!g.o((CharSequence)localObject)) {}
+        }
+        else
+        {
+          i = 1;
+        }
+        if (i == 0)
+        {
+          localObject = getBrazeManager();
+          if (localObject != null) {
+            ((z1)localObject).a(new b3(getTriggerId(), buttonIdClicked));
+          }
+        }
+      }
+    }
+  }
+  
+  public void setLocalAssetsDirectoryUrl(String paramString)
+  {
+    localAssetsDirectoryUrl = paramString;
+  }
+  
+  public void setLocalPrefetchedAssetPaths(Map<String, String> paramMap)
+  {
+    i.e(paramMap, "remotePathToLocalAssetMap");
+    if ((paramMap.isEmpty() ^ true))
+    {
+      paramMap = paramMap.values().toArray(new String[0]);
+      Objects.requireNonNull(paramMap, "null cannot be cast to non-null type kotlin.Array<T of kotlin.collections.ArraysKt__ArraysJVMKt.toTypedArray>");
+      setLocalAssetsDirectoryUrl(((String[])paramMap)[0]);
+    }
+  }
+  
+  static final class a
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    a(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Trigger id not found (this is expected for test sends). Not logging html in-app message button click for id: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class b
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final b b = new b();
+    
+    b()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Button Id was null or blank for this html in-app message. Ignoring.";
+    }
+  }
+  
+  static final class c
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final c b = new c();
+    
+    c()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Button click already logged for this html in-app message. Ignoring.";
+    }
+  }
+  
+  static final class d
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    public static final d b = new d();
+    
+    d()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Cannot log an html in-app message button click because the BrazeManager is null.";
+    }
+  }
+  
+  static final class e
+    extends kotlin.x.d.j
+    implements a<String>
+  {
+    e(String paramString1, String paramString2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Logged button click for button id: ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" and trigger id: ");
+      localStringBuilder.append(str);
+      return localStringBuilder.toString();
+    }
+  }
+}

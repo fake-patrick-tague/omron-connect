@@ -1,0 +1,262 @@
+package com.google.android.gms.fitness;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build.VERSION;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.Api.ApiOptions.NoOptions;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.internal.fitness.zzad;
+import com.google.android.gms.internal.fitness.zzaj;
+import com.google.android.gms.internal.fitness.zzap;
+import com.google.android.gms.internal.fitness.zzav;
+import com.google.android.gms.internal.fitness.zzco;
+import com.google.android.gms.internal.fitness.zzcw;
+import com.google.android.gms.internal.fitness.zzdd;
+import com.google.android.gms.internal.fitness.zzde;
+import com.google.android.gms.internal.fitness.zzdo;
+import com.google.android.gms.internal.fitness.zzdx;
+import com.google.android.gms.internal.fitness.zzeb;
+import com.google.android.gms.internal.fitness.zzen;
+import com.google.android.gms.internal.fitness.zzk;
+import com.google.android.gms.internal.fitness.zzq;
+import com.google.android.gms.internal.fitness.zzw;
+import java.util.concurrent.TimeUnit;
+
+public class Fitness
+{
+  @RecentlyNonNull
+  public static final String ACTION_TRACK = "vnd.google.fitness.TRACK";
+  @RecentlyNonNull
+  public static final String ACTION_VIEW = "vnd.google.fitness.VIEW";
+  @RecentlyNonNull
+  public static final String ACTION_VIEW_GOAL = "vnd.google.fitness.VIEW_GOAL";
+  @Deprecated
+  @RecentlyNonNull
+  public static final Void API;
+  @Deprecated
+  @RecentlyNonNull
+  public static final Api<Api.ApiOptions.NoOptions> BLE_API;
+  @Deprecated
+  @RecentlyNonNull
+  public static final BleApi BleApi;
+  @Deprecated
+  @RecentlyNonNull
+  public static final Api<Api.ApiOptions.NoOptions> CONFIG_API;
+  @Deprecated
+  @RecentlyNonNull
+  public static final ConfigApi ConfigApi;
+  @RecentlyNonNull
+  public static final String EXTRA_END_TIME = "vnd.google.fitness.end_time";
+  @RecentlyNonNull
+  public static final String EXTRA_START_TIME = "vnd.google.fitness.start_time";
+  @Deprecated
+  @RecentlyNonNull
+  public static final Api<Api.ApiOptions.NoOptions> GOALS_API;
+  @Deprecated
+  @RecentlyNonNull
+  public static final GoalsApi GoalsApi;
+  @Deprecated
+  @RecentlyNonNull
+  public static final Api<Api.ApiOptions.NoOptions> HISTORY_API;
+  @Deprecated
+  @RecentlyNonNull
+  public static final HistoryApi HistoryApi;
+  @Deprecated
+  @RecentlyNonNull
+  public static final Api<Api.ApiOptions.NoOptions> RECORDING_API;
+  @Deprecated
+  @RecentlyNonNull
+  public static final RecordingApi RecordingApi;
+  @RecentlyNonNull
+  public static final Scope SCOPE_ACTIVITY_READ;
+  @RecentlyNonNull
+  public static final Scope SCOPE_ACTIVITY_READ_WRITE;
+  @RecentlyNonNull
+  public static final Scope SCOPE_BODY_READ = new Scope("https://www.googleapis.com/auth/fitness.body.read");
+  @RecentlyNonNull
+  public static final Scope SCOPE_BODY_READ_WRITE = new Scope("https://www.googleapis.com/auth/fitness.body.write");
+  @RecentlyNonNull
+  public static final Scope SCOPE_LOCATION_READ;
+  @RecentlyNonNull
+  public static final Scope SCOPE_LOCATION_READ_WRITE;
+  @RecentlyNonNull
+  public static final Scope SCOPE_NUTRITION_READ = new Scope("https://www.googleapis.com/auth/fitness.nutrition.read");
+  @RecentlyNonNull
+  public static final Scope SCOPE_NUTRITION_READ_WRITE = new Scope("https://www.googleapis.com/auth/fitness.nutrition.write");
+  @Deprecated
+  @RecentlyNonNull
+  public static final Api<Api.ApiOptions.NoOptions> SENSORS_API = zzap.API;
+  @Deprecated
+  @RecentlyNonNull
+  public static final Api<Api.ApiOptions.NoOptions> SESSIONS_API;
+  @Deprecated
+  @RecentlyNonNull
+  public static final SensorsApi SensorsApi = new zzdx();
+  @Deprecated
+  @RecentlyNonNull
+  public static final SessionsApi SessionsApi;
+  @ShowFirstParty
+  private static final Scope zzkf = new Scope("https://www.googleapis.com/auth/fitness.heart_rate.read");
+  @ShowFirstParty
+  private static final Scope zzkg = new Scope("https://www.googleapis.com/auth/fitness.heart_rate.write");
+  @ShowFirstParty
+  private static final Scope zzkh = new Scope("https://www.googleapis.com/auth/fitness.respiratory_rate.read");
+  @ShowFirstParty
+  private static final Scope zzki = new Scope("https://www.googleapis.com/auth/fitness.respiratory_rate.write");
+  @ShowFirstParty
+  private static final Scope zzkj = new Scope("https://www.googleapis.com/auth/fitness.sleep.read");
+  @ShowFirstParty
+  private static final Scope zzkk = new Scope("https://www.googleapis.com/auth/fitness.sleep.write");
+  
+  static
+  {
+    RECORDING_API = zzaj.API;
+    RecordingApi = new zzdo();
+    SESSIONS_API = zzav.API;
+    SessionsApi = new zzeb();
+    HISTORY_API = zzad.API;
+    HistoryApi = new zzde();
+    GOALS_API = zzw.API;
+    GoalsApi = new zzdd();
+    CONFIG_API = zzq.API;
+    ConfigApi = new zzcw();
+    BLE_API = zzk.API;
+    Object localObject;
+    if (Build.VERSION.SDK_INT >= 18) {
+      localObject = new zzco();
+    } else {
+      localObject = new zzen();
+    }
+    BleApi = (BleApi)localObject;
+    SCOPE_ACTIVITY_READ = new Scope("https://www.googleapis.com/auth/fitness.activity.read");
+    SCOPE_ACTIVITY_READ_WRITE = new Scope("https://www.googleapis.com/auth/fitness.activity.write");
+    SCOPE_LOCATION_READ = new Scope("https://www.googleapis.com/auth/fitness.location.read");
+    SCOPE_LOCATION_READ_WRITE = new Scope("https://www.googleapis.com/auth/fitness.location.write");
+  }
+  
+  private Fitness() {}
+  
+  @Deprecated
+  @RecentlyNonNull
+  public static BleClient getBleClient(@RecentlyNonNull Activity paramActivity, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new BleClient(paramActivity, new zzg(paramActivity, paramGoogleSignInAccount));
+  }
+  
+  @Deprecated
+  @RecentlyNonNull
+  public static BleClient getBleClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new BleClient(paramContext, new zzg(paramContext, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static ConfigClient getConfigClient(@RecentlyNonNull Activity paramActivity, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new ConfigClient(paramActivity, new zzg(paramActivity, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static ConfigClient getConfigClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new ConfigClient(paramContext, new zzg(paramContext, paramGoogleSignInAccount));
+  }
+  
+  public static long getEndTime(@RecentlyNonNull Intent paramIntent, @RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    long l = paramIntent.getLongExtra("vnd.google.fitness.end_time", -1L);
+    if (l == -1L) {
+      return -1L;
+    }
+    return paramTimeUnit.convert(l, TimeUnit.MILLISECONDS);
+  }
+  
+  @RecentlyNonNull
+  public static GoalsClient getGoalsClient(@RecentlyNonNull Activity paramActivity, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new GoalsClient(paramActivity, new zzg(paramActivity, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static GoalsClient getGoalsClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new GoalsClient(paramContext, new zzg(paramContext, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static HistoryClient getHistoryClient(@RecentlyNonNull Activity paramActivity, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new HistoryClient(paramActivity, new zzg(paramActivity, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static HistoryClient getHistoryClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new HistoryClient(paramContext, new zzg(paramContext, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static RecordingClient getRecordingClient(@RecentlyNonNull Activity paramActivity, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new RecordingClient(paramActivity, new zzg(paramActivity, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static RecordingClient getRecordingClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new RecordingClient(paramContext, new zzg(paramContext, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static SensorsClient getSensorsClient(@RecentlyNonNull Activity paramActivity, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new SensorsClient(paramActivity, new zzg(paramActivity, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static SensorsClient getSensorsClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new SensorsClient(paramContext, new zzg(paramContext, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static SessionsClient getSessionsClient(@RecentlyNonNull Activity paramActivity, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new SessionsClient(paramActivity, new zzg(paramActivity, paramGoogleSignInAccount));
+  }
+  
+  @RecentlyNonNull
+  public static SessionsClient getSessionsClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInAccount paramGoogleSignInAccount)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInAccount);
+    return new SessionsClient(paramContext, new zzg(paramContext, paramGoogleSignInAccount));
+  }
+  
+  public static long getStartTime(@RecentlyNonNull Intent paramIntent, @RecentlyNonNull TimeUnit paramTimeUnit)
+  {
+    long l = paramIntent.getLongExtra("vnd.google.fitness.start_time", -1L);
+    if (l == -1L) {
+      return -1L;
+    }
+    return paramTimeUnit.convert(l, TimeUnit.MILLISECONDS);
+  }
+}

@@ -1,0 +1,93 @@
+package com.google.android.gms.auth;
+
+import android.accounts.Account;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import android.text.TextUtils;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+
+@SafeParcelable.Class(creator="AccountChangeEventsRequestCreator")
+public class AccountChangeEventsRequest
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<AccountChangeEventsRequest> CREATOR = new zzb();
+  @SafeParcelable.VersionField(id=1)
+  private final int zze;
+  @Deprecated
+  @SafeParcelable.Field(id=3)
+  private String zzg;
+  @SafeParcelable.Field(id=2)
+  private int zzi;
+  @SafeParcelable.Field(id=4)
+  private Account zzk;
+  
+  public AccountChangeEventsRequest()
+  {
+    zze = 1;
+  }
+  
+  @SafeParcelable.Constructor
+  AccountChangeEventsRequest(@SafeParcelable.Param(id=1) int paramInt1, @SafeParcelable.Param(id=2) int paramInt2, @SafeParcelable.Param(id=3) String paramString, @SafeParcelable.Param(id=4) Account paramAccount)
+  {
+    zze = paramInt1;
+    zzi = paramInt2;
+    zzg = paramString;
+    if ((paramAccount == null) && (!TextUtils.isEmpty(paramString)))
+    {
+      zzk = new Account(paramString, "com.google");
+      return;
+    }
+    zzk = paramAccount;
+  }
+  
+  public Account getAccount()
+  {
+    return zzk;
+  }
+  
+  @Deprecated
+  public String getAccountName()
+  {
+    return zzg;
+  }
+  
+  public int getEventIndex()
+  {
+    return zzi;
+  }
+  
+  public AccountChangeEventsRequest setAccount(Account paramAccount)
+  {
+    zzk = paramAccount;
+    return this;
+  }
+  
+  @Deprecated
+  public AccountChangeEventsRequest setAccountName(String paramString)
+  {
+    zzg = paramString;
+    return this;
+  }
+  
+  public AccountChangeEventsRequest setEventIndex(int paramInt)
+  {
+    zzi = paramInt;
+    return this;
+  }
+  
+  public void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zze);
+    SafeParcelWriter.writeInt(paramParcel, 2, zzi);
+    SafeParcelWriter.writeString(paramParcel, 3, zzg, false);
+    SafeParcelWriter.writeParcelable(paramParcel, 4, zzk, paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

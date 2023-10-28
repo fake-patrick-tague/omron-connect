@@ -1,0 +1,129 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.RemoteException;
+import com.google.android.gms.common.Feature;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Api.AnyClient;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.BiConsumer;
+import com.google.android.gms.tasks.TaskCompletionSource;
+
+@KeepForSdk
+public abstract class TaskApiCall<A extends Api.AnyClient, ResultT>
+{
+  private final Feature[] zaa;
+  private final boolean zab;
+  private final int zac;
+  
+  @Deprecated
+  @KeepForSdk
+  public TaskApiCall()
+  {
+    zaa = null;
+    zab = false;
+    zac = 0;
+  }
+  
+  @KeepForSdk
+  protected TaskApiCall(Feature[] paramArrayOfFeature, boolean paramBoolean, int paramInt)
+  {
+    zaa = paramArrayOfFeature;
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (paramArrayOfFeature != null)
+    {
+      bool1 = bool2;
+      if (paramBoolean) {
+        bool1 = true;
+      }
+    }
+    zab = bool1;
+    zac = paramInt;
+  }
+  
+  @KeepForSdk
+  public static <A extends Api.AnyClient, ResultT> Builder<A, ResultT> builder()
+  {
+    return new Builder(null);
+  }
+  
+  @KeepForSdk
+  protected abstract void doExecute(A paramA, TaskCompletionSource<ResultT> paramTaskCompletionSource)
+    throws RemoteException;
+  
+  @KeepForSdk
+  public boolean shouldAutoResolveMissingFeatures()
+  {
+    return zab;
+  }
+  
+  public final int zaa()
+  {
+    return zac;
+  }
+  
+  public final Feature[] zab()
+  {
+    return zaa;
+  }
+  
+  @KeepForSdk
+  public static class Builder<A extends Api.AnyClient, ResultT>
+  {
+    private RemoteCall<A, TaskCompletionSource<ResultT>> zaa;
+    private boolean zab = true;
+    private Feature[] zac;
+    private int zad = 0;
+    
+    private Builder() {}
+    
+    @KeepForSdk
+    public TaskApiCall<A, ResultT> build()
+    {
+      boolean bool;
+      if (zaa != null) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      Preconditions.checkArgument(bool, "execute parameter required");
+      return new zacv(this, zac, zab, zad);
+    }
+    
+    @Deprecated
+    @KeepForSdk
+    public Builder<A, ResultT> execute(BiConsumer<A, TaskCompletionSource<ResultT>> paramBiConsumer)
+    {
+      zaa = new zacu(paramBiConsumer);
+      return this;
+    }
+    
+    @KeepForSdk
+    public Builder<A, ResultT> run(RemoteCall<A, TaskCompletionSource<ResultT>> paramRemoteCall)
+    {
+      zaa = paramRemoteCall;
+      return this;
+    }
+    
+    @KeepForSdk
+    public Builder<A, ResultT> setAutoResolveMissingFeatures(boolean paramBoolean)
+    {
+      zab = paramBoolean;
+      return this;
+    }
+    
+    @KeepForSdk
+    public Builder<A, ResultT> setFeatures(Feature... paramVarArgs)
+    {
+      zac = paramVarArgs;
+      return this;
+    }
+    
+    @KeepForSdk
+    public Builder<A, ResultT> setMethodKey(int paramInt)
+    {
+      zad = paramInt;
+      return this;
+    }
+  }
+}

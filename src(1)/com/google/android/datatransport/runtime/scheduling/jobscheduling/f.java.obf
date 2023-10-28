@@ -1,0 +1,136 @@
+package com.google.android.datatransport.runtime.scheduling.jobscheduling;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import com.google.android.datatransport.h.j.a;
+import com.google.android.datatransport.h.p;
+import com.google.android.datatransport.h.y.j.i0;
+import com.google.android.datatransport.h.y.j.j0;
+import com.google.android.datatransport.h.y.j.q0;
+import com.google.android.datatransport.runtime.backends.BackendResponse;
+import com.google.android.datatransport.runtime.backends.BackendResponse.Status;
+import com.google.android.datatransport.runtime.backends.f.a;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.Executor;
+
+public class t
+{
+  private final Context a;
+  private final com.google.android.datatransport.runtime.backends.e b;
+  private final j0 c;
+  private final x d;
+  private final Executor e;
+  private final com.google.android.datatransport.h.z.b f;
+  private final com.google.android.datatransport.h.a0.a g;
+  private final com.google.android.datatransport.h.a0.a h;
+  private final i0 i;
+  
+  public t(Context paramContext, com.google.android.datatransport.runtime.backends.e paramE, j0 paramJ0, x paramX, Executor paramExecutor, com.google.android.datatransport.h.z.b paramB, com.google.android.datatransport.h.a0.a paramA1, com.google.android.datatransport.h.a0.a paramA2, i0 paramI0)
+  {
+    a = paramContext;
+    b = paramE;
+    c = paramJ0;
+    d = paramX;
+    e = paramExecutor;
+    f = paramB;
+    g = paramA1;
+    h = paramA2;
+    i = paramI0;
+  }
+  
+  public com.google.android.datatransport.h.j a(com.google.android.datatransport.runtime.backends.l paramL)
+  {
+    Object localObject = f;
+    i0 localI0 = i;
+    Objects.requireNonNull(localI0);
+    localObject = (com.google.android.datatransport.runtime.firebase.transport.a)((com.google.android.datatransport.h.z.b)localObject).h(new o(localI0));
+    return paramL.b(com.google.android.datatransport.h.j.a().i(g.a()).k(h.a()).j("GDT_CLIENT_METRICS").h(new com.google.android.datatransport.h.i(com.google.android.datatransport.b.b("proto"), ((com.google.android.datatransport.runtime.firebase.transport.a)localObject).f())).d());
+  }
+  
+  boolean b()
+  {
+    NetworkInfo localNetworkInfo = ((ConnectivityManager)a.getSystemService("connectivity")).getActiveNetworkInfo();
+    return (localNetworkInfo != null) && (localNetworkInfo.isConnected());
+  }
+  
+  public BackendResponse u(p paramP, int paramInt)
+  {
+    com.google.android.datatransport.runtime.backends.l localL = b.get(paramP.b());
+    long l1 = 0L;
+    Object localObject2 = BackendResponse.e(0L);
+    while (((Boolean)f.h(new e(this, paramP))).booleanValue())
+    {
+      Object localObject3 = (Iterable)f.h(new g(this, paramP));
+      if (!((Iterable)localObject3).iterator().hasNext()) {
+        return localObject2;
+      }
+      if (localL == null) {
+        com.google.android.datatransport.h.w.a.b("Uploader", "Unknown backend for %s, deleting event batch for it...", paramP);
+      }
+      for (Object localObject1 = BackendResponse.a();; localObject1 = localL.a(com.google.android.datatransport.runtime.backends.f.a().b((Iterable)localObject1).c(paramP.c()).a()))
+      {
+        break;
+        localObject1 = new ArrayList();
+        localObject2 = ((Iterable)localObject3).iterator();
+        while (((Iterator)localObject2).hasNext()) {
+          ((List)localObject1).add(((q0)((Iterator)localObject2).next()).b());
+        }
+        if (paramP.e()) {
+          ((List)localObject1).add(a(localL));
+        }
+      }
+      if (((BackendResponse)localObject1).c() == BackendResponse.Status.c)
+      {
+        f.h(new h(this, (Iterable)localObject3, paramP, l1));
+        d.b(paramP, paramInt + 1, true);
+        return localObject1;
+      }
+      f.h(new j(this, (Iterable)localObject3));
+      if (((BackendResponse)localObject1).c() == BackendResponse.Status.b)
+      {
+        long l2 = Math.max(l1, ((BackendResponse)localObject1).b());
+        l1 = l2;
+        localObject2 = localObject1;
+        if (paramP.e())
+        {
+          f.h(new l(this));
+          l1 = l2;
+          localObject2 = localObject1;
+        }
+      }
+      else
+      {
+        localObject2 = localObject1;
+        if (((BackendResponse)localObject1).c() == BackendResponse.Status.e)
+        {
+          localObject2 = new HashMap();
+          localObject3 = ((Iterable)localObject3).iterator();
+          while (((Iterator)localObject3).hasNext())
+          {
+            String str = ((q0)((Iterator)localObject3).next()).b().j();
+            if (!((Map)localObject2).containsKey(str)) {
+              ((Map)localObject2).put(str, Integer.valueOf(1));
+            } else {
+              ((Map)localObject2).put(str, Integer.valueOf(((Integer)((Map)localObject2).get(str)).intValue() + 1));
+            }
+          }
+          f.h(new f(this, (Map)localObject2));
+          localObject2 = localObject1;
+        }
+      }
+    }
+    f.h(new i(this, paramP, l1));
+    return localObject2;
+  }
+  
+  public void v(p paramP, int paramInt, Runnable paramRunnable)
+  {
+    e.execute(new d(this, paramP, paramInt, paramRunnable));
+  }
+}

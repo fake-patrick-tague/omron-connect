@@ -1,0 +1,209 @@
+package com.braze.ui.support;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import androidx.core.graphics.b;
+import c.h.q.n0;
+import c.h.q.n0.m;
+import com.braze.enums.inappmessage.Orientation;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import java.util.Objects;
+import kotlin.x.c.a;
+import kotlin.x.d.j;
+
+public final class ViewUtils
+{
+  private static final String TAG = BrazeLogger.INSTANCE.getBrazeLogTag("ViewUtils");
+  
+  public static final double convertDpToPixels(Context paramContext, double paramDouble)
+  {
+    kotlin.x.d.i.e(paramContext, "context");
+    return paramDouble * getResourcesgetDisplayMetricsdensity;
+  }
+  
+  public static final int getMaxSafeBottomInset(n0 paramN0)
+  {
+    kotlin.x.d.i.e(paramN0, "windowInsets");
+    c.h.q.i localI = paramN0.e();
+    int i;
+    if (localI != null) {
+      i = localI.a();
+    } else {
+      i = 0;
+    }
+    return Math.max(i, fbe);
+  }
+  
+  public static final int getMaxSafeLeftInset(n0 paramN0)
+  {
+    kotlin.x.d.i.e(paramN0, "windowInsets");
+    c.h.q.i localI = paramN0.e();
+    int i;
+    if (localI != null) {
+      i = localI.b();
+    } else {
+      i = 0;
+    }
+    return Math.max(i, fbb);
+  }
+  
+  public static final int getMaxSafeRightInset(n0 paramN0)
+  {
+    kotlin.x.d.i.e(paramN0, "windowInsets");
+    c.h.q.i localI = paramN0.e();
+    int i;
+    if (localI != null) {
+      i = localI.c();
+    } else {
+      i = 0;
+    }
+    return Math.max(i, fbd);
+  }
+  
+  public static final int getMaxSafeTopInset(n0 paramN0)
+  {
+    kotlin.x.d.i.e(paramN0, "windowInsets");
+    c.h.q.i localI = paramN0.e();
+    int i;
+    if (localI != null) {
+      i = localI.d();
+    } else {
+      i = 0;
+    }
+    return Math.max(i, fbc);
+  }
+  
+  public static final boolean isCurrentOrientationValid(int paramInt, final Orientation paramOrientation)
+  {
+    kotlin.x.d.i.e(paramOrientation, "preferredOrientation");
+    if ((paramInt == 2) && (paramOrientation == Orientation.LANDSCAPE))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.D, null, isCurrentOrientationValid.1.INSTANCE, 4, null);
+      return true;
+    }
+    if ((paramInt == 1) && (paramOrientation == Orientation.PORTRAIT))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.D, null, isCurrentOrientationValid.2.INSTANCE, 4, null);
+      return true;
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.D, null, new j(paramInt)
+    {
+      public final String invoke()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Current orientation ");
+        localStringBuilder.append($currentScreenOrientation);
+        localStringBuilder.append(" and preferred orientation ");
+        localStringBuilder.append(paramOrientation);
+        localStringBuilder.append(" don't match");
+        return localStringBuilder.toString();
+      }
+    }, 4, null);
+    return false;
+  }
+  
+  public static final boolean isDeviceInNightMode(Context paramContext)
+  {
+    kotlin.x.d.i.e(paramContext, "context");
+    return (getResourcesgetConfigurationuiMode & 0x30) == 32;
+  }
+  
+  public static final boolean isDeviceNotInTouchMode(View paramView)
+  {
+    kotlin.x.d.i.e(paramView, "view");
+    return paramView.isInTouchMode() ^ true;
+  }
+  
+  public static final boolean isRunningOnTablet(Activity paramActivity)
+  {
+    kotlin.x.d.i.e(paramActivity, "<this>");
+    return getResourcesgetConfigurationsmallestScreenWidthDp >= 600;
+  }
+  
+  public static final void removeViewFromParent(View paramView)
+  {
+    if (paramView == null) {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.D, null, removeViewFromParent.1.INSTANCE, 4, null);
+    }
+    Object localObject;
+    if (paramView != null) {
+      localObject = paramView.getParent();
+    } else {
+      localObject = null;
+    }
+    if ((localObject instanceof ViewGroup))
+    {
+      localObject = paramView.getParent();
+      Objects.requireNonNull(localObject, "null cannot be cast to non-null type android.view.ViewGroup");
+      localObject = (ViewGroup)localObject;
+      ((ViewGroup)localObject).removeView(paramView);
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.D, null, new j(paramView)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Removed view: ");
+          localStringBuilder.append($this_removeViewFromParent);
+          localStringBuilder.append("\nfrom parent: ");
+          localStringBuilder.append($parent);
+          return localStringBuilder.toString();
+        }
+      }, 4, null);
+    }
+  }
+  
+  public static final void setActivityRequestedOrientation(final Activity paramActivity, int paramInt)
+  {
+    kotlin.x.d.i.e(paramActivity, "<this>");
+    try
+    {
+      paramActivity.setRequestedOrientation(paramInt);
+      return;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(TAG, BrazeLogger.Priority.E, localException, new j(paramInt)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Failed to set requested orientation ");
+          localStringBuilder.append($requestedOrientation);
+          localStringBuilder.append(" for activity class: ");
+          localStringBuilder.append(paramActivity.getLocalClassName());
+          return localStringBuilder.toString();
+        }
+      });
+    }
+  }
+  
+  public static final void setFocusableInTouchModeAndRequestFocus(View paramView)
+  {
+    kotlin.x.d.i.e(paramView, "<this>");
+    try
+    {
+      paramView.setFocusableInTouchMode(true);
+      paramView.requestFocus();
+      return;
+    }
+    catch (Exception paramView)
+    {
+      BrazeLogger.INSTANCE.brazelog(TAG, BrazeLogger.Priority.E, paramView, setFocusableInTouchModeAndRequestFocus.1.INSTANCE);
+    }
+  }
+  
+  public static final void setHeightOnViewLayoutParams(View paramView, int paramInt)
+  {
+    kotlin.x.d.i.e(paramView, "view");
+    ViewGroup.LayoutParams localLayoutParams = paramView.getLayoutParams();
+    height = paramInt;
+    paramView.setLayoutParams(localLayoutParams);
+  }
+}

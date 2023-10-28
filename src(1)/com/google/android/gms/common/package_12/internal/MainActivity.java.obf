@@ -1,0 +1,174 @@
+package com.google.android.gms.common.api.internal;
+
+import android.util.Log;
+import android.util.SparseArray;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.internal.Preconditions;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.concurrent.atomic.AtomicReference;
+
+public final class zak
+  extends zap
+{
+  private final SparseArray<zaj> zad = new SparseArray();
+  
+  private zak(LifecycleFragment paramLifecycleFragment)
+  {
+    super(paramLifecycleFragment, GoogleApiAvailability.getInstance());
+    mLifecycleFragment.addCallback("AutoManageHelper", this);
+  }
+  
+  public static zak zaa(LifecycleActivity paramLifecycleActivity)
+  {
+    paramLifecycleActivity = LifecycleCallback.getFragment(paramLifecycleActivity);
+    zak localZak = (zak)paramLifecycleActivity.getCallbackOrNull("AutoManageHelper", zak.class);
+    if (localZak != null) {
+      return localZak;
+    }
+    return new zak(paramLifecycleActivity);
+  }
+  
+  private final zaj zai(int paramInt)
+  {
+    if (zad.size() <= paramInt) {
+      return null;
+    }
+    SparseArray localSparseArray = zad;
+    return (zaj)localSparseArray.get(localSparseArray.keyAt(paramInt));
+  }
+  
+  public final void dump(String paramString, FileDescriptor paramFileDescriptor, PrintWriter paramPrintWriter, String[] paramArrayOfString)
+  {
+    int i = 0;
+    while (i < zad.size())
+    {
+      zaj localZaj = zai(i);
+      if (localZaj != null)
+      {
+        paramPrintWriter.append(paramString).append("GoogleApiClient #").print(zaa);
+        paramPrintWriter.println(":");
+        zab.dump(String.valueOf(paramString).concat("  "), paramFileDescriptor, paramPrintWriter, paramArrayOfString);
+      }
+      i += 1;
+    }
+  }
+  
+  public final void onStart()
+  {
+    super.onStart();
+    boolean bool = zaa;
+    Object localObject = String.valueOf(zad);
+    StringBuilder localStringBuilder = new StringBuilder(((String)localObject).length() + 14);
+    localStringBuilder.append("onStart ");
+    localStringBuilder.append(bool);
+    localStringBuilder.append(" ");
+    localStringBuilder.append((String)localObject);
+    Log.d("AutoManageHelper", localStringBuilder.toString());
+    if (zab.get() == null)
+    {
+      int i = 0;
+      while (i < zad.size())
+      {
+        localObject = zai(i);
+        if (localObject != null) {
+          zab.connect();
+        }
+        i += 1;
+      }
+    }
+  }
+  
+  public final void onStop()
+  {
+    super.onStop();
+    int i = 0;
+    while (i < zad.size())
+    {
+      zaj localZaj = zai(i);
+      if (localZaj != null) {
+        zab.disconnect();
+      }
+      i += 1;
+    }
+  }
+  
+  protected final void zab(ConnectionResult paramConnectionResult, int paramInt)
+  {
+    Log.w("AutoManageHelper", "Unresolved error while connecting client. Stopping auto-manage.");
+    if (paramInt < 0)
+    {
+      Log.wtf("AutoManageHelper", "AutoManageLifecycleHelper received onErrorResolutionFailed callback but no failing client ID is set", new Exception());
+      return;
+    }
+    Object localObject = (zaj)zad.get(paramInt);
+    if (localObject != null)
+    {
+      zae(paramInt);
+      localObject = zac;
+      if (localObject != null) {
+        ((OnConnectionFailedListener)localObject).onConnectionFailed(paramConnectionResult);
+      }
+    }
+  }
+  
+  protected final void zac()
+  {
+    int i = 0;
+    while (i < zad.size())
+    {
+      zaj localZaj = zai(i);
+      if (localZaj != null) {
+        zab.connect();
+      }
+      i += 1;
+    }
+  }
+  
+  public final void zad(int paramInt, GoogleApiClient paramGoogleApiClient, GoogleApiClient.OnConnectionFailedListener paramOnConnectionFailedListener)
+  {
+    Preconditions.checkNotNull(paramGoogleApiClient, "GoogleApiClient instance cannot be null");
+    if (zad.indexOfKey(paramInt) < 0) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    Object localObject = new StringBuilder(54);
+    ((StringBuilder)localObject).append("Already managing a GoogleApiClient with id ");
+    ((StringBuilder)localObject).append(paramInt);
+    Preconditions.checkState(bool, ((StringBuilder)localObject).toString());
+    localObject = (zam)zab.get();
+    boolean bool = zaa;
+    String str = String.valueOf(localObject);
+    StringBuilder localStringBuilder = new StringBuilder(str.length() + 49);
+    localStringBuilder.append("starting AutoManage for client ");
+    localStringBuilder.append(paramInt);
+    localStringBuilder.append(" ");
+    localStringBuilder.append(bool);
+    localStringBuilder.append(" ");
+    localStringBuilder.append(str);
+    Log.d("AutoManageHelper", localStringBuilder.toString());
+    paramOnConnectionFailedListener = new zaj(this, paramInt, paramGoogleApiClient, paramOnConnectionFailedListener);
+    paramGoogleApiClient.registerConnectionFailedListener(paramOnConnectionFailedListener);
+    zad.put(paramInt, paramOnConnectionFailedListener);
+    if ((zaa) && (localObject == null))
+    {
+      Log.d("AutoManageHelper", "connecting ".concat(paramGoogleApiClient.toString()));
+      paramGoogleApiClient.connect();
+    }
+  }
+  
+  public final void zae(int paramInt)
+  {
+    zaj localZaj = (zaj)zad.get(paramInt);
+    zad.remove(paramInt);
+    if (localZaj != null)
+    {
+      zab.unregisterConnectionFailedListener(localZaj);
+      zab.disconnect();
+    }
+  }
+}

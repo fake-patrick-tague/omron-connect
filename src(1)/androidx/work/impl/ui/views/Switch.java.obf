@@ -1,0 +1,49 @@
+package androidx.work.impl.m.f;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import androidx.work.impl.utils.p.a;
+import androidx.work.j;
+
+public abstract class c<T>
+  extends d<T>
+{
+  private static final String g = j.f("BrdcstRcvrCnstrntTrckr");
+  private final BroadcastReceiver h = new a();
+  
+  public c(Context paramContext, a paramA)
+  {
+    super(paramContext, paramA);
+  }
+  
+  public void e()
+  {
+    j.c().a(g, String.format("%s: registering receiver", new Object[] { getClass().getSimpleName() }), new Throwable[0]);
+    c.registerReceiver(h, g());
+  }
+  
+  public void f()
+  {
+    j.c().a(g, String.format("%s: unregistering receiver", new Object[] { getClass().getSimpleName() }), new Throwable[0]);
+    c.unregisterReceiver(h);
+  }
+  
+  public abstract IntentFilter g();
+  
+  public abstract void h(Context paramContext, Intent paramIntent);
+  
+  class a
+    extends BroadcastReceiver
+  {
+    a() {}
+    
+    public void onReceive(Context paramContext, Intent paramIntent)
+    {
+      if (paramIntent != null) {
+        h(paramContext, paramIntent);
+      }
+    }
+  }
+}

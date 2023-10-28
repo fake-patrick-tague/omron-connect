@@ -1,0 +1,150 @@
+package androidx.appcompat.widget;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources.NotFoundException;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.widget.CompoundButton;
+import androidx.core.widget.c;
+import c.h.q.f0;
+
+class j
+{
+  private final CompoundButton a;
+  private ColorStateList b = null;
+  private PorterDuff.Mode c = null;
+  private boolean d = false;
+  private boolean e = false;
+  private boolean f;
+  
+  j(CompoundButton paramCompoundButton)
+  {
+    a = paramCompoundButton;
+  }
+  
+  void a()
+  {
+    Drawable localDrawable = c.a(a);
+    if ((localDrawable != null) && ((d) || (e)))
+    {
+      localDrawable = androidx.core.graphics.drawable.a.r(localDrawable).mutate();
+      if (d) {
+        androidx.core.graphics.drawable.a.o(localDrawable, b);
+      }
+      if (e) {
+        androidx.core.graphics.drawable.a.p(localDrawable, c);
+      }
+      if (localDrawable.isStateful()) {
+        localDrawable.setState(a.getDrawableState());
+      }
+      a.setButtonDrawable(localDrawable);
+    }
+  }
+  
+  int b(int paramInt)
+  {
+    int i = paramInt;
+    if (Build.VERSION.SDK_INT < 17)
+    {
+      Drawable localDrawable = c.a(a);
+      i = paramInt;
+      if (localDrawable != null) {
+        i = paramInt + localDrawable.getIntrinsicWidth();
+      }
+    }
+    return i;
+  }
+  
+  ColorStateList c()
+  {
+    return b;
+  }
+  
+  PorterDuff.Mode d()
+  {
+    return c;
+  }
+  
+  void e(AttributeSet paramAttributeSet, int paramInt)
+  {
+    localObject = a.getContext();
+    int[] arrayOfInt = c.a.j.U0;
+    localObject = n0.v((Context)localObject, paramAttributeSet, arrayOfInt, paramInt, 0);
+    CompoundButton localCompoundButton = a;
+    f0.n0(localCompoundButton, localCompoundButton.getContext(), arrayOfInt, paramAttributeSet, ((n0)localObject).r(), paramInt, 0);
+    for (;;)
+    {
+      try
+      {
+        paramInt = c.a.j.W0;
+        if (((n0)localObject).s(paramInt))
+        {
+          paramInt = ((n0)localObject).n(paramInt, 0);
+          if (paramInt == 0) {}
+        }
+      }
+      finally
+      {
+        ((n0)localObject).w();
+      }
+      try
+      {
+        paramAttributeSet = a;
+        paramAttributeSet.setButtonDrawable(c.a.k.a.a.b(paramAttributeSet.getContext(), paramInt));
+        paramInt = 1;
+      }
+      catch (Resources.NotFoundException paramAttributeSet) {}
+    }
+    paramInt = 0;
+    if (paramInt == 0)
+    {
+      paramInt = c.a.j.V0;
+      if (((n0)localObject).s(paramInt))
+      {
+        paramInt = ((n0)localObject).n(paramInt, 0);
+        if (paramInt != 0)
+        {
+          paramAttributeSet = a;
+          paramAttributeSet.setButtonDrawable(c.a.k.a.a.b(paramAttributeSet.getContext(), paramInt));
+        }
+      }
+    }
+    paramInt = c.a.j.X0;
+    if (((n0)localObject).s(paramInt)) {
+      c.c(a, ((n0)localObject).c(paramInt));
+    }
+    paramInt = c.a.j.Y0;
+    if (((n0)localObject).s(paramInt)) {
+      c.d(a, x.d(((n0)localObject).k(paramInt, -1), null));
+    }
+    ((n0)localObject).w();
+  }
+  
+  void f()
+  {
+    if (f)
+    {
+      f = false;
+      return;
+    }
+    f = true;
+    a();
+  }
+  
+  void g(ColorStateList paramColorStateList)
+  {
+    b = paramColorStateList;
+    d = true;
+    a();
+  }
+  
+  void h(PorterDuff.Mode paramMode)
+  {
+    c = paramMode;
+    e = true;
+    a();
+  }
+}

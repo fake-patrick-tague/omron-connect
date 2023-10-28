@@ -1,0 +1,311 @@
+package androidx.core.graphics;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Typeface;
+import android.graphics.Typeface.CustomFallbackBuilder;
+import android.graphics.fonts.Font;
+import android.graphics.fonts.Font.Builder;
+import android.graphics.fonts.FontFamily;
+import android.graphics.fonts.FontFamily.Builder;
+import android.graphics.fonts.FontStyle;
+import androidx.core.content.g.g.c;
+import androidx.core.content.g.g.d;
+import c.h.n.g.b;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class j
+  extends k
+{
+  public j() {}
+  
+  private Font l(FontFamily paramFontFamily, int paramInt)
+  {
+    if ((paramInt & 0x1) != 0) {
+      i = 700;
+    } else {
+      i = 400;
+    }
+    int j = 1;
+    if ((paramInt & 0x2) != 0) {
+      paramInt = 1;
+    } else {
+      paramInt = 0;
+    }
+    FontStyle localFontStyle = new FontStyle(i, paramInt);
+    Object localObject = paramFontFamily.getFont(0);
+    int i = m(localFontStyle, ((Font)localObject).getStyle());
+    paramInt = j;
+    while (paramInt < paramFontFamily.getSize())
+    {
+      Font localFont = paramFontFamily.getFont(paramInt);
+      int k = m(localFontStyle, localFont.getStyle());
+      j = i;
+      if (k < i)
+      {
+        localObject = localFont;
+        j = k;
+      }
+      paramInt += 1;
+      i = j;
+    }
+    return localObject;
+  }
+  
+  private static int m(FontStyle paramFontStyle1, FontStyle paramFontStyle2)
+  {
+    int j = Math.abs(paramFontStyle1.getWeight() - paramFontStyle2.getWeight()) / 100;
+    int i;
+    if (paramFontStyle1.getSlant() == paramFontStyle2.getSlant()) {
+      i = 0;
+    } else {
+      i = 2;
+    }
+    return j + i;
+  }
+  
+  public Typeface b(Context paramContext, g.c paramC, Resources paramResources, int paramInt)
+  {
+    for (;;)
+    {
+      try
+      {
+        g.d[] arrayOfD = paramC.a();
+        int k = arrayOfD.length;
+        paramContext = null;
+        i = 0;
+        if (i < k) {
+          paramC = arrayOfD[i];
+        }
+      }
+      catch (Exception paramContext)
+      {
+        int i;
+        Font.Builder localBuilder;
+        return null;
+      }
+      try
+      {
+        localBuilder = new Font.Builder(paramResources, paramC.b()).setWeight(paramC.e());
+        if (!paramC.f()) {
+          break label166;
+        }
+        j = 1;
+      }
+      catch (IOException paramC)
+      {
+        continue;
+        j = 0;
+        continue;
+      }
+      paramC = localBuilder.setSlant(j).setTtcIndex(paramC.c()).setFontVariationSettings(paramC.d()).build();
+      if (paramContext == null)
+      {
+        paramC = new FontFamily.Builder(paramC);
+        paramContext = paramC;
+      }
+      else
+      {
+        paramContext.addFont(paramC);
+      }
+      i += 1;
+    }
+    if (paramContext == null) {
+      return null;
+    }
+    paramContext = paramContext.build();
+    paramContext = new Typeface.CustomFallbackBuilder(paramContext).setStyle(l(paramContext, paramInt).getStyle()).build();
+    return paramContext;
+  }
+  
+  /* Error */
+  public Typeface c(Context paramContext, android.os.CancellationSignal paramCancellationSignal, g.b[] paramArrayOfB, int paramInt)
+  {
+    // Byte code:
+    //   0: aload_1
+    //   1: invokevirtual 134	android/content/Context:getContentResolver	()Landroid/content/ContentResolver;
+    //   4: astore 9
+    //   6: aload_3
+    //   7: arraylength
+    //   8: istore 7
+    //   10: aconst_null
+    //   11: astore_1
+    //   12: iconst_0
+    //   13: istore 5
+    //   15: iload 5
+    //   17: iload 7
+    //   19: if_icmpge +178 -> 197
+    //   22: aload_3
+    //   23: iload 5
+    //   25: aaload
+    //   26: astore 11
+    //   28: aload_1
+    //   29: astore 8
+    //   31: aload 9
+    //   33: aload 11
+    //   35: invokevirtual 139	c/h/n/g$b:d	()Landroid/net/Uri;
+    //   38: ldc -115
+    //   40: aload_2
+    //   41: invokevirtual 147	android/content/ContentResolver:openFileDescriptor	(Landroid/net/Uri;Ljava/lang/String;Landroid/os/CancellationSignal;)Landroid/os/ParcelFileDescriptor;
+    //   44: astore 10
+    //   46: aload 10
+    //   48: ifnonnull +25 -> 73
+    //   51: aload_1
+    //   52: astore 8
+    //   54: aload 10
+    //   56: ifnull +129 -> 185
+    //   59: aload_1
+    //   60: astore 8
+    //   62: aload 10
+    //   64: invokevirtual 152	android/os/ParcelFileDescriptor:close	()V
+    //   67: aload_1
+    //   68: astore 8
+    //   70: goto +115 -> 185
+    //   73: new 62	android/graphics/fonts/Font$Builder
+    //   76: dup
+    //   77: aload 10
+    //   79: invokespecial 155	android/graphics/fonts/Font$Builder:<init>	(Landroid/os/ParcelFileDescriptor;)V
+    //   82: aload 11
+    //   84: invokevirtual 156	c/h/n/g$b:e	()I
+    //   87: invokevirtual 76	android/graphics/fonts/Font$Builder:setWeight	(I)Landroid/graphics/fonts/Font$Builder;
+    //   90: astore 8
+    //   92: aload 11
+    //   94: invokevirtual 157	c/h/n/g$b:f	()Z
+    //   97: ifeq +145 -> 242
+    //   100: iconst_1
+    //   101: istore 6
+    //   103: goto +3 -> 106
+    //   106: aload 8
+    //   108: iload 6
+    //   110: invokevirtual 83	android/graphics/fonts/Font$Builder:setSlant	(I)Landroid/graphics/fonts/Font$Builder;
+    //   113: aload 11
+    //   115: invokevirtual 158	c/h/n/g$b:c	()I
+    //   118: invokevirtual 89	android/graphics/fonts/Font$Builder:setTtcIndex	(I)Landroid/graphics/fonts/Font$Builder;
+    //   121: invokevirtual 101	android/graphics/fonts/Font$Builder:build	()Landroid/graphics/fonts/Font;
+    //   124: astore 8
+    //   126: aload_1
+    //   127: ifnonnull +20 -> 147
+    //   130: new 103	android/graphics/fonts/FontFamily$Builder
+    //   133: dup
+    //   134: aload 8
+    //   136: invokespecial 106	android/graphics/fonts/FontFamily$Builder:<init>	(Landroid/graphics/fonts/Font;)V
+    //   139: astore 8
+    //   141: aload 8
+    //   143: astore_1
+    //   144: goto -85 -> 59
+    //   147: aload_1
+    //   148: aload 8
+    //   150: invokevirtual 110	android/graphics/fonts/FontFamily$Builder:addFont	(Landroid/graphics/fonts/Font;)Landroid/graphics/fonts/FontFamily$Builder;
+    //   153: pop
+    //   154: goto -95 -> 59
+    //   157: astore 11
+    //   159: aload 10
+    //   161: invokevirtual 152	android/os/ParcelFileDescriptor:close	()V
+    //   164: goto +15 -> 179
+    //   167: astore 10
+    //   169: aload_1
+    //   170: astore 8
+    //   172: aload 11
+    //   174: aload 10
+    //   176: invokevirtual 164	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   179: aload_1
+    //   180: astore 8
+    //   182: aload 11
+    //   184: athrow
+    //   185: iload 5
+    //   187: iconst_1
+    //   188: iadd
+    //   189: istore 5
+    //   191: aload 8
+    //   193: astore_1
+    //   194: goto -179 -> 15
+    //   197: aload_1
+    //   198: ifnonnull +5 -> 203
+    //   201: aconst_null
+    //   202: areturn
+    //   203: aload_1
+    //   204: invokevirtual 113	android/graphics/fonts/FontFamily$Builder:build	()Landroid/graphics/fonts/FontFamily;
+    //   207: astore_1
+    //   208: new 115	android/graphics/Typeface$CustomFallbackBuilder
+    //   211: dup
+    //   212: aload_1
+    //   213: invokespecial 118	android/graphics/Typeface$CustomFallbackBuilder:<init>	(Landroid/graphics/fonts/FontFamily;)V
+    //   216: aload_0
+    //   217: aload_1
+    //   218: iload 4
+    //   220: invokespecial 120	androidx/core/graphics/j:l	(Landroid/graphics/fonts/FontFamily;I)Landroid/graphics/fonts/Font;
+    //   223: invokevirtual 28	android/graphics/fonts/Font:getStyle	()Landroid/graphics/fonts/FontStyle;
+    //   226: invokevirtual 124	android/graphics/Typeface$CustomFallbackBuilder:setStyle	(Landroid/graphics/fonts/FontStyle;)Landroid/graphics/Typeface$CustomFallbackBuilder;
+    //   229: invokevirtual 127	android/graphics/Typeface$CustomFallbackBuilder:build	()Landroid/graphics/Typeface;
+    //   232: astore_1
+    //   233: aload_1
+    //   234: areturn
+    //   235: astore_1
+    //   236: aconst_null
+    //   237: areturn
+    //   238: astore_1
+    //   239: goto -54 -> 185
+    //   242: iconst_0
+    //   243: istore 6
+    //   245: goto -139 -> 106
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	248	0	this	j
+    //   0	248	1	paramContext	Context
+    //   0	248	2	paramCancellationSignal	android.os.CancellationSignal
+    //   0	248	3	paramArrayOfB	g.b[]
+    //   0	248	4	paramInt	int
+    //   13	177	5	i	int
+    //   101	143	6	j	int
+    //   8	12	7	k	int
+    //   29	163	8	localObject1	Object
+    //   4	28	9	localContentResolver	android.content.ContentResolver
+    //   44	116	10	localParcelFileDescriptor	android.os.ParcelFileDescriptor
+    //   167	8	10	localThrowable	Throwable
+    //   26	88	11	localB	g.b
+    //   157	26	11	localObject2	Object
+    // Exception table:
+    //   from	to	target	type
+    //   73	100	157	finally
+    //   106	126	157	finally
+    //   130	141	157	finally
+    //   147	154	157	finally
+    //   159	164	167	finally
+    //   6	10	235	java/lang/Exception
+    //   31	46	235	java/lang/Exception
+    //   62	67	235	java/lang/Exception
+    //   172	179	235	java/lang/Exception
+    //   182	185	235	java/lang/Exception
+    //   203	233	235	java/lang/Exception
+    //   31	46	238	java/io/IOException
+    //   62	67	238	java/io/IOException
+    //   172	179	238	java/io/IOException
+    //   182	185	238	java/io/IOException
+  }
+  
+  protected Typeface d(Context paramContext, InputStream paramInputStream)
+  {
+    throw new RuntimeException("Do not use this function in API 29 or later.");
+  }
+  
+  public Typeface e(Context paramContext, Resources paramResources, int paramInt1, String paramString, int paramInt2)
+  {
+    try
+    {
+      paramContext = new Font.Builder(paramResources, paramInt1).build();
+      paramContext = new Typeface.CustomFallbackBuilder(new FontFamily.Builder(paramContext).build()).setStyle(paramContext.getStyle()).build();
+      return paramContext;
+    }
+    catch (Exception paramContext)
+    {
+      for (;;) {}
+    }
+    return null;
+  }
+  
+  protected g.b i(g.b[] paramArrayOfB, int paramInt)
+  {
+    throw new RuntimeException("Do not use this function in API 29 or later.");
+  }
+}

@@ -1,0 +1,102 @@
+package com.google.android.material.datepicker;
+
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
+
+class n
+{
+  static AtomicReference<m> a = new AtomicReference();
+  
+  static long a(long paramLong)
+  {
+    Calendar localCalendar = k();
+    localCalendar.setTimeInMillis(paramLong);
+    return d(localCalendar).getTimeInMillis();
+  }
+  
+  static android.icu.text.DateFormat b(Locale paramLocale)
+  {
+    return c("MMMEd", paramLocale);
+  }
+  
+  private static android.icu.text.DateFormat c(String paramString, Locale paramLocale)
+  {
+    paramString = android.icu.text.DateFormat.getInstanceForSkeleton(paramString, paramLocale);
+    paramString.setTimeZone(j());
+    return paramString;
+  }
+  
+  static Calendar d(Calendar paramCalendar)
+  {
+    paramCalendar = l(paramCalendar);
+    Calendar localCalendar = k();
+    localCalendar.set(paramCalendar.get(1), paramCalendar.get(2), paramCalendar.get(5));
+    return localCalendar;
+  }
+  
+  private static java.text.DateFormat e(int paramInt, Locale paramLocale)
+  {
+    paramLocale = java.text.DateFormat.getDateInstance(paramInt, paramLocale);
+    paramLocale.setTimeZone(h());
+    return paramLocale;
+  }
+  
+  static java.text.DateFormat f(Locale paramLocale)
+  {
+    return e(0, paramLocale);
+  }
+  
+  static m g()
+  {
+    m localM2 = (m)a.get();
+    m localM1 = localM2;
+    if (localM2 == null) {
+      localM1 = m.c();
+    }
+    return localM1;
+  }
+  
+  private static java.util.TimeZone h()
+  {
+    return java.util.TimeZone.getTimeZone("UTC");
+  }
+  
+  static Calendar i()
+  {
+    Calendar localCalendar = g().a();
+    localCalendar.set(11, 0);
+    localCalendar.set(12, 0);
+    localCalendar.set(13, 0);
+    localCalendar.set(14, 0);
+    localCalendar.setTimeZone(h());
+    return localCalendar;
+  }
+  
+  private static android.icu.util.TimeZone j()
+  {
+    return android.icu.util.TimeZone.getTimeZone("UTC");
+  }
+  
+  static Calendar k()
+  {
+    return l(null);
+  }
+  
+  static Calendar l(Calendar paramCalendar)
+  {
+    Calendar localCalendar = Calendar.getInstance(h());
+    if (paramCalendar == null)
+    {
+      localCalendar.clear();
+      return localCalendar;
+    }
+    localCalendar.setTimeInMillis(paramCalendar.getTimeInMillis());
+    return localCalendar;
+  }
+  
+  static android.icu.text.DateFormat m(Locale paramLocale)
+  {
+    return c("yMMMEd", paramLocale);
+  }
+}

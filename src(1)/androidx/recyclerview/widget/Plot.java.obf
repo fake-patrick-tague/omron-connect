@@ -1,0 +1,639 @@
+package androidx.recyclerview.widget;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
+public class h
+{
+  private static final Comparator<d> a = new a();
+  
+  private static i a(h paramH, b paramB, c paramC1, c paramC2, int paramInt)
+  {
+    int j;
+    if ((paramH.b() - paramH.a()) % 2 == 0) {
+      j = 1;
+    } else {
+      j = 0;
+    }
+    int i3 = paramH.b();
+    int i4 = paramH.a();
+    int i2 = -paramInt;
+    int k = i2;
+    while (k <= paramInt)
+    {
+      int m;
+      int i;
+      if ((k != i2) && ((k == paramInt) || (paramC2.b(k + 1) >= paramC2.b(k - 1))))
+      {
+        m = paramC2.b(k - 1);
+        i = m - 1;
+      }
+      else
+      {
+        m = paramC2.b(k + 1);
+        i = m;
+      }
+      int i1 = d - (b - i - k);
+      int n;
+      if ((paramInt != 0) && (i == m)) {
+        n = i1 + 1;
+      } else {
+        n = i1;
+      }
+      while ((i > a) && (i1 > c) && (paramB.areItemsTheSame(i - 1, i1 - 1)))
+      {
+        i -= 1;
+        i1 -= 1;
+      }
+      paramC2.c(k, i);
+      if (j != 0)
+      {
+        int i5 = i3 - i4 - k;
+        if ((i5 >= i2) && (i5 <= paramInt) && (paramC1.b(i5) >= i))
+        {
+          paramH = new i();
+          a = i;
+          b = i1;
+          c = m;
+          d = n;
+          e = true;
+          return paramH;
+        }
+      }
+      k += 2;
+    }
+    return null;
+  }
+  
+  public static e b(b paramB)
+  {
+    return c(paramB, true);
+  }
+  
+  public static e c(b paramB, boolean paramBoolean)
+  {
+    int i = paramB.getOldListSize();
+    int j = paramB.getNewListSize();
+    ArrayList localArrayList1 = new ArrayList();
+    ArrayList localArrayList2 = new ArrayList();
+    localArrayList2.add(new h(0, i, 0, j));
+    i = (i + j + 1) / 2 * 2 + 1;
+    c localC1 = new c(i);
+    c localC2 = new c(i);
+    ArrayList localArrayList3 = new ArrayList();
+    while (!localArrayList2.isEmpty())
+    {
+      h localH2 = (h)localArrayList2.remove(localArrayList2.size() - 1);
+      i localI = e(localH2, paramB, localC1, localC2);
+      if (localI != null)
+      {
+        if (localI.a() > 0) {
+          localArrayList1.add(localI.d());
+        }
+        h localH1;
+        if (localArrayList3.isEmpty()) {
+          localH1 = new h();
+        } else {
+          localH1 = (h)localArrayList3.remove(localArrayList3.size() - 1);
+        }
+        a = a;
+        c = c;
+        b = a;
+        d = b;
+        localArrayList2.add(localH1);
+        b = b;
+        d = d;
+        a = c;
+        c = d;
+        localArrayList2.add(localH2);
+      }
+      else
+      {
+        localArrayList3.add(localH2);
+      }
+    }
+    Collections.sort(localArrayList1, a);
+    return new e(paramB, localArrayList1, localC1.a(), localC2.a(), paramBoolean);
+  }
+  
+  private static i d(h paramH, b paramB, c paramC1, c paramC2, int paramInt)
+  {
+    int i = Math.abs(paramH.b() - paramH.a());
+    int j = 1;
+    if (i % 2 != 1) {
+      j = 0;
+    }
+    int i3 = paramH.b();
+    int i4 = paramH.a();
+    int i2 = -paramInt;
+    int k = i2;
+    while (k <= paramInt)
+    {
+      int m;
+      if ((k != i2) && ((k == paramInt) || (paramC1.b(k + 1) <= paramC1.b(k - 1))))
+      {
+        m = paramC1.b(k - 1);
+        i = m + 1;
+      }
+      else
+      {
+        m = paramC1.b(k + 1);
+        i = m;
+      }
+      int i1 = c + (i - a) - k;
+      int n;
+      if ((paramInt != 0) && (i == m)) {
+        n = i1 - 1;
+      } else {
+        n = i1;
+      }
+      while ((i < b) && (i1 < d) && (paramB.areItemsTheSame(i, i1)))
+      {
+        i += 1;
+        i1 += 1;
+      }
+      paramC1.c(k, i);
+      if (j != 0)
+      {
+        int i5 = i3 - i4 - k;
+        if ((i5 >= i2 + 1) && (i5 <= paramInt - 1) && (paramC2.b(i5) <= i))
+        {
+          paramH = new i();
+          a = m;
+          b = n;
+          c = i;
+          d = i1;
+          e = false;
+          return paramH;
+        }
+      }
+      k += 2;
+    }
+    return null;
+  }
+  
+  private static i e(h paramH, b paramB, c paramC1, c paramC2)
+  {
+    if (paramH.b() >= 1)
+    {
+      if (paramH.a() < 1) {
+        return null;
+      }
+      int j = (paramH.b() + paramH.a() + 1) / 2;
+      paramC1.c(1, a);
+      paramC2.c(1, b);
+      int i = 0;
+      while (i < j)
+      {
+        i localI = d(paramH, paramB, paramC1, paramC2, i);
+        if (localI != null) {
+          return localI;
+        }
+        localI = a(paramH, paramB, paramC1, paramC2, i);
+        if (localI != null) {
+          return localI;
+        }
+        i += 1;
+      }
+    }
+    return null;
+  }
+  
+  class a
+    implements Comparator<h.d>
+  {
+    a() {}
+    
+    public int a(h.d paramD1, h.d paramD2)
+    {
+      return a - a;
+    }
+  }
+  
+  public static abstract class b
+  {
+    public b() {}
+    
+    public abstract boolean areContentsTheSame(int paramInt1, int paramInt2);
+    
+    public abstract boolean areItemsTheSame(int paramInt1, int paramInt2);
+    
+    public Object getChangePayload(int paramInt1, int paramInt2)
+    {
+      return null;
+    }
+    
+    public abstract int getNewListSize();
+    
+    public abstract int getOldListSize();
+  }
+  
+  static class c
+  {
+    private final int[] a;
+    private final int b;
+    
+    c(int paramInt)
+    {
+      int[] arrayOfInt = new int[paramInt];
+      a = arrayOfInt;
+      b = (arrayOfInt.length / 2);
+    }
+    
+    int[] a()
+    {
+      return a;
+    }
+    
+    int b(int paramInt)
+    {
+      return a[(paramInt + b)];
+    }
+    
+    void c(int paramInt1, int paramInt2)
+    {
+      a[(paramInt1 + b)] = paramInt2;
+    }
+  }
+  
+  static class d
+  {
+    public final int a;
+    public final int b;
+    public final int c;
+    
+    d(int paramInt1, int paramInt2, int paramInt3)
+    {
+      a = paramInt1;
+      b = paramInt2;
+      c = paramInt3;
+    }
+    
+    int a()
+    {
+      return a + c;
+    }
+    
+    int b()
+    {
+      return b + c;
+    }
+  }
+  
+  public static class e
+  {
+    private final List<h.d> a;
+    private final int[] b;
+    private final int[] c;
+    private final h.b d;
+    private final int e;
+    private final int f;
+    private final boolean g;
+    
+    e(h.b paramB, List<h.d> paramList, int[] paramArrayOfInt1, int[] paramArrayOfInt2, boolean paramBoolean)
+    {
+      a = paramList;
+      b = paramArrayOfInt1;
+      c = paramArrayOfInt2;
+      Arrays.fill(paramArrayOfInt1, 0);
+      Arrays.fill(paramArrayOfInt2, 0);
+      d = paramB;
+      e = paramB.getOldListSize();
+      f = paramB.getNewListSize();
+      g = paramBoolean;
+      a();
+      e();
+    }
+    
+    private void a()
+    {
+      h.d localD;
+      if (a.isEmpty()) {
+        localD = null;
+      } else {
+        localD = (h.d)a.get(0);
+      }
+      if ((localD == null) || (a != 0) || (b != 0)) {
+        a.add(0, new h.d(0, 0, 0));
+      }
+      a.add(new h.d(e, f, 0));
+    }
+    
+    private void d(int paramInt)
+    {
+      int k = a.size();
+      int j = 0;
+      int i = 0;
+      while (j < k)
+      {
+        h.d localD = (h.d)a.get(j);
+        while (i < b)
+        {
+          if ((c[i] == 0) && (d.areItemsTheSame(paramInt, i)))
+          {
+            if (d.areContentsTheSame(paramInt, i)) {
+              j = 8;
+            } else {
+              j = 4;
+            }
+            b[paramInt] = (i << 4 | j);
+            c[i] = (paramInt << 4 | j);
+            return;
+          }
+          i += 1;
+        }
+        i = localD.b();
+        j += 1;
+      }
+    }
+    
+    private void e()
+    {
+      Iterator localIterator = a.iterator();
+      while (localIterator.hasNext())
+      {
+        h.d localD = (h.d)localIterator.next();
+        int i = 0;
+        while (i < c)
+        {
+          int k = a + i;
+          int m = b + i;
+          int j;
+          if (d.areContentsTheSame(k, m)) {
+            j = 1;
+          } else {
+            j = 2;
+          }
+          b[k] = (m << 4 | j);
+          c[m] = (k << 4 | j);
+          i += 1;
+        }
+      }
+      if (g) {
+        f();
+      }
+    }
+    
+    private void f()
+    {
+      Iterator localIterator = a.iterator();
+      h.d localD;
+      for (int i = 0; localIterator.hasNext(); i = localD.a())
+      {
+        localD = (h.d)localIterator.next();
+        while (i < a)
+        {
+          if (b[i] == 0) {
+            d(i);
+          }
+          i += 1;
+        }
+      }
+    }
+    
+    private static h.g g(Collection<h.g> paramCollection, int paramInt, boolean paramBoolean)
+    {
+      Iterator localIterator = paramCollection.iterator();
+      while (localIterator.hasNext())
+      {
+        paramCollection = (h.g)localIterator.next();
+        if ((a == paramInt) && (c == paramBoolean))
+        {
+          localIterator.remove();
+          break label53;
+        }
+      }
+      paramCollection = null;
+      label53:
+      while (localIterator.hasNext())
+      {
+        h.g localG = (h.g)localIterator.next();
+        if (paramBoolean) {
+          b -= 1;
+        } else {
+          b += 1;
+        }
+      }
+      return paramCollection;
+    }
+    
+    public void b(q paramQ)
+    {
+      if ((paramQ instanceof e)) {
+        paramQ = (e)paramQ;
+      } else {
+        paramQ = new e(paramQ);
+      }
+      int i = e;
+      ArrayDeque localArrayDeque = new ArrayDeque();
+      int k = e;
+      int j = f;
+      int m = a.size() - 1;
+      while (m >= 0)
+      {
+        h.d localD = (h.d)a.get(m);
+        int i4 = localD.a();
+        int i3 = localD.b();
+        int n = k;
+        k = i;
+        int i2;
+        int i1;
+        h.g localG;
+        for (;;)
+        {
+          i2 = 0;
+          i = k;
+          i1 = j;
+          if (n <= i4) {
+            break;
+          }
+          i = n - 1;
+          i1 = b[i];
+          if ((i1 & 0xC) != 0)
+          {
+            i2 = i1 >> 4;
+            localG = g(localArrayDeque, i2, false);
+            if (localG != null)
+            {
+              int i5 = k - b - 1;
+              paramQ.a(i, i5);
+              n = i;
+              if ((i1 & 0x4) != 0)
+              {
+                paramQ.d(i5, 1, d.getChangePayload(i, i2));
+                n = i;
+              }
+            }
+            else
+            {
+              localArrayDeque.add(new h.g(i, k - i - 1, true));
+              n = i;
+            }
+          }
+          else
+          {
+            paramQ.c(i, 1);
+            k -= 1;
+            n = i;
+          }
+        }
+        while (i1 > i3)
+        {
+          j = i1 - 1;
+          k = c[j];
+          if ((k & 0xC) != 0)
+          {
+            i4 = k >> 4;
+            localG = g(localArrayDeque, i4, true);
+            if (localG == null)
+            {
+              localArrayDeque.add(new h.g(j, i - n, false));
+              i1 = j;
+            }
+            else
+            {
+              paramQ.a(i - b - 1, n);
+              i1 = j;
+              if ((k & 0x4) != 0)
+              {
+                paramQ.d(n, 1, d.getChangePayload(i4, j));
+                i1 = j;
+              }
+            }
+          }
+          else
+          {
+            paramQ.b(n, 1);
+            i += 1;
+            i1 = j;
+          }
+        }
+        n = a;
+        k = b;
+        j = i2;
+        while (j < c)
+        {
+          if ((b[n] & 0xF) == 2) {
+            paramQ.d(n, 1, d.getChangePayload(n, k));
+          }
+          n += 1;
+          k += 1;
+          j += 1;
+        }
+        k = a;
+        j = b;
+        m -= 1;
+      }
+      paramQ.e();
+    }
+    
+    public void c(RecyclerView.Adapter paramAdapter)
+    {
+      b(new b(paramAdapter));
+    }
+  }
+  
+  public static abstract class f<T>
+  {
+    public f() {}
+    
+    public abstract boolean a(T paramT1, T paramT2);
+    
+    public abstract boolean b(T paramT1, T paramT2);
+    
+    public Object c(T paramT1, T paramT2)
+    {
+      return null;
+    }
+  }
+  
+  private static class g
+  {
+    int a;
+    int b;
+    boolean c;
+    
+    g(int paramInt1, int paramInt2, boolean paramBoolean)
+    {
+      a = paramInt1;
+      b = paramInt2;
+      c = paramBoolean;
+    }
+  }
+  
+  static class h
+  {
+    int a;
+    int b;
+    int c;
+    int d;
+    
+    public h() {}
+    
+    public h(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      a = paramInt1;
+      b = paramInt2;
+      c = paramInt3;
+      d = paramInt4;
+    }
+    
+    int a()
+    {
+      return d - c;
+    }
+    
+    int b()
+    {
+      return b - a;
+    }
+  }
+  
+  static class i
+  {
+    public int a;
+    public int b;
+    public int c;
+    public int d;
+    public boolean e;
+    
+    i() {}
+    
+    int a()
+    {
+      return Math.min(c - a, d - b);
+    }
+    
+    boolean b()
+    {
+      return d - b != c - a;
+    }
+    
+    boolean c()
+    {
+      return d - b > c - a;
+    }
+    
+    h.d d()
+    {
+      if (b())
+      {
+        if (e) {
+          return new h.d(a, b, a());
+        }
+        if (c()) {
+          return new h.d(a, b + 1, a());
+        }
+        return new h.d(a + 1, b, a());
+      }
+      int i = a;
+      return new h.d(i, b, c - i);
+    }
+  }
+}

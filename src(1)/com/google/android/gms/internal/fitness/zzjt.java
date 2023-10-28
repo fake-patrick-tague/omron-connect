@@ -1,0 +1,49 @@
+package com.google.android.gms.internal.fitness;
+
+import java.util.AbstractList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.RandomAccess;
+
+public final class zzjt
+  extends AbstractList<String>
+  implements zzhr, RandomAccess
+{
+  private final zzhr zzabu;
+  
+  public zzjt(zzhr paramZzhr)
+  {
+    zzabu = paramZzhr;
+  }
+  
+  public final Iterator iterator()
+  {
+    return new zzjv(this);
+  }
+  
+  public final ListIterator listIterator(int paramInt)
+  {
+    return new zzjw(this, paramInt);
+  }
+  
+  public final int size()
+  {
+    return zzabu.size();
+  }
+  
+  public final Object zzaf(int paramInt)
+  {
+    return zzabu.zzaf(paramInt);
+  }
+  
+  public final List zzch()
+  {
+    return zzabu.zzch();
+  }
+  
+  public final zzhr zzci()
+  {
+    return this;
+  }
+}

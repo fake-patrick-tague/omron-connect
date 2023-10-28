@@ -1,0 +1,639 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.Bundle;
+import android.os.DeadObjectException;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.RemoteException;
+import android.util.Log;
+import c.e.a;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Feature;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.Api.ApiOptions;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.api.UnsupportedApiCallException;
+import com.google.android.gms.common.internal.BaseGmsClient.ConnectionProgressReportCallbacks;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import org.checkerframework.checker.initialization.qual.NotOnlyInitialized;
+
+public final class zabq<O extends Api.ApiOptions>
+  implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, zau
+{
+  private final Queue<zai> zab = new LinkedList();
+  @NotOnlyInitialized
+  private final Api.Client zac;
+  private final ApiKey<O> zad;
+  private final zaad zae;
+  private final Set<zal> zaf = new HashSet();
+  private final Map<ListenerHolder.ListenerKey<?>, zaci> zag = new HashMap();
+  private final int zah;
+  private final zact zai;
+  private boolean zaj;
+  private final List<zabs> zak = new ArrayList();
+  private ConnectionResult zal = null;
+  private int zam = 0;
+  
+  public zabq(GoogleApi<O> paramGoogleApi)
+  {
+    Object localObject;
+    Api.Client localClient = localObject.zab(GoogleApiManager.zaf(paramGoogleApi).getLooper(), this);
+    zac = localClient;
+    zad = localObject.getApiKey();
+    zae = new zaad();
+    zah = localObject.zaa();
+    if (localClient.requiresSignIn())
+    {
+      zai = localObject.zac(GoogleApiManager.zae(paramGoogleApi), GoogleApiManager.zaf(paramGoogleApi));
+      return;
+    }
+    zai = null;
+  }
+  
+  private final Feature zaB(Feature[] paramArrayOfFeature)
+  {
+    if (paramArrayOfFeature != null)
+    {
+      if (paramArrayOfFeature.length == 0) {
+        return null;
+      }
+      Object localObject2 = zac.getAvailableFeatures();
+      int j = 0;
+      Object localObject1 = localObject2;
+      if (localObject2 == null) {
+        localObject1 = new Feature[0];
+      }
+      int k = localObject1.length;
+      localObject2 = new a(k);
+      int i = 0;
+      Long localLong;
+      while (i < k)
+      {
+        localLong = localObject1[i];
+        ((Map)localObject2).put(localLong.getName(), Long.valueOf(localLong.getVersion()));
+        i += 1;
+      }
+      k = paramArrayOfFeature.length;
+      i = j;
+      while (i < k)
+      {
+        localObject1 = paramArrayOfFeature[i];
+        localLong = (Long)((Map)localObject2).get(((Feature)localObject1).getName());
+        if (localLong != null)
+        {
+          if (localLong.longValue() < ((Feature)localObject1).getVersion()) {
+            return localObject1;
+          }
+          i += 1;
+        }
+        else
+        {
+          return localObject1;
+        }
+      }
+    }
+    return null;
+  }
+  
+  private final void zaC(ConnectionResult paramConnectionResult)
+  {
+    Iterator localIterator = zaf.iterator();
+    while (localIterator.hasNext())
+    {
+      zal localZal = (zal)localIterator.next();
+      String str;
+      if (Objects.equal(paramConnectionResult, ConnectionResult.RESULT_SUCCESS)) {
+        str = zac.getEndpointPackageName();
+      } else {
+        str = null;
+      }
+      localZal.zac(zad, paramConnectionResult, str);
+    }
+    zaf.clear();
+  }
+  
+  private final void zaD(Status paramStatus)
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    zaE(paramStatus, null, false);
+  }
+  
+  private final void zaE(Status paramStatus, Exception paramException, boolean paramBoolean)
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    int j = 0;
+    int i;
+    if (paramStatus != null) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    if (paramException == null) {
+      j = 1;
+    }
+    if (i != j)
+    {
+      Iterator localIterator = zab.iterator();
+      while (localIterator.hasNext())
+      {
+        zai localZai = (zai)localIterator.next();
+        if ((!paramBoolean) || (zac == 2))
+        {
+          if (paramStatus != null) {
+            localZai.zad(paramStatus);
+          } else {
+            localZai.zae(paramException);
+          }
+          localIterator.remove();
+        }
+      }
+      return;
+    }
+    throw new IllegalArgumentException("Status XOR exception should be null");
+  }
+  
+  private final void zaF()
+  {
+    ArrayList localArrayList = new ArrayList(zab);
+    int j = localArrayList.size();
+    int i = 0;
+    while (i < j)
+    {
+      zai localZai = (zai)localArrayList.get(i);
+      if (!zac.isConnected()) {
+        return;
+      }
+      if (zaL(localZai)) {
+        zab.remove(localZai);
+      }
+      i += 1;
+    }
+  }
+  
+  private final void zaG()
+  {
+    zan();
+    zaC(ConnectionResult.RESULT_SUCCESS);
+    zaK();
+    Iterator localIterator = zag.values().iterator();
+    while (localIterator.hasNext())
+    {
+      zaci localZaci = (zaci)localIterator.next();
+      if (zaB(zaa.getRequiredFeatures()) != null) {
+        localIterator.remove();
+      }
+      try
+      {
+        zaa.registerListener(zac, new TaskCompletionSource());
+      }
+      catch (DeadObjectException localDeadObjectException)
+      {
+        for (;;) {}
+      }
+      catch (RemoteException localRemoteException)
+      {
+        for (;;) {}
+      }
+      localIterator.remove();
+      continue;
+      onConnectionSuspended(3);
+      zac.disconnect("DeadObjectException thrown while calling register listener method.");
+    }
+    zaF();
+    zaI();
+  }
+  
+  private final void zaH(int paramInt)
+  {
+    zan();
+    zaj = true;
+    zae.zae(paramInt, zac.getLastDisconnectMessage());
+    Object localObject = zaa;
+    GoogleApiManager.zaf((GoogleApiManager)localObject).sendMessageDelayed(Message.obtain(GoogleApiManager.zaf((GoogleApiManager)localObject), 9, zad), GoogleApiManager.zab(zaa));
+    localObject = zaa;
+    GoogleApiManager.zaf((GoogleApiManager)localObject).sendMessageDelayed(Message.obtain(GoogleApiManager.zaf((GoogleApiManager)localObject), 11, zad), GoogleApiManager.zac(zaa));
+    GoogleApiManager.zan(zaa).zac();
+    localObject = zag.values().iterator();
+    while (((Iterator)localObject).hasNext()) {
+      nextzac.run();
+    }
+  }
+  
+  private final void zaI()
+  {
+    GoogleApiManager.zaf(zaa).removeMessages(12, zad);
+    GoogleApiManager localGoogleApiManager = zaa;
+    GoogleApiManager.zaf(localGoogleApiManager).sendMessageDelayed(GoogleApiManager.zaf(localGoogleApiManager).obtainMessage(12, zad), GoogleApiManager.zad(zaa));
+  }
+  
+  private final void zaJ(zai paramZai)
+  {
+    paramZai.zag(zae, zaz());
+    try
+    {
+      paramZai.zaf(this);
+      return;
+    }
+    catch (DeadObjectException paramZai)
+    {
+      for (;;) {}
+    }
+    onConnectionSuspended(1);
+    zac.disconnect("DeadObjectException thrown while running ApiCallRunner.");
+  }
+  
+  private final void zaK()
+  {
+    if (zaj)
+    {
+      GoogleApiManager.zaf(zaa).removeMessages(11, zad);
+      GoogleApiManager.zaf(zaa).removeMessages(9, zad);
+      zaj = false;
+    }
+  }
+  
+  private final boolean zaL(zai paramZai)
+  {
+    if (!(paramZai instanceof zac))
+    {
+      zaJ(paramZai);
+      return true;
+    }
+    Object localObject = (zac)paramZai;
+    Feature localFeature = zaB(((zac)localObject).zab(this));
+    if (localFeature == null)
+    {
+      zaJ(paramZai);
+      return true;
+    }
+    paramZai = zac.getClass().getName();
+    String str = localFeature.getName();
+    long l = localFeature.getVersion();
+    StringBuilder localStringBuilder = new StringBuilder(paramZai.length() + 77 + String.valueOf(str).length());
+    localStringBuilder.append(paramZai);
+    localStringBuilder.append(" could not execute call because it requires feature (");
+    localStringBuilder.append(str);
+    localStringBuilder.append(", ");
+    localStringBuilder.append(l);
+    localStringBuilder.append(").");
+    Log.w("GoogleApiManager", localStringBuilder.toString());
+    if ((GoogleApiManager.zaE(zaa)) && (((zac)localObject).zaa(this)))
+    {
+      paramZai = new zabs(zad, localFeature, null);
+      int i = zak.indexOf(paramZai);
+      if (i >= 0)
+      {
+        paramZai = (zabs)zak.get(i);
+        GoogleApiManager.zaf(zaa).removeMessages(15, paramZai);
+        localObject = zaa;
+        GoogleApiManager.zaf((GoogleApiManager)localObject).sendMessageDelayed(Message.obtain(GoogleApiManager.zaf((GoogleApiManager)localObject), 15, paramZai), GoogleApiManager.zab(zaa));
+      }
+      else
+      {
+        zak.add(paramZai);
+        localObject = zaa;
+        GoogleApiManager.zaf((GoogleApiManager)localObject).sendMessageDelayed(Message.obtain(GoogleApiManager.zaf((GoogleApiManager)localObject), 15, paramZai), GoogleApiManager.zab(zaa));
+        localObject = zaa;
+        GoogleApiManager.zaf((GoogleApiManager)localObject).sendMessageDelayed(Message.obtain(GoogleApiManager.zaf((GoogleApiManager)localObject), 16, paramZai), GoogleApiManager.zac(zaa));
+        paramZai = new ConnectionResult(2, null);
+        if (!zaM(paramZai)) {
+          zaa.zaG(paramZai, zah);
+        }
+      }
+      return false;
+    }
+    ((zai)localObject).zae(new UnsupportedApiCallException(localFeature));
+    return true;
+  }
+  
+  private final boolean zaM(ConnectionResult paramConnectionResult)
+  {
+    synchronized ()
+    {
+      GoogleApiManager localGoogleApiManager = zaa;
+      if ((GoogleApiManager.zaj(localGoogleApiManager) != null) && (GoogleApiManager.zau(localGoogleApiManager).contains(zad)))
+      {
+        GoogleApiManager.zaj(zaa).zah(paramConnectionResult, zah);
+        return true;
+      }
+      return false;
+    }
+  }
+  
+  private final boolean zaN(boolean paramBoolean)
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    if ((zac.isConnected()) && (zag.size() == 0))
+    {
+      if (zae.zag())
+      {
+        if (paramBoolean) {
+          zaI();
+        }
+        return false;
+      }
+      zac.disconnect("Timing out service connection.");
+      return true;
+    }
+    return false;
+  }
+  
+  public final void onConnected(Bundle paramBundle)
+  {
+    if (Looper.myLooper() == GoogleApiManager.zaf(zaa).getLooper())
+    {
+      zaG();
+      return;
+    }
+    GoogleApiManager.zaf(zaa).post(new zabm(this));
+  }
+  
+  public final void onConnectionFailed(ConnectionResult paramConnectionResult)
+  {
+    zar(paramConnectionResult, null);
+  }
+  
+  public final void onConnectionSuspended(int paramInt)
+  {
+    if (Looper.myLooper() == GoogleApiManager.zaf(zaa).getLooper())
+    {
+      zaH(paramInt);
+      return;
+    }
+    GoogleApiManager.zaf(zaa).post(new zabn(this, paramInt));
+  }
+  
+  public final boolean zaA()
+  {
+    return zaN(true);
+  }
+  
+  public final void zaa(ConnectionResult paramConnectionResult, Api<?> paramApi, boolean paramBoolean)
+  {
+    throw null;
+  }
+  
+  public final int zab()
+  {
+    return zah;
+  }
+  
+  final int zac()
+  {
+    return zam;
+  }
+  
+  public final ConnectionResult zad()
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    return zal;
+  }
+  
+  public final Api.Client zaf()
+  {
+    return zac;
+  }
+  
+  public final Map<ListenerHolder.ListenerKey<?>, zaci> zah()
+  {
+    return zag;
+  }
+  
+  public final void zan()
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    zal = null;
+  }
+  
+  public final void zao()
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    if (!zac.isConnected())
+    {
+      if (zac.isConnecting()) {
+        return;
+      }
+      try
+      {
+        Object localObject1 = zaa;
+        int i = GoogleApiManager.zan((GoogleApiManager)localObject1).zab(GoogleApiManager.zae((GoogleApiManager)localObject1), zac);
+        if (i != 0)
+        {
+          localObject1 = new ConnectionResult(i, null);
+          localObject2 = zac.getClass().getName();
+          String str = localObject1.toString();
+          StringBuilder localStringBuilder = new StringBuilder(((String)localObject2).length() + 35 + str.length());
+          localStringBuilder.append("The service for ");
+          localStringBuilder.append((String)localObject2);
+          localStringBuilder.append(" is not available: ");
+          localStringBuilder.append(str);
+          Log.w("GoogleApiManager", localStringBuilder.toString());
+          zar((ConnectionResult)localObject1, null);
+          return;
+        }
+        Object localObject2 = zaa;
+        localObject1 = zac;
+        localObject2 = new zabu((GoogleApiManager)localObject2, (Api.Client)localObject1, zad);
+        if (((Api.Client)localObject1).requiresSignIn()) {
+          ((zact)Preconditions.checkNotNull(zai)).zae((zacs)localObject2);
+        }
+        try
+        {
+          zac.connect((BaseGmsClient.ConnectionProgressReportCallbacks)localObject2);
+          return;
+        }
+        catch (SecurityException localSecurityException)
+        {
+          zar(new ConnectionResult(10), localSecurityException);
+          return;
+        }
+        return;
+      }
+      catch (IllegalStateException localIllegalStateException)
+      {
+        zar(new ConnectionResult(10), localIllegalStateException);
+      }
+    }
+  }
+  
+  public final void zap(zai paramZai)
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    if (zac.isConnected())
+    {
+      if (zaL(paramZai))
+      {
+        zaI();
+        return;
+      }
+      zab.add(paramZai);
+      return;
+    }
+    zab.add(paramZai);
+    paramZai = zal;
+    if ((paramZai != null) && (paramZai.hasResolution()))
+    {
+      zar(zal, null);
+      return;
+    }
+    zao();
+  }
+  
+  final void zaq()
+  {
+    zam += 1;
+  }
+  
+  public final void zar(ConnectionResult paramConnectionResult, Exception paramException)
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    Object localObject = zai;
+    if (localObject != null) {
+      ((zact)localObject).zaf();
+    }
+    zan();
+    GoogleApiManager.zan(zaa).zac();
+    zaC(paramConnectionResult);
+    if (((zac instanceof com.google.android.gms.common.internal.service.zap)) && (paramConnectionResult.getErrorCode() != 24))
+    {
+      GoogleApiManager.zav(zaa, true);
+      localObject = zaa;
+      GoogleApiManager.zaf((GoogleApiManager)localObject).sendMessageDelayed(GoogleApiManager.zaf((GoogleApiManager)localObject).obtainMessage(19), 300000L);
+    }
+    if (paramConnectionResult.getErrorCode() == 4)
+    {
+      zaD(GoogleApiManager.zah());
+      return;
+    }
+    if (zab.isEmpty())
+    {
+      zal = paramConnectionResult;
+      return;
+    }
+    if (paramException != null)
+    {
+      Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+      zaE(null, paramException, false);
+      return;
+    }
+    if (GoogleApiManager.zaE(zaa))
+    {
+      zaE(GoogleApiManager.zai(zad, paramConnectionResult), null, true);
+      if (zab.isEmpty()) {
+        return;
+      }
+      if (zaM(paramConnectionResult)) {
+        return;
+      }
+      if (!zaa.zaG(paramConnectionResult, zah))
+      {
+        if (paramConnectionResult.getErrorCode() == 18) {
+          zaj = true;
+        }
+        if (zaj)
+        {
+          paramConnectionResult = zaa;
+          GoogleApiManager.zaf(paramConnectionResult).sendMessageDelayed(Message.obtain(GoogleApiManager.zaf(paramConnectionResult), 9, zad), GoogleApiManager.zab(zaa));
+          return;
+        }
+        zaD(GoogleApiManager.zai(zad, paramConnectionResult));
+      }
+      return;
+    }
+    zaD(GoogleApiManager.zai(zad, paramConnectionResult));
+  }
+  
+  public final void zas(ConnectionResult paramConnectionResult)
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    Api.Client localClient = zac;
+    String str1 = localClient.getClass().getName();
+    String str2 = String.valueOf(paramConnectionResult);
+    StringBuilder localStringBuilder = new StringBuilder(str1.length() + 25 + str2.length());
+    localStringBuilder.append("onSignInFailed for ");
+    localStringBuilder.append(str1);
+    localStringBuilder.append(" with ");
+    localStringBuilder.append(str2);
+    localClient.disconnect(localStringBuilder.toString());
+    zar(paramConnectionResult, null);
+  }
+  
+  public final void zat(zal paramZal)
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    zaf.add(paramZal);
+  }
+  
+  public final void zau()
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    if (zaj) {
+      zao();
+    }
+  }
+  
+  public final void zav()
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    zaD(GoogleApiManager.zaa);
+    zae.zaf();
+    Object localObject = zag.keySet();
+    int i = 0;
+    localObject = (ListenerHolder.ListenerKey[])((Set)localObject).toArray(new ListenerHolder.ListenerKey[0]);
+    int j = localObject.length;
+    while (i < j)
+    {
+      zap(new zah(localObject[i], new TaskCompletionSource()));
+      i += 1;
+    }
+    zaC(new ConnectionResult(4));
+    if (zac.isConnected()) {
+      zac.onUserSignOut(new zabp(this));
+    }
+  }
+  
+  public final void zaw()
+  {
+    Preconditions.checkHandlerThread(GoogleApiManager.zaf(zaa));
+    if (zaj)
+    {
+      zaK();
+      Object localObject = zaa;
+      if (GoogleApiManager.zag((GoogleApiManager)localObject).isGooglePlayServicesAvailable(GoogleApiManager.zae((GoogleApiManager)localObject)) == 18) {
+        localObject = new Status(21, "Connection timed out waiting for Google Play services update to complete.");
+      } else {
+        localObject = new Status(22, "API failed to connect while resuming due to an unknown error.");
+      }
+      zaD((Status)localObject);
+      zac.disconnect("Timing out connection while resuming.");
+    }
+  }
+  
+  final boolean zay()
+  {
+    return zac.isConnected();
+  }
+  
+  public final boolean zaz()
+  {
+    return zac.requiresSignIn();
+  }
+}

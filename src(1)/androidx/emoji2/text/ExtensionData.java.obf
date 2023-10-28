@@ -1,0 +1,239 @@
+package androidx.emoji2.text;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.ContentObserver;
+import android.graphics.Typeface;
+import android.os.Handler;
+import androidx.core.graphics.l;
+import c.h.n.e;
+import c.h.n.g;
+import c.h.n.g.a;
+import c.h.n.g.b;
+import c.h.p.h;
+import java.nio.ByteBuffer;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
+
+public class k
+  extends g.c
+{
+  private static final a j = new a();
+  
+  public k(Context paramContext, e paramE)
+  {
+    super(new b(paramContext, paramE, j));
+  }
+  
+  public k c(Executor paramExecutor)
+  {
+    ((b)a()).f(paramExecutor);
+    return this;
+  }
+  
+  public static class a
+  {
+    public a() {}
+    
+    public Typeface a(Context paramContext, g.b paramB)
+      throws PackageManager.NameNotFoundException
+    {
+      return g.a(paramContext, null, new g.b[] { paramB });
+    }
+    
+    public g.a b(Context paramContext, e paramE)
+      throws PackageManager.NameNotFoundException
+    {
+      return g.b(paramContext, null, paramE);
+    }
+    
+    public void c(Context paramContext, ContentObserver paramContentObserver)
+    {
+      paramContext.getContentResolver().unregisterContentObserver(paramContentObserver);
+    }
+  }
+  
+  private static class b
+    implements g.g
+  {
+    private final Context a;
+    private final e b;
+    private final k.a c;
+    private final Object d = new Object();
+    private Handler e;
+    private Executor f;
+    private ThreadPoolExecutor g;
+    private k.c h;
+    g.h i;
+    private ContentObserver j;
+    private Runnable k;
+    
+    b(Context paramContext, e paramE, k.a paramA)
+    {
+      h.h(paramContext, "Context cannot be null");
+      h.h(paramE, "FontRequest cannot be null");
+      a = paramContext.getApplicationContext();
+      b = paramE;
+      c = paramA;
+    }
+    
+    private void b()
+    {
+      synchronized (d)
+      {
+        i = null;
+        Object localObject2 = j;
+        if (localObject2 != null)
+        {
+          c.c(a, (ContentObserver)localObject2);
+          j = null;
+        }
+        localObject2 = e;
+        if (localObject2 != null) {
+          ((Handler)localObject2).removeCallbacks(k);
+        }
+        e = null;
+        localObject2 = g;
+        if (localObject2 != null) {
+          ((ThreadPoolExecutor)localObject2).shutdown();
+        }
+        f = null;
+        g = null;
+        return;
+      }
+    }
+    
+    private g.b e()
+    {
+      try
+      {
+        Object localObject = c.b(a, b);
+        if (((g.a)localObject).c() == 0)
+        {
+          localObject = ((g.a)localObject).b();
+          if ((localObject != null) && (localObject.length != 0)) {
+            return localObject[0];
+          }
+          throw new RuntimeException("fetchFonts failed (empty result)");
+        }
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("fetchFonts failed (");
+        localStringBuilder.append(((g.a)localObject).c());
+        localStringBuilder.append(")");
+        throw new RuntimeException(localStringBuilder.toString());
+      }
+      catch (PackageManager.NameNotFoundException localNameNotFoundException)
+      {
+        throw new RuntimeException("provider not found", localNameNotFoundException);
+      }
+    }
+    
+    public void a(g.h paramH)
+    {
+      h.h(paramH, "LoaderCallback cannot be null");
+      synchronized (d)
+      {
+        i = paramH;
+        d();
+        return;
+      }
+    }
+    
+    void c()
+    {
+      synchronized (d)
+      {
+        if (i == null) {
+          return;
+        }
+        try
+        {
+          ??? = e();
+          int m = ((g.b)???).b();
+          if (m == 2) {
+            synchronized (d)
+            {
+              if (h != null) {
+                throw null;
+              }
+            }
+          }
+          if (m == 0) {
+            try
+            {
+              c.h.m.m.a("EmojiCompat.FontRequestEmojiCompatConfig.buildTypeface");
+              ??? = c.a(a, localB);
+              ??? = l.f(a, null, localB.d());
+              if ((??? != null) && (??? != null))
+              {
+                ??? = m.b((Typeface)???, (ByteBuffer)???);
+                c.h.m.m.b();
+                synchronized (d)
+                {
+                  localH = i;
+                  if (localH != null) {
+                    localH.b((m)???);
+                  }
+                  b();
+                  return;
+                }
+              }
+              throw new RuntimeException("Unable to open file.");
+            }
+            finally
+            {
+              c.h.m.m.b();
+            }
+          }
+          ??? = new StringBuilder();
+          ((StringBuilder)???).append("fetchFonts result is not OK. (");
+          ((StringBuilder)???).append(m);
+          ((StringBuilder)???).append(")");
+          throw new RuntimeException(((StringBuilder)???).toString());
+        }
+        finally
+        {
+          synchronized (d)
+          {
+            g.h localH = i;
+            if (localH != null) {
+              localH.a(localThrowable);
+            }
+            b();
+            return;
+          }
+        }
+      }
+    }
+    
+    void d()
+    {
+      synchronized (d)
+      {
+        if (i == null) {
+          return;
+        }
+        if (f == null)
+        {
+          ThreadPoolExecutor localThreadPoolExecutor = d.a("emojiCompat");
+          g = localThreadPoolExecutor;
+          f = localThreadPoolExecutor;
+        }
+        f.execute(new a(this));
+        return;
+      }
+    }
+    
+    public void f(Executor paramExecutor)
+    {
+      synchronized (d)
+      {
+        f = paramExecutor;
+        return;
+      }
+    }
+  }
+  
+  public static abstract class c {}
+}

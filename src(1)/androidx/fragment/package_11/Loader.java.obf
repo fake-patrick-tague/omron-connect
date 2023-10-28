@@ -1,0 +1,75 @@
+package androidx.fragment.app;
+
+import c.e.g;
+
+public class q
+{
+  private static final g<ClassLoader, g<String, Class<?>>> a = new g();
+  
+  public q() {}
+  
+  static boolean b(ClassLoader paramClassLoader, String paramString)
+  {
+    try
+    {
+      boolean bool = Fragment.class.isAssignableFrom(c(paramClassLoader, paramString));
+      return bool;
+    }
+    catch (ClassNotFoundException paramClassLoader)
+    {
+      for (;;) {}
+    }
+    return false;
+  }
+  
+  private static Class<?> c(ClassLoader paramClassLoader, String paramString)
+    throws ClassNotFoundException
+  {
+    Object localObject3 = a;
+    Object localObject2 = (g)((g)localObject3).get(paramClassLoader);
+    Object localObject1 = localObject2;
+    if (localObject2 == null)
+    {
+      localObject1 = new g();
+      ((g)localObject3).put(paramClassLoader, localObject1);
+    }
+    localObject3 = (Class)((g)localObject1).get(paramString);
+    localObject2 = localObject3;
+    if (localObject3 == null)
+    {
+      localObject2 = Class.forName(paramString, false, paramClassLoader);
+      ((g)localObject1).put(paramString, localObject2);
+    }
+    return localObject2;
+  }
+  
+  public static Class<? extends Fragment> d(ClassLoader paramClassLoader, String paramString)
+  {
+    try
+    {
+      paramClassLoader = c(paramClassLoader, paramString);
+      return paramClassLoader;
+    }
+    catch (ClassCastException paramClassLoader)
+    {
+      localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Unable to instantiate fragment ");
+      localStringBuilder.append(paramString);
+      localStringBuilder.append(": make sure class is a valid subclass of Fragment");
+      throw new Fragment.l(localStringBuilder.toString(), paramClassLoader);
+    }
+    catch (ClassNotFoundException paramClassLoader)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Unable to instantiate fragment ");
+      localStringBuilder.append(paramString);
+      localStringBuilder.append(": make sure class name exists");
+      throw new Fragment.l(localStringBuilder.toString(), paramClassLoader);
+    }
+  }
+  
+  public Fragment a(ClassLoader paramClassLoader, String paramString)
+  {
+    throw null;
+  }
+}

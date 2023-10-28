@@ -1,0 +1,139 @@
+package com.google.android.material.internal;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.PorterDuff.Mode;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
+import android.view.ViewParent;
+import c.h.q.f0;
+import c.h.q.n0;
+import c.h.q.z;
+
+public class j
+{
+  public static void a(View paramView, c paramC)
+  {
+    f0.C0(paramView, new a(paramC, new d(f0.I(paramView), paramView.getPaddingTop(), f0.H(paramView), paramView.getPaddingBottom())));
+    f(paramView);
+  }
+  
+  public static float b(Context paramContext, int paramInt)
+  {
+    paramContext = paramContext.getResources();
+    return TypedValue.applyDimension(1, paramInt, paramContext.getDisplayMetrics());
+  }
+  
+  public static float c(View paramView)
+  {
+    paramView = paramView.getParent();
+    float f = 0.0F;
+    while ((paramView instanceof View))
+    {
+      f += f0.x((View)paramView);
+      paramView = paramView.getParent();
+    }
+    return f;
+  }
+  
+  public static boolean d(View paramView)
+  {
+    return f0.D(paramView) == 1;
+  }
+  
+  public static PorterDuff.Mode e(int paramInt, PorterDuff.Mode paramMode)
+  {
+    if (paramInt != 3)
+    {
+      if (paramInt != 5)
+      {
+        if (paramInt != 9)
+        {
+          switch (paramInt)
+          {
+          default: 
+            return paramMode;
+          case 16: 
+            return PorterDuff.Mode.ADD;
+          case 15: 
+            return PorterDuff.Mode.SCREEN;
+          }
+          return PorterDuff.Mode.MULTIPLY;
+        }
+        return PorterDuff.Mode.SRC_ATOP;
+      }
+      return PorterDuff.Mode.SRC_IN;
+    }
+    return PorterDuff.Mode.SRC_OVER;
+  }
+  
+  public static void f(View paramView)
+  {
+    if (f0.S(paramView))
+    {
+      f0.m0(paramView);
+      return;
+    }
+    paramView.addOnAttachStateChangeListener(new b());
+  }
+  
+  static final class a
+    implements z
+  {
+    a(j.c paramC, j.d paramD) {}
+    
+    public n0 a(View paramView, n0 paramN0)
+    {
+      return a.a(paramView, paramN0, new j.d(b));
+    }
+  }
+  
+  static final class b
+    implements View.OnAttachStateChangeListener
+  {
+    b() {}
+    
+    public void onViewAttachedToWindow(View paramView)
+    {
+      paramView.removeOnAttachStateChangeListener(this);
+      f0.m0(paramView);
+    }
+    
+    public void onViewDetachedFromWindow(View paramView) {}
+  }
+  
+  public static abstract interface c
+  {
+    public abstract n0 a(View paramView, n0 paramN0, j.d paramD);
+  }
+  
+  public static class d
+  {
+    public int a;
+    public int b;
+    public int c;
+    public int d;
+    
+    public d(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      a = paramInt1;
+      b = paramInt2;
+      c = paramInt3;
+      d = paramInt4;
+    }
+    
+    public d(d paramD)
+    {
+      a = a;
+      b = b;
+      c = c;
+      d = d;
+    }
+    
+    public void a(View paramView)
+    {
+      f0.D0(paramView, a, b, c, d);
+    }
+  }
+}

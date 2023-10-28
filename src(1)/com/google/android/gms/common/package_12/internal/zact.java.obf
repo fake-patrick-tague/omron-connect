@@ -1,0 +1,93 @@
+package com.google.android.gms.common.api.internal;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Api.AbstractClientBuilder;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.internal.ClientSettings;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.signin.SignInOptions;
+import com.google.android.gms.signin.internal.zac;
+import com.google.android.gms.signin.internal.zak;
+import com.google.android.gms.signin.zad;
+import com.google.android.gms.signin.zae;
+import java.util.Set;
+
+public final class zact
+  extends zac
+  implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+{
+  private static final Api.AbstractClientBuilder<? extends zae, SignInOptions> zaa = zad.zac;
+  private final Context zab;
+  private final Handler zac;
+  private final Api.AbstractClientBuilder<? extends zae, SignInOptions> zad;
+  private final Set<Scope> zae;
+  private final ClientSettings zaf;
+  private zae zag;
+  private zacs zah;
+  
+  public zact(Context paramContext, Handler paramHandler, ClientSettings paramClientSettings)
+  {
+    zab = paramContext;
+    zac = paramHandler;
+    zaf = ((ClientSettings)Preconditions.checkNotNull(paramClientSettings, "ClientSettings must not be null"));
+    zae = paramClientSettings.getRequiredScopes();
+    zad = localAbstractClientBuilder;
+  }
+  
+  public final void onConnected(Bundle paramBundle)
+  {
+    zag.zad(this);
+  }
+  
+  public final void onConnectionFailed(ConnectionResult paramConnectionResult)
+  {
+    zah.zae(paramConnectionResult);
+  }
+  
+  public final void onConnectionSuspended(int paramInt)
+  {
+    zag.disconnect();
+  }
+  
+  public final void zab(zak paramZak)
+  {
+    zac.post(new zacr(this, paramZak));
+  }
+  
+  public final void zae(zacs paramZacs)
+  {
+    Object localObject = zag;
+    if (localObject != null) {
+      ((Api.Client)localObject).disconnect();
+    }
+    zaf.zae(Integer.valueOf(System.identityHashCode(this)));
+    localObject = zad;
+    Context localContext = zab;
+    Looper localLooper = zac.getLooper();
+    ClientSettings localClientSettings = zaf;
+    zag = ((Api.AbstractClientBuilder)localObject).buildClient(localContext, localLooper, localClientSettings, localClientSettings.zaa(), this, this);
+    zah = paramZacs;
+    paramZacs = zae;
+    if ((paramZacs != null) && (!paramZacs.isEmpty()))
+    {
+      zag.zab();
+      return;
+    }
+    zac.post(new zacq(this));
+  }
+  
+  public final void zaf()
+  {
+    zae localZae = zag;
+    if (localZae != null) {
+      localZae.disconnect();
+    }
+  }
+}

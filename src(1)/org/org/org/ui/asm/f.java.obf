@@ -1,0 +1,892 @@
+package d.c.a.a.x;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Matrix;
+import android.graphics.Outline;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Region;
+import android.graphics.Region.Op;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.os.Build.VERSION;
+import android.os.Looper;
+import android.util.AttributeSet;
+import android.util.Log;
+import java.util.BitSet;
+
+public class g
+  extends Drawable
+  implements androidx.core.graphics.drawable.b, n
+{
+  private static final String b = g.class.getSimpleName();
+  private static final Paint c = new Paint(1);
+  private c d;
+  private final m.g[] e = new m.g[4];
+  private final m.g[] f = new m.g[4];
+  private final BitSet g = new BitSet(8);
+  private boolean h;
+  private final Matrix i = new Matrix();
+  private final Path j = new Path();
+  private final Path k = new Path();
+  private final RectF l = new RectF();
+  private final RectF m = new RectF();
+  private final Region n = new Region();
+  private final Region o = new Region();
+  private k p;
+  private final Paint q;
+  private final Paint r;
+  private final d.c.a.a.w.a s;
+  private final l.b t;
+  private final l u;
+  private PorterDuffColorFilter v;
+  private PorterDuffColorFilter w;
+  private final RectF x;
+  private boolean y;
+  
+  public g()
+  {
+    this(new k());
+  }
+  
+  public g(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    this(k.e(paramContext, paramAttributeSet, paramInt1, paramInt2).m());
+  }
+  
+  private g(c paramC)
+  {
+    Paint localPaint1 = new Paint(1);
+    q = localPaint1;
+    Paint localPaint2 = new Paint(1);
+    r = localPaint2;
+    s = new d.c.a.a.w.a();
+    l localL;
+    if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+      localL = l.k();
+    } else {
+      localL = new l();
+    }
+    u = localL;
+    x = new RectF();
+    y = true;
+    d = paramC;
+    localPaint2.setStyle(Paint.Style.STROKE);
+    localPaint1.setStyle(Paint.Style.FILL);
+    paramC = c;
+    paramC.setColor(-1);
+    paramC.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+    i0();
+    h0(getState());
+    t = new a();
+  }
+  
+  public g(k paramK)
+  {
+    this(new c(paramK, null));
+  }
+  
+  private float D()
+  {
+    if (L()) {
+      return r.getStrokeWidth() / 2.0F;
+    }
+    return 0.0F;
+  }
+  
+  private boolean J()
+  {
+    c localC = d;
+    int i1 = q;
+    boolean bool = true;
+    if ((i1 != 1) && (r > 0))
+    {
+      if (i1 == 2) {
+        return bool;
+      }
+      if (T()) {
+        return true;
+      }
+    }
+    bool = false;
+    return bool;
+  }
+  
+  private boolean K()
+  {
+    Paint.Style localStyle = d.v;
+    return (localStyle == Paint.Style.FILL_AND_STROKE) || (localStyle == Paint.Style.FILL);
+  }
+  
+  private boolean L()
+  {
+    Paint.Style localStyle = d.v;
+    return ((localStyle == Paint.Style.FILL_AND_STROKE) || (localStyle == Paint.Style.STROKE)) && (r.getStrokeWidth() > 0.0F);
+  }
+  
+  private void N()
+  {
+    super.invalidateSelf();
+  }
+  
+  private void Q(Canvas paramCanvas)
+  {
+    if (!J()) {
+      return;
+    }
+    paramCanvas.save();
+    S(paramCanvas);
+    if (!y)
+    {
+      n(paramCanvas);
+      paramCanvas.restore();
+      return;
+    }
+    int i1 = (int)(x.width() - getBounds().width());
+    int i2 = (int)(x.height() - getBounds().height());
+    if ((i1 >= 0) && (i2 >= 0))
+    {
+      Bitmap localBitmap = Bitmap.createBitmap((int)x.width() + d.r * 2 + i1, (int)x.height() + d.r * 2 + i2, Bitmap.Config.ARGB_8888);
+      Canvas localCanvas = new Canvas(localBitmap);
+      float f1 = getBoundsleft - d.r - i1;
+      float f2 = getBoundstop - d.r - i2;
+      localCanvas.translate(-f1, -f2);
+      n(localCanvas);
+      paramCanvas.drawBitmap(localBitmap, f1, f2, null);
+      localBitmap.recycle();
+      paramCanvas.restore();
+      return;
+    }
+    throw new IllegalStateException("Invalid shadow bounds. Check that the treatments result in a valid path.");
+  }
+  
+  private static int R(int paramInt1, int paramInt2)
+  {
+    return paramInt1 * (paramInt2 + (paramInt2 >>> 7)) >>> 8;
+  }
+  
+  private void S(Canvas paramCanvas)
+  {
+    int i1 = z();
+    int i2 = A();
+    if ((Build.VERSION.SDK_INT < 21) && (y))
+    {
+      Rect localRect = paramCanvas.getClipBounds();
+      int i3 = d.r;
+      localRect.inset(-i3, -i3);
+      localRect.offset(i1, i2);
+      paramCanvas.clipRect(localRect, Region.Op.REPLACE);
+    }
+    paramCanvas.translate(i1, i2);
+  }
+  
+  private PorterDuffColorFilter f(Paint paramPaint, boolean paramBoolean)
+  {
+    if (paramBoolean)
+    {
+      int i1 = paramPaint.getColor();
+      int i2 = l(i1);
+      if (i2 != i1) {
+        return new PorterDuffColorFilter(i2, PorterDuff.Mode.SRC_IN);
+      }
+    }
+    return null;
+  }
+  
+  private void g(RectF paramRectF, Path paramPath)
+  {
+    h(paramRectF, paramPath);
+    if (d.j != 1.0F)
+    {
+      i.reset();
+      Matrix localMatrix = i;
+      float f1 = d.j;
+      localMatrix.setScale(f1, f1, paramRectF.width() / 2.0F, paramRectF.height() / 2.0F);
+      paramPath.transform(i);
+    }
+    paramPath.computeBounds(x, true);
+  }
+  
+  private boolean h0(int[] paramArrayOfInt)
+  {
+    int i1;
+    int i2;
+    if (d.d != null)
+    {
+      i1 = q.getColor();
+      i2 = d.d.getColorForState(paramArrayOfInt, i1);
+      if (i1 != i2)
+      {
+        q.setColor(i2);
+        bool = true;
+        break label53;
+      }
+    }
+    boolean bool = false;
+    label53:
+    if (d.e != null)
+    {
+      i1 = r.getColor();
+      i2 = d.e.getColorForState(paramArrayOfInt, i1);
+      if (i1 != i2)
+      {
+        r.setColor(i2);
+        return true;
+      }
+    }
+    return bool;
+  }
+  
+  private void i()
+  {
+    final float f1 = -D();
+    k localK = C().y(new b(f1));
+    p = localK;
+    u.d(localK, d.k, v(), k);
+  }
+  
+  private boolean i0()
+  {
+    PorterDuffColorFilter localPorterDuffColorFilter1 = v;
+    PorterDuffColorFilter localPorterDuffColorFilter2 = w;
+    Object localObject2 = d;
+    Object localObject1 = g;
+    localObject2 = h;
+    Paint localPaint = q;
+    boolean bool = true;
+    v = k((ColorStateList)localObject1, (PorterDuff.Mode)localObject2, localPaint, true);
+    localObject1 = d;
+    w = k(f, h, r, false);
+    localObject1 = d;
+    if (u) {
+      s.d(g.getColorForState(getState(), 0));
+    }
+    if (c.h.p.c.a(localPorterDuffColorFilter1, v))
+    {
+      if (!c.h.p.c.a(localPorterDuffColorFilter2, w)) {
+        return true;
+      }
+      bool = false;
+    }
+    return bool;
+  }
+  
+  private PorterDuffColorFilter j(ColorStateList paramColorStateList, PorterDuff.Mode paramMode, boolean paramBoolean)
+  {
+    int i2 = paramColorStateList.getColorForState(getState(), 0);
+    int i1 = i2;
+    if (paramBoolean) {
+      i1 = l(i2);
+    }
+    return new PorterDuffColorFilter(i1, paramMode);
+  }
+  
+  private void j0()
+  {
+    float f1 = I();
+    d.r = ((int)Math.ceil(0.75F * f1));
+    d.s = ((int)Math.ceil(f1 * 0.25F));
+    i0();
+    N();
+  }
+  
+  private PorterDuffColorFilter k(ColorStateList paramColorStateList, PorterDuff.Mode paramMode, Paint paramPaint, boolean paramBoolean)
+  {
+    if ((paramColorStateList != null) && (paramMode != null)) {
+      return j(paramColorStateList, paramMode, paramBoolean);
+    }
+    return f(paramPaint, paramBoolean);
+  }
+  
+  public static g m(Context paramContext, float paramFloat)
+  {
+    int i1 = d.c.a.a.o.a.b(paramContext, d.c.a.a.b.o, g.class.getSimpleName());
+    g localG = new g();
+    localG.M(paramContext);
+    localG.X(ColorStateList.valueOf(i1));
+    localG.W(paramFloat);
+    return localG;
+  }
+  
+  private void n(Canvas paramCanvas)
+  {
+    if (g.cardinality() > 0) {
+      Log.w(b, "Compatibility shadow requested but can't be drawn for all operations in this shape.");
+    }
+    if (d.s != 0) {
+      paramCanvas.drawPath(j, s.c());
+    }
+    int i1 = 0;
+    while (i1 < 4)
+    {
+      e[i1].b(s, d.r, paramCanvas);
+      f[i1].b(s, d.r, paramCanvas);
+      i1 += 1;
+    }
+    if (y)
+    {
+      i1 = z();
+      int i2 = A();
+      paramCanvas.translate(-i1, -i2);
+      paramCanvas.drawPath(j, c);
+      paramCanvas.translate(i1, i2);
+    }
+  }
+  
+  private void o(Canvas paramCanvas)
+  {
+    q(paramCanvas, q, j, d.a, u());
+  }
+  
+  private void q(Canvas paramCanvas, Paint paramPaint, Path paramPath, k paramK, RectF paramRectF)
+  {
+    if (paramK.u(paramRectF))
+    {
+      float f1 = paramK.t().a(paramRectF) * d.k;
+      paramCanvas.drawRoundRect(paramRectF, f1, f1, paramPaint);
+      return;
+    }
+    paramCanvas.drawPath(paramPath, paramPaint);
+  }
+  
+  private void r(Canvas paramCanvas)
+  {
+    q(paramCanvas, r, k, p, v());
+  }
+  
+  private RectF v()
+  {
+    m.set(u());
+    float f1 = D();
+    m.inset(f1, f1);
+    return m;
+  }
+  
+  public int A()
+  {
+    c localC = d;
+    return (int)(s * Math.cos(Math.toRadians(t)));
+  }
+  
+  public int B()
+  {
+    return d.r;
+  }
+  
+  public k C()
+  {
+    return d.a;
+  }
+  
+  public ColorStateList E()
+  {
+    return d.g;
+  }
+  
+  public float F()
+  {
+    return d.a.r().a(u());
+  }
+  
+  public float G()
+  {
+    return d.a.t().a(u());
+  }
+  
+  public float H()
+  {
+    return d.p;
+  }
+  
+  public float I()
+  {
+    return w() + H();
+  }
+  
+  public void M(Context paramContext)
+  {
+    d.b = new d.c.a.a.r.a(paramContext);
+    j0();
+  }
+  
+  public boolean O()
+  {
+    d.c.a.a.r.a localA = d.b;
+    return (localA != null) && (localA.d());
+  }
+  
+  public boolean P()
+  {
+    return d.a.u(u());
+  }
+  
+  public boolean T()
+  {
+    int i1 = Build.VERSION.SDK_INT;
+    return (i1 < 21) || ((!P()) && (!j.isConvex()) && (i1 < 29));
+  }
+  
+  public void U(float paramFloat)
+  {
+    setShapeAppearanceModel(d.a.w(paramFloat));
+  }
+  
+  public void V(c paramC)
+  {
+    setShapeAppearanceModel(d.a.x(paramC));
+  }
+  
+  public void W(float paramFloat)
+  {
+    c localC = d;
+    if (o != paramFloat)
+    {
+      o = paramFloat;
+      j0();
+    }
+  }
+  
+  public void X(ColorStateList paramColorStateList)
+  {
+    c localC = d;
+    if (d != paramColorStateList)
+    {
+      d = paramColorStateList;
+      onStateChange(getState());
+    }
+  }
+  
+  public void Y(float paramFloat)
+  {
+    c localC = d;
+    if (k != paramFloat)
+    {
+      k = paramFloat;
+      h = true;
+      invalidateSelf();
+    }
+  }
+  
+  public void Z(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    c localC = d;
+    if (i == null) {
+      i = new Rect();
+    }
+    d.i.set(paramInt1, paramInt2, paramInt3, paramInt4);
+    invalidateSelf();
+  }
+  
+  public void a0(float paramFloat)
+  {
+    c localC = d;
+    if (n != paramFloat)
+    {
+      n = paramFloat;
+      j0();
+    }
+  }
+  
+  public void b0(int paramInt)
+  {
+    s.d(paramInt);
+    d.u = false;
+    N();
+  }
+  
+  public void c0(int paramInt)
+  {
+    c localC = d;
+    if (t != paramInt)
+    {
+      t = paramInt;
+      N();
+    }
+  }
+  
+  public void d0(float paramFloat, int paramInt)
+  {
+    g0(paramFloat);
+    f0(ColorStateList.valueOf(paramInt));
+  }
+  
+  public void draw(Canvas paramCanvas)
+  {
+    q.setColorFilter(v);
+    int i1 = q.getAlpha();
+    q.setAlpha(R(i1, d.m));
+    r.setColorFilter(w);
+    r.setStrokeWidth(d.l);
+    int i2 = r.getAlpha();
+    r.setAlpha(R(i2, d.m));
+    if (h)
+    {
+      i();
+      g(u(), j);
+      h = false;
+    }
+    Q(paramCanvas);
+    if (K()) {
+      o(paramCanvas);
+    }
+    if (L()) {
+      r(paramCanvas);
+    }
+    q.setAlpha(i1);
+    r.setAlpha(i2);
+  }
+  
+  public void e0(float paramFloat, ColorStateList paramColorStateList)
+  {
+    g0(paramFloat);
+    f0(paramColorStateList);
+  }
+  
+  public void f0(ColorStateList paramColorStateList)
+  {
+    c localC = d;
+    if (e != paramColorStateList)
+    {
+      e = paramColorStateList;
+      onStateChange(getState());
+    }
+  }
+  
+  public void g0(float paramFloat)
+  {
+    d.l = paramFloat;
+    invalidateSelf();
+  }
+  
+  public Drawable.ConstantState getConstantState()
+  {
+    return d;
+  }
+  
+  public int getOpacity()
+  {
+    return -3;
+  }
+  
+  public void getOutline(Outline paramOutline)
+  {
+    if (d.q == 2) {
+      return;
+    }
+    if (P())
+    {
+      float f1 = F();
+      float f2 = d.k;
+      paramOutline.setRoundRect(getBounds(), f1 * f2);
+      return;
+    }
+    g(u(), j);
+    if ((j.isConvex()) || (Build.VERSION.SDK_INT >= 29)) {}
+    try
+    {
+      paramOutline.setConvexPath(j);
+      return;
+    }
+    catch (IllegalArgumentException paramOutline) {}
+  }
+  
+  public boolean getPadding(Rect paramRect)
+  {
+    Rect localRect = d.i;
+    if (localRect != null)
+    {
+      paramRect.set(localRect);
+      return true;
+    }
+    return super.getPadding(paramRect);
+  }
+  
+  public Region getTransparentRegion()
+  {
+    Rect localRect = getBounds();
+    n.set(localRect);
+    g(u(), j);
+    o.setPath(j, n);
+    n.op(o, Region.Op.DIFFERENCE);
+    return n;
+  }
+  
+  protected final void h(RectF paramRectF, Path paramPath)
+  {
+    l localL = u;
+    c localC = d;
+    localL.e(a, k, paramRectF, t, paramPath);
+  }
+  
+  public void invalidateSelf()
+  {
+    h = true;
+    super.invalidateSelf();
+  }
+  
+  public boolean isStateful()
+  {
+    if (!super.isStateful())
+    {
+      ColorStateList localColorStateList = d.g;
+      if ((localColorStateList == null) || (!localColorStateList.isStateful()))
+      {
+        localColorStateList = d.f;
+        if ((localColorStateList == null) || (!localColorStateList.isStateful()))
+        {
+          localColorStateList = d.e;
+          if ((localColorStateList == null) || (!localColorStateList.isStateful()))
+          {
+            localColorStateList = d.d;
+            if ((localColorStateList == null) || (!localColorStateList.isStateful())) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+  
+  protected int l(int paramInt)
+  {
+    float f1 = I();
+    float f2 = y();
+    d.c.a.a.r.a localA = d.b;
+    int i1 = paramInt;
+    if (localA != null) {
+      i1 = localA.c(paramInt, f1 + f2);
+    }
+    return i1;
+  }
+  
+  public Drawable mutate()
+  {
+    d = new c(d);
+    return this;
+  }
+  
+  protected void onBoundsChange(Rect paramRect)
+  {
+    h = true;
+    super.onBoundsChange(paramRect);
+  }
+  
+  protected boolean onStateChange(int[] paramArrayOfInt)
+  {
+    boolean bool1 = h0(paramArrayOfInt);
+    boolean bool2 = i0();
+    if ((!bool1) && (!bool2)) {
+      bool1 = false;
+    } else {
+      bool1 = true;
+    }
+    if (bool1) {
+      invalidateSelf();
+    }
+    return bool1;
+  }
+  
+  protected void p(Canvas paramCanvas, Paint paramPaint, Path paramPath, RectF paramRectF)
+  {
+    q(paramCanvas, paramPaint, paramPath, d.a, paramRectF);
+  }
+  
+  public float s()
+  {
+    return d.a.j().a(u());
+  }
+  
+  public void setAlpha(int paramInt)
+  {
+    c localC = d;
+    if (m != paramInt)
+    {
+      m = paramInt;
+      N();
+    }
+  }
+  
+  public void setColorFilter(ColorFilter paramColorFilter)
+  {
+    d.c = paramColorFilter;
+    N();
+  }
+  
+  public void setShapeAppearanceModel(k paramK)
+  {
+    d.a = paramK;
+    invalidateSelf();
+  }
+  
+  public void setTint(int paramInt)
+  {
+    setTintList(ColorStateList.valueOf(paramInt));
+  }
+  
+  public void setTintList(ColorStateList paramColorStateList)
+  {
+    d.g = paramColorStateList;
+    i0();
+    N();
+  }
+  
+  public void setTintMode(PorterDuff.Mode paramMode)
+  {
+    c localC = d;
+    if (h != paramMode)
+    {
+      h = paramMode;
+      i0();
+      N();
+    }
+  }
+  
+  public float t()
+  {
+    return d.a.l().a(u());
+  }
+  
+  protected RectF u()
+  {
+    l.set(getBounds());
+    return l;
+  }
+  
+  public float w()
+  {
+    return d.o;
+  }
+  
+  public ColorStateList x()
+  {
+    return d.d;
+  }
+  
+  public float y()
+  {
+    return d.n;
+  }
+  
+  public int z()
+  {
+    c localC = d;
+    return (int)(s * Math.sin(Math.toRadians(t)));
+  }
+  
+  class a
+    implements l.b
+  {
+    a() {}
+    
+    public void a(m paramM, Matrix paramMatrix, int paramInt)
+    {
+      g.b(g.this).set(paramInt, paramM.e());
+      g.c(g.this)[paramInt] = paramM.f(paramMatrix);
+    }
+    
+    public void b(m paramM, Matrix paramMatrix, int paramInt)
+    {
+      g.b(g.this).set(paramInt + 4, paramM.e());
+      g.d(g.this)[paramInt] = paramM.f(paramMatrix);
+    }
+  }
+  
+  class b
+    implements k.c
+  {
+    b(float paramFloat) {}
+    
+    public c a(c paramC)
+    {
+      if ((paramC instanceof i)) {
+        return paramC;
+      }
+      return new b(f1, paramC);
+    }
+  }
+  
+  static final class c
+    extends Drawable.ConstantState
+  {
+    public k a;
+    public d.c.a.a.r.a b;
+    public ColorFilter c;
+    public ColorStateList d = null;
+    public ColorStateList e = null;
+    public ColorStateList f = null;
+    public ColorStateList g = null;
+    public PorterDuff.Mode h = PorterDuff.Mode.SRC_IN;
+    public Rect i = null;
+    public float j = 1.0F;
+    public float k = 1.0F;
+    public float l;
+    public int m = 255;
+    public float n = 0.0F;
+    public float o = 0.0F;
+    public float p = 0.0F;
+    public int q = 0;
+    public int r = 0;
+    public int s = 0;
+    public int t = 0;
+    public boolean u = false;
+    public Paint.Style v = Paint.Style.FILL_AND_STROKE;
+    
+    public c(c paramC)
+    {
+      a = a;
+      b = b;
+      l = l;
+      c = c;
+      d = d;
+      e = e;
+      h = h;
+      g = g;
+      m = m;
+      j = j;
+      s = s;
+      q = q;
+      u = u;
+      k = k;
+      n = n;
+      o = o;
+      p = p;
+      r = r;
+      t = t;
+      f = f;
+      v = v;
+      if (i != null) {
+        i = new Rect(i);
+      }
+    }
+    
+    public c(k paramK, d.c.a.a.r.a paramA)
+    {
+      a = paramK;
+      b = paramA;
+    }
+    
+    public int getChangingConfigurations()
+    {
+      return 0;
+    }
+    
+    public Drawable newDrawable()
+    {
+      g localG = new g(this, null);
+      g.e(localG, true);
+      return localG;
+    }
+  }
+}

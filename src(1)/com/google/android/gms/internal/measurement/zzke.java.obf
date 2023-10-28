@@ -1,0 +1,191 @@
+package com.google.android.gms.internal.measurement;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public abstract class zzke<MessageType extends zzke<MessageType, BuilderType>, BuilderType extends zzka<MessageType, BuilderType>>
+  extends zzin<MessageType, BuilderType>
+{
+  private static final Map zza = new ConcurrentHashMap();
+  protected zzmo zzc = zzmo.zzc();
+  protected int zzd = -1;
+  
+  public zzke() {}
+  
+  protected static zzkj zzbA()
+  {
+    return zzkf.zzf();
+  }
+  
+  protected static zzkk zzbB()
+  {
+    return zzla.zzf();
+  }
+  
+  protected static zzkk zzbC(zzkk paramZzkk)
+  {
+    int i = paramZzkk.size();
+    if (i == 0) {
+      i = 10;
+    } else {
+      i += i;
+    }
+    return paramZzkk.zze(i);
+  }
+  
+  protected static zzkl zzbD()
+  {
+    return zzlu.zze();
+  }
+  
+  protected static zzkl zzbE(zzkl paramZzkl)
+  {
+    int i = paramZzkl.size();
+    if (i == 0) {
+      i = 10;
+    } else {
+      i += i;
+    }
+    return paramZzkl.zzd(i);
+  }
+  
+  static Object zzbH(Method paramMethod, Object paramObject, Object... paramVarArgs)
+  {
+    try
+    {
+      paramMethod = paramMethod.invoke(paramObject, paramVarArgs);
+      return paramMethod;
+    }
+    catch (InvocationTargetException paramMethod)
+    {
+      paramMethod = paramMethod.getCause();
+      if (!(paramMethod instanceof RuntimeException))
+      {
+        if ((paramMethod instanceof Error)) {
+          throw ((Error)paramMethod);
+        }
+        throw new RuntimeException("Unexpected exception thrown by generated accessor method.", paramMethod);
+      }
+      throw ((RuntimeException)paramMethod);
+    }
+    catch (IllegalAccessException paramMethod)
+    {
+      throw new RuntimeException("Couldn't use Java reflection to implement protocol message reflection.", paramMethod);
+    }
+  }
+  
+  protected static Object zzbI(zzll paramZzll, String paramString, Object[] paramArrayOfObject)
+  {
+    return new zzlv(paramZzll, paramString, paramArrayOfObject);
+  }
+  
+  protected static void zzbJ(Class paramClass, zzke paramZzke)
+  {
+    zza.put(paramClass, paramZzke);
+  }
+  
+  static zzke zzbz(Class paramClass)
+  {
+    Map localMap = zza;
+    zzke localZzke2 = (zzke)localMap.get(paramClass);
+    zzke localZzke1 = localZzke2;
+    if (localZzke2 == null) {
+      try
+      {
+        Class.forName(paramClass.getName(), true, paramClass.getClassLoader());
+        localZzke1 = (zzke)localMap.get(paramClass);
+      }
+      catch (ClassNotFoundException paramClass)
+      {
+        throw new IllegalStateException("Class initialization cannot fail.", paramClass);
+      }
+    }
+    if (localZzke1 == null)
+    {
+      localZzke1 = (zzke)((zzke)zzmx.zze(paramClass)).zzl(6, null, null);
+      if (localZzke1 != null)
+      {
+        localMap.put(paramClass, localZzke1);
+        return localZzke1;
+      }
+      throw new IllegalStateException();
+    }
+    return localZzke1;
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (paramObject == null) {
+      return false;
+    }
+    if (getClass() != paramObject.getClass()) {
+      return false;
+    }
+    return zzlt.zza().zzb(getClass()).zzj(this, (zzke)paramObject);
+  }
+  
+  public final int hashCode()
+  {
+    int i = zzb;
+    if (i != 0) {
+      return i;
+    }
+    i = zzlt.zza().zzb(getClass()).zzb(this);
+    zzb = i;
+    return i;
+  }
+  
+  public final String toString()
+  {
+    return zzln.zza(this, super.toString());
+  }
+  
+  public final void zzbK(zzjl paramZzjl)
+    throws IOException
+  {
+    zzlt.zza().zzb(getClass()).zzi(this, zzjm.zza(paramZzjl));
+  }
+  
+  final int zzbr()
+  {
+    return zzd;
+  }
+  
+  final void zzbu(int paramInt)
+  {
+    zzd = paramInt;
+  }
+  
+  public final int zzbw()
+  {
+    int j = zzd;
+    int i = j;
+    if (j == -1)
+    {
+      i = zzlt.zza().zzb(getClass()).zza(this);
+      zzd = i;
+    }
+    return i;
+  }
+  
+  protected final zzka zzbx()
+  {
+    return (zzka)zzl(5, null, null);
+  }
+  
+  public final zzka zzby()
+  {
+    zzka localZzka = (zzka)zzl(5, null, null);
+    localZzka.zzaC(this);
+    return localZzka;
+  }
+  
+  protected abstract Object zzl(int paramInt, Object paramObject1, Object paramObject2);
+}

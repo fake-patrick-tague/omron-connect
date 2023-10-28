@@ -1,0 +1,140 @@
+package c.h.q.p0;
+
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeProvider;
+import java.util.ArrayList;
+import java.util.List;
+
+public class d
+{
+  private final Object a;
+  
+  public d()
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 26)
+    {
+      a = new c(this);
+      return;
+    }
+    if (i >= 19)
+    {
+      a = new b(this);
+      return;
+    }
+    if (i >= 16)
+    {
+      a = new a(this);
+      return;
+    }
+    a = null;
+  }
+  
+  public d(Object paramObject)
+  {
+    a = paramObject;
+  }
+  
+  public void a(int paramInt, c paramC, String paramString, Bundle paramBundle) {}
+  
+  public c b(int paramInt)
+  {
+    return null;
+  }
+  
+  public List<c> c(String paramString, int paramInt)
+  {
+    return null;
+  }
+  
+  public c d(int paramInt)
+  {
+    return null;
+  }
+  
+  public Object e()
+  {
+    return a;
+  }
+  
+  public boolean f(int paramInt1, int paramInt2, Bundle paramBundle)
+  {
+    return false;
+  }
+  
+  static class a
+    extends AccessibilityNodeProvider
+  {
+    final d a;
+    
+    a(d paramD)
+    {
+      a = paramD;
+    }
+    
+    public AccessibilityNodeInfo createAccessibilityNodeInfo(int paramInt)
+    {
+      c localC = a.b(paramInt);
+      if (localC == null) {
+        return null;
+      }
+      return localC.x0();
+    }
+    
+    public List<AccessibilityNodeInfo> findAccessibilityNodeInfosByText(String paramString, int paramInt)
+    {
+      paramString = a.c(paramString, paramInt);
+      if (paramString == null) {
+        return null;
+      }
+      ArrayList localArrayList = new ArrayList();
+      int i = paramString.size();
+      paramInt = 0;
+      while (paramInt < i)
+      {
+        localArrayList.add(((c)paramString.get(paramInt)).x0());
+        paramInt += 1;
+      }
+      return localArrayList;
+    }
+    
+    public boolean performAction(int paramInt1, int paramInt2, Bundle paramBundle)
+    {
+      return a.f(paramInt1, paramInt2, paramBundle);
+    }
+  }
+  
+  static class b
+    extends d.a
+  {
+    b(d paramD)
+    {
+      super();
+    }
+    
+    public AccessibilityNodeInfo findFocus(int paramInt)
+    {
+      c localC = a.d(paramInt);
+      if (localC == null) {
+        return null;
+      }
+      return localC.x0();
+    }
+  }
+  
+  static class c
+    extends d.b
+  {
+    c(d paramD)
+    {
+      super();
+    }
+    
+    public void addExtraDataToAccessibilityNodeInfo(int paramInt, AccessibilityNodeInfo paramAccessibilityNodeInfo, String paramString, Bundle paramBundle)
+    {
+      a.a(paramInt, c.y0(paramAccessibilityNodeInfo), paramString, paramBundle);
+    }
+  }
+}

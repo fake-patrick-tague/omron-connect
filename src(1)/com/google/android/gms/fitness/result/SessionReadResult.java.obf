@@ -1,0 +1,134 @@
+package com.google.android.gms.fitness.result;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.fitness.data.zzae;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+@SafeParcelable.Class(creator="SessionReadResultCreator")
+@SafeParcelable.Reserved({4, 1000})
+public class SessionReadResult
+  extends AbstractSafeParcelable
+  implements Result
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<SessionReadResult> CREATOR = new zzh();
+  @SafeParcelable.Field(getter="getSessions", id=1)
+  private final List<Session> zzqr;
+  @SafeParcelable.Field(getter="getStatus", id=3)
+  private final Status zzsv;
+  @SafeParcelable.Field(getter="getSessionDataSets", id=2)
+  private final List<zzae> zzta;
+  
+  @ShowFirstParty
+  @SafeParcelable.Constructor
+  public SessionReadResult(@RecentlyNonNull @SafeParcelable.Param(id=1) List<Session> paramList, @RecentlyNonNull @SafeParcelable.Param(id=2) List<zzae> paramList1, @RecentlyNonNull @SafeParcelable.Param(id=3) Status paramStatus)
+  {
+    zzqr = paramList;
+    zzta = Collections.unmodifiableList(paramList1);
+    zzsv = paramStatus;
+  }
+  
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static SessionReadResult zze(@RecentlyNonNull Status paramStatus)
+  {
+    return new SessionReadResult(new ArrayList(), new ArrayList(), paramStatus);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof SessionReadResult)) {
+      return false;
+    }
+    paramObject = (SessionReadResult)paramObject;
+    return (zzsv.equals(zzsv)) && (Objects.equal(zzqr, zzqr)) && (Objects.equal(zzta, zzta));
+  }
+  
+  @RecentlyNonNull
+  public List<DataSet> getDataSet(@RecentlyNonNull Session paramSession)
+  {
+    Preconditions.checkArgument(zzqr.contains(paramSession), "Attempting to read data for session %s which was not returned", new Object[] { paramSession });
+    ArrayList localArrayList = new ArrayList();
+    Iterator localIterator = zzta.iterator();
+    while (localIterator.hasNext())
+    {
+      zzae localZzae = (zzae)localIterator.next();
+      if (Objects.equal(paramSession, localZzae.getSession())) {
+        localArrayList.add(localZzae.getDataSet());
+      }
+    }
+    return localArrayList;
+  }
+  
+  @RecentlyNonNull
+  public List<DataSet> getDataSet(@RecentlyNonNull Session paramSession, @RecentlyNonNull DataType paramDataType)
+  {
+    Preconditions.checkArgument(zzqr.contains(paramSession), "Attempting to read data for session %s which was not returned", new Object[] { paramSession });
+    ArrayList localArrayList = new ArrayList();
+    Iterator localIterator = zzta.iterator();
+    while (localIterator.hasNext())
+    {
+      zzae localZzae = (zzae)localIterator.next();
+      if ((Objects.equal(paramSession, localZzae.getSession())) && (paramDataType.equals(localZzae.getDataSet().getDataType()))) {
+        localArrayList.add(localZzae.getDataSet());
+      }
+    }
+    return localArrayList;
+  }
+  
+  @RecentlyNonNull
+  public List<Session> getSessions()
+  {
+    return zzqr;
+  }
+  
+  @RecentlyNonNull
+  public Status getStatus()
+  {
+    return zzsv;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzsv, zzqr, zzta });
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("status", zzsv).add("sessions", zzqr).add("sessionDataSets", zzta).toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeTypedList(paramParcel, 1, getSessions(), false);
+    SafeParcelWriter.writeTypedList(paramParcel, 2, zzta, false);
+    SafeParcelWriter.writeParcelable(paramParcel, 3, getStatus(), paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

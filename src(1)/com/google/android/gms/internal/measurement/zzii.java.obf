@@ -1,0 +1,58 @@
+package com.google.android.gms.internal.measurement;
+
+import java.io.Serializable;
+import java.util.Objects;
+
+final class zzii
+  implements Serializable, zzih
+{
+  final zzih zza;
+  volatile transient boolean zzb;
+  transient Object zzc;
+  
+  zzii(zzih paramZzih)
+  {
+    Objects.requireNonNull(paramZzih);
+    zza = paramZzih;
+  }
+  
+  public final String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Suppliers.memoize(");
+    Object localObject;
+    if (zzb)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("<supplier that returned ");
+      ((StringBuilder)localObject).append(zzc);
+      ((StringBuilder)localObject).append(">");
+      localObject = ((StringBuilder)localObject).toString();
+    }
+    else
+    {
+      localObject = zza;
+    }
+    localStringBuilder.append(localObject);
+    localStringBuilder.append(")");
+    return localStringBuilder.toString();
+  }
+  
+  public final Object zza()
+  {
+    if (!zzb) {
+      try
+      {
+        if (!zzb)
+        {
+          Object localObject1 = zza.zza();
+          zzc = localObject1;
+          zzb = true;
+          return localObject1;
+        }
+      }
+      finally {}
+    }
+    return zzc;
+  }
+}

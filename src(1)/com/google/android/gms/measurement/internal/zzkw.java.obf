@@ -1,0 +1,46 @@
+package com.google.android.gms.measurement.internal;
+
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.internal.measurement.zzfs;
+import com.google.android.gms.internal.measurement.zzgc;
+import com.google.android.gms.internal.measurement.zzke;
+import java.util.ArrayList;
+import java.util.List;
+
+final class zzkw
+{
+  zzgc zza;
+  List zzb;
+  List zzc;
+  long zzd;
+  
+  private static final long zzb(zzfs paramZzfs)
+  {
+    return paramZzfs.zzd() / 1000L / 60L / 60L;
+  }
+  
+  public final boolean zza(long paramLong, zzfs paramZzfs)
+  {
+    Preconditions.checkNotNull(paramZzfs);
+    if (zzc == null) {
+      zzc = new ArrayList();
+    }
+    if (zzb == null) {
+      zzb = new ArrayList();
+    }
+    if ((!zzc.isEmpty()) && (zzb((zzfs)zzc.get(0)) != zzb(paramZzfs))) {
+      return false;
+    }
+    long l = zzd + paramZzfs.zzbw();
+    zze.zzg();
+    if (l >= Math.max(0, ((Integer)zzeb.zzh.zza(null)).intValue())) {
+      return false;
+    }
+    zzd = l;
+    zzc.add(paramZzfs);
+    zzb.add(Long.valueOf(paramLong));
+    int i = zzc.size();
+    zze.zzg();
+    return i < Math.max(1, ((Integer)zzeb.zzi.zza(null)).intValue());
+  }
+}

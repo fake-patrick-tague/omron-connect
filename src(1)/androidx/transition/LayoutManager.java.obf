@@ -1,0 +1,147 @@
+package androidx.transition;
+
+import android.animation.LayoutTransition;
+import android.util.Log;
+import android.view.ViewGroup;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+class s
+{
+  private static LayoutTransition a;
+  private static Field b;
+  private static boolean c;
+  private static Method d;
+  private static boolean e;
+  
+  private static void a(LayoutTransition paramLayoutTransition)
+  {
+    if (!e) {}
+    try
+    {
+      localMethod = LayoutTransition.class.getDeclaredMethod("cancel", new Class[0]);
+      d = localMethod;
+      localMethod.setAccessible(true);
+    }
+    catch (NoSuchMethodException localNoSuchMethodException)
+    {
+      Method localMethod;
+      for (;;) {}
+    }
+    Log.i("ViewGroupUtilsApi14", "Failed to access cancel method by reflection");
+    e = true;
+    localMethod = d;
+    if (localMethod != null) {}
+    try
+    {
+      localMethod.invoke(paramLayoutTransition, new Object[0]);
+      return;
+    }
+    catch (IllegalAccessException paramLayoutTransition)
+    {
+      for (;;) {}
+    }
+    catch (InvocationTargetException paramLayoutTransition)
+    {
+      for (;;) {}
+    }
+    Log.i("ViewGroupUtilsApi14", "Failed to invoke cancel method by reflection");
+    return;
+    Log.i("ViewGroupUtilsApi14", "Failed to access cancel method by reflection");
+  }
+  
+  static void b(ViewGroup paramViewGroup, boolean paramBoolean)
+  {
+    Object localObject = a;
+    boolean bool2 = false;
+    bool1 = false;
+    if (localObject == null)
+    {
+      localObject = new a();
+      a = (LayoutTransition)localObject;
+      ((LayoutTransition)localObject).setAnimator(2, null);
+      a.setAnimator(0, null);
+      a.setAnimator(1, null);
+      a.setAnimator(3, null);
+      a.setAnimator(4, null);
+    }
+    if (paramBoolean)
+    {
+      localObject = paramViewGroup.getLayoutTransition();
+      if (localObject != null)
+      {
+        if (((LayoutTransition)localObject).isRunning()) {
+          a((LayoutTransition)localObject);
+        }
+        if (localObject != a) {
+          paramViewGroup.setTag(f.d, localObject);
+        }
+      }
+      paramViewGroup.setLayoutTransition(a);
+      return;
+    }
+    paramViewGroup.setLayoutTransition(null);
+    if (!c) {}
+    try
+    {
+      localObject = ViewGroup.class.getDeclaredField("mLayoutSuppressed");
+      b = (Field)localObject;
+      ((Field)localObject).setAccessible(true);
+    }
+    catch (NoSuchFieldException localNoSuchFieldException)
+    {
+      for (;;) {}
+    }
+    Log.i("ViewGroupUtilsApi14", "Failed to access mLayoutSuppressed field by reflection");
+    c = true;
+    localObject = b;
+    paramBoolean = bool2;
+    if (localObject != null) {}
+    for (;;)
+    {
+      try
+      {
+        paramBoolean = ((Field)localObject).getBoolean(paramViewGroup);
+        if (!paramBoolean) {}
+      }
+      catch (IllegalAccessException localIllegalAccessException1)
+      {
+        int i;
+        paramBoolean = bool1;
+        continue;
+      }
+      try
+      {
+        b.setBoolean(paramViewGroup, false);
+      }
+      catch (IllegalAccessException localIllegalAccessException2) {}
+    }
+    break label208;
+    break label216;
+    label208:
+    Log.i("ViewGroupUtilsApi14", "Failed to get mLayoutSuppressed field by reflection");
+    label216:
+    if (paramBoolean) {
+      paramViewGroup.requestLayout();
+    }
+    i = f.d;
+    localObject = (LayoutTransition)paramViewGroup.getTag(i);
+    if (localObject != null)
+    {
+      paramViewGroup.setTag(i, null);
+      paramViewGroup.setLayoutTransition((LayoutTransition)localObject);
+    }
+  }
+  
+  static final class a
+    extends LayoutTransition
+  {
+    a() {}
+    
+    public boolean isChangingLayout()
+    {
+      return true;
+    }
+  }
+}

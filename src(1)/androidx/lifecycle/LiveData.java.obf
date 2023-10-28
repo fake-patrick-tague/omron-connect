@@ -1,0 +1,384 @@
+package androidx.lifecycle;
+
+import c.b.a.a.a;
+import c.b.a.b.b;
+import c.b.a.b.b.d;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
+public abstract class LiveData<T>
+{
+  static final Object NOT_SET = new Object();
+  static final int START_VERSION = -1;
+  int mActiveCount = 0;
+  private boolean mChangingActiveState;
+  private volatile Object mData;
+  final Object mDataLock = new Object();
+  private boolean mDispatchInvalidated;
+  private boolean mDispatchingValue;
+  private b<t<? super T>, LiveData<T>.c> mObservers = new b();
+  volatile Object mPendingData;
+  private final Runnable mPostValueRunnable;
+  private int mVersion;
+  
+  public LiveData()
+  {
+    Object localObject = NOT_SET;
+    mPendingData = localObject;
+    mPostValueRunnable = new a();
+    mData = localObject;
+    mVersion = -1;
+  }
+  
+  public LiveData(T paramT)
+  {
+    mPendingData = NOT_SET;
+    mPostValueRunnable = new a();
+    mData = paramT;
+    mVersion = 0;
+  }
+  
+  static void assertMainThread(String paramString)
+  {
+    if (a.e().b()) {
+      return;
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Cannot invoke ");
+    localStringBuilder.append(paramString);
+    localStringBuilder.append(" on a background thread");
+    throw new IllegalStateException(localStringBuilder.toString());
+  }
+  
+  private void considerNotify(LiveData<T>.c paramLiveData)
+  {
+    if (!b) {
+      return;
+    }
+    if (!paramLiveData.k())
+    {
+      paramLiveData.h(false);
+      return;
+    }
+    int i = c;
+    int j = mVersion;
+    if (i >= j) {
+      return;
+    }
+    c = j;
+    a.onChanged(mData);
+  }
+  
+  void changeActiveCounter(int paramInt)
+  {
+    int i = mActiveCount;
+    mActiveCount = (paramInt + i);
+    if (mChangingActiveState) {
+      return;
+    }
+    mChangingActiveState = true;
+    for (;;)
+    {
+      int j;
+      try
+      {
+        j = mActiveCount;
+        if (i != j)
+        {
+          if ((i == 0) && (j > 0))
+          {
+            paramInt = 1;
+            break label90;
+            if (paramInt != 0) {
+              onActive();
+            } else if (i != 0) {
+              onInactive();
+            }
+            i = j;
+          }
+        }
+        else {
+          return;
+        }
+      }
+      finally
+      {
+        mChangingActiveState = false;
+      }
+      paramInt = 0;
+      label90:
+      if ((i > 0) && (j == 0)) {
+        i = 1;
+      } else {
+        i = 0;
+      }
+    }
+  }
+  
+  void dispatchingValue(LiveData<T>.c paramLiveData)
+  {
+    if (mDispatchingValue)
+    {
+      mDispatchInvalidated = true;
+      return;
+    }
+    mDispatchingValue = true;
+    do
+    {
+      mDispatchInvalidated = false;
+      LiveData<T>.c localLiveData;
+      if (paramLiveData != null)
+      {
+        considerNotify(paramLiveData);
+        localLiveData = null;
+      }
+      else
+      {
+        b.d localD = mObservers.c();
+        do
+        {
+          localLiveData = paramLiveData;
+          if (!localD.hasNext()) {
+            break;
+          }
+          considerNotify((c)((Map.Entry)localD.next()).getValue());
+        } while (!mDispatchInvalidated);
+        localLiveData = paramLiveData;
+      }
+      paramLiveData = localLiveData;
+    } while (mDispatchInvalidated);
+    mDispatchingValue = false;
+  }
+  
+  public T getValue()
+  {
+    Object localObject = mData;
+    if (localObject != NOT_SET) {
+      return localObject;
+    }
+    return null;
+  }
+  
+  int getVersion()
+  {
+    return mVersion;
+  }
+  
+  public boolean hasActiveObservers()
+  {
+    return mActiveCount > 0;
+  }
+  
+  public boolean hasObservers()
+  {
+    return mObservers.size() > 0;
+  }
+  
+  public void observe(m paramM, t<? super T> paramT)
+  {
+    assertMainThread("observe");
+    if (paramM.getLifecycle().b() == Lifecycle.State.b) {
+      return;
+    }
+    LifecycleBoundObserver localLifecycleBoundObserver = new LifecycleBoundObserver(paramM, paramT);
+    paramT = (c)mObservers.f(paramT, localLifecycleBoundObserver);
+    if ((paramT != null) && (!paramT.j(paramM))) {
+      throw new IllegalArgumentException("Cannot add the same observer with different lifecycles");
+    }
+    if (paramT != null) {
+      return;
+    }
+    paramM.getLifecycle().a(localLifecycleBoundObserver);
+  }
+  
+  public void observeForever(t<? super T> paramT)
+  {
+    assertMainThread("observeForever");
+    b localB = new b(paramT);
+    paramT = (c)mObservers.f(paramT, localB);
+    if (!(paramT instanceof LifecycleBoundObserver))
+    {
+      if (paramT != null) {
+        return;
+      }
+      localB.h(true);
+      return;
+    }
+    throw new IllegalArgumentException("Cannot add the same observer with different lifecycles");
+  }
+  
+  protected void onActive() {}
+  
+  protected void onInactive() {}
+  
+  protected void postValue(T paramT)
+  {
+    for (;;)
+    {
+      synchronized (mDataLock)
+      {
+        if (mPendingData == NOT_SET)
+        {
+          i = 1;
+          mPendingData = paramT;
+          if (i == 0) {
+            return;
+          }
+          a.e().c(mPostValueRunnable);
+          return;
+        }
+      }
+      int i = 0;
+    }
+  }
+  
+  public void removeObserver(t<? super T> paramT)
+  {
+    assertMainThread("removeObserver");
+    paramT = (c)mObservers.g(paramT);
+    if (paramT == null) {
+      return;
+    }
+    paramT.i();
+    paramT.h(false);
+  }
+  
+  public void removeObservers(m paramM)
+  {
+    assertMainThread("removeObservers");
+    Iterator localIterator = mObservers.iterator();
+    while (localIterator.hasNext())
+    {
+      Map.Entry localEntry = (Map.Entry)localIterator.next();
+      if (((c)localEntry.getValue()).j(paramM)) {
+        removeObserver((t)localEntry.getKey());
+      }
+    }
+  }
+  
+  protected void setValue(T paramT)
+  {
+    assertMainThread("setValue");
+    mVersion += 1;
+    mData = paramT;
+    dispatchingValue(null);
+  }
+  
+  class LifecycleBoundObserver
+    extends LiveData<T>.c
+    implements k
+  {
+    final m e;
+    
+    LifecycleBoundObserver(t<? super T> paramT)
+    {
+      super(localT);
+      e = paramT;
+    }
+    
+    public void c(m paramM, Lifecycle.Event paramEvent)
+    {
+      paramM = e.getLifecycle().b();
+      if (paramM == Lifecycle.State.b)
+      {
+        removeObserver(a);
+        return;
+      }
+      paramEvent = null;
+      while (paramEvent != paramM)
+      {
+        h(k());
+        Lifecycle.State localState = e.getLifecycle().b();
+        paramEvent = paramM;
+        paramM = localState;
+      }
+    }
+    
+    void i()
+    {
+      e.getLifecycle().c(this);
+    }
+    
+    boolean j(m paramM)
+    {
+      return e == paramM;
+    }
+    
+    boolean k()
+    {
+      return e.getLifecycle().b().a(Lifecycle.State.e);
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    public void run()
+    {
+      synchronized (mDataLock)
+      {
+        Object localObject2 = mPendingData;
+        mPendingData = LiveData.NOT_SET;
+        setValue(localObject2);
+        return;
+      }
+    }
+  }
+  
+  private class b
+    extends LiveData<T>.c
+  {
+    b()
+    {
+      super(localT);
+    }
+    
+    boolean k()
+    {
+      return true;
+    }
+  }
+  
+  private abstract class c
+  {
+    final t<? super T> a;
+    boolean b;
+    int c = -1;
+    
+    c()
+    {
+      Object localObject;
+      a = localObject;
+    }
+    
+    void h(boolean paramBoolean)
+    {
+      if (paramBoolean == b) {
+        return;
+      }
+      b = paramBoolean;
+      LiveData localLiveData = LiveData.this;
+      int i;
+      if (paramBoolean) {
+        i = 1;
+      } else {
+        i = -1;
+      }
+      localLiveData.changeActiveCounter(i);
+      if (b) {
+        dispatchingValue(this);
+      }
+    }
+    
+    void i() {}
+    
+    boolean j(m paramM)
+    {
+      return false;
+    }
+    
+    abstract boolean k();
+  }
+}

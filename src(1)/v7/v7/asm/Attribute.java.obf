@@ -1,0 +1,239 @@
+package c.h.n;
+
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ProviderInfo;
+import android.content.pm.Signature;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.net.Uri;
+import android.net.Uri.Builder;
+import android.os.Build.VERSION;
+import android.os.CancellationSignal;
+import androidx.core.content.g.g;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+class d
+{
+  private static final Comparator<byte[]> a = a.b;
+  
+  private static List<byte[]> a(Signature[] paramArrayOfSignature)
+  {
+    ArrayList localArrayList = new ArrayList();
+    int j = paramArrayOfSignature.length;
+    int i = 0;
+    while (i < j)
+    {
+      localArrayList.add(paramArrayOfSignature[i].toByteArray());
+      i += 1;
+    }
+    return localArrayList;
+  }
+  
+  private static boolean b(List<byte[]> paramList1, List<byte[]> paramList2)
+  {
+    if (paramList1.size() != paramList2.size()) {
+      return false;
+    }
+    int i = 0;
+    while (i < paramList1.size())
+    {
+      if (!Arrays.equals((byte[])paramList1.get(i), (byte[])paramList2.get(i))) {
+        return false;
+      }
+      i += 1;
+    }
+    return true;
+  }
+  
+  private static List<List<byte[]>> c(e paramE, Resources paramResources)
+  {
+    if (paramE.b() != null) {
+      return paramE.b();
+    }
+    return g.c(paramResources, paramE.c());
+  }
+  
+  static g.a d(Context paramContext, e paramE, CancellationSignal paramCancellationSignal)
+    throws PackageManager.NameNotFoundException
+  {
+    ProviderInfo localProviderInfo = e(paramContext.getPackageManager(), paramE, paramContext.getResources());
+    if (localProviderInfo == null) {
+      return g.a.a(1, null);
+    }
+    return g.a.a(0, g(paramContext, paramE, authority, paramCancellationSignal));
+  }
+  
+  static ProviderInfo e(PackageManager paramPackageManager, e paramE, Resources paramResources)
+    throws PackageManager.NameNotFoundException
+  {
+    String str = paramE.e();
+    int i = 0;
+    ProviderInfo localProviderInfo = paramPackageManager.resolveContentProvider(str, 0);
+    if (localProviderInfo != null)
+    {
+      if (packageName.equals(paramE.f()))
+      {
+        paramPackageManager = a(getPackageInfopackageName, 64).signatures);
+        Collections.sort(paramPackageManager, a);
+        paramE = c(paramE, paramResources);
+        while (i < paramE.size())
+        {
+          paramResources = new ArrayList((Collection)paramE.get(i));
+          Collections.sort(paramResources, a);
+          if (b(paramPackageManager, paramResources)) {
+            return localProviderInfo;
+          }
+          i += 1;
+        }
+        return null;
+      }
+      paramPackageManager = new StringBuilder();
+      paramPackageManager.append("Found content provider ");
+      paramPackageManager.append(str);
+      paramPackageManager.append(", but package was not ");
+      paramPackageManager.append(paramE.f());
+      throw new PackageManager.NameNotFoundException(paramPackageManager.toString());
+    }
+    paramPackageManager = new StringBuilder();
+    paramPackageManager.append("No package found for authority: ");
+    paramPackageManager.append(str);
+    throw new PackageManager.NameNotFoundException(paramPackageManager.toString());
+  }
+  
+  static g.b[] g(Context paramContext, e paramE, String paramString, CancellationSignal paramCancellationSignal)
+  {
+    ArrayList localArrayList = new ArrayList();
+    Uri localUri1 = new Uri.Builder().scheme("content").authority(paramString).build();
+    Uri localUri2 = new Uri.Builder().scheme("content").authority(paramString).appendPath("file").build();
+    Object localObject = null;
+    paramString = localObject;
+    for (;;)
+    {
+      try
+      {
+        String[] arrayOfString = new String[7];
+        arrayOfString[0] = "_id";
+        arrayOfString[1] = "file_id";
+        arrayOfString[2] = "font_ttc_index";
+        arrayOfString[3] = "font_variation_settings";
+        arrayOfString[4] = "font_weight";
+        arrayOfString[5] = "font_italic";
+        arrayOfString[6] = "result_code";
+        paramString = localObject;
+        paramContext = paramContext.getContentResolver();
+        paramString = localObject;
+        if (Build.VERSION.SDK_INT > 16)
+        {
+          paramString = localObject;
+          paramContext = a.a(paramContext, localUri1, arrayOfString, "query = ?", new String[] { paramE.g() }, null, paramCancellationSignal);
+        }
+        else
+        {
+          paramString = localObject;
+          paramContext = paramContext.query(localUri1, arrayOfString, "query = ?", new String[] { paramE.g() }, null);
+        }
+        paramE = localArrayList;
+        if (paramContext != null)
+        {
+          paramE = localArrayList;
+          paramString = paramContext;
+          if (paramContext.getCount() > 0)
+          {
+            paramString = paramContext;
+            int m = paramContext.getColumnIndex("result_code");
+            paramString = paramContext;
+            paramCancellationSignal = new ArrayList();
+            paramString = paramContext;
+            int n = paramContext.getColumnIndex("_id");
+            paramString = paramContext;
+            int i1 = paramContext.getColumnIndex("file_id");
+            paramString = paramContext;
+            int i2 = paramContext.getColumnIndex("font_ttc_index");
+            paramString = paramContext;
+            int i3 = paramContext.getColumnIndex("font_weight");
+            paramString = paramContext;
+            int i4 = paramContext.getColumnIndex("font_italic");
+            paramString = paramContext;
+            if (paramContext.moveToNext())
+            {
+              if (m == -1) {
+                break label494;
+              }
+              paramString = paramContext;
+              i = paramContext.getInt(m);
+              if (i2 == -1) {
+                break label500;
+              }
+              paramString = paramContext;
+              j = paramContext.getInt(i2);
+              if (i1 == -1)
+              {
+                paramString = paramContext;
+                paramE = ContentUris.withAppendedId(localUri1, paramContext.getLong(n));
+              }
+              else
+              {
+                paramString = paramContext;
+                paramE = ContentUris.withAppendedId(localUri2, paramContext.getLong(i1));
+              }
+              int k = i;
+              if (i3 == -1) {
+                break label506;
+              }
+              paramString = paramContext;
+              i = paramContext.getInt(i3);
+              if (i4 == -1) {
+                break label514;
+              }
+              paramString = paramContext;
+              if (paramContext.getInt(i4) != 1) {
+                break label514;
+              }
+              bool = true;
+              paramString = paramContext;
+              paramCancellationSignal.add(g.b.a(paramE, j, i, bool, k));
+              continue;
+            }
+            paramE = paramCancellationSignal;
+          }
+        }
+        return (g.b[])paramE.toArray(new g.b[0]);
+      }
+      finally
+      {
+        if (paramString != null) {
+          paramString.close();
+        }
+      }
+      label494:
+      int i = 0;
+      continue;
+      label500:
+      int j = 0;
+      continue;
+      label506:
+      i = 400;
+      continue;
+      label514:
+      boolean bool = false;
+    }
+  }
+  
+  static class a
+  {
+    static Cursor a(ContentResolver paramContentResolver, Uri paramUri, String[] paramArrayOfString1, String paramString1, String[] paramArrayOfString2, String paramString2, Object paramObject)
+    {
+      return paramContentResolver.query(paramUri, paramArrayOfString1, paramString1, paramArrayOfString2, paramString2, (CancellationSignal)paramObject);
+    }
+  }
+}

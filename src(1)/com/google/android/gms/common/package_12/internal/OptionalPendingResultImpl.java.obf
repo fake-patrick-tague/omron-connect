@@ -1,0 +1,78 @@
+package com.google.android.gms.common.api.internal;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.PendingResult.StatusListener;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.ResultTransform;
+import com.google.android.gms.common.api.TransformedResult;
+import java.util.concurrent.TimeUnit;
+
+@KeepForSdk
+public final class OptionalPendingResultImpl<R extends Result>
+  extends OptionalPendingResult<R>
+{
+  private final BasePendingResult<R> zaa;
+  
+  public OptionalPendingResultImpl(PendingResult<R> paramPendingResult)
+  {
+    zaa = ((BasePendingResult)paramPendingResult);
+  }
+  
+  public final void addStatusListener(PendingResult.StatusListener paramStatusListener)
+  {
+    zaa.addStatusListener(paramStatusListener);
+  }
+  
+  public final R await()
+  {
+    return zaa.await();
+  }
+  
+  public final R await(long paramLong, TimeUnit paramTimeUnit)
+  {
+    return zaa.await(paramLong, paramTimeUnit);
+  }
+  
+  public final void cancel()
+  {
+    zaa.cancel();
+  }
+  
+  public final R get()
+  {
+    if (zaa.isReady())
+    {
+      TimeUnit localTimeUnit = TimeUnit.MILLISECONDS;
+      return zaa.await(0L, localTimeUnit);
+    }
+    throw new IllegalStateException("Result is not available. Check that isDone() returns true before calling get().");
+  }
+  
+  public final boolean isCanceled()
+  {
+    return zaa.isCanceled();
+  }
+  
+  public final boolean isDone()
+  {
+    return zaa.isReady();
+  }
+  
+  public final void setResultCallback(ResultCallback<? super R> paramResultCallback)
+  {
+    zaa.setResultCallback(paramResultCallback);
+  }
+  
+  public final void setResultCallback(ResultCallback<? super R> paramResultCallback, long paramLong, TimeUnit paramTimeUnit)
+  {
+    zaa.setResultCallback(paramResultCallback, paramLong, paramTimeUnit);
+  }
+  
+  public final <S extends Result> TransformedResult<S> then(ResultTransform<? super R, ? extends S> paramResultTransform)
+  {
+    return zaa.then(paramResultTransform);
+  }
+}

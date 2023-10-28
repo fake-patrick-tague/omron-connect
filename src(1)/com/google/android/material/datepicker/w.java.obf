@@ -1,0 +1,85 @@
+package com.google.android.material.datepicker;
+
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build.VERSION;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+import d.c.a.a.h;
+import d.c.a.a.j;
+import java.util.Calendar;
+import java.util.Locale;
+
+class d
+  extends BaseAdapter
+{
+  private static final int b;
+  private final Calendar c;
+  private final int d;
+  private final int e;
+  
+  static
+  {
+    int i;
+    if (Build.VERSION.SDK_INT >= 26) {
+      i = 4;
+    } else {
+      i = 1;
+    }
+    b = i;
+  }
+  
+  public d()
+  {
+    Calendar localCalendar = n.k();
+    c = localCalendar;
+    d = localCalendar.getMaximum(7);
+    e = localCalendar.getFirstDayOfWeek();
+  }
+  
+  private int b(int paramInt)
+  {
+    int i = paramInt + e;
+    int j = d;
+    paramInt = i;
+    if (i > j) {
+      paramInt = i - j;
+    }
+    return paramInt;
+  }
+  
+  public Integer a(int paramInt)
+  {
+    if (paramInt >= d) {
+      return null;
+    }
+    return Integer.valueOf(b(paramInt));
+  }
+  
+  public int getCount()
+  {
+    return d;
+  }
+  
+  public long getItemId(int paramInt)
+  {
+    return 0L;
+  }
+  
+  public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
+  {
+    TextView localTextView = (TextView)paramView;
+    if (paramView == null) {
+      localTextView = (TextView)LayoutInflater.from(paramViewGroup.getContext()).inflate(h.n, paramViewGroup, false);
+    }
+    c.set(7, b(paramInt));
+    paramView = getResourcesgetConfigurationlocale;
+    localTextView.setText(c.getDisplayName(7, b, paramView));
+    localTextView.setContentDescription(String.format(paramViewGroup.getContext().getString(j.n), new Object[] { c.getDisplayName(7, 2, Locale.getDefault()) }));
+    return localTextView;
+  }
+}

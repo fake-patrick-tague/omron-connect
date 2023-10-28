@@ -1,0 +1,279 @@
+package com.alivecor.ecg.record;
+
+import android.content.Context;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.s;
+import c.h.m.l;
+import com.alivecor.universal_monitor.bluetooth.BluetoothDeviceConnectionError;
+import com.alivecor.universal_monitor.bluetooth.BluetoothDeviceController;
+import com.alivecor.universal_monitor.bluetooth.BluetoothDeviceControllerCallback;
+import com.alivecor.universal_monitor.bluetooth.BluetoothDeviceProperties;
+import com.alivecor.universal_monitor.bluetooth.BluetoothECGMode;
+import com.alivecor.universal_monitor.devices.TriangleDevice;
+import com.alivecor.universal_monitor.devices.TriangleDeviceCallback;
+import io.reactivex.c0.b;
+import io.reactivex.c0.c;
+import io.reactivex.n;
+import io.reactivex.q;
+import io.reactivex.r;
+import java.util.concurrent.TimeoutException;
+
+public class TriangleBluetoothWrapperClass
+{
+  public static final int BATTERY_LEVEL_UNKNOWN = -1;
+  private static TriangleBluetoothWrapperClass triangleBluetoothWrapperClass;
+  Context applicationContext;
+  private BluetoothDeviceController bluetoothDeviceController;
+  private c<TriangleDevice> connectSubject;
+  private TriangleDevice connectedTriangleDevice;
+  private final s<BLEConnectionState> connectionStateLiveData;
+  private final q controlScheduler = io.reactivex.u.b.a.a();
+  private s<BluetoothDeviceProperties> devicePropertiesLiveData = new s();
+  private c<TriangleDevice> enableCaptureSubject;
+  private b<TriangleDevice> scanSubject;
+  private s<Integer> triangleBatteryLiveData = new s();
+  
+  public TriangleBluetoothWrapperClass()
+  {
+    s localS = new s();
+    connectionStateLiveData = localS;
+    RecordEkgConfig.get().getRecordDependencyComponent().inject(this);
+    bluetoothDeviceController = createBluetoothDeviceController();
+    triangleBatteryLiveData.setValue(Integer.valueOf(-1));
+    localS.setValue(BLEConnectionState.DISCONNECTED);
+  }
+  
+  private BluetoothDeviceController createBluetoothDeviceController()
+  {
+    return new BluetoothDeviceController(createBluetoothDeviceControllerCallback(), applicationContext);
+  }
+  
+  private BluetoothDeviceControllerCallback createBluetoothDeviceControllerCallback()
+  {
+    new BluetoothDeviceControllerCallback()
+    {
+      public void bluetoothConnectionError(BluetoothDeviceConnectionError paramAnonymousBluetoothDeviceConnectionError, String paramAnonymousString)
+      {
+        l.a.a.b("Bluetooth connection error: %s: %s", new Object[] { paramAnonymousBluetoothDeviceConnectionError, paramAnonymousString });
+        if (paramAnonymousBluetoothDeviceConnectionError == BluetoothDeviceConnectionError.NO_ERROR) {
+          return;
+        }
+        if (connectionStateLiveData.getValue() == TriangleBluetoothWrapperClass.BLEConnectionState.DISCONNECTING)
+        {
+          l.a.a.d("Bluetooth error received while disconnecting.  Moving to DISCONNECTED", new Object[0]);
+          connectionStateLiveData.setValue(TriangleBluetoothWrapperClass.BLEConnectionState.DISCONNECTED);
+          return;
+        }
+        connectionStateLiveData.setValue(TriangleBluetoothWrapperClass.BLEConnectionState.ERROR);
+        if (scanSubject != null)
+        {
+          scanSubject.a(new BluetoothException(paramAnonymousBluetoothDeviceConnectionError));
+          TriangleBluetoothWrapperClass.access$502(TriangleBluetoothWrapperClass.this, null);
+        }
+        if (connectSubject != null)
+        {
+          connectSubject.a(new BluetoothException(paramAnonymousBluetoothDeviceConnectionError));
+          TriangleBluetoothWrapperClass.access$702(TriangleBluetoothWrapperClass.this, null);
+        }
+        if (enableCaptureSubject != null)
+        {
+          enableCaptureSubject.a(new BluetoothException(paramAnonymousBluetoothDeviceConnectionError));
+          TriangleBluetoothWrapperClass.access$102(TriangleBluetoothWrapperClass.this, null);
+        }
+      }
+      
+      public void didBeginConnecting() {}
+      
+      public void didConnectTriangleDevice(TriangleDevice paramAnonymousTriangleDevice)
+      {
+        connectionStateLiveData.setValue(TriangleBluetoothWrapperClass.BLEConnectionState.CONNECTED);
+        TriangleBluetoothWrapperClass.access$202(TriangleBluetoothWrapperClass.this, paramAnonymousTriangleDevice);
+        if (connectSubject != null)
+        {
+          connectSubject.onSuccess(paramAnonymousTriangleDevice);
+          TriangleBluetoothWrapperClass.access$702(TriangleBluetoothWrapperClass.this, null);
+        }
+      }
+      
+      public void didDisconnectTriangleDevice(TriangleDevice paramAnonymousTriangleDevice)
+      {
+        l.a.a.g("didDisconnectTriangleDevice", new Object[0]);
+        if (connectionStateLiveData.getValue() != TriangleBluetoothWrapperClass.BLEConnectionState.ERROR) {
+          connectionStateLiveData.setValue(TriangleBluetoothWrapperClass.BLEConnectionState.DISCONNECTED);
+        }
+        TriangleBluetoothWrapperClass.this.disposeTriangleDevice();
+        triangleBatteryLiveData.setValue(Integer.valueOf(-1));
+        devicePropertiesLiveData.setValue(null);
+      }
+      
+      public void didStopScanning()
+      {
+        if (connectionStateLiveData.getValue() == TriangleBluetoothWrapperClass.BLEConnectionState.SCANNING)
+        {
+          connectionStateLiveData.setValue(TriangleBluetoothWrapperClass.BLEConnectionState.ERROR);
+          if ((scanSubject != null) && (!scanSubject.z()) && (!scanSubject.A())) {
+            scanSubject.a(new TimeoutException("Scan stopped.  Either timed out or manually stopped."));
+          }
+          TriangleBluetoothWrapperClass.access$502(TriangleBluetoothWrapperClass.this, null);
+          return;
+        }
+        if (connectionStateLiveData.getValue() == TriangleBluetoothWrapperClass.BLEConnectionState.DISCONNECTING)
+        {
+          l.a.a.g("didStopScanning(): Was disconnecting.  Moving to DISCONNECTED", new Object[0]);
+          connectionStateLiveData.setValue(TriangleBluetoothWrapperClass.BLEConnectionState.DISCONNECTED);
+          return;
+        }
+        l.a.a.g("didStopScanning, Received in state %s", new Object[] { connectionStateLiveData.getValue() });
+      }
+      
+      public void discoveredTriangleDevice(TriangleDevice paramAnonymousTriangleDevice)
+      {
+        l.a.a.g("discoveredTriangleDevice: Discovered %s in state %s", new Object[] { paramAnonymousTriangleDevice, connectionStateLiveData.getValue() });
+        if (scanSubject != null)
+        {
+          scanSubject.c(paramAnonymousTriangleDevice);
+          return;
+        }
+        if (connectionStateLiveData.getValue() == TriangleBluetoothWrapperClass.BLEConnectionState.CONNECTING)
+        {
+          l.a.a.d("Discovered device while in CONNECTING state.  Retrying connection", new Object[0]);
+          bluetoothDeviceController.connectTriangleDevice(paramAnonymousTriangleDevice);
+        }
+      }
+      
+      public void readyToScan() {}
+    };
+  }
+  
+  private TriangleDeviceCallback createTriangleCallback()
+  {
+    new TriangleDeviceCallback()
+    {
+      public void triangleBatteryLevelUpdated(int paramAnonymousInt)
+      {
+        if (triangleBatteryLiveData != null) {
+          triangleBatteryLiveData.setValue(Integer.valueOf(paramAnonymousInt));
+        }
+      }
+      
+      public void triangleDeviceCaptureEnabled()
+      {
+        connectionStateLiveData.setValue(TriangleBluetoothWrapperClass.BLEConnectionState.CAPTURE_ENABLED);
+        if ((enableCaptureSubject != null) && (connectedTriangleDevice != null)) {
+          enableCaptureSubject.onSuccess(connectedTriangleDevice);
+        }
+      }
+      
+      public void triangleDevicePropertiesUpdated(BluetoothDeviceProperties paramAnonymousBluetoothDeviceProperties)
+      {
+        if (devicePropertiesLiveData != null) {
+          devicePropertiesLiveData.setValue(paramAnonymousBluetoothDeviceProperties);
+        }
+      }
+    };
+  }
+  
+  private void disposeTriangleDevice()
+  {
+    TriangleDevice localTriangleDevice = connectedTriangleDevice;
+    if (localTriangleDevice != null)
+    {
+      localTriangleDevice.dispose();
+      connectedTriangleDevice = null;
+    }
+  }
+  
+  public static TriangleBluetoothWrapperClass getInstance()
+  {
+    if (triangleBluetoothWrapperClass == null) {
+      triangleBluetoothWrapperClass = new TriangleBluetoothWrapperClass();
+    }
+    return triangleBluetoothWrapperClass;
+  }
+  
+  public r<TriangleDevice> connectToDevice(TriangleDevice paramTriangleDevice)
+  {
+    return r.f(new p1(this, paramTriangleDevice)).v(controlScheduler).g(new s1(this)).v(controlScheduler);
+  }
+  
+  public LiveData<BLEConnectionState> connectionState()
+  {
+    return connectionStateLiveData;
+  }
+  
+  public LiveData<BluetoothDeviceProperties> deviceProperties()
+  {
+    return devicePropertiesLiveData;
+  }
+  
+  public void disconnect()
+  {
+    if (connectionStateLiveData.getValue() == BLEConnectionState.DISCONNECTED) {
+      l.a.a.d("disconnect(): Called while already disconnected.  Not changing state, but trying to clean up anyway", new Object[0]);
+    } else {
+      connectionStateLiveData.setValue(BLEConnectionState.DISCONNECTING);
+    }
+    bluetoothDeviceController.stopScanning();
+    Object localObject = scanSubject;
+    if (localObject != null)
+    {
+      ((b)localObject).a(new l());
+      scanSubject = null;
+    }
+    localObject = connectSubject;
+    if (localObject != null)
+    {
+      ((c)localObject).a(new l());
+      connectSubject = null;
+    }
+    localObject = enableCaptureSubject;
+    if (localObject != null)
+    {
+      ((c)localObject).a(new l());
+      enableCaptureSubject = null;
+    }
+  }
+  
+  public void dispose()
+  {
+    disconnect();
+    disposeTriangleDevice();
+  }
+  
+  public r<TriangleDevice> enableCapture(TriangleDevice paramTriangleDevice, boolean paramBoolean, BluetoothECGMode paramBluetoothECGMode)
+  {
+    return r.f(new u1(this, paramTriangleDevice, paramBluetoothECGMode, paramBoolean)).v(controlScheduler).g(new t1(this)).v(controlScheduler);
+  }
+  
+  public n<TriangleDevice> scanForDevices()
+  {
+    return n.g(new r1(this)).u(controlScheduler).i(new q1(this)).u(controlScheduler);
+  }
+  
+  public LiveData<Integer> triangleBattery()
+  {
+    return triangleBatteryLiveData;
+  }
+  
+  public static enum BLEConnectionState
+  {
+    static
+    {
+      BLEConnectionState localBLEConnectionState1 = new BLEConnectionState("SCANNING", 0);
+      SCANNING = localBLEConnectionState1;
+      BLEConnectionState localBLEConnectionState2 = new BLEConnectionState("CONNECTING", 1);
+      CONNECTING = localBLEConnectionState2;
+      BLEConnectionState localBLEConnectionState3 = new BLEConnectionState("CONNECTED", 2);
+      CONNECTED = localBLEConnectionState3;
+      BLEConnectionState localBLEConnectionState4 = new BLEConnectionState("CAPTURE_ENABLED", 3);
+      CAPTURE_ENABLED = localBLEConnectionState4;
+      BLEConnectionState localBLEConnectionState5 = new BLEConnectionState("DISCONNECTING", 4);
+      DISCONNECTING = localBLEConnectionState5;
+      BLEConnectionState localBLEConnectionState6 = new BLEConnectionState("DISCONNECTED", 5);
+      DISCONNECTED = localBLEConnectionState6;
+      BLEConnectionState localBLEConnectionState7 = new BLEConnectionState("ERROR", 6);
+      ERROR = localBLEConnectionState7;
+      $VALUES = new BLEConnectionState[] { localBLEConnectionState1, localBLEConnectionState2, localBLEConnectionState3, localBLEConnectionState4, localBLEConnectionState5, localBLEConnectionState6, localBLEConnectionState7 };
+    }
+  }
+}

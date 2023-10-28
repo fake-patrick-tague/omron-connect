@@ -1,0 +1,143 @@
+package com.google.android.gms.fitness.request;
+
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.internal.fitness.zzbg;
+import com.google.android.gms.internal.fitness.zzbh;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+@SafeParcelable.Class(creator="DataSourcesRequestCreator")
+@SafeParcelable.Reserved({5, 1000})
+public class DataSourcesRequest
+  extends AbstractSafeParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<DataSourcesRequest> CREATOR = new zzp();
+  @SafeParcelable.Field(getter="getDataTypes", id=1)
+  private final List<DataType> zzlf;
+  @SafeParcelable.Field(getter="getDataSourceTypes", id=2)
+  private final List<Integer> zzrg;
+  @SafeParcelable.Field(getter="includeDbOnlySources", id=3)
+  private final boolean zzrh;
+  @SafeParcelable.Field(getter="getCallbackBinder", id=4, type="android.os.IBinder")
+  private final zzbh zzri;
+  
+  private DataSourcesRequest(Builder paramBuilder)
+  {
+    this(Builder.zza(paramBuilder), Builder.zzb(paramBuilder), false, null);
+  }
+  
+  public DataSourcesRequest(DataSourcesRequest paramDataSourcesRequest, zzbh paramZzbh)
+  {
+    this(zzlf, zzrg, zzrh, paramZzbh);
+  }
+  
+  @SafeParcelable.Constructor
+  DataSourcesRequest(@SafeParcelable.Param(id=1) List<DataType> paramList, @SafeParcelable.Param(id=2) List<Integer> paramList1, @SafeParcelable.Param(id=3) boolean paramBoolean, @SafeParcelable.Param(id=4) IBinder paramIBinder)
+  {
+    zzlf = paramList;
+    zzrg = paramList1;
+    zzrh = paramBoolean;
+    if (paramIBinder == null) {
+      paramList = null;
+    } else {
+      paramList = zzbg.zzd(paramIBinder);
+    }
+    zzri = paramList;
+  }
+  
+  private DataSourcesRequest(List<DataType> paramList, List<Integer> paramList1, boolean paramBoolean, zzbh paramZzbh)
+  {
+    zzlf = paramList;
+    zzrg = paramList1;
+    zzrh = paramBoolean;
+    zzri = paramZzbh;
+  }
+  
+  @RecentlyNonNull
+  public List<DataType> getDataTypes()
+  {
+    return zzlf;
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    Objects.ToStringHelper localToStringHelper = Objects.toStringHelper(this).add("dataTypes", zzlf).add("sourceTypes", zzrg);
+    if (zzrh) {
+      localToStringHelper.add("includeDbOnlySources", "true");
+    }
+    return localToStringHelper.toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeTypedList(paramParcel, 1, getDataTypes(), false);
+    SafeParcelWriter.writeIntegerList(paramParcel, 2, zzrg, false);
+    SafeParcelWriter.writeBoolean(paramParcel, 3, zzrh);
+    Object localObject = zzri;
+    if (localObject == null) {
+      localObject = null;
+    } else {
+      localObject = ((IInterface)localObject).asBinder();
+    }
+    SafeParcelWriter.writeIBinder(paramParcel, 4, (IBinder)localObject, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+  
+  public static class Builder
+  {
+    private List<DataType> zzlf = new ArrayList();
+    private List<Integer> zzrg = Arrays.asList(new Integer[] { Integer.valueOf(0), Integer.valueOf(1) });
+    private boolean zzrh = false;
+    
+    public Builder() {}
+    
+    @RecentlyNonNull
+    public DataSourcesRequest build()
+    {
+      Preconditions.checkState(zzlf.isEmpty() ^ true, "Must add at least one data type");
+      Preconditions.checkState(zzrg.isEmpty() ^ true, "Must add at least one data source type");
+      return new DataSourcesRequest(this, null);
+    }
+    
+    @RecentlyNonNull
+    public Builder setDataSourceTypes(@RecentlyNonNull int... paramVarArgs)
+    {
+      zzrg = new ArrayList();
+      int j = paramVarArgs.length;
+      int i = 0;
+      while (i < j)
+      {
+        int k = paramVarArgs[i];
+        zzrg.add(Integer.valueOf(k));
+        i += 1;
+      }
+      return this;
+    }
+    
+    @RecentlyNonNull
+    public Builder setDataTypes(@RecentlyNonNull DataType... paramVarArgs)
+    {
+      zzlf = Arrays.asList(paramVarArgs);
+      return this;
+    }
+  }
+}

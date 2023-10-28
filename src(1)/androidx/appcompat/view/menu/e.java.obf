@@ -1,0 +1,260 @@
+package androidx.appcompat.view.menu;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.SparseArray;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import java.util.ArrayList;
+
+public class e
+  implements m, AdapterView.OnItemClickListener
+{
+  Context b;
+  LayoutInflater c;
+  g d;
+  ExpandedMenuView e;
+  int f;
+  int g;
+  int h;
+  private m.a i;
+  a j;
+  private int k;
+  
+  public e(int paramInt1, int paramInt2)
+  {
+    h = paramInt1;
+    g = paramInt2;
+  }
+  
+  public e(Context paramContext, int paramInt)
+  {
+    this(paramInt, 0);
+    b = paramContext;
+    c = LayoutInflater.from(paramContext);
+  }
+  
+  public void a(g paramG, boolean paramBoolean)
+  {
+    m.a localA = i;
+    if (localA != null) {
+      localA.a(paramG, paramBoolean);
+    }
+  }
+  
+  public ListAdapter b()
+  {
+    if (j == null) {
+      j = new a();
+    }
+    return j;
+  }
+  
+  public void c(boolean paramBoolean)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.notifyDataSetChanged();
+    }
+  }
+  
+  public boolean d()
+  {
+    return false;
+  }
+  
+  public boolean e(g paramG, i paramI)
+  {
+    return false;
+  }
+  
+  public boolean f(g paramG, i paramI)
+  {
+    return false;
+  }
+  
+  public void g(m.a paramA)
+  {
+    i = paramA;
+  }
+  
+  public int getId()
+  {
+    return k;
+  }
+  
+  public n h(ViewGroup paramViewGroup)
+  {
+    if (e == null)
+    {
+      e = ((ExpandedMenuView)c.inflate(c.a.g.g, paramViewGroup, false));
+      if (j == null) {
+        j = new a();
+      }
+      e.setAdapter(j);
+      e.setOnItemClickListener(this);
+    }
+    return e;
+  }
+  
+  public void i(Context paramContext, g paramG)
+  {
+    if (g != 0)
+    {
+      paramContext = new ContextThemeWrapper(paramContext, g);
+      b = paramContext;
+      c = LayoutInflater.from(paramContext);
+    }
+    else if (b != null)
+    {
+      b = paramContext;
+      if (c == null) {
+        c = LayoutInflater.from(paramContext);
+      }
+    }
+    d = paramG;
+    paramContext = j;
+    if (paramContext != null) {
+      paramContext.notifyDataSetChanged();
+    }
+  }
+  
+  public void j(Parcelable paramParcelable)
+  {
+    k((Bundle)paramParcelable);
+  }
+  
+  public void k(Bundle paramBundle)
+  {
+    paramBundle = paramBundle.getSparseParcelableArray("android:menu:list");
+    if (paramBundle != null) {
+      e.restoreHierarchyState(paramBundle);
+    }
+  }
+  
+  public boolean l(r paramR)
+  {
+    if (!paramR.hasVisibleItems()) {
+      return false;
+    }
+    new h(paramR).d(null);
+    m.a localA = i;
+    if (localA != null) {
+      localA.b(paramR);
+    }
+    return true;
+  }
+  
+  public Parcelable m()
+  {
+    if (e == null) {
+      return null;
+    }
+    Bundle localBundle = new Bundle();
+    n(localBundle);
+    return localBundle;
+  }
+  
+  public void n(Bundle paramBundle)
+  {
+    SparseArray localSparseArray = new SparseArray();
+    ExpandedMenuView localExpandedMenuView = e;
+    if (localExpandedMenuView != null) {
+      localExpandedMenuView.saveHierarchyState(localSparseArray);
+    }
+    paramBundle.putSparseParcelableArray("android:menu:list", localSparseArray);
+  }
+  
+  public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong)
+  {
+    d.O(j.b(paramInt), this, 0);
+  }
+  
+  private class a
+    extends BaseAdapter
+  {
+    private int b = -1;
+    
+    public a()
+    {
+      a();
+    }
+    
+    void a()
+    {
+      i localI = d.x();
+      if (localI != null)
+      {
+        ArrayList localArrayList = d.B();
+        int j = localArrayList.size();
+        int i = 0;
+        while (i < j)
+        {
+          if ((i)localArrayList.get(i) == localI)
+          {
+            b = i;
+            return;
+          }
+          i += 1;
+        }
+      }
+      b = -1;
+    }
+    
+    public i b(int paramInt)
+    {
+      ArrayList localArrayList = d.B();
+      int i = paramInt + f;
+      int j = b;
+      paramInt = i;
+      if (j >= 0)
+      {
+        paramInt = i;
+        if (i >= j) {
+          paramInt = i + 1;
+        }
+      }
+      return (i)localArrayList.get(paramInt);
+    }
+    
+    public int getCount()
+    {
+      int i = d.B().size() - f;
+      if (b < 0) {
+        return i;
+      }
+      return i - 1;
+    }
+    
+    public long getItemId(int paramInt)
+    {
+      return paramInt;
+    }
+    
+    public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
+    {
+      View localView = paramView;
+      if (paramView == null)
+      {
+        paramView = e.this;
+        localView = c.inflate(h, paramViewGroup, false);
+      }
+      ((n.a)localView).e(b(paramInt), 0);
+      return localView;
+    }
+    
+    public void notifyDataSetChanged()
+    {
+      a();
+      super.notifyDataSetChanged();
+    }
+  }
+}

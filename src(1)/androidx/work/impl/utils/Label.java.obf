@@ -1,0 +1,68 @@
+package androidx.work.impl.utils;
+
+import android.content.Context;
+import android.content.Intent;
+import androidx.work.WorkInfo.State;
+import androidx.work.e;
+import androidx.work.f;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.n.q;
+import androidx.work.j;
+import com.google.common.util.concurrent.c;
+import java.util.UUID;
+
+public class m
+  implements f
+{
+  private static final String a = j.f("WMFgUpdater");
+  private final androidx.work.impl.utils.p.a b;
+  final androidx.work.impl.foreground.a c;
+  final q d;
+  
+  public m(WorkDatabase paramWorkDatabase, androidx.work.impl.foreground.a paramA, androidx.work.impl.utils.p.a paramA1)
+  {
+    c = paramA;
+    b = paramA1;
+    d = paramWorkDatabase.B();
+  }
+  
+  public c<Void> a(final Context paramContext, final UUID paramUUID, final e paramE)
+  {
+    final androidx.work.impl.utils.futures.b localB = androidx.work.impl.utils.futures.b.t();
+    b.b(new a(localB, paramUUID, paramE, paramContext));
+    return localB;
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(androidx.work.impl.utils.futures.b paramB, UUID paramUUID, e paramE, Context paramContext) {}
+    
+    public void run()
+    {
+      try
+      {
+        if (!localB.isCancelled())
+        {
+          Object localObject = paramUUID.toString();
+          WorkInfo.State localState = d.m((String)localObject);
+          if ((localState != null) && (!localState.a()))
+          {
+            c.a((String)localObject, paramE);
+            localObject = androidx.work.impl.foreground.b.a(paramContext, (String)localObject, paramE);
+            paramContext.startService((Intent)localObject);
+          }
+          else
+          {
+            throw new IllegalStateException("Calls to setForegroundAsync() must complete before a ListenableWorker signals completion of work by returning an instance of Result.");
+          }
+        }
+        return;
+      }
+      finally
+      {
+        localB.q(localThrowable);
+      }
+    }
+  }
+}

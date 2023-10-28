@@ -1,0 +1,72 @@
+package com.google.android.gms.fitness;
+
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Context;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Api.ApiOptions.HasGoogleSignInAccountOptions;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApi.Settings;
+import com.google.android.gms.common.internal.PendingResultUtil;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.fitness.request.SessionInsertRequest;
+import com.google.android.gms.fitness.request.SessionReadRequest;
+import com.google.android.gms.fitness.result.SessionReadResponse;
+import com.google.android.gms.internal.fitness.zzav;
+import com.google.android.gms.internal.fitness.zzeb;
+import com.google.android.gms.tasks.Task;
+import java.util.List;
+
+public class SessionsClient
+  extends GoogleApi<Api.ApiOptions.HasGoogleSignInAccountOptions>
+{
+  private static final SessionsApi zzla = new zzeb();
+  
+  SessionsClient(Activity paramActivity, Api.ApiOptions.HasGoogleSignInAccountOptions paramHasGoogleSignInAccountOptions)
+  {
+    super(paramActivity, zzav.zzoz, paramHasGoogleSignInAccountOptions, GoogleApi.Settings.DEFAULT_SETTINGS);
+  }
+  
+  @ShowFirstParty
+  protected SessionsClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull Api.ApiOptions.HasGoogleSignInAccountOptions paramHasGoogleSignInAccountOptions)
+  {
+    super(paramContext, zzav.zzoz, paramHasGoogleSignInAccountOptions, GoogleApi.Settings.DEFAULT_SETTINGS);
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> insertSession(@RecentlyNonNull SessionInsertRequest paramSessionInsertRequest)
+  {
+    return PendingResultUtil.toVoidTask(zzla.insertSession(asGoogleApiClient(), paramSessionInsertRequest));
+  }
+  
+  @RecentlyNonNull
+  public Task<SessionReadResponse> readSession(@RecentlyNonNull SessionReadRequest paramSessionReadRequest)
+  {
+    return PendingResultUtil.toResponseTask(zzla.readSession(asGoogleApiClient(), paramSessionReadRequest), new SessionReadResponse());
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> registerForSessions(@RecentlyNonNull PendingIntent paramPendingIntent)
+  {
+    return PendingResultUtil.toVoidTask(zzla.registerForSessions(asGoogleApiClient(), paramPendingIntent));
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> startSession(@RecentlyNonNull Session paramSession)
+  {
+    return PendingResultUtil.toVoidTask(zzla.startSession(asGoogleApiClient(), paramSession));
+  }
+  
+  @RecentlyNonNull
+  public Task<List<Session>> stopSession(String paramString)
+  {
+    return PendingResultUtil.toTask(zzla.stopSession(asGoogleApiClient(), paramString), zzp.zzjz);
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> unregisterForSessions(@RecentlyNonNull PendingIntent paramPendingIntent)
+  {
+    return PendingResultUtil.toVoidTask(zzla.unregisterForSessions(asGoogleApiClient(), paramPendingIntent));
+  }
+}

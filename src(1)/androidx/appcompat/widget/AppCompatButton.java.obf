@@ -1,0 +1,336 @@
+package androidx.appcompat.widget;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
+import android.text.InputFilter;
+import android.util.AttributeSet;
+import android.view.ActionMode.Callback;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Button;
+import androidx.core.widget.i;
+import c.a.a;
+import c.h.q.e0;
+
+public class AppCompatButton
+  extends Button
+  implements e0, androidx.core.widget.m
+{
+  private final h b;
+  private final t c;
+  private m d;
+  
+  public AppCompatButton(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, a.q);
+  }
+  
+  public AppCompatButton(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(k0.b(paramContext), paramAttributeSet, paramInt);
+    i0.a(this, getContext());
+    paramContext = new h(this);
+    b = paramContext;
+    paramContext.e(paramAttributeSet, paramInt);
+    paramContext = new t(this);
+    c = paramContext;
+    paramContext.m(paramAttributeSet, paramInt);
+    paramContext.b();
+    getEmojiTextViewHelper().b(paramAttributeSet, paramInt);
+  }
+  
+  private m getEmojiTextViewHelper()
+  {
+    if (d == null) {
+      d = new m(this);
+    }
+    return d;
+  }
+  
+  protected void drawableStateChanged()
+  {
+    super.drawableStateChanged();
+    Object localObject = b;
+    if (localObject != null) {
+      ((h)localObject).b();
+    }
+    localObject = c;
+    if (localObject != null) {
+      ((t)localObject).b();
+    }
+  }
+  
+  public int getAutoSizeMaxTextSize()
+  {
+    if (t0.b) {
+      return super.getAutoSizeMaxTextSize();
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.e();
+    }
+    return -1;
+  }
+  
+  public int getAutoSizeMinTextSize()
+  {
+    if (t0.b) {
+      return super.getAutoSizeMinTextSize();
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.f();
+    }
+    return -1;
+  }
+  
+  public int getAutoSizeStepGranularity()
+  {
+    if (t0.b) {
+      return super.getAutoSizeStepGranularity();
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.g();
+    }
+    return -1;
+  }
+  
+  public int[] getAutoSizeTextAvailableSizes()
+  {
+    if (t0.b) {
+      return super.getAutoSizeTextAvailableSizes();
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.h();
+    }
+    return new int[0];
+  }
+  
+  public int getAutoSizeTextType()
+  {
+    boolean bool = t0.b;
+    int i = 0;
+    if (bool)
+    {
+      if (super.getAutoSizeTextType() == 1) {
+        i = 1;
+      }
+      return i;
+    }
+    t localT = c;
+    if (localT != null) {
+      return localT.i();
+    }
+    return 0;
+  }
+  
+  public ActionMode.Callback getCustomSelectionActionModeCallback()
+  {
+    return i.s(super.getCustomSelectionActionModeCallback());
+  }
+  
+  public ColorStateList getSupportBackgroundTintList()
+  {
+    h localH = b;
+    if (localH != null) {
+      return localH.c();
+    }
+    return null;
+  }
+  
+  public PorterDuff.Mode getSupportBackgroundTintMode()
+  {
+    h localH = b;
+    if (localH != null) {
+      return localH.d();
+    }
+    return null;
+  }
+  
+  public ColorStateList getSupportCompoundDrawablesTintList()
+  {
+    return c.j();
+  }
+  
+  public PorterDuff.Mode getSupportCompoundDrawablesTintMode()
+  {
+    return c.k();
+  }
+  
+  public void onInitializeAccessibilityEvent(AccessibilityEvent paramAccessibilityEvent)
+  {
+    super.onInitializeAccessibilityEvent(paramAccessibilityEvent);
+    paramAccessibilityEvent.setClassName(Button.class.getName());
+  }
+  
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+  {
+    super.onInitializeAccessibilityNodeInfo(paramAccessibilityNodeInfo);
+    paramAccessibilityNodeInfo.setClassName(Button.class.getName());
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onLayout(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    t localT = c;
+    if (localT != null) {
+      localT.o(paramBoolean, paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+  }
+  
+  protected void onTextChanged(CharSequence paramCharSequence, int paramInt1, int paramInt2, int paramInt3)
+  {
+    super.onTextChanged(paramCharSequence, paramInt1, paramInt2, paramInt3);
+    paramCharSequence = c;
+    if ((paramCharSequence != null) && (!t0.b) && (paramCharSequence.l())) {
+      paramInt1 = 1;
+    } else {
+      paramInt1 = 0;
+    }
+    if (paramInt1 != 0) {
+      c.c();
+    }
+  }
+  
+  public void setAllCaps(boolean paramBoolean)
+  {
+    super.setAllCaps(paramBoolean);
+    getEmojiTextViewHelper().c(paramBoolean);
+  }
+  
+  public void setAutoSizeTextTypeUniformWithConfiguration(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    throws IllegalArgumentException
+  {
+    if (t0.b)
+    {
+      super.setAutoSizeTextTypeUniformWithConfiguration(paramInt1, paramInt2, paramInt3, paramInt4);
+      return;
+    }
+    t localT = c;
+    if (localT != null) {
+      localT.t(paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+  }
+  
+  public void setAutoSizeTextTypeUniformWithPresetSizes(int[] paramArrayOfInt, int paramInt)
+    throws IllegalArgumentException
+  {
+    if (t0.b)
+    {
+      super.setAutoSizeTextTypeUniformWithPresetSizes(paramArrayOfInt, paramInt);
+      return;
+    }
+    t localT = c;
+    if (localT != null) {
+      localT.u(paramArrayOfInt, paramInt);
+    }
+  }
+  
+  public void setAutoSizeTextTypeWithDefaults(int paramInt)
+  {
+    if (t0.b)
+    {
+      super.setAutoSizeTextTypeWithDefaults(paramInt);
+      return;
+    }
+    t localT = c;
+    if (localT != null) {
+      localT.v(paramInt);
+    }
+  }
+  
+  public void setBackgroundDrawable(Drawable paramDrawable)
+  {
+    super.setBackgroundDrawable(paramDrawable);
+    h localH = b;
+    if (localH != null) {
+      localH.f(paramDrawable);
+    }
+  }
+  
+  public void setBackgroundResource(int paramInt)
+  {
+    super.setBackgroundResource(paramInt);
+    h localH = b;
+    if (localH != null) {
+      localH.g(paramInt);
+    }
+  }
+  
+  public void setCustomSelectionActionModeCallback(ActionMode.Callback paramCallback)
+  {
+    super.setCustomSelectionActionModeCallback(i.t(this, paramCallback));
+  }
+  
+  public void setEmojiCompatEnabled(boolean paramBoolean)
+  {
+    getEmojiTextViewHelper().d(paramBoolean);
+  }
+  
+  public void setFilters(InputFilter[] paramArrayOfInputFilter)
+  {
+    super.setFilters(getEmojiTextViewHelper().a(paramArrayOfInputFilter));
+  }
+  
+  public void setSupportAllCaps(boolean paramBoolean)
+  {
+    t localT = c;
+    if (localT != null) {
+      localT.s(paramBoolean);
+    }
+  }
+  
+  public void setSupportBackgroundTintList(ColorStateList paramColorStateList)
+  {
+    h localH = b;
+    if (localH != null) {
+      localH.i(paramColorStateList);
+    }
+  }
+  
+  public void setSupportBackgroundTintMode(PorterDuff.Mode paramMode)
+  {
+    h localH = b;
+    if (localH != null) {
+      localH.j(paramMode);
+    }
+  }
+  
+  public void setSupportCompoundDrawablesTintList(ColorStateList paramColorStateList)
+  {
+    c.w(paramColorStateList);
+    c.b();
+  }
+  
+  public void setSupportCompoundDrawablesTintMode(PorterDuff.Mode paramMode)
+  {
+    c.x(paramMode);
+    c.b();
+  }
+  
+  public void setTextAppearance(Context paramContext, int paramInt)
+  {
+    super.setTextAppearance(paramContext, paramInt);
+    t localT = c;
+    if (localT != null) {
+      localT.q(paramContext, paramInt);
+    }
+  }
+  
+  public void setTextSize(int paramInt, float paramFloat)
+  {
+    if (t0.b)
+    {
+      super.setTextSize(paramInt, paramFloat);
+      return;
+    }
+    t localT = c;
+    if (localT != null) {
+      localT.A(paramInt, paramFloat);
+    }
+  }
+}

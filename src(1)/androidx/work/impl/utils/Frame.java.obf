@@ -1,0 +1,85 @@
+package androidx.work.impl.utils;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.Application;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Build.VERSION;
+import android.os.Process;
+import android.text.TextUtils;
+import androidx.work.a;
+import androidx.work.j;
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.List;
+
+public class f
+{
+  private static final String a = j.f("ProcessUtils");
+  
+  private f() {}
+  
+  public static String a(Context paramContext)
+  {
+    int i = Build.VERSION.SDK_INT;
+    if (i >= 28) {
+      return Application.getProcessName();
+    }
+    try
+    {
+      Object localObject3 = Class.forName("android.app.ActivityThread", false, f.class.getClassLoader());
+      Object localObject1;
+      if (i >= 18)
+      {
+        localObject1 = ((Class)localObject3).getDeclaredMethod("currentProcessName", new Class[0]);
+        ((Method)localObject1).setAccessible(true);
+        localObject1 = ((Method)localObject1).invoke(null, new Object[0]);
+      }
+      else
+      {
+        localObject1 = ((Class)localObject3).getDeclaredMethod("currentActivityThread", new Class[0]);
+        ((Method)localObject1).setAccessible(true);
+        localObject3 = ((Class)localObject3).getDeclaredMethod("getProcessName", new Class[0]);
+        ((Method)localObject3).setAccessible(true);
+        localObject1 = ((Method)localObject3).invoke(((Method)localObject1).invoke(null, new Object[0]), new Object[0]);
+      }
+      if ((localObject1 instanceof String))
+      {
+        localObject1 = (String)localObject1;
+        return localObject1;
+      }
+    }
+    finally
+    {
+      j.c().a(a, "Unable to check ActivityThread for processName", new Throwable[] { localObject2 });
+      i = Process.myPid();
+      paramContext = (ActivityManager)paramContext.getSystemService("activity");
+      if (paramContext != null)
+      {
+        paramContext = paramContext.getRunningAppProcesses();
+        if ((paramContext != null) && (!paramContext.isEmpty()))
+        {
+          paramContext = paramContext.iterator();
+          while (paramContext.hasNext())
+          {
+            ActivityManager.RunningAppProcessInfo localRunningAppProcessInfo = (ActivityManager.RunningAppProcessInfo)paramContext.next();
+            if (pid == i) {
+              return processName;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
+  
+  public static boolean b(Context paramContext, a paramA)
+  {
+    String str = a(paramContext);
+    if (!TextUtils.isEmpty(paramA.c())) {
+      return TextUtils.equals(str, paramA.c());
+    }
+    return TextUtils.equals(str, getApplicationInfoprocessName);
+  }
+}

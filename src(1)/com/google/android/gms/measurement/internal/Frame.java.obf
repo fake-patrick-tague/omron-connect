@@ -1,0 +1,105 @@
+package com.google.android.gms.measurement.internal;
+
+import android.os.Bundle;
+import c.e.a;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+public final class zzd
+  extends zze
+{
+  private final Map zza = new a();
+  private final Map zzb = new a();
+  private long zzc;
+  
+  public zzd(zzfy paramZzfy)
+  {
+    super(paramZzfy);
+  }
+  
+  private final void zzh(long paramLong, zzik paramZzik)
+  {
+    if (paramZzik == null)
+    {
+      zzs.zzay().zzj().zza("Not logging ad exposure. No active activity");
+      return;
+    }
+    if (paramLong < 1000L)
+    {
+      zzs.zzay().zzj().zzb("Not logging ad exposure. Less than 1000 ms. exposure", Long.valueOf(paramLong));
+      return;
+    }
+    Bundle localBundle = new Bundle();
+    localBundle.putLong("_xt", paramLong);
+    zzlh.zzK(paramZzik, localBundle, true);
+    zzs.zzq().zzG("am", "_xa", localBundle);
+  }
+  
+  private final void zzi(String paramString, long paramLong, zzik paramZzik)
+  {
+    if (paramZzik == null)
+    {
+      zzs.zzay().zzj().zza("Not logging ad unit exposure. No active activity");
+      return;
+    }
+    if (paramLong < 1000L)
+    {
+      zzs.zzay().zzj().zzb("Not logging ad unit exposure. Less than 1000 ms. exposure", Long.valueOf(paramLong));
+      return;
+    }
+    Bundle localBundle = new Bundle();
+    localBundle.putString("_ai", paramString);
+    localBundle.putLong("_xt", paramLong);
+    zzlh.zzK(paramZzik, localBundle, true);
+    zzs.zzq().zzG("am", "_xu", localBundle);
+  }
+  
+  private final void zzj(long paramLong)
+  {
+    Iterator localIterator = zza.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      zza.put(str, Long.valueOf(paramLong));
+    }
+    if (!zza.isEmpty()) {
+      zzc = paramLong;
+    }
+  }
+  
+  public final void zzd(String paramString, long paramLong)
+  {
+    if ((paramString != null) && (paramString.length() != 0))
+    {
+      zzs.zzaz().zzp(new zza(this, paramString, paramLong));
+      return;
+    }
+    zzs.zzay().zzd().zza("Ad unit id must be a non-empty string");
+  }
+  
+  public final void zze(String paramString, long paramLong)
+  {
+    if ((paramString != null) && (paramString.length() != 0))
+    {
+      zzs.zzaz().zzp(new zzb(this, paramString, paramLong));
+      return;
+    }
+    zzs.zzay().zzd().zza("Ad unit id must be a non-empty string");
+  }
+  
+  public final void zzf(long paramLong)
+  {
+    zzik localZzik = zzs.zzs().zzj(false);
+    Iterator localIterator = zza.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      zzi(str, paramLong - ((Long)zza.get(str)).longValue(), localZzik);
+    }
+    if (!zza.isEmpty()) {
+      zzh(paramLong - zzc, localZzik);
+    }
+    zzj(paramLong);
+  }
+}

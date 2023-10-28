@@ -1,0 +1,156 @@
+package androidx.constraintlayout.solver.widgets.analyzer;
+
+import androidx.constraintlayout.solver.widgets.ConstraintWidget;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class DependencyNode
+  implements d
+{
+  public d a = null;
+  public boolean b = false;
+  public boolean c = false;
+  WidgetRun d;
+  Type e = Type.b;
+  int f;
+  public int g;
+  int h = 1;
+  f i = null;
+  public boolean j = false;
+  List<d> k = new ArrayList();
+  List<DependencyNode> l = new ArrayList();
+  
+  public DependencyNode(WidgetRun paramWidgetRun)
+  {
+    d = paramWidgetRun;
+  }
+  
+  public void a(d paramD)
+  {
+    paramD = l.iterator();
+    while (paramD.hasNext()) {
+      if (!nextj) {
+        return;
+      }
+    }
+    c = true;
+    paramD = a;
+    if (paramD != null) {
+      paramD.a(this);
+    }
+    if (b)
+    {
+      d.a(this);
+      return;
+    }
+    paramD = null;
+    int m = 0;
+    Iterator localIterator = l.iterator();
+    Object localObject;
+    while (localIterator.hasNext())
+    {
+      localObject = (DependencyNode)localIterator.next();
+      if (!(localObject instanceof f))
+      {
+        m += 1;
+        paramD = (d)localObject;
+      }
+    }
+    if ((paramD != null) && (m == 1) && (j))
+    {
+      localObject = i;
+      if (localObject != null) {
+        if (j) {
+          f = (h * g);
+        } else {
+          return;
+        }
+      }
+      d(g + f);
+    }
+    paramD = a;
+    if (paramD != null) {
+      paramD.a(this);
+    }
+  }
+  
+  public void b(d paramD)
+  {
+    k.add(paramD);
+    if (j) {
+      paramD.a(paramD);
+    }
+  }
+  
+  public void c()
+  {
+    l.clear();
+    k.clear();
+    j = false;
+    g = 0;
+    c = false;
+    b = false;
+  }
+  
+  public void d(int paramInt)
+  {
+    if (j) {
+      return;
+    }
+    j = true;
+    g = paramInt;
+    Iterator localIterator = k.iterator();
+    while (localIterator.hasNext())
+    {
+      d localD = (d)localIterator.next();
+      localD.a(localD);
+    }
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(d.b.r());
+    localStringBuilder.append(":");
+    localStringBuilder.append(e);
+    localStringBuilder.append("(");
+    Object localObject;
+    if (j) {
+      localObject = Integer.valueOf(g);
+    } else {
+      localObject = "unresolved";
+    }
+    localStringBuilder.append(localObject);
+    localStringBuilder.append(") <t=");
+    localStringBuilder.append(l.size());
+    localStringBuilder.append(":d=");
+    localStringBuilder.append(k.size());
+    localStringBuilder.append(">");
+    return localStringBuilder.toString();
+  }
+  
+  static enum Type
+  {
+    static
+    {
+      Type localType1 = new Type("UNKNOWN", 0);
+      b = localType1;
+      Type localType2 = new Type("HORIZONTAL_DIMENSION", 1);
+      c = localType2;
+      Type localType3 = new Type("VERTICAL_DIMENSION", 2);
+      d = localType3;
+      Type localType4 = new Type("LEFT", 3);
+      e = localType4;
+      Type localType5 = new Type("RIGHT", 4);
+      f = localType5;
+      Type localType6 = new Type("TOP", 5);
+      g = localType6;
+      Type localType7 = new Type("BOTTOM", 6);
+      h = localType7;
+      Type localType8 = new Type("BASELINE", 7);
+      i = localType8;
+      j = new Type[] { localType1, localType2, localType3, localType4, localType5, localType6, localType7, localType8 };
+    }
+  }
+}

@@ -1,0 +1,1500 @@
+package com.google.android.material.bottomsheet;
+
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
+import android.os.Build.VERSION;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.ClassLoaderCreator;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.Behavior;
+import androidx.coordinatorlayout.widget.CoordinatorLayout.e;
+import androidx.customview.view.AbsSavedState;
+import c.h.k.a;
+import c.h.q.f0;
+import c.h.q.n0;
+import c.h.q.p0.c.a;
+import c.h.q.p0.f;
+import c.h.q.p0.f.a;
+import c.j.a.c.c;
+import com.google.android.material.internal.j.c;
+import com.google.android.material.internal.j.d;
+import d.c.a.a.d;
+import d.c.a.a.l;
+import d.c.a.a.x.g;
+import d.c.a.a.x.k.b;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public class BottomSheetBehavior<V extends View>
+  extends CoordinatorLayout.Behavior<V>
+{
+  private static final int a = d.c.a.a.k.h;
+  int A = 4;
+  c.j.a.c B;
+  private boolean C;
+  private int D;
+  private boolean E;
+  private int F;
+  int G;
+  int H;
+  WeakReference<V> I;
+  WeakReference<View> J;
+  private final ArrayList<f> K = new ArrayList();
+  private VelocityTracker L;
+  int M;
+  private int N;
+  boolean O;
+  private Map<View, Integer> P;
+  private int Q = -1;
+  private final c.c R = new d();
+  private int b = 0;
+  private boolean c = true;
+  private boolean d = false;
+  private float e;
+  private int f;
+  private boolean g;
+  private int h;
+  private int i;
+  private boolean j;
+  private g k;
+  private int l;
+  private boolean m;
+  private d.c.a.a.x.k n;
+  private boolean o;
+  private BottomSheetBehavior<V>.g p = null;
+  private ValueAnimator q;
+  int r;
+  int s;
+  int t;
+  float u = 0.5F;
+  int v;
+  float w = -1.0F;
+  boolean x;
+  private boolean y;
+  private boolean z = true;
+  
+  public BottomSheetBehavior() {}
+  
+  public BottomSheetBehavior(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+    i = paramContext.getResources().getDimensionPixelSize(d.a0);
+    TypedArray localTypedArray = paramContext.obtainStyledAttributes(paramAttributeSet, l.Z);
+    j = localTypedArray.hasValue(l.l0);
+    int i1 = l.b0;
+    boolean bool = localTypedArray.hasValue(i1);
+    if (bool) {
+      R(paramContext, paramAttributeSet, bool, d.c.a.a.u.c.a(paramContext, localTypedArray, i1));
+    } else {
+      Q(paramContext, paramAttributeSet, bool);
+    }
+    S();
+    if (Build.VERSION.SDK_INT >= 21) {
+      w = localTypedArray.getDimension(l.a0, -1.0F);
+    }
+    i1 = l.h0;
+    paramAttributeSet = localTypedArray.peekValue(i1);
+    if (paramAttributeSet != null)
+    {
+      int i2 = data;
+      if (i2 == -1)
+      {
+        h0(i2);
+        break label228;
+      }
+    }
+    h0(localTypedArray.getDimensionPixelSize(i1, -1));
+    label228:
+    g0(localTypedArray.getBoolean(l.g0, false));
+    e0(localTypedArray.getBoolean(l.k0, false));
+    d0(localTypedArray.getBoolean(l.e0, true));
+    k0(localTypedArray.getBoolean(l.j0, false));
+    b0(localTypedArray.getBoolean(l.c0, true));
+    j0(localTypedArray.getInt(l.i0, 0));
+    f0(localTypedArray.getFloat(l.f0, 0.5F));
+    i1 = l.d0;
+    paramAttributeSet = localTypedArray.peekValue(i1);
+    if ((paramAttributeSet != null) && (type == 16)) {
+      c0(data);
+    } else {
+      c0(localTypedArray.getDimensionPixelOffset(i1, 0));
+    }
+    localTypedArray.recycle();
+    e = ViewConfiguration.get(paramContext).getScaledMaximumFlingVelocity();
+  }
+  
+  private int L(V paramV, int paramInt1, int paramInt2)
+  {
+    return f0.b(paramV, paramV.getResources().getString(paramInt1), P(paramInt2));
+  }
+  
+  private void M()
+  {
+    int i1 = O();
+    if (c)
+    {
+      v = Math.max(H - i1, s);
+      return;
+    }
+    v = (H - i1);
+  }
+  
+  private void N()
+  {
+    t = ((int)(H * (1.0F - u)));
+  }
+  
+  private int O()
+  {
+    if (g) {
+      return Math.min(Math.max(h, H - G * 9 / 16), F);
+    }
+    if (!m)
+    {
+      int i1 = l;
+      if (i1 > 0) {
+        return Math.max(f, i1 + i);
+      }
+    }
+    return f;
+  }
+  
+  private f P(final int paramInt)
+  {
+    return new e(paramInt);
+  }
+  
+  private void Q(Context paramContext, AttributeSet paramAttributeSet, boolean paramBoolean)
+  {
+    R(paramContext, paramAttributeSet, paramBoolean, null);
+  }
+  
+  private void R(Context paramContext, AttributeSet paramAttributeSet, boolean paramBoolean, ColorStateList paramColorStateList)
+  {
+    if (j)
+    {
+      n = d.c.a.a.x.k.e(paramContext, paramAttributeSet, d.c.a.a.b.e, a).m();
+      paramAttributeSet = new g(n);
+      k = paramAttributeSet;
+      paramAttributeSet.M(paramContext);
+      if ((paramBoolean) && (paramColorStateList != null))
+      {
+        k.X(paramColorStateList);
+        return;
+      }
+      paramAttributeSet = new TypedValue();
+      paramContext.getTheme().resolveAttribute(16842801, paramAttributeSet, true);
+      k.setTint(data);
+    }
+  }
+  
+  private void S()
+  {
+    ValueAnimator localValueAnimator = ValueAnimator.ofFloat(new float[] { 0.0F, 1.0F });
+    q = localValueAnimator;
+    localValueAnimator.setDuration(500L);
+    q.addUpdateListener(new b());
+  }
+  
+  private float W()
+  {
+    VelocityTracker localVelocityTracker = L;
+    if (localVelocityTracker == null) {
+      return 0.0F;
+    }
+    localVelocityTracker.computeCurrentVelocity(1000, e);
+    return L.getYVelocity(M);
+  }
+  
+  private void Y(V paramV, c.a paramA, int paramInt)
+  {
+    f0.l0(paramV, paramA, null, P(paramInt));
+  }
+  
+  private void Z()
+  {
+    M = -1;
+    VelocityTracker localVelocityTracker = L;
+    if (localVelocityTracker != null)
+    {
+      localVelocityTracker.recycle();
+      L = null;
+    }
+  }
+  
+  private void a0(SavedState paramSavedState)
+  {
+    int i1 = b;
+    if (i1 == 0) {
+      return;
+    }
+    if ((i1 == -1) || ((i1 & 0x1) == 1)) {
+      f = e;
+    }
+    if ((i1 == -1) || ((i1 & 0x2) == 2)) {
+      c = f;
+    }
+    if ((i1 == -1) || ((i1 & 0x4) == 4)) {
+      x = g;
+    }
+    if ((i1 == -1) || ((i1 & 0x8) == 8)) {
+      y = h;
+    }
+  }
+  
+  private void n0(View paramView)
+  {
+    if ((Build.VERSION.SDK_INT >= 29) && (!X()) && (!g)) {
+      com.google.android.material.internal.j.a(paramView, new c());
+    }
+  }
+  
+  private void p0(final int paramInt)
+  {
+    final View localView = (View)I.get();
+    if (localView == null) {
+      return;
+    }
+    ViewParent localViewParent = localView.getParent();
+    if ((localViewParent != null) && (localViewParent.isLayoutRequested()) && (f0.S(localView)))
+    {
+      localView.post(new a(localView, paramInt));
+      return;
+    }
+    o0(localView, paramInt);
+  }
+  
+  private void s0()
+  {
+    Object localObject = I;
+    if (localObject == null) {
+      return;
+    }
+    localObject = (View)((WeakReference)localObject).get();
+    if (localObject == null) {
+      return;
+    }
+    f0.j0((View)localObject, 524288);
+    f0.j0((View)localObject, 262144);
+    f0.j0((View)localObject, 1048576);
+    int i1 = Q;
+    if (i1 != -1) {
+      f0.j0((View)localObject, i1);
+    }
+    int i2 = A;
+    i1 = 6;
+    if (i2 != 6) {
+      Q = L((View)localObject, d.c.a.a.j.a, 6);
+    }
+    if ((x) && (A != 5)) {
+      Y((View)localObject, c.a.u, 5);
+    }
+    i2 = A;
+    if (i2 != 3)
+    {
+      if (i2 != 4)
+      {
+        if (i2 != 6) {
+          return;
+        }
+        Y((View)localObject, c.a.t, 4);
+        Y((View)localObject, c.a.s, 3);
+        return;
+      }
+      if (c) {
+        i1 = 3;
+      }
+      Y((View)localObject, c.a.s, i1);
+      return;
+    }
+    if (c) {
+      i1 = 4;
+    }
+    Y((View)localObject, c.a.t, i1);
+  }
+  
+  private void t0(int paramInt)
+  {
+    if (paramInt == 2) {
+      return;
+    }
+    boolean bool;
+    if (paramInt == 3) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    if (o != bool)
+    {
+      o = bool;
+      if (k != null)
+      {
+        ValueAnimator localValueAnimator = q;
+        if (localValueAnimator != null)
+        {
+          if (localValueAnimator.isRunning())
+          {
+            q.reverse();
+            return;
+          }
+          float f1;
+          if (bool) {
+            f1 = 0.0F;
+          } else {
+            f1 = 1.0F;
+          }
+          q.setFloatValues(new float[] { 1.0F - f1, f1 });
+          q.start();
+        }
+      }
+    }
+  }
+  
+  private void u0(boolean paramBoolean)
+  {
+    Object localObject = I;
+    if (localObject == null) {
+      return;
+    }
+    localObject = ((View)((WeakReference)localObject).get()).getParent();
+    if (!(localObject instanceof CoordinatorLayout)) {
+      return;
+    }
+    localObject = (CoordinatorLayout)localObject;
+    int i2 = ((ViewGroup)localObject).getChildCount();
+    if ((Build.VERSION.SDK_INT >= 16) && (paramBoolean)) {
+      if (P == null) {
+        P = new HashMap(i2);
+      } else {
+        return;
+      }
+    }
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      View localView = ((ViewGroup)localObject).getChildAt(i1);
+      if (localView != I.get()) {
+        if (paramBoolean)
+        {
+          if (Build.VERSION.SDK_INT >= 16) {
+            P.put(localView, Integer.valueOf(localView.getImportantForAccessibility()));
+          }
+          if (d) {
+            f0.A0(localView, 4);
+          }
+        }
+        else if (d)
+        {
+          Map localMap = P;
+          if ((localMap != null) && (localMap.containsKey(localView))) {
+            f0.A0(localView, ((Integer)P.get(localView)).intValue());
+          }
+        }
+      }
+      i1 += 1;
+    }
+    if (!paramBoolean)
+    {
+      P = null;
+      return;
+    }
+    if (d) {
+      ((View)I.get()).sendAccessibilityEvent(8);
+    }
+  }
+  
+  private void v0(boolean paramBoolean)
+  {
+    if (I != null)
+    {
+      M();
+      if (A == 4)
+      {
+        View localView = (View)I.get();
+        if (localView != null)
+        {
+          if (paramBoolean)
+          {
+            p0(A);
+            return;
+          }
+          localView.requestLayout();
+        }
+      }
+    }
+  }
+  
+  public boolean A(CoordinatorLayout paramCoordinatorLayout, V paramV, View paramView1, View paramView2, int paramInt1, int paramInt2)
+  {
+    boolean bool = false;
+    D = 0;
+    E = false;
+    if ((paramInt1 & 0x2) != 0) {
+      bool = true;
+    }
+    return bool;
+  }
+  
+  public void C(CoordinatorLayout paramCoordinatorLayout, V paramV, View paramView, int paramInt)
+  {
+    paramInt = paramV.getTop();
+    int i2 = V();
+    int i1 = 3;
+    if (paramInt == i2)
+    {
+      m0(3);
+      return;
+    }
+    paramCoordinatorLayout = J;
+    if ((paramCoordinatorLayout != null) && (paramView == paramCoordinatorLayout.get()))
+    {
+      if (!E) {
+        return;
+      }
+      if (D > 0)
+      {
+        if (c)
+        {
+          paramInt = s;
+          break label354;
+        }
+        i2 = paramV.getTop();
+        paramInt = t;
+        if (i2 <= paramInt)
+        {
+          paramInt = r;
+          break label354;
+        }
+      }
+      else
+      {
+        if ((x) && (q0(paramV, W())))
+        {
+          paramInt = H;
+          i1 = 5;
+          break label354;
+        }
+        if (D == 0)
+        {
+          paramInt = paramV.getTop();
+          if (c)
+          {
+            if (Math.abs(paramInt - s) < Math.abs(paramInt - v))
+            {
+              paramInt = s;
+              break label354;
+            }
+            paramInt = v;
+          }
+          else
+          {
+            i2 = t;
+            if (paramInt < i2)
+            {
+              if (paramInt < Math.abs(paramInt - v))
+              {
+                paramInt = r;
+                break label354;
+              }
+              paramInt = t;
+              break label338;
+            }
+            if (Math.abs(paramInt - i2) < Math.abs(paramInt - v))
+            {
+              paramInt = t;
+              break label338;
+            }
+            paramInt = v;
+          }
+        }
+        else
+        {
+          if (!c) {
+            break label303;
+          }
+        }
+      }
+      for (paramInt = v;; paramInt = v)
+      {
+        i1 = 4;
+        break;
+        label303:
+        paramInt = paramV.getTop();
+        if (Math.abs(paramInt - t) < Math.abs(paramInt - v))
+        {
+          paramInt = t;
+          label338:
+          i1 = 6;
+          break;
+        }
+      }
+      label354:
+      r0(paramV, i1, paramInt, false);
+      E = false;
+    }
+  }
+  
+  public boolean D(CoordinatorLayout paramCoordinatorLayout, V paramV, MotionEvent paramMotionEvent)
+  {
+    if (!paramV.isShown()) {
+      return false;
+    }
+    int i1 = paramMotionEvent.getActionMasked();
+    if ((A == 1) && (i1 == 0)) {
+      return true;
+    }
+    paramCoordinatorLayout = B;
+    if (paramCoordinatorLayout != null) {
+      paramCoordinatorLayout.z(paramMotionEvent);
+    }
+    if (i1 == 0) {
+      Z();
+    }
+    if (L == null) {
+      L = VelocityTracker.obtain();
+    }
+    L.addMovement(paramMotionEvent);
+    if ((B != null) && (i1 == 2) && (!C) && (Math.abs(N - paramMotionEvent.getY()) > B.u())) {
+      B.b(paramV, paramMotionEvent.getPointerId(paramMotionEvent.getActionIndex()));
+    }
+    return C ^ true;
+  }
+  
+  void T(int paramInt)
+  {
+    View localView = (View)I.get();
+    if ((localView != null) && (!K.isEmpty()))
+    {
+      int i1 = v;
+      float f2;
+      if ((paramInt <= i1) && (i1 != V()))
+      {
+        i1 = v;
+        f2 = i1 - paramInt;
+        f1 = i1 - V();
+      }
+      else
+      {
+        i1 = v;
+        f2 = i1 - paramInt;
+        f1 = H - i1;
+      }
+      float f1 = f2 / f1;
+      paramInt = 0;
+      while (paramInt < K.size())
+      {
+        ((f)K.get(paramInt)).a(localView, f1);
+        paramInt += 1;
+      }
+    }
+  }
+  
+  View U(View paramView)
+  {
+    if (f0.U(paramView)) {
+      return paramView;
+    }
+    if ((paramView instanceof ViewGroup))
+    {
+      paramView = (ViewGroup)paramView;
+      int i1 = 0;
+      int i2 = paramView.getChildCount();
+      while (i1 < i2)
+      {
+        View localView = U(paramView.getChildAt(i1));
+        if (localView != null) {
+          return localView;
+        }
+        i1 += 1;
+      }
+    }
+    return null;
+  }
+  
+  public int V()
+  {
+    if (c) {
+      return s;
+    }
+    return r;
+  }
+  
+  public boolean X()
+  {
+    return m;
+  }
+  
+  public void b0(boolean paramBoolean)
+  {
+    z = paramBoolean;
+  }
+  
+  public void c0(int paramInt)
+  {
+    if (paramInt >= 0)
+    {
+      r = paramInt;
+      return;
+    }
+    throw new IllegalArgumentException("offset must be greater than or equal to 0");
+  }
+  
+  public void d0(boolean paramBoolean)
+  {
+    if (c == paramBoolean) {
+      return;
+    }
+    c = paramBoolean;
+    if (I != null) {
+      M();
+    }
+    int i1;
+    if ((c) && (A == 6)) {
+      i1 = 3;
+    } else {
+      i1 = A;
+    }
+    m0(i1);
+    s0();
+  }
+  
+  public void e0(boolean paramBoolean)
+  {
+    m = paramBoolean;
+  }
+  
+  public void f0(float paramFloat)
+  {
+    if ((paramFloat > 0.0F) && (paramFloat < 1.0F))
+    {
+      u = paramFloat;
+      if (I != null) {
+        N();
+      }
+      return;
+    }
+    throw new IllegalArgumentException("ratio must be a float value between 0 and 1");
+  }
+  
+  public void g(CoordinatorLayout.e paramE)
+  {
+    super.g(paramE);
+    I = null;
+    B = null;
+  }
+  
+  public void g0(boolean paramBoolean)
+  {
+    if (x != paramBoolean)
+    {
+      x = paramBoolean;
+      if ((!paramBoolean) && (A == 5)) {
+        l0(4);
+      }
+      s0();
+    }
+  }
+  
+  public void h0(int paramInt)
+  {
+    i0(paramInt, false);
+  }
+  
+  public final void i0(int paramInt, boolean paramBoolean)
+  {
+    int i1 = 1;
+    if (paramInt == -1)
+    {
+      if (!g)
+      {
+        g = true;
+        paramInt = i1;
+        break label63;
+      }
+    }
+    else {
+      if ((g) || (f != paramInt)) {
+        break label47;
+      }
+    }
+    paramInt = 0;
+    break label63;
+    label47:
+    g = false;
+    f = Math.max(0, paramInt);
+    paramInt = i1;
+    label63:
+    if (paramInt != 0) {
+      v0(paramBoolean);
+    }
+  }
+  
+  public void j()
+  {
+    super.j();
+    I = null;
+    B = null;
+  }
+  
+  public void j0(int paramInt)
+  {
+    b = paramInt;
+  }
+  
+  public boolean k(CoordinatorLayout paramCoordinatorLayout, V paramV, MotionEvent paramMotionEvent)
+  {
+    boolean bool1 = paramV.isShown();
+    boolean bool2 = false;
+    if ((bool1) && (z))
+    {
+      int i1 = paramMotionEvent.getActionMasked();
+      if (i1 == 0) {
+        Z();
+      }
+      if (L == null) {
+        L = VelocityTracker.obtain();
+      }
+      L.addMovement(paramMotionEvent);
+      Object localObject2 = null;
+      if (i1 != 0)
+      {
+        if ((i1 == 1) || (i1 == 3))
+        {
+          O = false;
+          M = -1;
+          if (C)
+          {
+            C = false;
+            return false;
+          }
+        }
+      }
+      else
+      {
+        int i2 = (int)paramMotionEvent.getX();
+        N = ((int)paramMotionEvent.getY());
+        if (A != 2)
+        {
+          localObject1 = J;
+          if (localObject1 != null) {
+            localObject1 = (View)((WeakReference)localObject1).get();
+          } else {
+            localObject1 = null;
+          }
+          if ((localObject1 != null) && (paramCoordinatorLayout.B((View)localObject1, i2, N)))
+          {
+            M = paramMotionEvent.getPointerId(paramMotionEvent.getActionIndex());
+            O = true;
+          }
+        }
+        if ((M == -1) && (!paramCoordinatorLayout.B(paramV, i2, N))) {
+          bool1 = true;
+        } else {
+          bool1 = false;
+        }
+        C = bool1;
+      }
+      if (!C)
+      {
+        paramV = B;
+        if ((paramV != null) && (paramV.G(paramMotionEvent))) {
+          return true;
+        }
+      }
+      Object localObject1 = J;
+      paramV = localObject2;
+      if (localObject1 != null) {
+        paramV = (View)((WeakReference)localObject1).get();
+      }
+      bool1 = bool2;
+      if (i1 == 2)
+      {
+        bool1 = bool2;
+        if (paramV != null)
+        {
+          bool1 = bool2;
+          if (!C)
+          {
+            bool1 = bool2;
+            if (A != 1)
+            {
+              bool1 = bool2;
+              if (!paramCoordinatorLayout.B(paramV, (int)paramMotionEvent.getX(), (int)paramMotionEvent.getY()))
+              {
+                bool1 = bool2;
+                if (B != null)
+                {
+                  bool1 = bool2;
+                  if (Math.abs(N - paramMotionEvent.getY()) > B.u()) {
+                    bool1 = true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return bool1;
+    }
+    C = true;
+    return false;
+  }
+  
+  public void k0(boolean paramBoolean)
+  {
+    y = paramBoolean;
+  }
+  
+  public boolean l(CoordinatorLayout paramCoordinatorLayout, V paramV, int paramInt)
+  {
+    if ((f0.A(paramCoordinatorLayout)) && (!f0.A(paramV))) {
+      paramV.setFitsSystemWindows(true);
+    }
+    if (I == null)
+    {
+      h = paramCoordinatorLayout.getResources().getDimensionPixelSize(d.j);
+      n0(paramV);
+      I = new WeakReference(paramV);
+      if (j)
+      {
+        localG = k;
+        if (localG != null) {
+          f0.t0(paramV, localG);
+        }
+      }
+      g localG = k;
+      if (localG != null)
+      {
+        float f2 = w;
+        float f1 = f2;
+        if (f2 == -1.0F) {
+          f1 = f0.x(paramV);
+        }
+        localG.W(f1);
+        boolean bool;
+        if (A == 3) {
+          bool = true;
+        } else {
+          bool = false;
+        }
+        o = bool;
+        localG = k;
+        if (bool) {
+          f1 = 0.0F;
+        } else {
+          f1 = 1.0F;
+        }
+        localG.Y(f1);
+      }
+      s0();
+      if (f0.B(paramV) == 0) {
+        f0.A0(paramV, 1);
+      }
+    }
+    if (B == null) {
+      B = c.j.a.c.m(paramCoordinatorLayout, R);
+    }
+    int i1 = paramV.getTop();
+    paramCoordinatorLayout.I(paramV, paramInt);
+    G = paramCoordinatorLayout.getWidth();
+    H = paramCoordinatorLayout.getHeight();
+    paramInt = paramV.getHeight();
+    F = paramInt;
+    s = Math.max(0, H - paramInt);
+    N();
+    M();
+    paramInt = A;
+    if (paramInt == 3) {
+      f0.a0(paramV, V());
+    } else if (paramInt == 6) {
+      f0.a0(paramV, t);
+    } else if ((x) && (paramInt == 5)) {
+      f0.a0(paramV, H);
+    } else if (paramInt == 4) {
+      f0.a0(paramV, v);
+    } else if ((paramInt == 1) || (paramInt == 2)) {
+      f0.a0(paramV, i1 - paramV.getTop());
+    }
+    J = new WeakReference(U(paramV));
+    return true;
+  }
+  
+  public void l0(int paramInt)
+  {
+    if (paramInt == A) {
+      return;
+    }
+    if (I == null)
+    {
+      if ((paramInt == 4) || (paramInt == 3) || (paramInt == 6) || ((x) && (paramInt == 5))) {
+        A = paramInt;
+      }
+      return;
+    }
+    p0(paramInt);
+  }
+  
+  void m0(int paramInt)
+  {
+    if (A == paramInt) {
+      return;
+    }
+    A = paramInt;
+    Object localObject = I;
+    if (localObject == null) {
+      return;
+    }
+    localObject = (View)((WeakReference)localObject).get();
+    if (localObject == null) {
+      return;
+    }
+    int i1 = 0;
+    if (paramInt == 3) {
+      u0(true);
+    } else if ((paramInt == 6) || (paramInt == 5) || (paramInt == 4)) {
+      u0(false);
+    }
+    t0(paramInt);
+    while (i1 < K.size())
+    {
+      ((f)K.get(i1)).b((View)localObject, paramInt);
+      i1 += 1;
+    }
+    s0();
+  }
+  
+  public boolean o(CoordinatorLayout paramCoordinatorLayout, V paramV, View paramView, float paramFloat1, float paramFloat2)
+  {
+    WeakReference localWeakReference = J;
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (localWeakReference != null)
+    {
+      bool1 = bool2;
+      if (paramView == localWeakReference.get()) {
+        if (A == 3)
+        {
+          bool1 = bool2;
+          if (!super.o(paramCoordinatorLayout, paramV, paramView, paramFloat1, paramFloat2)) {}
+        }
+        else
+        {
+          bool1 = true;
+        }
+      }
+    }
+    return bool1;
+  }
+  
+  void o0(View paramView, int paramInt)
+  {
+    int i1;
+    if (paramInt == 4)
+    {
+      i1 = v;
+    }
+    else if (paramInt == 6)
+    {
+      int i2 = t;
+      if (c)
+      {
+        i1 = s;
+        if (i2 <= i1)
+        {
+          paramInt = 3;
+          break label84;
+        }
+      }
+      i1 = i2;
+    }
+    else if (paramInt == 3)
+    {
+      i1 = V();
+    }
+    else
+    {
+      if ((!x) || (paramInt != 5)) {
+        break label93;
+      }
+      i1 = H;
+    }
+    label84:
+    r0(paramView, paramInt, i1, false);
+    return;
+    label93:
+    paramView = new StringBuilder();
+    paramView.append("Illegal state argument: ");
+    paramView.append(paramInt);
+    throw new IllegalArgumentException(paramView.toString());
+  }
+  
+  public void q(CoordinatorLayout paramCoordinatorLayout, V paramV, View paramView, int paramInt1, int paramInt2, int[] paramArrayOfInt, int paramInt3)
+  {
+    if (paramInt3 == 1) {
+      return;
+    }
+    paramCoordinatorLayout = J;
+    if (paramCoordinatorLayout != null) {
+      paramCoordinatorLayout = (View)paramCoordinatorLayout.get();
+    } else {
+      paramCoordinatorLayout = null;
+    }
+    if (paramView != paramCoordinatorLayout) {
+      return;
+    }
+    paramInt1 = paramV.getTop();
+    paramInt3 = paramInt1 - paramInt2;
+    if (paramInt2 > 0)
+    {
+      if (paramInt3 < V())
+      {
+        paramArrayOfInt[1] = (paramInt1 - V());
+        f0.a0(paramV, -paramArrayOfInt[1]);
+        m0(3);
+      }
+      else
+      {
+        if (!z) {
+          return;
+        }
+        paramArrayOfInt[1] = paramInt2;
+        f0.a0(paramV, -paramInt2);
+        m0(1);
+      }
+    }
+    else if ((paramInt2 < 0) && (!paramView.canScrollVertically(-1)))
+    {
+      int i1 = v;
+      if ((paramInt3 > i1) && (!x))
+      {
+        paramArrayOfInt[1] = (paramInt1 - i1);
+        f0.a0(paramV, -paramArrayOfInt[1]);
+        m0(4);
+      }
+      else
+      {
+        if (!z) {
+          return;
+        }
+        paramArrayOfInt[1] = paramInt2;
+        f0.a0(paramV, -paramInt2);
+        m0(1);
+      }
+    }
+    T(paramV.getTop());
+    D = paramInt2;
+    E = true;
+  }
+  
+  boolean q0(View paramView, float paramFloat)
+  {
+    if (y) {
+      return true;
+    }
+    if (paramView.getTop() < v) {
+      return false;
+    }
+    int i1 = O();
+    return Math.abs(paramView.getTop() + paramFloat * 0.1F - v) / i1 > 0.5F;
+  }
+  
+  void r0(View paramView, int paramInt1, int paramInt2, boolean paramBoolean)
+  {
+    Object localObject = B;
+    if ((localObject != null) && (paramBoolean ? ((c.j.a.c)localObject).F(paramView.getLeft(), paramInt2) : ((c.j.a.c)localObject).H(paramView, paramView.getLeft(), paramInt2))) {
+      paramInt2 = 1;
+    } else {
+      paramInt2 = 0;
+    }
+    if (paramInt2 != 0)
+    {
+      m0(2);
+      t0(paramInt1);
+      if (p == null) {
+        p = new g(paramView, paramInt1);
+      }
+      if (!g.a(p))
+      {
+        localObject = p;
+        d = paramInt1;
+        f0.h0(paramView, (Runnable)localObject);
+        g.b(p, true);
+        return;
+      }
+      p.d = paramInt1;
+      return;
+    }
+    m0(paramInt1);
+  }
+  
+  public void t(CoordinatorLayout paramCoordinatorLayout, V paramV, View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int[] paramArrayOfInt) {}
+  
+  public void x(CoordinatorLayout paramCoordinatorLayout, V paramV, Parcelable paramParcelable)
+  {
+    paramParcelable = (SavedState)paramParcelable;
+    super.x(paramCoordinatorLayout, paramV, paramParcelable.a());
+    a0(paramParcelable);
+    int i1 = d;
+    if ((i1 != 1) && (i1 != 2))
+    {
+      A = i1;
+      return;
+    }
+    A = 4;
+  }
+  
+  public Parcelable y(CoordinatorLayout paramCoordinatorLayout, V paramV)
+  {
+    return new SavedState(super.y(paramCoordinatorLayout, paramV), this);
+  }
+  
+  protected static class SavedState
+    extends AbsSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    final int d;
+    int e;
+    boolean f;
+    boolean g;
+    boolean h;
+    
+    public SavedState(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      super(paramClassLoader);
+      d = paramParcel.readInt();
+      e = paramParcel.readInt();
+      int i = paramParcel.readInt();
+      boolean bool2 = false;
+      if (i == 1) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      f = bool1;
+      if (paramParcel.readInt() == 1) {
+        bool1 = true;
+      } else {
+        bool1 = false;
+      }
+      g = bool1;
+      boolean bool1 = bool2;
+      if (paramParcel.readInt() == 1) {
+        bool1 = true;
+      }
+      h = bool1;
+    }
+    
+    public SavedState(Parcelable paramParcelable, BottomSheetBehavior<?> paramBottomSheetBehavior)
+    {
+      super();
+      d = A;
+      e = BottomSheetBehavior.J(paramBottomSheetBehavior);
+      f = BottomSheetBehavior.I(paramBottomSheetBehavior);
+      g = x;
+      h = BottomSheetBehavior.K(paramBottomSheetBehavior);
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    static final class a
+      implements Parcelable.ClassLoaderCreator<BottomSheetBehavior.SavedState>
+    {
+      a() {}
+      
+      public BottomSheetBehavior.SavedState a(Parcel paramParcel)
+      {
+        return new BottomSheetBehavior.SavedState(paramParcel, null);
+      }
+      
+      public BottomSheetBehavior.SavedState b(Parcel paramParcel, ClassLoader paramClassLoader)
+      {
+        return new BottomSheetBehavior.SavedState(paramParcel, paramClassLoader);
+      }
+      
+      public BottomSheetBehavior.SavedState[] c(int paramInt)
+      {
+        return new BottomSheetBehavior.SavedState[paramInt];
+      }
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(View paramView, int paramInt) {}
+    
+    public void run()
+    {
+      o0(localView, paramInt);
+    }
+  }
+  
+  class b
+    implements ValueAnimator.AnimatorUpdateListener
+  {
+    b() {}
+    
+    public void onAnimationUpdate(ValueAnimator paramValueAnimator)
+    {
+      float f = ((Float)paramValueAnimator.getAnimatedValue()).floatValue();
+      if (BottomSheetBehavior.E(BottomSheetBehavior.this) != null) {
+        BottomSheetBehavior.E(BottomSheetBehavior.this).Y(f);
+      }
+    }
+  }
+  
+  class c
+    implements j.c
+  {
+    c() {}
+    
+    public n0 a(View paramView, n0 paramN0, j.d paramD)
+    {
+      BottomSheetBehavior.F(BottomSheetBehavior.this, ge);
+      BottomSheetBehavior.G(BottomSheetBehavior.this, false);
+      return paramN0;
+    }
+  }
+  
+  class d
+    extends c.c
+  {
+    d() {}
+    
+    private boolean n(View paramView)
+    {
+      int i = paramView.getTop();
+      paramView = BottomSheetBehavior.this;
+      return i > (H + paramView.V()) / 2;
+    }
+    
+    public int a(View paramView, int paramInt1, int paramInt2)
+    {
+      return paramView.getLeft();
+    }
+    
+    public int b(View paramView, int paramInt1, int paramInt2)
+    {
+      int i = V();
+      paramView = BottomSheetBehavior.this;
+      if (x) {
+        paramInt2 = H;
+      } else {
+        paramInt2 = v;
+      }
+      return a.b(paramInt1, i, paramInt2);
+    }
+    
+    public int e(View paramView)
+    {
+      paramView = BottomSheetBehavior.this;
+      if (x) {
+        return H;
+      }
+      return v;
+    }
+    
+    public void j(int paramInt)
+    {
+      if ((paramInt == 1) && (BottomSheetBehavior.H(BottomSheetBehavior.this))) {
+        m0(1);
+      }
+    }
+    
+    public void k(View paramView, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      T(paramInt2);
+    }
+    
+    public void l(View paramView, float paramFloat1, float paramFloat2)
+    {
+      int j = 4;
+      if (paramFloat2 < 0.0F) {
+        if (BottomSheetBehavior.I(BottomSheetBehavior.this)) {
+          i = s;
+        }
+      }
+      BottomSheetBehavior localBottomSheetBehavior;
+      for (;;)
+      {
+        j = 3;
+        break label498;
+        j = paramView.getTop();
+        localBottomSheetBehavior = BottomSheetBehavior.this;
+        i = t;
+        if (j > i) {
+          break label305;
+        }
+        i = r;
+        continue;
+        localBottomSheetBehavior = BottomSheetBehavior.this;
+        if ((!x) || (!localBottomSheetBehavior.q0(paramView, paramFloat2))) {
+          break label218;
+        }
+        if (((Math.abs(paramFloat1) < Math.abs(paramFloat2)) && (paramFloat2 > 500.0F)) || (n(paramView)))
+        {
+          i = H;
+          j = 5;
+          break label498;
+        }
+        if (BottomSheetBehavior.I(BottomSheetBehavior.this))
+        {
+          i = s;
+        }
+        else
+        {
+          if (Math.abs(paramView.getTop() - r) >= Math.abs(paramView.getTop() - t)) {
+            break;
+          }
+          i = r;
+        }
+      }
+      int i = t;
+      break label305;
+      label218:
+      if ((paramFloat2 != 0.0F) && (Math.abs(paramFloat1) <= Math.abs(paramFloat2)))
+      {
+        if (BottomSheetBehavior.I(BottomSheetBehavior.this))
+        {
+          i = v;
+          break label498;
+        }
+        i = paramView.getTop();
+        if (Math.abs(i - t) < Math.abs(i - v)) {
+          i = t;
+        }
+      }
+      for (;;)
+      {
+        label305:
+        j = 6;
+        break label498;
+        i = v;
+        break label498;
+        i = paramView.getTop();
+        if (BottomSheetBehavior.I(BottomSheetBehavior.this))
+        {
+          if (Math.abs(i - s) < Math.abs(i - v))
+          {
+            i = s;
+            break;
+          }
+          i = v;
+          break label498;
+        }
+        localBottomSheetBehavior = BottomSheetBehavior.this;
+        int k = t;
+        if (i < k)
+        {
+          if (i < Math.abs(i - v))
+          {
+            i = r;
+            break;
+          }
+          i = t;
+          continue;
+        }
+        if (Math.abs(i - k) >= Math.abs(i - v)) {
+          break label489;
+        }
+        i = t;
+      }
+      label489:
+      i = v;
+      label498:
+      r0(paramView, j, i, true);
+    }
+    
+    public boolean m(View paramView, int paramInt)
+    {
+      Object localObject = BottomSheetBehavior.this;
+      int i = A;
+      if (i == 1) {
+        return false;
+      }
+      if (O) {
+        return false;
+      }
+      if ((i == 3) && (M == paramInt))
+      {
+        localObject = J;
+        if (localObject != null) {
+          localObject = (View)((WeakReference)localObject).get();
+        } else {
+          localObject = null;
+        }
+        if ((localObject != null) && (((View)localObject).canScrollVertically(-1))) {
+          return false;
+        }
+      }
+      localObject = I;
+      return (localObject != null) && (((WeakReference)localObject).get() == paramView);
+    }
+  }
+  
+  class e
+    implements f
+  {
+    e(int paramInt) {}
+    
+    public boolean a(View paramView, f.a paramA)
+    {
+      l0(paramInt);
+      return true;
+    }
+  }
+  
+  public static abstract class f
+  {
+    public f() {}
+    
+    public abstract void a(View paramView, float paramFloat);
+    
+    public abstract void b(View paramView, int paramInt);
+  }
+  
+  private class g
+    implements Runnable
+  {
+    private final View b;
+    private boolean c;
+    int d;
+    
+    g(View paramView, int paramInt)
+    {
+      b = paramView;
+      d = paramInt;
+    }
+    
+    public void run()
+    {
+      c.j.a.c localC = B;
+      if ((localC != null) && (localC.k(true))) {
+        f0.h0(b, this);
+      } else {
+        m0(d);
+      }
+      c = false;
+    }
+  }
+}

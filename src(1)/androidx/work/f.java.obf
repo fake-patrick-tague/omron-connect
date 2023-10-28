@@ -1,0 +1,185 @@
+package androidx.work;
+
+import android.os.Build.VERSION;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class a
+{
+  final Executor a;
+  final Executor b;
+  final t c;
+  final i d;
+  final p e;
+  final g f;
+  final String g;
+  final int h;
+  final int i;
+  final int j;
+  final int k;
+  private final boolean l;
+  
+  a(b paramB)
+  {
+    Object localObject = a;
+    if (localObject == null) {
+      a = a(false);
+    } else {
+      a = ((Executor)localObject);
+    }
+    localObject = d;
+    if (localObject == null)
+    {
+      l = true;
+      b = a(true);
+    }
+    else
+    {
+      l = false;
+      b = ((Executor)localObject);
+    }
+    localObject = b;
+    if (localObject == null) {
+      c = t.c();
+    } else {
+      c = ((t)localObject);
+    }
+    localObject = c;
+    if (localObject == null) {
+      d = i.c();
+    } else {
+      d = ((i)localObject);
+    }
+    localObject = e;
+    if (localObject == null) {
+      e = new androidx.work.impl.a();
+    } else {
+      e = ((p)localObject);
+    }
+    h = h;
+    i = i;
+    j = j;
+    k = k;
+    f = f;
+    g = g;
+  }
+  
+  private Executor a(boolean paramBoolean)
+  {
+    return Executors.newFixedThreadPool(Math.max(2, Math.min(Runtime.getRuntime().availableProcessors() - 1, 4)), b(paramBoolean));
+  }
+  
+  private ThreadFactory b(final boolean paramBoolean)
+  {
+    return new a(paramBoolean);
+  }
+  
+  public String c()
+  {
+    return g;
+  }
+  
+  public g d()
+  {
+    return f;
+  }
+  
+  public Executor e()
+  {
+    return a;
+  }
+  
+  public i f()
+  {
+    return d;
+  }
+  
+  public int g()
+  {
+    return j;
+  }
+  
+  public int h()
+  {
+    if (Build.VERSION.SDK_INT == 23) {
+      return k / 2;
+    }
+    return k;
+  }
+  
+  public int i()
+  {
+    return i;
+  }
+  
+  public int j()
+  {
+    return h;
+  }
+  
+  public p k()
+  {
+    return e;
+  }
+  
+  public Executor l()
+  {
+    return b;
+  }
+  
+  public t m()
+  {
+    return c;
+  }
+  
+  class a
+    implements ThreadFactory
+  {
+    private final AtomicInteger b = new AtomicInteger(0);
+    
+    a(boolean paramBoolean) {}
+    
+    public Thread newThread(Runnable paramRunnable)
+    {
+      String str;
+      if (paramBoolean) {
+        str = "WM.task-";
+      } else {
+        str = "androidx.work-";
+      }
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append(str);
+      localStringBuilder.append(b.incrementAndGet());
+      return new Thread(paramRunnable, localStringBuilder.toString());
+    }
+  }
+  
+  public static final class b
+  {
+    Executor a;
+    t b;
+    i c;
+    Executor d;
+    p e;
+    g f;
+    String g;
+    int h = 4;
+    int i = 0;
+    int j = Integer.MAX_VALUE;
+    int k = 20;
+    
+    public b() {}
+    
+    public a a()
+    {
+      return new a(this);
+    }
+  }
+  
+  public static abstract interface c
+  {
+    public abstract a a();
+  }
+}

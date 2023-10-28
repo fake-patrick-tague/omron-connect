@@ -1,0 +1,51 @@
+package com.alivecor.kardia_ai;
+
+public class ClassifierResult
+{
+  public boolean afib;
+  public AlgorithmDetermination algorithmDetermination;
+  public String error;
+  public int heartRate;
+  public boolean inverted;
+  public boolean isConvex;
+  public StatusCode status;
+  public String version;
+  
+  public ClassifierResult(int paramInt1, int paramInt2, int paramInt3, boolean paramBoolean1, String paramString1, String paramString2, boolean paramBoolean2, boolean paramBoolean3)
+  {
+    status = StatusCode.fromInt(paramInt1);
+    algorithmDetermination = AlgorithmDetermination.fromInt(paramInt2);
+    heartRate = paramInt3;
+    inverted = paramBoolean1;
+    error = paramString1;
+    version = paramString2;
+    afib = paramBoolean2;
+    isConvex = paramBoolean3;
+  }
+  
+  public static String descriptionForAlgorithmDetermination(AlgorithmDetermination paramAlgorithmDetermination)
+  {
+    return nativeDescriptionForAlgorithmDetermination(algorithmDetermination);
+  }
+  
+  public static String labelForAlgorithmDetermination(AlgorithmDetermination paramAlgorithmDetermination)
+  {
+    return nativeLabelForAlgorithmDetermination(algorithmDetermination);
+  }
+  
+  public static native String nativeDescriptionForAlgorithmDetermination(int paramInt);
+  
+  public static native String nativeLabelForAlgorithmDetermination(int paramInt);
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Determination: ");
+    localStringBuilder.append(algorithmDetermination);
+    localStringBuilder.append(", heartRate: ");
+    localStringBuilder.append(heartRate);
+    localStringBuilder.append(", algorithm version: ");
+    localStringBuilder.append(version);
+    return localStringBuilder.toString();
+  }
+}

@@ -1,0 +1,111 @@
+package com.google.android.datatransport.runtime.backends;
+
+import com.google.android.datatransport.h.j;
+import java.util.Arrays;
+import java.util.Objects;
+
+final class a
+  extends f
+{
+  private final Iterable<j> a;
+  private final byte[] b;
+  
+  private a(Iterable<j> paramIterable, byte[] paramArrayOfByte)
+  {
+    a = paramIterable;
+    b = paramArrayOfByte;
+  }
+  
+  public Iterable<j> b()
+  {
+    return a;
+  }
+  
+  public byte[] c()
+  {
+    return b;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if ((paramObject instanceof f))
+    {
+      paramObject = (f)paramObject;
+      if (a.equals(paramObject.b()))
+      {
+        byte[] arrayOfByte = b;
+        if ((paramObject instanceof a)) {
+          paramObject = b;
+        } else {
+          paramObject = paramObject.c();
+        }
+        if (Arrays.equals(arrayOfByte, paramObject)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return false;
+  }
+  
+  public int hashCode()
+  {
+    return (a.hashCode() ^ 0xF4243) * 1000003 ^ Arrays.hashCode(b);
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("BackendRequest{events=");
+    localStringBuilder.append(a);
+    localStringBuilder.append(", extras=");
+    localStringBuilder.append(Arrays.toString(b));
+    localStringBuilder.append("}");
+    return localStringBuilder.toString();
+  }
+  
+  static final class b
+    extends f.a
+  {
+    private Iterable<j> a;
+    private byte[] b;
+    
+    b() {}
+    
+    public f a()
+    {
+      Object localObject2 = a;
+      Object localObject1 = "";
+      if (localObject2 == null)
+      {
+        localObject1 = new StringBuilder();
+        ((StringBuilder)localObject1).append("");
+        ((StringBuilder)localObject1).append(" events");
+        localObject1 = ((StringBuilder)localObject1).toString();
+      }
+      if (((String)localObject1).isEmpty()) {
+        return new a(a, b, null);
+      }
+      localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append("Missing required properties:");
+      ((StringBuilder)localObject2).append((String)localObject1);
+      throw new IllegalStateException(((StringBuilder)localObject2).toString());
+    }
+    
+    public f.a b(Iterable<j> paramIterable)
+    {
+      Objects.requireNonNull(paramIterable, "Null events");
+      a = paramIterable;
+      return this;
+    }
+    
+    public f.a c(byte[] paramArrayOfByte)
+    {
+      b = paramArrayOfByte;
+      return this;
+    }
+  }
+}

@@ -1,0 +1,145 @@
+package com.google.android.gms.auth.api.signin;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.text.TextUtils;
+import androidx.annotation.RecentlyNonNull;
+import androidx.annotation.RecentlyNullable;
+import androidx.fragment.app.Fragment;
+import com.google.android.gms.auth.api.signin.internal.zbm;
+import com.google.android.gms.auth.api.signin.internal.zbn;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.ApiExceptionUtil;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public final class GoogleSignIn
+{
+  private GoogleSignIn() {}
+  
+  public static GoogleSignInAccount getAccountForExtension(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInOptionsExtension paramGoogleSignInOptionsExtension)
+  {
+    Preconditions.checkNotNull(paramContext, "please provide a valid Context object");
+    Preconditions.checkNotNull(paramGoogleSignInOptionsExtension, "please provide valid GoogleSignInOptionsExtension");
+    GoogleSignInAccount localGoogleSignInAccount = getLastSignedInAccount(paramContext);
+    paramContext = localGoogleSignInAccount;
+    if (localGoogleSignInAccount == null) {
+      paramContext = GoogleSignInAccount.createDefault();
+    }
+    return paramContext.requestExtraScopes(zbb(paramGoogleSignInOptionsExtension.getImpliedScopes()));
+  }
+  
+  public static GoogleSignInAccount getAccountForScopes(@RecentlyNonNull Context paramContext, @RecentlyNonNull Scope paramScope, @RecentlyNonNull Scope... paramVarArgs)
+  {
+    Preconditions.checkNotNull(paramContext, "please provide a valid Context object");
+    Preconditions.checkNotNull(paramScope, "please provide at least one valid scope");
+    GoogleSignInAccount localGoogleSignInAccount = getLastSignedInAccount(paramContext);
+    paramContext = localGoogleSignInAccount;
+    if (localGoogleSignInAccount == null) {
+      paramContext = GoogleSignInAccount.createDefault();
+    }
+    paramContext.requestExtraScopes(new Scope[] { paramScope });
+    paramContext.requestExtraScopes(paramVarArgs);
+    return paramContext;
+  }
+  
+  @RecentlyNonNull
+  public static GoogleSignInClient getClient(@RecentlyNonNull Activity paramActivity, @RecentlyNonNull GoogleSignInOptions paramGoogleSignInOptions)
+  {
+    return new GoogleSignInClient(paramActivity, (GoogleSignInOptions)Preconditions.checkNotNull(paramGoogleSignInOptions));
+  }
+  
+  @RecentlyNonNull
+  public static GoogleSignInClient getClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull GoogleSignInOptions paramGoogleSignInOptions)
+  {
+    return new GoogleSignInClient(paramContext, (GoogleSignInOptions)Preconditions.checkNotNull(paramGoogleSignInOptions));
+  }
+  
+  @RecentlyNullable
+  public static GoogleSignInAccount getLastSignedInAccount(@RecentlyNonNull Context paramContext)
+  {
+    return zbn.zbc(paramContext).zba();
+  }
+  
+  @RecentlyNonNull
+  public static Task<GoogleSignInAccount> getSignedInAccountFromIntent(Intent paramIntent)
+  {
+    paramIntent = zbm.zbd(paramIntent);
+    GoogleSignInAccount localGoogleSignInAccount = paramIntent.getSignInAccount();
+    if ((paramIntent.getStatus().isSuccess()) && (localGoogleSignInAccount != null)) {
+      return Tasks.forResult(localGoogleSignInAccount);
+    }
+    return Tasks.forException(ApiExceptionUtil.fromStatus(paramIntent.getStatus()));
+  }
+  
+  public static boolean hasPermissions(GoogleSignInAccount paramGoogleSignInAccount, @RecentlyNonNull GoogleSignInOptionsExtension paramGoogleSignInOptionsExtension)
+  {
+    Preconditions.checkNotNull(paramGoogleSignInOptionsExtension, "Please provide a non-null GoogleSignInOptionsExtension");
+    return hasPermissions(paramGoogleSignInAccount, zbb(paramGoogleSignInOptionsExtension.getImpliedScopes()));
+  }
+  
+  public static boolean hasPermissions(GoogleSignInAccount paramGoogleSignInAccount, @RecentlyNonNull Scope... paramVarArgs)
+  {
+    if (paramGoogleSignInAccount == null) {
+      return false;
+    }
+    HashSet localHashSet = new HashSet();
+    Collections.addAll(localHashSet, paramVarArgs);
+    return paramGoogleSignInAccount.getGrantedScopes().containsAll(localHashSet);
+  }
+  
+  public static void requestPermissions(@RecentlyNonNull Activity paramActivity, int paramInt, GoogleSignInAccount paramGoogleSignInAccount, @RecentlyNonNull GoogleSignInOptionsExtension paramGoogleSignInOptionsExtension)
+  {
+    Preconditions.checkNotNull(paramActivity, "Please provide a non-null Activity");
+    Preconditions.checkNotNull(paramGoogleSignInOptionsExtension, "Please provide a non-null GoogleSignInOptionsExtension");
+    requestPermissions(paramActivity, paramInt, paramGoogleSignInAccount, zbb(paramGoogleSignInOptionsExtension.getImpliedScopes()));
+  }
+  
+  public static void requestPermissions(@RecentlyNonNull Activity paramActivity, int paramInt, GoogleSignInAccount paramGoogleSignInAccount, @RecentlyNonNull Scope... paramVarArgs)
+  {
+    Preconditions.checkNotNull(paramActivity, "Please provide a non-null Activity");
+    Preconditions.checkNotNull(paramVarArgs, "Please provide at least one scope");
+    paramActivity.startActivityForResult(zba(paramActivity, paramGoogleSignInAccount, paramVarArgs), paramInt);
+  }
+  
+  public static void requestPermissions(@RecentlyNonNull Fragment paramFragment, int paramInt, GoogleSignInAccount paramGoogleSignInAccount, @RecentlyNonNull GoogleSignInOptionsExtension paramGoogleSignInOptionsExtension)
+  {
+    Preconditions.checkNotNull(paramFragment, "Please provide a non-null Fragment");
+    Preconditions.checkNotNull(paramGoogleSignInOptionsExtension, "Please provide a non-null GoogleSignInOptionsExtension");
+    requestPermissions(paramFragment, paramInt, paramGoogleSignInAccount, zbb(paramGoogleSignInOptionsExtension.getImpliedScopes()));
+  }
+  
+  public static void requestPermissions(@RecentlyNonNull Fragment paramFragment, int paramInt, GoogleSignInAccount paramGoogleSignInAccount, @RecentlyNonNull Scope... paramVarArgs)
+  {
+    Preconditions.checkNotNull(paramFragment, "Please provide a non-null Fragment");
+    Preconditions.checkNotNull(paramVarArgs, "Please provide at least one scope");
+    paramFragment.startActivityForResult(zba(paramFragment.getActivity(), paramGoogleSignInAccount, paramVarArgs), paramInt);
+  }
+  
+  private static Intent zba(Activity paramActivity, GoogleSignInAccount paramGoogleSignInAccount, Scope... paramVarArgs)
+  {
+    GoogleSignInOptions.Builder localBuilder = new GoogleSignInOptions.Builder();
+    if (paramVarArgs.length > 0) {
+      localBuilder.requestScopes(paramVarArgs[0], paramVarArgs);
+    }
+    if ((paramGoogleSignInAccount != null) && (!TextUtils.isEmpty(paramGoogleSignInAccount.getEmail()))) {
+      localBuilder.setAccountName((String)Preconditions.checkNotNull(paramGoogleSignInAccount.getEmail()));
+    }
+    return new GoogleSignInClient(paramActivity, localBuilder.build()).getSignInIntent();
+  }
+  
+  private static Scope[] zbb(List<Scope> paramList)
+  {
+    if (paramList == null) {
+      return new Scope[0];
+    }
+    return (Scope[])paramList.toArray(new Scope[paramList.size()]);
+  }
+}

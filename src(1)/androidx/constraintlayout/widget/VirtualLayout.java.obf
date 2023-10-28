@@ -1,0 +1,86 @@
+package androidx.constraintlayout.widget;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.view.View;
+import androidx.constraintlayout.solver.widgets.i;
+
+public abstract class VirtualLayout
+  extends ConstraintHelper
+{
+  private boolean k;
+  private boolean l;
+  
+  protected void h(AttributeSet paramAttributeSet)
+  {
+    super.h(paramAttributeSet);
+    if (paramAttributeSet != null)
+    {
+      paramAttributeSet = getContext().obtainStyledAttributes(paramAttributeSet, e.a1);
+      int j = paramAttributeSet.getIndexCount();
+      int i = 0;
+      while (i < j)
+      {
+        int m = paramAttributeSet.getIndex(i);
+        if (m == e.c1) {
+          k = true;
+        } else if (m == e.h1) {
+          l = true;
+        }
+        i += 1;
+      }
+      paramAttributeSet.recycle();
+    }
+  }
+  
+  public void o(i paramI, int paramInt1, int paramInt2) {}
+  
+  public void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    if ((k) || (l))
+    {
+      Object localObject = getParent();
+      if ((localObject != null) && ((localObject instanceof ConstraintLayout)))
+      {
+        localObject = (ConstraintLayout)localObject;
+        int j = getVisibility();
+        float f;
+        if (Build.VERSION.SDK_INT >= 21) {
+          f = getElevation();
+        } else {
+          f = 0.0F;
+        }
+        int i = 0;
+        while (i < c)
+        {
+          View localView = ((ConstraintLayout)localObject).i(b[i]);
+          if (localView != null)
+          {
+            if (k) {
+              localView.setVisibility(j);
+            }
+            if ((l) && (f > 0.0F) && (Build.VERSION.SDK_INT >= 21)) {
+              localView.setTranslationZ(localView.getTranslationZ() + f);
+            }
+          }
+          i += 1;
+        }
+      }
+    }
+  }
+  
+  public void setElevation(float paramFloat)
+  {
+    super.setElevation(paramFloat);
+    d();
+  }
+  
+  public void setVisibility(int paramInt)
+  {
+    super.setVisibility(paramInt);
+    d();
+  }
+}

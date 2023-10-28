@@ -1,0 +1,261 @@
+package com.braze.ui;
+
+import android.content.Context;
+import android.os.BaseBundle;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import androidx.fragment.package_11.Fragment;
+import androidx.fragment.package_11.ListFragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.j;
+import com.braze.Braze;
+import com.braze.enums.CardCategory;
+import com.braze.events.FeedUpdatedEvent;
+import com.braze.events.IEventSubscriber;
+import com.braze.support.BrazeLogger;
+import com.braze.ui.adapters.BrazeListAdapter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
+import v7.v7.package_13.GestureDetectorCompat;
+
+public class BrazeFeedFragment
+  extends ListFragment
+  implements SwipeRefreshLayout.j
+{
+  private static final String name = BrazeLogger.getBrazeLogTag(BrazeFeedFragment.class);
+  private BrazeListAdapter mAdapter;
+  private EnumSet<CardCategory> mCategories;
+  int mCurrentCardIndexAtBottomOfScreen = 0;
+  private LinearLayout mEmptyFeedLayout;
+  private RelativeLayout mFeedRootLayout;
+  private SwipeRefreshLayout mFeedSwipeLayout;
+  private IEventSubscriber<FeedUpdatedEvent> mFeedUpdatedSubscriber;
+  private GestureDetectorCompat mGestureDetector;
+  private ProgressBar mLoadingSpinner;
+  private final Handler mMainThreadLooper = new Handler(Looper.getMainLooper());
+  private LinearLayout mNetworkErrorLayout;
+  int mPreviousVisibleHeadCardIndex = 0;
+  private final Runnable mShowNetworkError = new Runnable()
+  {
+    public void run()
+    {
+      if (mLoadingSpinner != null) {
+        mLoadingSpinner.setVisibility(8);
+      }
+      if (mNetworkErrorLayout != null) {
+        mNetworkErrorLayout.setVisibility(0);
+      }
+    }
+  };
+  boolean mSkipCardImpressionsReset = false;
+  private boolean mSortEnabled = false;
+  private View mTransparentFullBoundsContainerView;
+  
+  public BrazeFeedFragment() {}
+  
+  private void setOnScreenCardsToRead()
+  {
+    mAdapter.batchSetCardsToRead(mPreviousVisibleHeadCardIndex, mCurrentCardIndexAtBottomOfScreen);
+  }
+  
+  void loadFragmentStateFromSavedInstanceState(Bundle paramBundle)
+  {
+    if (paramBundle == null) {
+      return;
+    }
+    if (mCategories == null) {
+      mCategories = CardCategory.getAllCategories();
+    }
+    mPreviousVisibleHeadCardIndex = paramBundle.getInt("PREVIOUS_VISIBLE_HEAD_CARD_INDEX", 0);
+    mCurrentCardIndexAtBottomOfScreen = paramBundle.getInt("CURRENT_CARD_INDEX_AT_BOTTOM_OF_SCREEN", 0);
+    mSkipCardImpressionsReset = paramBundle.getBoolean("SKIP_CARD_IMPRESSIONS_RESET", false);
+    paramBundle = paramBundle.getStringArrayList("CARD_CATEGORY");
+    if (paramBundle != null)
+    {
+      mCategories.clear();
+      paramBundle = paramBundle.iterator();
+      while (paramBundle.hasNext())
+      {
+        String str = (String)paramBundle.next();
+        mCategories.add(CardCategory.valueOf(str));
+      }
+    }
+  }
+  
+  public void onAttach(Context paramContext)
+  {
+    super.onAttach(paramContext);
+    if (mAdapter == null)
+    {
+      mAdapter = new BrazeListAdapter(paramContext, R.id.id, new ArrayList());
+      mCategories = CardCategory.getAllCategories();
+    }
+    mGestureDetector = new GestureDetectorCompat(paramContext, new FeedGestureListener());
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramLayoutInflater = paramLayoutInflater.inflate(R.layout.com_braze_feed, paramViewGroup, false);
+    mNetworkErrorLayout = ((LinearLayout)paramLayoutInflater.findViewById(R.id.com_braze_feed_network_error));
+    mLoadingSpinner = ((ProgressBar)paramLayoutInflater.findViewById(R.id.com_braze_feed_loading_spinner));
+    mEmptyFeedLayout = ((LinearLayout)paramLayoutInflater.findViewById(R.id.com_braze_feed_empty_feed));
+    mFeedRootLayout = ((RelativeLayout)paramLayoutInflater.findViewById(R.id.com_braze_feed_root));
+    paramViewGroup = (SwipeRefreshLayout)paramLayoutInflater.findViewById(R.id.braze_feed_swipe_container);
+    mFeedSwipeLayout = paramViewGroup;
+    paramViewGroup.setOnRefreshListener(this);
+    mFeedSwipeLayout.setEnabled(false);
+    mFeedSwipeLayout.setColorSchemeResources(new int[] { R.color.com_braze_newsfeed_swipe_refresh_color_1, R.color.com_braze_newsfeed_swipe_refresh_color_2, R.color.com_braze_newsfeed_swipe_refresh_color_3, R.color.com_braze_newsfeed_swipe_refresh_color_4 });
+    mTransparentFullBoundsContainerView = paramLayoutInflater.findViewById(R.id.com_braze_feed_transparent_full_bounds_container_view);
+    return paramLayoutInflater;
+  }
+  
+  public void onDestroyView()
+  {
+    super.onDestroyView();
+    Braze.getInstance(getContext()).removeSingleSubscription(mFeedUpdatedSubscriber, FeedUpdatedEvent.class);
+    setOnScreenCardsToRead();
+  }
+  
+  public void onDetach()
+  {
+    super.onDetach();
+    setListAdapter(null);
+  }
+  
+  public void onPause()
+  {
+    super.onPause();
+    setOnScreenCardsToRead();
+  }
+  
+  public void onRefresh()
+  {
+    Braze.getInstance(getContext()).requestFeedRefresh();
+    mMainThreadLooper.postDelayed(new Action(this), 2500L);
+  }
+  
+  public void onResume()
+  {
+    super.onResume();
+    Braze.getInstance(getContext()).logFeedDisplayed();
+  }
+  
+  public void onSaveInstanceState(Bundle paramBundle)
+  {
+    paramBundle.putInt("PREVIOUS_VISIBLE_HEAD_CARD_INDEX", mPreviousVisibleHeadCardIndex);
+    paramBundle.putInt("CURRENT_CARD_INDEX_AT_BOTTOM_OF_SCREEN", mCurrentCardIndexAtBottomOfScreen);
+    paramBundle.putBoolean("SKIP_CARD_IMPRESSIONS_RESET", mSkipCardImpressionsReset);
+    if (mCategories == null) {
+      mCategories = CardCategory.getAllCategories();
+    }
+    ArrayList localArrayList = new ArrayList(mCategories.size());
+    Iterator localIterator = mCategories.iterator();
+    while (localIterator.hasNext()) {
+      localArrayList.add(((CardCategory)localIterator.next()).name());
+    }
+    paramBundle.putStringArrayList("CARD_CATEGORY", localArrayList);
+    super.onSaveInstanceState(paramBundle);
+    if (isVisible()) {
+      mSkipCardImpressionsReset = true;
+    }
+  }
+  
+  public void onViewCreated(View paramView, Bundle paramBundle)
+  {
+    super.onViewCreated(paramView, paramBundle);
+    loadFragmentStateFromSavedInstanceState(paramBundle);
+    if (mSkipCardImpressionsReset)
+    {
+      mSkipCardImpressionsReset = false;
+    }
+    else
+    {
+      mAdapter.resetCardImpressionTracker();
+      BrazeLogger.d(name, "Resetting card impressions.");
+    }
+    paramView = LayoutInflater.from(getActivity());
+    paramBundle = getListView();
+    paramBundle.addHeaderView(paramView.inflate(R.layout.com_braze_feed_header, null));
+    paramBundle.addFooterView(paramView.inflate(R.layout.com_braze_feed_footer, null));
+    mFeedRootLayout.setOnTouchListener(new PullToRefreshAttacher(this));
+    paramBundle.setOnScrollListener(new AbsListView.OnScrollListener()
+    {
+      public void onScroll(AbsListView paramAnonymousAbsListView, int paramAnonymousInt1, int paramAnonymousInt2, int paramAnonymousInt3)
+      {
+        paramAnonymousAbsListView = mFeedSwipeLayout;
+        boolean bool;
+        if (paramAnonymousInt1 == 0) {
+          bool = true;
+        } else {
+          bool = false;
+        }
+        paramAnonymousAbsListView.setEnabled(bool);
+        if (paramAnonymousInt2 == 0) {
+          return;
+        }
+        paramAnonymousInt3 = paramAnonymousInt1 - 1;
+        paramAnonymousAbsListView = BrazeFeedFragment.this;
+        if (paramAnonymousInt3 > mPreviousVisibleHeadCardIndex) {
+          mAdapter.batchSetCardsToRead(mPreviousVisibleHeadCardIndex, paramAnonymousInt3);
+        }
+        paramAnonymousAbsListView = BrazeFeedFragment.this;
+        mPreviousVisibleHeadCardIndex = paramAnonymousInt3;
+        mCurrentCardIndexAtBottomOfScreen = (paramAnonymousInt1 + paramAnonymousInt2);
+      }
+      
+      public void onScrollStateChanged(AbsListView paramAnonymousAbsListView, int paramAnonymousInt) {}
+    });
+    mTransparentFullBoundsContainerView.setOnTouchListener(c.d);
+    Braze.getInstance(getContext()).removeSingleSubscription(mFeedUpdatedSubscriber, FeedUpdatedEvent.class);
+    mFeedUpdatedSubscriber = new SearchResultsFragment.1(this, paramBundle);
+    Braze.getInstance(getContext()).subscribeToFeedUpdates(mFeedUpdatedSubscriber);
+    paramBundle.setAdapter(mAdapter);
+    Braze.getInstance(getContext()).requestFeedRefreshFromCache();
+  }
+  
+  public List sortFeedCards(List paramList)
+  {
+    Collections.sort(paramList, b.a);
+    return paramList;
+  }
+  
+  public class FeedGestureListener
+    extends GestureDetector.SimpleOnGestureListener
+  {
+    public FeedGestureListener() {}
+    
+    public boolean onDown(MotionEvent paramMotionEvent)
+    {
+      return true;
+    }
+    
+    public boolean onFling(MotionEvent paramMotionEvent1, MotionEvent paramMotionEvent2, float paramFloat1, float paramFloat2)
+    {
+      long l = (paramMotionEvent2.getEventTime() - paramMotionEvent1.getEventTime()) * 2L;
+      int i = (int)(paramFloat2 * (float)l / 1000.0F);
+      getListView().smoothScrollBy(-i, (int)(l * 2L));
+      return true;
+    }
+    
+    public boolean onScroll(MotionEvent paramMotionEvent1, MotionEvent paramMotionEvent2, float paramFloat1, float paramFloat2)
+    {
+      getListView().smoothScrollBy((int)paramFloat2, 0);
+      return true;
+    }
+  }
+}

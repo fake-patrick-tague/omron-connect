@@ -1,0 +1,410 @@
+package c.j.a;
+
+import android.graphics.Rect;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+class b
+{
+  private static boolean a(int paramInt, Rect paramRect1, Rect paramRect2, Rect paramRect3)
+  {
+    boolean bool2 = b(paramInt, paramRect1, paramRect2);
+    boolean bool3 = b(paramInt, paramRect1, paramRect3);
+    boolean bool1 = false;
+    if (!bool3)
+    {
+      if (!bool2) {
+        return false;
+      }
+      if (!j(paramInt, paramRect1, paramRect3)) {
+        return true;
+      }
+      if (paramInt != 17)
+      {
+        if (paramInt == 66) {
+          return true;
+        }
+        if (k(paramInt, paramRect1, paramRect2) < m(paramInt, paramRect1, paramRect3)) {
+          bool1 = true;
+        }
+        return bool1;
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  private static boolean b(int paramInt, Rect paramRect1, Rect paramRect2)
+  {
+    if (paramInt != 17)
+    {
+      if (paramInt != 33)
+      {
+        if (paramInt == 66) {
+          break label64;
+        }
+        if (paramInt != 130) {
+          throw new IllegalArgumentException("direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
+        }
+      }
+      return (right >= left) && (left <= right);
+    }
+    label64:
+    return (bottom >= top) && (top <= bottom);
+  }
+  
+  public static <L, T> T c(L paramL, b<L, T> paramB, a<T> paramA, T paramT, Rect paramRect, int paramInt)
+  {
+    Rect localRect1 = new Rect(paramRect);
+    int i = 0;
+    if (paramInt != 17)
+    {
+      if (paramInt != 33)
+      {
+        if (paramInt != 66)
+        {
+          if (paramInt == 130) {
+            localRect1.offset(0, -(paramRect.height() + 1));
+          } else {
+            throw new IllegalArgumentException("direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
+          }
+        }
+        else {
+          localRect1.offset(-(paramRect.width() + 1), 0);
+        }
+      }
+      else {
+        localRect1.offset(0, paramRect.height() + 1);
+      }
+    }
+    else {
+      localRect1.offset(paramRect.width() + 1, 0);
+    }
+    Object localObject1 = null;
+    int j = paramB.b(paramL);
+    Rect localRect2 = new Rect();
+    while (i < j)
+    {
+      Object localObject2 = paramB.a(paramL, i);
+      if (localObject2 != paramT)
+      {
+        paramA.a(localObject2, localRect2);
+        if (h(paramInt, paramRect, localRect2, localRect1))
+        {
+          localRect1.set(localRect2);
+          localObject1 = localObject2;
+        }
+      }
+      i += 1;
+    }
+    return localObject1;
+  }
+  
+  public static <L, T> T d(L paramL, b<L, T> paramB, a<T> paramA, T paramT, int paramInt, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    int j = paramB.b(paramL);
+    ArrayList localArrayList = new ArrayList(j);
+    int i = 0;
+    while (i < j)
+    {
+      localArrayList.add(paramB.a(paramL, i));
+      i += 1;
+    }
+    Collections.sort(localArrayList, new c(paramBoolean1, paramA));
+    if (paramInt != 1)
+    {
+      if (paramInt == 2) {
+        return e(paramT, localArrayList, paramBoolean2);
+      }
+      throw new IllegalArgumentException("direction must be one of {FOCUS_FORWARD, FOCUS_BACKWARD}.");
+    }
+    return f(paramT, localArrayList, paramBoolean2);
+  }
+  
+  private static <T> T e(T paramT, ArrayList<T> paramArrayList, boolean paramBoolean)
+  {
+    int j = paramArrayList.size();
+    int i;
+    if (paramT == null) {
+      i = -1;
+    } else {
+      i = paramArrayList.lastIndexOf(paramT);
+    }
+    i += 1;
+    if (i < j) {
+      return paramArrayList.get(i);
+    }
+    if ((paramBoolean) && (j > 0)) {
+      return paramArrayList.get(0);
+    }
+    return null;
+  }
+  
+  private static <T> T f(T paramT, ArrayList<T> paramArrayList, boolean paramBoolean)
+  {
+    int j = paramArrayList.size();
+    int i;
+    if (paramT == null) {
+      i = j;
+    } else {
+      i = paramArrayList.indexOf(paramT);
+    }
+    i -= 1;
+    if (i >= 0) {
+      return paramArrayList.get(i);
+    }
+    if ((paramBoolean) && (j > 0)) {
+      return paramArrayList.get(j - 1);
+    }
+    return null;
+  }
+  
+  private static int g(int paramInt1, int paramInt2)
+  {
+    return paramInt1 * 13 * paramInt1 + paramInt2 * paramInt2;
+  }
+  
+  private static boolean h(int paramInt, Rect paramRect1, Rect paramRect2, Rect paramRect3)
+  {
+    boolean bool2 = i(paramRect1, paramRect2, paramInt);
+    boolean bool1 = false;
+    if (!bool2) {
+      return false;
+    }
+    if (!i(paramRect1, paramRect3, paramInt)) {
+      return true;
+    }
+    if (a(paramInt, paramRect1, paramRect2, paramRect3)) {
+      return true;
+    }
+    if (a(paramInt, paramRect1, paramRect3, paramRect2)) {
+      return false;
+    }
+    if (g(k(paramInt, paramRect1, paramRect2), o(paramInt, paramRect1, paramRect2)) < g(k(paramInt, paramRect1, paramRect3), o(paramInt, paramRect1, paramRect3))) {
+      bool1 = true;
+    }
+    return bool1;
+  }
+  
+  private static boolean i(Rect paramRect1, Rect paramRect2, int paramInt)
+  {
+    if (paramInt != 17)
+    {
+      if (paramInt != 33)
+      {
+        if (paramInt != 66)
+        {
+          if (paramInt == 130)
+          {
+            paramInt = top;
+            i = top;
+            return ((paramInt < i) || (bottom <= i)) && (bottom < bottom);
+          }
+          throw new IllegalArgumentException("direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
+        }
+        paramInt = left;
+        i = left;
+        return ((paramInt < i) || (right <= i)) && (right < right);
+      }
+      paramInt = bottom;
+      i = bottom;
+      return ((paramInt > i) || (top >= i)) && (top > top);
+    }
+    paramInt = right;
+    int i = right;
+    return ((paramInt > i) || (left >= i)) && (left > left);
+  }
+  
+  private static boolean j(int paramInt, Rect paramRect1, Rect paramRect2)
+  {
+    if (paramInt != 17)
+    {
+      if (paramInt != 33)
+      {
+        if (paramInt != 66)
+        {
+          if (paramInt == 130) {
+            return bottom <= top;
+          }
+          throw new IllegalArgumentException("direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
+        }
+        return right <= left;
+      }
+      return top >= bottom;
+    }
+    return left >= right;
+  }
+  
+  private static int k(int paramInt, Rect paramRect1, Rect paramRect2)
+  {
+    return Math.max(0, l(paramInt, paramRect1, paramRect2));
+  }
+  
+  private static int l(int paramInt, Rect paramRect1, Rect paramRect2)
+  {
+    int i;
+    if (paramInt != 17) {
+      if (paramInt != 33) {
+        if (paramInt != 66) {
+          if (paramInt == 130)
+          {
+            paramInt = top;
+            i = bottom;
+          }
+        }
+      }
+    }
+    for (;;)
+    {
+      return paramInt - i;
+      throw new IllegalArgumentException("direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
+      paramInt = left;
+      i = right;
+      continue;
+      paramInt = top;
+      i = bottom;
+      continue;
+      paramInt = left;
+      i = right;
+    }
+  }
+  
+  private static int m(int paramInt, Rect paramRect1, Rect paramRect2)
+  {
+    return Math.max(1, n(paramInt, paramRect1, paramRect2));
+  }
+  
+  private static int n(int paramInt, Rect paramRect1, Rect paramRect2)
+  {
+    int i;
+    if (paramInt != 17) {
+      if (paramInt != 33) {
+        if (paramInt != 66) {
+          if (paramInt == 130)
+          {
+            paramInt = bottom;
+            i = bottom;
+          }
+        }
+      }
+    }
+    for (;;)
+    {
+      return paramInt - i;
+      throw new IllegalArgumentException("direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
+      paramInt = right;
+      i = right;
+      continue;
+      paramInt = top;
+      i = top;
+      continue;
+      paramInt = left;
+      i = left;
+    }
+  }
+  
+  private static int o(int paramInt, Rect paramRect1, Rect paramRect2)
+  {
+    if (paramInt != 17)
+    {
+      if (paramInt != 33)
+      {
+        if (paramInt == 66) {
+          break label65;
+        }
+        if (paramInt != 130) {
+          throw new IllegalArgumentException("direction must be one of {FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, FOCUS_RIGHT}.");
+        }
+      }
+      return Math.abs(left + paramRect1.width() / 2 - (left + paramRect2.width() / 2));
+    }
+    label65:
+    return Math.abs(top + paramRect1.height() / 2 - (top + paramRect2.height() / 2));
+  }
+  
+  public static abstract interface a<T>
+  {
+    public abstract void a(T paramT, Rect paramRect);
+  }
+  
+  public static abstract interface b<T, V>
+  {
+    public abstract V a(T paramT, int paramInt);
+    
+    public abstract int b(T paramT);
+  }
+  
+  private static class c<T>
+    implements Comparator<T>
+  {
+    private final Rect b = new Rect();
+    private final Rect c = new Rect();
+    private final boolean d;
+    private final b.a<T> e;
+    
+    c(boolean paramBoolean, b.a<T> paramA)
+    {
+      d = paramBoolean;
+      e = paramA;
+    }
+    
+    public int compare(T paramT1, T paramT2)
+    {
+      Rect localRect1 = b;
+      Rect localRect2 = c;
+      e.a(paramT1, localRect1);
+      e.a(paramT2, localRect2);
+      int j = top;
+      int k = top;
+      int i = -1;
+      if (j < k) {
+        return -1;
+      }
+      if (j > k) {
+        return 1;
+      }
+      j = left;
+      k = left;
+      if (j < k)
+      {
+        if (d) {
+          i = 1;
+        }
+        return i;
+      }
+      if (j > k)
+      {
+        if (d) {
+          return -1;
+        }
+        return 1;
+      }
+      j = bottom;
+      k = bottom;
+      if (j < k) {
+        return -1;
+      }
+      if (j > k) {
+        return 1;
+      }
+      j = right;
+      k = right;
+      if (j < k)
+      {
+        if (d) {
+          i = 1;
+        }
+        return i;
+      }
+      if (j > k)
+      {
+        if (d) {
+          return -1;
+        }
+        return 1;
+      }
+      return 0;
+    }
+  }
+}

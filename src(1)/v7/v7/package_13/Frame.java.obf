@@ -1,0 +1,115 @@
+package c.h.q;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.os.Build.VERSION;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.ViewConfiguration;
+import java.lang.reflect.Method;
+
+public final class g0
+{
+  private static Method a;
+  
+  static
+  {
+    if (Build.VERSION.SDK_INT == 25) {}
+    try
+    {
+      a = ViewConfiguration.class.getDeclaredMethod("getScaledScrollFactor", new Class[0]);
+      return;
+    }
+    catch (Exception localException)
+    {
+      for (;;) {}
+    }
+    Log.i("ViewConfigCompat", "Could not find method getScaledScrollFactor() on ViewConfiguration");
+  }
+  
+  private static float a(ViewConfiguration paramViewConfiguration, Context paramContext)
+  {
+    Method localMethod;
+    if (Build.VERSION.SDK_INT >= 25)
+    {
+      localMethod = a;
+      if (localMethod == null) {}
+    }
+    try
+    {
+      int i = ((Integer)localMethod.invoke(paramViewConfiguration, new Object[0])).intValue();
+      return i;
+    }
+    catch (Exception paramViewConfiguration)
+    {
+      for (;;) {}
+    }
+    Log.i("ViewConfigCompat", "Could not find method getScaledScrollFactor() on ViewConfiguration");
+    paramViewConfiguration = new TypedValue();
+    if (paramContext.getTheme().resolveAttribute(16842829, paramViewConfiguration, true)) {
+      return paramViewConfiguration.getDimension(paramContext.getResources().getDisplayMetrics());
+    }
+    return 0.0F;
+  }
+  
+  public static float b(ViewConfiguration paramViewConfiguration, Context paramContext)
+  {
+    if (Build.VERSION.SDK_INT >= 26) {
+      return a.a(paramViewConfiguration);
+    }
+    return a(paramViewConfiguration, paramContext);
+  }
+  
+  public static int c(ViewConfiguration paramViewConfiguration)
+  {
+    if (Build.VERSION.SDK_INT >= 28) {
+      return b.a(paramViewConfiguration);
+    }
+    return paramViewConfiguration.getScaledTouchSlop() / 2;
+  }
+  
+  public static float d(ViewConfiguration paramViewConfiguration, Context paramContext)
+  {
+    if (Build.VERSION.SDK_INT >= 26) {
+      return a.b(paramViewConfiguration);
+    }
+    return a(paramViewConfiguration, paramContext);
+  }
+  
+  public static boolean e(ViewConfiguration paramViewConfiguration, Context paramContext)
+  {
+    if (Build.VERSION.SDK_INT >= 28) {
+      return b.b(paramViewConfiguration);
+    }
+    paramViewConfiguration = paramContext.getResources();
+    int i = paramViewConfiguration.getIdentifier("config_showMenuShortcutsWhenKeyboardPresent", "bool", "android");
+    return (i != 0) && (paramViewConfiguration.getBoolean(i));
+  }
+  
+  static class a
+  {
+    static float a(ViewConfiguration paramViewConfiguration)
+    {
+      return paramViewConfiguration.getScaledHorizontalScrollFactor();
+    }
+    
+    static float b(ViewConfiguration paramViewConfiguration)
+    {
+      return paramViewConfiguration.getScaledVerticalScrollFactor();
+    }
+  }
+  
+  static class b
+  {
+    static int a(ViewConfiguration paramViewConfiguration)
+    {
+      return paramViewConfiguration.getScaledHoverSlop();
+    }
+    
+    static boolean b(ViewConfiguration paramViewConfiguration)
+    {
+      return paramViewConfiguration.shouldShowMenuShortcutsWhenKeyboardPresent();
+    }
+  }
+}

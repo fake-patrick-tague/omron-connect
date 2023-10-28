@@ -1,0 +1,184 @@
+package androidx.fragment.app;
+
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.view.View;
+import android.view.ViewGroup;
+import c.h.m.e;
+import c.h.q.c0;
+import c.h.q.f0;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public abstract class d0
+{
+  public d0() {}
+  
+  protected static void d(List<View> paramList, View paramView)
+  {
+    int k = paramList.size();
+    if (g(paramList, paramView, k)) {
+      return;
+    }
+    if (f0.L(paramView) != null) {
+      paramList.add(paramView);
+    }
+    int i = k;
+    while (i < paramList.size())
+    {
+      paramView = (View)paramList.get(i);
+      if ((paramView instanceof ViewGroup))
+      {
+        paramView = (ViewGroup)paramView;
+        int m = paramView.getChildCount();
+        int j = 0;
+        while (j < m)
+        {
+          View localView = paramView.getChildAt(j);
+          if ((!g(paramList, localView, k)) && (f0.L(localView) != null)) {
+            paramList.add(localView);
+          }
+          j += 1;
+        }
+      }
+      i += 1;
+    }
+  }
+  
+  private static boolean g(List<View> paramList, View paramView, int paramInt)
+  {
+    int i = 0;
+    while (i < paramInt)
+    {
+      if (paramList.get(i) == paramView) {
+        return true;
+      }
+      i += 1;
+    }
+    return false;
+  }
+  
+  protected static boolean i(List paramList)
+  {
+    return (paramList == null) || (paramList.isEmpty());
+  }
+  
+  public abstract void a(Object paramObject, View paramView);
+  
+  public abstract void b(Object paramObject, ArrayList<View> paramArrayList);
+  
+  public abstract void c(ViewGroup paramViewGroup, Object paramObject);
+  
+  public abstract boolean e(Object paramObject);
+  
+  public abstract Object f(Object paramObject);
+  
+  protected void h(View paramView, Rect paramRect)
+  {
+    if (!f0.S(paramView)) {
+      return;
+    }
+    RectF localRectF = new RectF();
+    localRectF.set(0.0F, 0.0F, paramView.getWidth(), paramView.getHeight());
+    paramView.getMatrix().mapRect(localRectF);
+    localRectF.offset(paramView.getLeft(), paramView.getTop());
+    for (Object localObject = paramView.getParent(); (localObject instanceof View); localObject = ((View)localObject).getParent())
+    {
+      localObject = (View)localObject;
+      localRectF.offset(-((View)localObject).getScrollX(), -((View)localObject).getScrollY());
+      ((View)localObject).getMatrix().mapRect(localRectF);
+      localRectF.offset(((View)localObject).getLeft(), ((View)localObject).getTop());
+    }
+    localObject = new int[2];
+    paramView.getRootView().getLocationOnScreen((int[])localObject);
+    localRectF.offset(localObject[0], localObject[1]);
+    paramRect.set(Math.round(left), Math.round(top), Math.round(right), Math.round(bottom));
+  }
+  
+  public abstract Object j(Object paramObject1, Object paramObject2, Object paramObject3);
+  
+  public abstract Object k(Object paramObject1, Object paramObject2, Object paramObject3);
+  
+  ArrayList<String> l(ArrayList<View> paramArrayList)
+  {
+    ArrayList localArrayList = new ArrayList();
+    int j = paramArrayList.size();
+    int i = 0;
+    while (i < j)
+    {
+      View localView = (View)paramArrayList.get(i);
+      localArrayList.add(f0.L(localView));
+      f0.H0(localView, null);
+      i += 1;
+    }
+    return localArrayList;
+  }
+  
+  public abstract void m(Object paramObject, View paramView, ArrayList<View> paramArrayList);
+  
+  public abstract void n(Object paramObject1, Object paramObject2, ArrayList<View> paramArrayList1, Object paramObject3, ArrayList<View> paramArrayList2, Object paramObject4, ArrayList<View> paramArrayList3);
+  
+  public abstract void o(Object paramObject, Rect paramRect);
+  
+  public abstract void p(Object paramObject, View paramView);
+  
+  public void q(Fragment paramFragment, Object paramObject, e paramE, Runnable paramRunnable)
+  {
+    paramRunnable.run();
+  }
+  
+  void r(View paramView, final ArrayList<View> paramArrayList1, final ArrayList<View> paramArrayList2, final ArrayList<String> paramArrayList, Map<String, String> paramMap)
+  {
+    final int k = paramArrayList2.size();
+    final ArrayList localArrayList = new ArrayList();
+    int i = 0;
+    while (i < k)
+    {
+      Object localObject = (View)paramArrayList1.get(i);
+      String str = f0.L((View)localObject);
+      localArrayList.add(str);
+      if (str != null)
+      {
+        f0.H0((View)localObject, null);
+        localObject = (String)paramMap.get(str);
+        int j = 0;
+        while (j < k)
+        {
+          if (((String)localObject).equals(paramArrayList.get(j)))
+          {
+            f0.H0((View)paramArrayList2.get(j), str);
+            break;
+          }
+          j += 1;
+        }
+      }
+      i += 1;
+    }
+    c0.a(paramView, new a(k, paramArrayList2, paramArrayList, paramArrayList1, localArrayList));
+  }
+  
+  public abstract void s(Object paramObject, View paramView, ArrayList<View> paramArrayList);
+  
+  public abstract void t(Object paramObject, ArrayList<View> paramArrayList1, ArrayList<View> paramArrayList2);
+  
+  public abstract Object u(Object paramObject);
+  
+  class a
+    implements Runnable
+  {
+    a(int paramInt, ArrayList paramArrayList1, ArrayList paramArrayList2, ArrayList paramArrayList3, ArrayList paramArrayList4) {}
+    
+    public void run()
+    {
+      int i = 0;
+      while (i < k)
+      {
+        f0.H0((View)paramArrayList2.get(i), (String)paramArrayList.get(i));
+        f0.H0((View)paramArrayList1.get(i), (String)localArrayList.get(i));
+        i += 1;
+      }
+    }
+  }
+}

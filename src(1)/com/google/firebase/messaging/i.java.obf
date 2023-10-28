@@ -1,0 +1,347 @@
+package com.google.firebase.messaging;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build.VERSION;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.util.Log;
+
+class g1
+  implements Runnable
+{
+  private static final Object b = new Object();
+  private static Boolean c;
+  private static Boolean d;
+  private final Context e;
+  private final r0 f;
+  private final PowerManager.WakeLock g;
+  private final f1 h;
+  private final long i;
+  
+  g1(f1 paramF1, Context paramContext, r0 paramR0, long paramLong)
+  {
+    h = paramF1;
+    e = paramContext;
+    i = paramLong;
+    f = paramR0;
+    g = ((PowerManager)paramContext.getSystemService("power")).newWakeLock(1, "wake:com.google.firebase.messaging");
+  }
+  
+  private static String e(String paramString)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Missing Permission: ");
+    localStringBuilder.append(paramString);
+    localStringBuilder.append(". This permission should normally be included by the manifest merger, but may needed to be manually added to your manifest");
+    return localStringBuilder.toString();
+  }
+  
+  private static boolean f(Context paramContext)
+  {
+    synchronized (b)
+    {
+      Boolean localBoolean = d;
+      if (localBoolean == null) {
+        bool = g(paramContext, "android.permission.ACCESS_NETWORK_STATE", localBoolean);
+      } else {
+        bool = localBoolean.booleanValue();
+      }
+      paramContext = Boolean.valueOf(bool);
+      d = paramContext;
+      boolean bool = paramContext.booleanValue();
+      return bool;
+    }
+  }
+  
+  private static boolean g(Context paramContext, String paramString, Boolean paramBoolean)
+  {
+    if (paramBoolean != null) {
+      return paramBoolean.booleanValue();
+    }
+    boolean bool;
+    if (paramContext.checkCallingOrSelfPermission(paramString) == 0) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    if ((!bool) && (Log.isLoggable("FirebaseMessaging", 3))) {
+      Log.d("FirebaseMessaging", e(paramString));
+    }
+    return bool;
+  }
+  
+  private static boolean h(Context paramContext)
+  {
+    synchronized (b)
+    {
+      Boolean localBoolean = c;
+      if (localBoolean == null) {
+        bool = g(paramContext, "android.permission.WAKE_LOCK", localBoolean);
+      } else {
+        bool = localBoolean.booleanValue();
+      }
+      paramContext = Boolean.valueOf(bool);
+      c = paramContext;
+      boolean bool = paramContext.booleanValue();
+      return bool;
+    }
+  }
+  
+  private boolean i()
+  {
+    for (;;)
+    {
+      try
+      {
+        Object localObject1 = (ConnectivityManager)e.getSystemService("connectivity");
+        if (localObject1 != null)
+        {
+          localObject1 = ((ConnectivityManager)localObject1).getActiveNetworkInfo();
+          if (localObject1 != null)
+          {
+            bool = ((NetworkInfo)localObject1).isConnected();
+            if (bool)
+            {
+              bool = true;
+              continue;
+            }
+          }
+          boolean bool = false;
+          return bool;
+        }
+      }
+      finally {}
+      Object localObject3 = null;
+    }
+  }
+  
+  private static boolean j()
+  {
+    return (Log.isLoggable("FirebaseMessaging", 3)) || ((Build.VERSION.SDK_INT == 23) && (Log.isLoggable("FirebaseMessaging", 3)));
+  }
+  
+  /* Error */
+  public void run()
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: getfield 37	com/google/firebase/messaging/g1:e	Landroid/content/Context;
+    //   4: invokestatic 148	com/google/firebase/messaging/g1:h	(Landroid/content/Context;)Z
+    //   7: ifeq +13 -> 20
+    //   10: aload_0
+    //   11: getfield 59	com/google/firebase/messaging/g1:g	Landroid/os/PowerManager$WakeLock;
+    //   14: getstatic 152	com/google/firebase/messaging/i0:a	J
+    //   17: invokevirtual 158	android/os/PowerManager$WakeLock:acquire	(J)V
+    //   20: aload_0
+    //   21: getfield 35	com/google/firebase/messaging/g1:h	Lcom/google/firebase/messaging/f1;
+    //   24: iconst_1
+    //   25: invokevirtual 164	com/google/firebase/messaging/f1:n	(Z)V
+    //   28: aload_0
+    //   29: getfield 41	com/google/firebase/messaging/g1:f	Lcom/google/firebase/messaging/r0;
+    //   32: invokevirtual 168	com/google/firebase/messaging/r0:g	()Z
+    //   35: ifne +38 -> 73
+    //   38: aload_0
+    //   39: getfield 35	com/google/firebase/messaging/g1:h	Lcom/google/firebase/messaging/f1;
+    //   42: iconst_0
+    //   43: invokevirtual 164	com/google/firebase/messaging/f1:n	(Z)V
+    //   46: aload_0
+    //   47: getfield 37	com/google/firebase/messaging/g1:e	Landroid/content/Context;
+    //   50: invokestatic 148	com/google/firebase/messaging/g1:h	(Landroid/content/Context;)Z
+    //   53: ifeq +19 -> 72
+    //   56: aload_0
+    //   57: getfield 59	com/google/firebase/messaging/g1:g	Landroid/os/PowerManager$WakeLock;
+    //   60: invokevirtual 171	android/os/PowerManager$WakeLock:release	()V
+    //   63: return
+    //   64: ldc 107
+    //   66: ldc -83
+    //   68: invokestatic 175	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;)I
+    //   71: pop
+    //   72: return
+    //   73: aload_0
+    //   74: getfield 37	com/google/firebase/messaging/g1:e	Landroid/content/Context;
+    //   77: invokestatic 177	com/google/firebase/messaging/g1:f	(Landroid/content/Context;)Z
+    //   80: ifeq +49 -> 129
+    //   83: aload_0
+    //   84: invokespecial 63	com/google/firebase/messaging/g1:i	()Z
+    //   87: ifne +42 -> 129
+    //   90: new 8	com/google/firebase/messaging/g1$a
+    //   93: dup
+    //   94: aload_0
+    //   95: aload_0
+    //   96: invokespecial 180	com/google/firebase/messaging/g1$a:<init>	(Lcom/google/firebase/messaging/g1;Lcom/google/firebase/messaging/g1;)V
+    //   99: invokevirtual 182	com/google/firebase/messaging/g1$a:a	()V
+    //   102: aload_0
+    //   103: getfield 37	com/google/firebase/messaging/g1:e	Landroid/content/Context;
+    //   106: invokestatic 148	com/google/firebase/messaging/g1:h	(Landroid/content/Context;)Z
+    //   109: ifeq +19 -> 128
+    //   112: aload_0
+    //   113: getfield 59	com/google/firebase/messaging/g1:g	Landroid/os/PowerManager$WakeLock;
+    //   116: invokevirtual 171	android/os/PowerManager$WakeLock:release	()V
+    //   119: return
+    //   120: ldc 107
+    //   122: ldc -83
+    //   124: invokestatic 175	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;)I
+    //   127: pop
+    //   128: return
+    //   129: aload_0
+    //   130: getfield 35	com/google/firebase/messaging/g1:h	Lcom/google/firebase/messaging/f1;
+    //   133: invokevirtual 185	com/google/firebase/messaging/f1:r	()Z
+    //   136: ifeq +14 -> 150
+    //   139: aload_0
+    //   140: getfield 35	com/google/firebase/messaging/g1:h	Lcom/google/firebase/messaging/f1;
+    //   143: iconst_0
+    //   144: invokevirtual 164	com/google/firebase/messaging/f1:n	(Z)V
+    //   147: goto +14 -> 161
+    //   150: aload_0
+    //   151: getfield 35	com/google/firebase/messaging/g1:h	Lcom/google/firebase/messaging/f1;
+    //   154: aload_0
+    //   155: getfield 39	com/google/firebase/messaging/g1:i	J
+    //   158: invokevirtual 188	com/google/firebase/messaging/f1:s	(J)V
+    //   161: aload_0
+    //   162: getfield 37	com/google/firebase/messaging/g1:e	Landroid/content/Context;
+    //   165: invokestatic 148	com/google/firebase/messaging/g1:h	(Landroid/content/Context;)Z
+    //   168: ifeq +86 -> 254
+    //   171: aload_0
+    //   172: getfield 59	com/google/firebase/messaging/g1:g	Landroid/os/PowerManager$WakeLock;
+    //   175: astore_1
+    //   176: goto +65 -> 241
+    //   179: astore_1
+    //   180: goto +75 -> 255
+    //   183: astore_1
+    //   184: new 71	java/lang/StringBuilder
+    //   187: dup
+    //   188: invokespecial 72	java/lang/StringBuilder:<init>	()V
+    //   191: astore_2
+    //   192: aload_2
+    //   193: ldc -66
+    //   195: invokevirtual 78	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   198: pop
+    //   199: aload_2
+    //   200: aload_1
+    //   201: invokevirtual 193	java/io/IOException:getMessage	()Ljava/lang/String;
+    //   204: invokevirtual 78	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   207: pop
+    //   208: ldc 107
+    //   210: aload_2
+    //   211: invokevirtual 84	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   214: invokestatic 195	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;)I
+    //   217: pop
+    //   218: aload_0
+    //   219: getfield 35	com/google/firebase/messaging/g1:h	Lcom/google/firebase/messaging/f1;
+    //   222: iconst_0
+    //   223: invokevirtual 164	com/google/firebase/messaging/f1:n	(Z)V
+    //   226: aload_0
+    //   227: getfield 37	com/google/firebase/messaging/g1:e	Landroid/content/Context;
+    //   230: invokestatic 148	com/google/firebase/messaging/g1:h	(Landroid/content/Context;)Z
+    //   233: ifeq +21 -> 254
+    //   236: aload_0
+    //   237: getfield 59	com/google/firebase/messaging/g1:g	Landroid/os/PowerManager$WakeLock;
+    //   240: astore_1
+    //   241: aload_1
+    //   242: invokevirtual 171	android/os/PowerManager$WakeLock:release	()V
+    //   245: return
+    //   246: ldc 107
+    //   248: ldc -83
+    //   250: invokestatic 175	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;)I
+    //   253: pop
+    //   254: return
+    //   255: aload_0
+    //   256: getfield 37	com/google/firebase/messaging/g1:e	Landroid/content/Context;
+    //   259: invokestatic 148	com/google/firebase/messaging/g1:h	(Landroid/content/Context;)Z
+    //   262: ifeq +21 -> 283
+    //   265: aload_0
+    //   266: getfield 59	com/google/firebase/messaging/g1:g	Landroid/os/PowerManager$WakeLock;
+    //   269: invokevirtual 171	android/os/PowerManager$WakeLock:release	()V
+    //   272: goto +11 -> 283
+    //   275: ldc 107
+    //   277: ldc -83
+    //   279: invokestatic 175	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;)I
+    //   282: pop
+    //   283: aload_1
+    //   284: athrow
+    //   285: astore_1
+    //   286: goto -222 -> 64
+    //   289: astore_1
+    //   290: goto -170 -> 120
+    //   293: astore_1
+    //   294: goto -48 -> 246
+    //   297: astore_2
+    //   298: goto -23 -> 275
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	301	0	this	g1
+    //   175	1	1	localWakeLock1	PowerManager.WakeLock
+    //   179	1	1	localObject	Object
+    //   183	18	1	localIOException	java.io.IOException
+    //   240	44	1	localWakeLock2	PowerManager.WakeLock
+    //   285	1	1	localRuntimeException1	RuntimeException
+    //   289	1	1	localRuntimeException2	RuntimeException
+    //   293	1	1	localRuntimeException3	RuntimeException
+    //   191	20	2	localStringBuilder	StringBuilder
+    //   297	1	2	localRuntimeException4	RuntimeException
+    // Exception table:
+    //   from	to	target	type
+    //   20	46	179	finally
+    //   73	102	179	finally
+    //   129	147	179	finally
+    //   150	161	179	finally
+    //   184	226	179	finally
+    //   20	46	183	java/io/IOException
+    //   73	102	183	java/io/IOException
+    //   129	147	183	java/io/IOException
+    //   150	161	183	java/io/IOException
+    //   56	63	285	java/lang/RuntimeException
+    //   112	119	289	java/lang/RuntimeException
+    //   171	176	293	java/lang/RuntimeException
+    //   236	241	293	java/lang/RuntimeException
+    //   241	245	293	java/lang/RuntimeException
+    //   265	272	297	java/lang/RuntimeException
+  }
+  
+  class a
+    extends BroadcastReceiver
+  {
+    private g1 a;
+    
+    public a(g1 paramG1)
+    {
+      a = paramG1;
+    }
+    
+    public void a()
+    {
+      if (g1.b()) {
+        Log.d("FirebaseMessaging", "Connectivity change received registered");
+      }
+      g1.d(g1.this).registerReceiver(this, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+    }
+    
+    public void onReceive(Context paramContext, Intent paramIntent)
+    {
+      try
+      {
+        paramIntent = a;
+        if (paramIntent == null) {
+          return;
+        }
+        boolean bool = g1.a(paramIntent);
+        if (!bool) {
+          return;
+        }
+        if (g1.b()) {
+          Log.d("FirebaseMessaging", "Connectivity changed. Starting background sync.");
+        }
+        g1.c(a).l(a, 0L);
+        paramContext.unregisterReceiver(this);
+        a = null;
+        return;
+      }
+      finally {}
+    }
+  }
+}

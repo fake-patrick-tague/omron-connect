@@ -1,0 +1,283 @@
+package d.c.a.a.u;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources.NotFoundException;
+import android.content.res.TypedArray;
+import android.graphics.Typeface;
+import android.os.Build.VERSION;
+import android.text.TextPaint;
+import android.util.Log;
+import androidx.core.content.g.j;
+import androidx.core.content.g.j.f;
+import d.c.a.a.l;
+
+public class d
+{
+  public final ColorStateList a;
+  public final ColorStateList b;
+  public final ColorStateList c;
+  public final ColorStateList d;
+  public final String e;
+  public final int f;
+  public final int g;
+  public final boolean h;
+  public final float i;
+  public final float j;
+  public final float k;
+  public final boolean l;
+  public final float m;
+  public float n;
+  private final int o;
+  private boolean p = false;
+  private Typeface q;
+  
+  public d(Context paramContext, int paramInt)
+  {
+    TypedArray localTypedArray = paramContext.obtainStyledAttributes(paramInt, l.N5);
+    n = localTypedArray.getDimension(l.O5, 0.0F);
+    a = c.a(paramContext, localTypedArray, l.R5);
+    b = c.a(paramContext, localTypedArray, l.S5);
+    c = c.a(paramContext, localTypedArray, l.T5);
+    f = localTypedArray.getInt(l.Q5, 0);
+    g = localTypedArray.getInt(l.P5, 1);
+    int i1 = c.e(localTypedArray, l.Z5, l.Y5);
+    o = localTypedArray.getResourceId(i1, 0);
+    e = localTypedArray.getString(i1);
+    h = localTypedArray.getBoolean(l.a6, false);
+    d = c.a(paramContext, localTypedArray, l.U5);
+    i = localTypedArray.getFloat(l.V5, 0.0F);
+    j = localTypedArray.getFloat(l.W5, 0.0F);
+    k = localTypedArray.getFloat(l.X5, 0.0F);
+    localTypedArray.recycle();
+    if (Build.VERSION.SDK_INT >= 21)
+    {
+      paramContext = paramContext.obtainStyledAttributes(paramInt, l.Y3);
+      paramInt = l.Z3;
+      l = paramContext.hasValue(paramInt);
+      m = paramContext.getFloat(paramInt, 0.0F);
+      paramContext.recycle();
+      return;
+    }
+    l = false;
+    m = 0.0F;
+  }
+  
+  private void d()
+  {
+    if (q == null)
+    {
+      String str = e;
+      if (str != null) {
+        q = Typeface.create(str, f);
+      }
+    }
+    if (q == null)
+    {
+      int i1 = g;
+      if (i1 != 1)
+      {
+        if (i1 != 2)
+        {
+          if (i1 != 3) {
+            q = Typeface.DEFAULT;
+          } else {
+            q = Typeface.MONOSPACE;
+          }
+        }
+        else {
+          q = Typeface.SERIF;
+        }
+      }
+      else {
+        q = Typeface.SANS_SERIF;
+      }
+      q = Typeface.create(q, f);
+    }
+  }
+  
+  private boolean i(Context paramContext)
+  {
+    return e.a();
+  }
+  
+  public Typeface e()
+  {
+    d();
+    return q;
+  }
+  
+  public Typeface f(Context paramContext)
+  {
+    if (p) {
+      return q;
+    }
+    if (!paramContext.isRestricted()) {}
+    try
+    {
+      try
+      {
+        paramContext = j.g(paramContext, o);
+        q = paramContext;
+        if (paramContext != null) {
+          q = Typeface.create(paramContext, f);
+        }
+      }
+      catch (Exception paramContext)
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Error loading font ");
+        localStringBuilder.append(e);
+        Log.d("TextAppearance", localStringBuilder.toString(), paramContext);
+      }
+    }
+    catch (UnsupportedOperationException|Resources.NotFoundException paramContext)
+    {
+      for (;;) {}
+    }
+    d();
+    p = true;
+    return q;
+  }
+  
+  public void g(Context paramContext, final TextPaint paramTextPaint, final f paramF)
+  {
+    l(paramTextPaint, e());
+    h(paramContext, new b(paramTextPaint, paramF));
+  }
+  
+  public void h(Context paramContext, final f paramF)
+  {
+    if (i(paramContext)) {
+      f(paramContext);
+    } else {
+      d();
+    }
+    int i1 = o;
+    if (i1 == 0) {
+      p = true;
+    }
+    if (p)
+    {
+      paramF.b(q, true);
+      return;
+    }
+    try
+    {
+      j.i(paramContext, i1, new a(paramF), null);
+      return;
+    }
+    catch (Exception paramContext)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Error loading font ");
+      localStringBuilder.append(e);
+      Log.d("TextAppearance", localStringBuilder.toString(), paramContext);
+      p = true;
+      paramF.a(-3);
+      return;
+      p = true;
+      paramF.a(1);
+      return;
+    }
+    catch (Resources.NotFoundException paramContext)
+    {
+      for (;;) {}
+    }
+  }
+  
+  public void j(Context paramContext, TextPaint paramTextPaint, f paramF)
+  {
+    k(paramContext, paramTextPaint, paramF);
+    paramContext = a;
+    int i1;
+    if (paramContext != null) {
+      i1 = paramContext.getColorForState(drawableState, paramContext.getDefaultColor());
+    } else {
+      i1 = -16777216;
+    }
+    paramTextPaint.setColor(i1);
+    float f1 = k;
+    float f2 = i;
+    float f3 = j;
+    paramContext = d;
+    if (paramContext != null) {
+      i1 = paramContext.getColorForState(drawableState, paramContext.getDefaultColor());
+    } else {
+      i1 = 0;
+    }
+    paramTextPaint.setShadowLayer(f1, f2, f3, i1);
+  }
+  
+  public void k(Context paramContext, TextPaint paramTextPaint, f paramF)
+  {
+    if (i(paramContext))
+    {
+      l(paramTextPaint, f(paramContext));
+      return;
+    }
+    g(paramContext, paramTextPaint, paramF);
+  }
+  
+  public void l(TextPaint paramTextPaint, Typeface paramTypeface)
+  {
+    paramTextPaint.setTypeface(paramTypeface);
+    int i1 = f;
+    i1 = paramTypeface.getStyle() & i1;
+    boolean bool;
+    if ((i1 & 0x1) != 0) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    paramTextPaint.setFakeBoldText(bool);
+    float f1;
+    if ((i1 & 0x2) != 0) {
+      f1 = -0.25F;
+    } else {
+      f1 = 0.0F;
+    }
+    paramTextPaint.setTextSkewX(f1);
+    paramTextPaint.setTextSize(n);
+    if ((Build.VERSION.SDK_INT >= 21) && (l)) {
+      paramTextPaint.setLetterSpacing(m);
+    }
+  }
+  
+  class a
+    extends j.f
+  {
+    a(f paramF) {}
+    
+    public void h(int paramInt)
+    {
+      d.c(d.this, true);
+      paramF.a(paramInt);
+    }
+    
+    public void i(Typeface paramTypeface)
+    {
+      d localD = d.this;
+      d.b(localD, Typeface.create(paramTypeface, f));
+      d.c(d.this, true);
+      paramF.b(d.a(d.this), false);
+    }
+  }
+  
+  class b
+    extends f
+  {
+    b(TextPaint paramTextPaint, f paramF) {}
+    
+    public void a(int paramInt)
+    {
+      paramF.a(paramInt);
+    }
+    
+    public void b(Typeface paramTypeface, boolean paramBoolean)
+    {
+      l(paramTextPaint, paramTypeface);
+      paramF.b(paramTypeface, paramBoolean);
+    }
+  }
+}

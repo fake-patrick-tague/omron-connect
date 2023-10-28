@@ -1,0 +1,111 @@
+package androidx.core.app;
+
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+public final class f
+{
+  public static IBinder a(Bundle paramBundle, String paramString)
+  {
+    if (Build.VERSION.SDK_INT >= 18) {
+      return a.a(paramBundle, paramString);
+    }
+    return b.a(paramBundle, paramString);
+  }
+  
+  public static void b(Bundle paramBundle, String paramString, IBinder paramIBinder)
+  {
+    if (Build.VERSION.SDK_INT >= 18)
+    {
+      a.b(paramBundle, paramString, paramIBinder);
+      return;
+    }
+    b.b(paramBundle, paramString, paramIBinder);
+  }
+  
+  static class a
+  {
+    static IBinder a(Bundle paramBundle, String paramString)
+    {
+      return paramBundle.getBinder(paramString);
+    }
+    
+    static void b(Bundle paramBundle, String paramString, IBinder paramIBinder)
+    {
+      paramBundle.putBinder(paramString, paramIBinder);
+    }
+  }
+  
+  static class b
+  {
+    private static Method a;
+    private static boolean b;
+    private static Method c;
+    private static boolean d;
+    
+    public static IBinder a(Bundle paramBundle, String paramString)
+    {
+      if (!b)
+      {
+        try
+        {
+          Method localMethod1 = Bundle.class.getMethod("getIBinder", new Class[] { String.class });
+          a = localMethod1;
+          localMethod1.setAccessible(true);
+        }
+        catch (NoSuchMethodException localNoSuchMethodException)
+        {
+          Log.i("BundleCompatBaseImpl", "Failed to retrieve getIBinder method", localNoSuchMethodException);
+        }
+        b = true;
+      }
+      Method localMethod2 = a;
+      if (localMethod2 != null)
+      {
+        try
+        {
+          paramBundle = (IBinder)localMethod2.invoke(paramBundle, new Object[] { paramString });
+          return paramBundle;
+        }
+        catch (IllegalArgumentException paramBundle) {}catch (IllegalAccessException paramBundle) {}catch (InvocationTargetException paramBundle) {}
+        Log.i("BundleCompatBaseImpl", "Failed to invoke getIBinder via reflection", paramBundle);
+        a = null;
+      }
+      return null;
+    }
+    
+    public static void b(Bundle paramBundle, String paramString, IBinder paramIBinder)
+    {
+      if (!d)
+      {
+        try
+        {
+          Method localMethod1 = Bundle.class.getMethod("putIBinder", new Class[] { String.class, IBinder.class });
+          c = localMethod1;
+          localMethod1.setAccessible(true);
+        }
+        catch (NoSuchMethodException localNoSuchMethodException)
+        {
+          Log.i("BundleCompatBaseImpl", "Failed to retrieve putIBinder method", localNoSuchMethodException);
+        }
+        d = true;
+      }
+      Method localMethod2 = c;
+      if (localMethod2 != null)
+      {
+        try
+        {
+          localMethod2.invoke(paramBundle, new Object[] { paramString, paramIBinder });
+          return;
+        }
+        catch (IllegalArgumentException paramBundle) {}catch (IllegalAccessException paramBundle) {}catch (InvocationTargetException paramBundle) {}
+        Log.i("BundleCompatBaseImpl", "Failed to invoke putIBinder via reflection", paramBundle);
+        c = null;
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+package androidx.core.app;
+
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.media.AudioAttributes;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.provider.Settings.System;
+import c.h.p.h;
+
+public class k
+{
+  final String a;
+  CharSequence b;
+  int c;
+  String d;
+  String e;
+  boolean f = true;
+  Uri g = Settings.System.DEFAULT_NOTIFICATION_URI;
+  AudioAttributes h;
+  boolean i;
+  int j = 0;
+  boolean k;
+  long[] l;
+  String m;
+  String n;
+  private boolean o;
+  private int p;
+  private boolean q;
+  private boolean r;
+  
+  k(NotificationChannel paramNotificationChannel)
+  {
+    this(paramNotificationChannel.getId(), paramNotificationChannel.getImportance());
+    b = paramNotificationChannel.getName();
+    d = paramNotificationChannel.getDescription();
+    e = paramNotificationChannel.getGroup();
+    h = paramNotificationChannel.getAudioAttributes();
+    i = paramNotificationChannel.shouldShowLights();
+    k = paramNotificationChannel.shouldVibrate();
+    l = paramNotificationChannel.getVibrationPattern();
+    int i1 = Build.VERSION.SDK_INT;
+    if (i1 >= 30)
+    {
+      m = paramNotificationChannel.getParentChannelId();
+      n = paramNotificationChannel.getConversationId();
+    }
+    o = paramNotificationChannel.canBypassDnd();
+    p = paramNotificationChannel.getLockscreenVisibility();
+    if (i1 >= 29) {
+      q = paramNotificationChannel.canBubble();
+    }
+    if (i1 >= 30) {
+      r = paramNotificationChannel.isImportantConversation();
+    }
+  }
+  
+  k(String paramString, int paramInt)
+  {
+    a = ((String)h.g(paramString));
+    c = paramInt;
+    if (Build.VERSION.SDK_INT >= 21) {
+      h = Notification.AUDIO_ATTRIBUTES_DEFAULT;
+    }
+  }
+  
+  NotificationChannel a()
+  {
+    int i1 = Build.VERSION.SDK_INT;
+    if (i1 < 26) {
+      return null;
+    }
+    NotificationChannel localNotificationChannel = new NotificationChannel(a, b, c);
+    localNotificationChannel.setDescription(d);
+    localNotificationChannel.setGroup(e);
+    localNotificationChannel.setShowBadge(f);
+    localNotificationChannel.setSound(g, h);
+    localNotificationChannel.enableLights(i);
+    localNotificationChannel.setLightColor(j);
+    localNotificationChannel.setVibrationPattern(l);
+    localNotificationChannel.enableVibration(k);
+    if (i1 >= 30)
+    {
+      String str1 = m;
+      if (str1 != null)
+      {
+        String str2 = n;
+        if (str2 != null) {
+          localNotificationChannel.setConversationId(str1, str2);
+        }
+      }
+    }
+    return localNotificationChannel;
+  }
+}

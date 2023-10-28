@@ -1,0 +1,34 @@
+package com.google.android.gms.measurement.internal;
+
+import android.os.RemoteException;
+import com.google.android.gms.common.internal.Preconditions;
+
+final class zziz
+  implements Runnable
+{
+  zziz(zzjs paramZzjs, zzq paramZzq) {}
+  
+  public final void run()
+  {
+    zzjs localZzjs = zzb;
+    zzee localZzee = zzjs.zzh(localZzjs);
+    if (localZzee == null)
+    {
+      zzs.zzay().zzd().zza("Discarding data. Failed to send app launch");
+      return;
+    }
+    try
+    {
+      Preconditions.checkNotNull(zza);
+      localZzee.zzj(zza);
+      zzb.zzs.zzi().zzm();
+      zzb.zzD(localZzee, null, zza);
+      zzjs.zzp(zzb);
+      return;
+    }
+    catch (RemoteException localRemoteException)
+    {
+      zzb.zzs.zzay().zzd().zzb("Failed to send app launch to the service", localRemoteException);
+    }
+  }
+}

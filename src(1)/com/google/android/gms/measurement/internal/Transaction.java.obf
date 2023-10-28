@@ -1,0 +1,123 @@
+package com.google.android.gms.measurement.internal;
+
+import android.net.Uri;
+import android.net.Uri.Builder;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Pair;
+import com.google.android.gms.common.util.Clock;
+import java.util.Iterator;
+import java.util.Set;
+
+public final class zzs
+{
+  private final zzfy zza;
+  
+  public zzs(zzfy paramZzfy)
+  {
+    zza = paramZzfy;
+  }
+  
+  final void zza(String paramString, Bundle paramBundle)
+  {
+    zza.zzaz().zzg();
+    if (!zza.zzJ())
+    {
+      if (paramBundle.isEmpty())
+      {
+        paramString = null;
+      }
+      else
+      {
+        Object localObject = paramString;
+        if (true == paramString.isEmpty()) {
+          localObject = "auto";
+        }
+        paramString = new Uri.Builder();
+        paramString.path((String)localObject);
+        localObject = paramBundle.keySet().iterator();
+        while (((Iterator)localObject).hasNext())
+        {
+          String str = (String)((Iterator)localObject).next();
+          paramString.appendQueryParameter(str, paramBundle.getString(str));
+        }
+        paramString = paramString.build().toString();
+      }
+      if (!TextUtils.isEmpty(paramString))
+      {
+        zza.zzm().zzp.zzb(paramString);
+        zza.zzm().zzq.zzb(zza.zzav().currentTimeMillis());
+      }
+    }
+  }
+  
+  final void zzb()
+  {
+    zza.zzaz().zzg();
+    if (!zzd()) {
+      return;
+    }
+    Object localObject;
+    if (zze())
+    {
+      zza.zzm().zzp.zzb(null);
+      localObject = new Bundle();
+      ((Bundle)localObject).putString("source", "(not set)");
+      ((Bundle)localObject).putString("medium", "(not set)");
+      ((Bundle)localObject).putString("_cis", "intent");
+      ((Bundle)localObject).putLong("_cc", 1L);
+      zza.zzq().zzG("auto", "_cmpx", (Bundle)localObject);
+    }
+    else
+    {
+      localObject = zza.zzm().zzp.zza();
+      if (TextUtils.isEmpty((CharSequence)localObject))
+      {
+        zza.zzay().zzh().zza("Cache still valid but referrer not found");
+      }
+      else
+      {
+        long l = zza.zzm().zzq.zza() / 3600000L;
+        localObject = Uri.parse((String)localObject);
+        Bundle localBundle = new Bundle();
+        Pair localPair = new Pair(((Uri)localObject).getPath(), localBundle);
+        Iterator localIterator = ((Uri)localObject).getQueryParameterNames().iterator();
+        while (localIterator.hasNext())
+        {
+          String str = (String)localIterator.next();
+          localBundle.putString(str, ((Uri)localObject).getQueryParameter(str));
+        }
+        ((Bundle)second).putLong("_cc", (l - 1L) * 3600000L);
+        localObject = first;
+        if (localObject == null) {
+          localObject = "app";
+        } else {
+          localObject = (String)localObject;
+        }
+        zza.zzq().zzG((String)localObject, "_cmp", (Bundle)second);
+      }
+      zza.zzm().zzp.zzb(null);
+    }
+    zza.zzm().zzq.zzb(0L);
+  }
+  
+  final void zzc()
+  {
+    if ((zzd()) && (zze())) {
+      zza.zzm().zzp.zzb(null);
+    }
+  }
+  
+  final boolean zzd()
+  {
+    return zza.zzm().zzq.zza() > 0L;
+  }
+  
+  final boolean zze()
+  {
+    if (!zzd()) {
+      return false;
+    }
+    return zza.zzav().currentTimeMillis() - zza.zzm().zzq.zza() > zza.zzf().zzi(null, zzeb.zzQ);
+  }
+}

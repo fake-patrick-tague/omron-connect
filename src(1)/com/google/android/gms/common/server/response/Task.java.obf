@@ -1,0 +1,50 @@
+package com.google.android.gms.common.server.response;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+
+@ShowFirstParty
+@SafeParcelable.Class(creator="FieldMapPairCreator")
+public final class zam
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<zam> CREATOR = new zak();
+  @SafeParcelable.VersionField(id=1)
+  final int zaa;
+  @SafeParcelable.Field(id=2)
+  final String zab;
+  @SafeParcelable.Field(id=3)
+  final FastJsonResponse.Field<?, ?> zac;
+  
+  @SafeParcelable.Constructor
+  zam(@SafeParcelable.Param(id=1) int paramInt, @SafeParcelable.Param(id=2) String paramString, @SafeParcelable.Param(id=3) FastJsonResponse.Field<?, ?> paramField)
+  {
+    zaa = paramInt;
+    zab = paramString;
+    zac = paramField;
+  }
+  
+  zam(String paramString, FastJsonResponse.Field<?, ?> paramField)
+  {
+    zaa = 1;
+    zab = paramString;
+    zac = paramField;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zaa);
+    SafeParcelWriter.writeString(paramParcel, 2, zab, false);
+    SafeParcelWriter.writeParcelable(paramParcel, 3, zac, paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

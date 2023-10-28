@@ -1,0 +1,180 @@
+package androidx.lifecycle;
+
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Handler;
+
+public class v
+  implements m
+{
+  private static final v b = new v();
+  private int c = 0;
+  private int d = 0;
+  private boolean e = true;
+  private boolean f = true;
+  private Handler g;
+  private final n h = new n(this);
+  private Runnable i = new a();
+  w.a j = new b();
+  
+  private v() {}
+  
+  public static m h()
+  {
+    return b;
+  }
+  
+  static void i(Context paramContext)
+  {
+    b.e(paramContext);
+  }
+  
+  void a()
+  {
+    int k = d - 1;
+    d = k;
+    if (k == 0) {
+      g.postDelayed(i, 700L);
+    }
+  }
+  
+  void b()
+  {
+    int k = d + 1;
+    d = k;
+    if (k == 1)
+    {
+      if (e)
+      {
+        h.h(Lifecycle.Event.ON_RESUME);
+        e = false;
+        return;
+      }
+      g.removeCallbacks(i);
+    }
+  }
+  
+  void c()
+  {
+    int k = c + 1;
+    c = k;
+    if ((k == 1) && (f))
+    {
+      h.h(Lifecycle.Event.ON_START);
+      f = false;
+    }
+  }
+  
+  void d()
+  {
+    c -= 1;
+    g();
+  }
+  
+  void e(Context paramContext)
+  {
+    g = new Handler();
+    h.h(Lifecycle.Event.ON_CREATE);
+    ((Application)paramContext.getApplicationContext()).registerActivityLifecycleCallbacks(new c());
+  }
+  
+  void f()
+  {
+    if (d == 0)
+    {
+      e = true;
+      h.h(Lifecycle.Event.ON_PAUSE);
+    }
+  }
+  
+  void g()
+  {
+    if ((c == 0) && (e))
+    {
+      h.h(Lifecycle.Event.ON_STOP);
+      f = true;
+    }
+  }
+  
+  public Lifecycle getLifecycle()
+  {
+    return h;
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    public void run()
+    {
+      f();
+      g();
+    }
+  }
+  
+  class b
+    implements w.a
+  {
+    b() {}
+    
+    public void a() {}
+    
+    public void onResume()
+    {
+      b();
+    }
+    
+    public void onStart()
+    {
+      c();
+    }
+  }
+  
+  class c
+    extends f
+  {
+    c() {}
+    
+    public void onActivityCreated(Activity paramActivity, Bundle paramBundle)
+    {
+      if (Build.VERSION.SDK_INT < 29) {
+        w.f(paramActivity).h(j);
+      }
+    }
+    
+    public void onActivityPaused(Activity paramActivity)
+    {
+      a();
+    }
+    
+    public void onActivityPreCreated(Activity paramActivity, Bundle paramBundle)
+    {
+      paramActivity.registerActivityLifecycleCallbacks(new a());
+    }
+    
+    public void onActivityStopped(Activity paramActivity)
+    {
+      d();
+    }
+    
+    class a
+      extends f
+    {
+      a() {}
+      
+      public void onActivityPostResumed(Activity paramActivity)
+      {
+        b();
+      }
+      
+      public void onActivityPostStarted(Activity paramActivity)
+      {
+        c();
+      }
+    }
+  }
+}

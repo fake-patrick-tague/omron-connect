@@ -1,0 +1,196 @@
+package com.braze.ui.actions.brazeactions;
+
+import android.content.Context;
+import android.net.Uri;
+import com.braze.enums.Channel;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.ui.actions.brazeactions.steps.AddToCustomAttributeArrayStep;
+import com.braze.ui.actions.brazeactions.steps.AddToSubscriptionGroupStep;
+import com.braze.ui.actions.brazeactions.steps.ContainerStep;
+import com.braze.ui.actions.brazeactions.steps.IBrazeActionStep;
+import com.braze.ui.actions.brazeactions.steps.LogCustomEventStep;
+import com.braze.ui.actions.brazeactions.steps.NoOpStep;
+import com.braze.ui.actions.brazeactions.steps.OpenLinkExternallyStep;
+import com.braze.ui.actions.brazeactions.steps.OpenLinkInWebViewStep;
+import com.braze.ui.actions.brazeactions.steps.RemoveFromCustomAttributeArrayStep;
+import com.braze.ui.actions.brazeactions.steps.RequestPushPermissionStep;
+import com.braze.ui.actions.brazeactions.steps.SetCustomUserAttributeStep;
+import com.braze.ui.actions.brazeactions.steps.SetEmailSubscriptionStep;
+import com.braze.ui.actions.brazeactions.steps.SetPushNotificationSubscriptionStep;
+import com.braze.ui.actions.brazeactions.steps.StepData;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import kotlin.collections.a0;
+import kotlin.l;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+import kotlin.z.d;
+import org.json.JSONObject;
+
+public final class BrazeActionParser
+{
+  public static final BrazeActionParser INSTANCE = new BrazeActionParser();
+  
+  private BrazeActionParser() {}
+  
+  public final void execute(Context paramContext, final Uri paramUri, Channel paramChannel)
+  {
+    i.e(paramContext, "context");
+    i.e(paramUri, "uri");
+    i.e(paramChannel, "channel");
+    BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+    BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.$EnumSwitchMapping$0, null, new j(paramChannel)
+    {
+      public final String invoke()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Attempting to parse Braze Action with channel ");
+        localStringBuilder.append(BrazeActionParser.this);
+        localStringBuilder.append(" and uri:\n'");
+        localStringBuilder.append(paramUri);
+        localStringBuilder.append('\'');
+        return localStringBuilder.toString();
+      }
+    }, 2, null);
+    try
+    {
+      Object localObject2 = getBrazeActionVersionAndJson$android_sdk_ui_release(paramUri);
+      if (localObject2 == null)
+      {
+        paramContext = BrazeLogger.Priority.g;
+        paramChannel = execute.2.INSTANCE;
+        BrazeLogger.brazelog$default(localBrazeLogger, this, paramContext, null, paramChannel, 2, null);
+        return;
+      }
+      Object localObject1 = ((l)localObject2).a();
+      localObject1 = (String)localObject1;
+      localObject2 = ((l)localObject2).b();
+      localObject2 = (JSONObject)localObject2;
+      boolean bool = i.a(localObject1, "v1");
+      if (!bool)
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, new j((String)localObject1)
+        {
+          public final String invoke()
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("Braze Actions version ");
+            localStringBuilder.append(BrazeActionParser.this);
+            localStringBuilder.append(" is unsupported. Version must be v1");
+            return localStringBuilder.toString();
+          }
+        }, 3, null);
+        return;
+      }
+      parse$android_sdk_ui_release(paramContext, new StepData((JSONObject)localObject2, paramChannel));
+    }
+    catch (Exception paramContext)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.this$0, paramContext, new j(paramUri)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Failed to parse uri as a Braze Action.\n'");
+          localStringBuilder.append(BrazeActionParser.this);
+          localStringBuilder.append('\'');
+          return localStringBuilder.toString();
+        }
+      });
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.$EnumSwitchMapping$0, null, new j(paramUri)
+    {
+      public final String invoke()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Done handling Braze uri\n'");
+        localStringBuilder.append(BrazeActionParser.this);
+        localStringBuilder.append('\'');
+        return localStringBuilder.toString();
+      }
+    }, 2, null);
+  }
+  
+  public final boolean isBrazeActionUri(Uri paramUri)
+  {
+    if (paramUri != null) {
+      paramUri = paramUri.getScheme();
+    } else {
+      paramUri = null;
+    }
+    return i.a(paramUri, "brazeActions");
+  }
+  
+  public static enum ActionType
+  {
+    public static final Companion Companion;
+    private static final Map<String, ActionType> pluginMap;
+    private final IBrazeActionStep impl;
+    private final String key;
+    
+    static
+    {
+      Object localObject1 = ContainerStep.INSTANCE;
+      int i = 0;
+      CONTAINER = new ActionType("CONTAINER", 0, "container", (IBrazeActionStep)localObject1);
+      LOG_CUSTOM_EVENT = new ActionType("LOG_CUSTOM_EVENT", 1, "logCustomEvent", LogCustomEventStep.INSTANCE);
+      SET_CUSTOM_ATTRIBUTE = new ActionType("SET_CUSTOM_ATTRIBUTE", 2, "setCustomUserAttribute", SetCustomUserAttributeStep.INSTANCE);
+      REQUEST_PUSH_PERMISSION = new ActionType("REQUEST_PUSH_PERMISSION", 3, "requestPushPermission", RequestPushPermissionStep.INSTANCE);
+      localObject1 = AddToSubscriptionGroupStep.INSTANCE;
+      ADD_TO_SUBSCRIPTION_GROUP = new ActionType("ADD_TO_SUBSCRIPTION_GROUP", 4, "addToSubscriptionGroup", (IBrazeActionStep)localObject1);
+      REMOVE_FROM_SUBSCRIPTION_GROUP = new ActionType("REMOVE_FROM_SUBSCRIPTION_GROUP", 5, "removeFromSubscriptionGroup", (IBrazeActionStep)localObject1);
+      ADD_TO_CUSTOM_ATTRIBUTE_ARRAY = new ActionType("ADD_TO_CUSTOM_ATTRIBUTE_ARRAY", 6, "addToCustomAttributeArray", AddToCustomAttributeArrayStep.INSTANCE);
+      REMOVE_FROM_CUSTOM_ATTRIBUTE_ARRAY = new ActionType("REMOVE_FROM_CUSTOM_ATTRIBUTE_ARRAY", 7, "removeFromCustomAttributeArray", RemoveFromCustomAttributeArrayStep.INSTANCE);
+      SET_EMAIL_SUBSCRIPTION = new ActionType("SET_EMAIL_SUBSCRIPTION", 8, "setEmailNotificationSubscriptionType", SetEmailSubscriptionStep.INSTANCE);
+      SET_PUSH_NOTIFICATION_SUBSCRIPTION = new ActionType("SET_PUSH_NOTIFICATION_SUBSCRIPTION", 9, "setPushNotificationSubscriptionType", SetPushNotificationSubscriptionStep.INSTANCE);
+      OPEN_LINK_IN_WEBVIEW = new ActionType("OPEN_LINK_IN_WEBVIEW", 10, "openLinkInWebview", OpenLinkInWebViewStep.INSTANCE);
+      OPEN_LINK_EXTERNALLY = new ActionType("OPEN_LINK_EXTERNALLY", 11, "openLink", OpenLinkExternallyStep.INSTANCE);
+      INVALID = new ActionType("INVALID", 12, "", NoOpStep.INSTANCE);
+      $VALUES = $values();
+      Companion = new Companion(null);
+      localObject1 = values();
+      LinkedHashMap localLinkedHashMap = new LinkedHashMap(d.a(a0.a(localObject1.length), 16));
+      int j = localObject1.length;
+      while (i < j)
+      {
+        Object localObject2 = localObject1[i];
+        i += 1;
+        localLinkedHashMap.put(key, localObject2);
+      }
+      pluginMap = localLinkedHashMap;
+    }
+    
+    private ActionType(String paramString, IBrazeActionStep paramIBrazeActionStep)
+    {
+      key = paramString;
+      impl = paramIBrazeActionStep;
+    }
+    
+    public final IBrazeActionStep getImpl()
+    {
+      return impl;
+    }
+    
+    public static final class Companion
+    {
+      private Companion() {}
+      
+      public final BrazeActionParser.ActionType fromValue(String paramString)
+      {
+        Map localMap = BrazeActionParser.ActionType.access$getMap$cp();
+        Object localObject = paramString;
+        if (paramString == null) {
+          localObject = "";
+        }
+        localObject = localMap.get(localObject);
+        paramString = (String)localObject;
+        if (localObject == null) {
+          paramString = BrazeActionParser.ActionType.INVALID;
+        }
+        return (BrazeActionParser.ActionType)paramString;
+      }
+    }
+  }
+}

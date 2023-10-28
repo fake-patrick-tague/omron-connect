@@ -1,0 +1,3929 @@
+package com.braze;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.net.Uri;
+import android.net.Uri.Builder;
+import android.os.Build;
+import bo.app.a0;
+import bo.app.a1;
+import bo.app.a5;
+import bo.app.a8;
+import bo.app.b.a;
+import bo.app.b0;
+import bo.app.b1;
+import bo.app.c4;
+import bo.app.d1;
+import bo.app.d5;
+import bo.app.e2;
+import bo.app.e4;
+import bo.app.e4.a;
+import bo.app.f0;
+import bo.app.g1;
+import bo.app.h2;
+import bo.app.h4;
+import bo.app.h4.a;
+import bo.app.h6;
+import bo.app.i0;
+import bo.app.i4;
+import bo.app.j.a;
+import bo.app.k2;
+import bo.app.l0;
+import bo.app.m1;
+import bo.app.n0;
+import bo.app.n1;
+import bo.app.q6;
+import bo.app.r6;
+import bo.app.s3;
+import bo.app.x1;
+import bo.app.x3.a;
+import bo.app.x4;
+import bo.app.y4;
+import bo.app.z1;
+import bo.app.z2;
+import bo.app.z5;
+import bo.app.z5.a;
+import com.braze.configuration.BrazeConfig;
+import com.braze.configuration.BrazeConfig.Builder;
+import com.braze.configuration.BrazeConfigurationProvider;
+import com.braze.coroutine.BrazeCoroutineScope;
+import com.braze.events.ContentCardsUpdatedEvent;
+import com.braze.events.FeedUpdatedEvent;
+import com.braze.events.IEventSubscriber;
+import com.braze.events.IValueCallback;
+import com.braze.events.InAppMessageEvent;
+import com.braze.events.SdkDataWipeEvent;
+import com.braze.images.DefaultBrazeImageLoader;
+import com.braze.images.DefaultBrazeImageLoader.b;
+import com.braze.images.IBrazeImageLoader;
+import com.braze.managers.BrazeGeofenceManager;
+import com.braze.models.cards.Card;
+import com.braze.models.outgoing.BrazeProperties;
+import com.braze.support.BrazeFileUtils;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.DateTimeUtils;
+import com.braze.support.PermissionUtils;
+import com.braze.support.StringUtils;
+import com.braze.support.ValidationUtils;
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import kotlin.collections.c;
+import kotlin.collections.g0;
+import kotlin.n;
+import kotlin.t;
+import kotlin.text.g;
+import kotlin.w.d;
+import kotlin.w.i.a.l;
+import kotlin.x.c.p;
+import kotlin.x.d.s;
+import kotlinx.coroutines.h;
+import kotlinx.coroutines.m0;
+import kotlinx.coroutines.t0;
+
+public final class Braze
+{
+  public static final Companion Companion = new Companion(null);
+  private static final Set<String> KNOWN_APP_CRAWLER_DEVICE_MODELS;
+  private static final Set<String> NECESSARY_BRAZE_SDK_PERMISSIONS;
+  private static boolean areOutboundNetworkRequestsOffline;
+  private static final ReentrantLock brazeClassLock = new ReentrantLock();
+  private static final BrazeConfig clearConfigSentinel = new BrazeConfig.Builder().build();
+  private static IBrazeNotificationFactory customBrazeNotificationFactory;
+  private static IBrazeEndpointProvider endpointProvider;
+  private static final ReentrantLock endpointProviderLock;
+  private static volatile Braze instance;
+  private static final List<BrazeConfig> pendingConfigurations;
+  private static y4 sdkEnablementProvider;
+  private static boolean shouldMockNetworkRequestsAndDropEvents;
+  private Context applicationContext;
+  private BrazeUser brazeUser;
+  public BrazeConfigurationProvider configurationProvider;
+  public e2 deviceIdReader;
+  private h2 externalIEventMessenger;
+  public IBrazeImageLoader imageLoader;
+  private Boolean isApiKeyPresent;
+  private boolean isInstanceStopped;
+  private s3 offlineUserStorageProvider;
+  private k2 registrationDataProvider;
+  public z2 udm;
+  
+  static
+  {
+    KNOWN_APP_CRAWLER_DEVICE_MODELS = g0.a("calypso appcrawler");
+    NECESSARY_BRAZE_SDK_PERMISSIONS = g0.d(new String[] { "android.permission.ACCESS_NETWORK_STATE", "android.permission.INTERNET" });
+    endpointProviderLock = new ReentrantLock();
+    pendingConfigurations = new ArrayList();
+  }
+  
+  public Braze(final Context paramContext)
+  {
+    long l = System.nanoTime();
+    BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+    BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, a.b, 3, null);
+    Object localObject = paramContext.getApplicationContext();
+    kotlin.x.d.i.d(localObject, "context.applicationContext");
+    applicationContext = ((Context)localObject);
+    localObject = Build.MODEL;
+    if (localObject != null)
+    {
+      Set localSet = KNOWN_APP_CRAWLER_DEVICE_MODELS;
+      String str = ((String)localObject).toLowerCase(Locale.ROOT);
+      kotlin.x.d.i.d(str, "this as java.lang.String).toLowerCase(Locale.ROOT)");
+      if (localSet.contains(str))
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.I, null, new b((String)localObject), 2, null);
+        Companion.enableMockNetworkRequestsAndDropEventsMode();
+      }
+    }
+    setImageLoader(new DefaultBrazeImageLoader(applicationContext));
+    externalIEventMessenger = new b1(Companion.access$getSdkEnablementProvider(Companion, applicationContext));
+    run$android_sdk_base_release(c.b, false, new d(this, paramContext));
+    BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, new e(System.nanoTime(), l), 3, null);
+  }
+  
+  public static final boolean configure(Context paramContext, BrazeConfig paramBrazeConfig)
+  {
+    return Companion.configure(paramContext, paramBrazeConfig);
+  }
+  
+  private final ContentCardsUpdatedEvent getCachedContentCardsUpdatedEvent()
+  {
+    return (ContentCardsUpdatedEvent)runForResult$default(this, null, l.b, false, new m(this, null), 4, null);
+  }
+  
+  public static final Braze getInstance(Context paramContext)
+  {
+    return Companion.getInstance(paramContext);
+  }
+  
+  private final boolean isEphemeralEventKey(String paramString)
+  {
+    if (!getConfigurationProvider$android_sdk_base_release().isEphemeralEventsEnabled()) {
+      return false;
+    }
+    BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+    BrazeLogger.Priority localPriority = BrazeLogger.Priority.V;
+    BrazeLogger.brazelog$default(localBrazeLogger, this, localPriority, null, p0.b, 2, null);
+    final Set localSet = getConfigurationProvider$android_sdk_base_release().getEphemeralEventKeys();
+    final boolean bool = localSet.contains(paramString);
+    BrazeLogger.brazelog$default(localBrazeLogger, this, localPriority, null, new q0(paramString, localSet, bool), 2, null);
+    return bool;
+  }
+  
+  private final void publishError(Throwable paramThrowable)
+  {
+    if (udm == null)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.V, paramThrowable, n1.b);
+      return;
+    }
+    try
+    {
+      getUdm$android_sdk_base_release().l().a(paramThrowable, Throwable.class);
+      return;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, localException, new o1(paramThrowable));
+    }
+  }
+  
+  private final <T> T runForResult(T paramT, kotlin.x.c.a<String> paramA, boolean paramBoolean, p<? super m0, ? super d<? super T>, ? extends Object> paramP)
+  {
+    if ((paramBoolean) && (Companion.isDisabled())) {
+      return paramT;
+    }
+    try
+    {
+      paramP = h.f(null, new v2(paramP, null), 1, null);
+      return paramP;
+    }
+    catch (Exception paramP)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramP, paramA);
+      publishError(paramP);
+    }
+    return paramT;
+  }
+  
+  private final void setSyncPolicyOfflineStatus(final boolean paramBoolean)
+  {
+    run$android_sdk_base_release$default(this, new a3(paramBoolean), false, new b3(this, paramBoolean), 2, null);
+  }
+  
+  private final void setUserSpecificMemberVariablesAndStartDispatch(r6 paramR6)
+  {
+    setUdm$android_sdk_base_release(paramR6);
+    a5.a.a(getUdm$android_sdk_base_release().l());
+    q6 localQ6 = getUdm$android_sdk_base_release().b();
+    z1 localZ1 = getUdm$android_sdk_base_release().m();
+    s3 localS3 = offlineUserStorageProvider;
+    paramR6 = localS3;
+    if (localS3 == null)
+    {
+      kotlin.x.d.i.o("offlineUserStorageProvider");
+      paramR6 = null;
+    }
+    brazeUser = new BrazeUser(localQ6, localZ1, paramR6.a(), getUdm$android_sdk_base_release().h(), getUdm$android_sdk_base_release().e());
+    getUdm$android_sdk_base_release().q().a(getUdm$android_sdk_base_release().l());
+    getUdm$android_sdk_base_release().n().d();
+    getUdm$android_sdk_base_release().f().a(getUdm$android_sdk_base_release().n());
+  }
+  
+  private final void verifyProperSdkSetup()
+  {
+    Iterator localIterator = NECESSARY_BRAZE_SDK_PERMISSIONS.iterator();
+    int j = 0;
+    int i = 1;
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      if (!PermissionUtils.hasPermission(applicationContext, str))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, new n3(str), 2, null);
+        i = 0;
+      }
+    }
+    if (g.o(getConfigurationProvider$android_sdk_base_release().getBrazeApiKey().toString()))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, o3.b, 2, null);
+      i = j;
+    }
+    if (i == 0) {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, p3.b, 2, null);
+    }
+  }
+  
+  public static final void wipeData(Context paramContext)
+  {
+    Companion.wipeData(paramContext);
+  }
+  
+  public <T> void addSingleSynchronousSubscription(IEventSubscriber<T> paramIEventSubscriber, Class<T> paramClass)
+  {
+    kotlin.x.d.i.e(paramIEventSubscriber, "subscriber");
+    kotlin.x.d.i.e(paramClass, "eventClass");
+    try
+    {
+      externalIEventMessenger.b(paramClass, paramIEventSubscriber);
+      return;
+    }
+    catch (Exception paramIEventSubscriber)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramIEventSubscriber, new h(paramClass));
+      publishError(paramIEventSubscriber);
+    }
+  }
+  
+  public void changeUser(String paramString)
+  {
+    changeUser(paramString, null);
+  }
+  
+  public void changeUser(String paramString1, final String paramString2)
+  {
+    run$android_sdk_base_release$default(this, new n(paramString1), false, new o(paramString1, this, paramString2), 2, null);
+  }
+  
+  public void closeSession(Activity paramActivity)
+  {
+    run$android_sdk_base_release$default(this, p.b, false, new q(paramActivity, this), 2, null);
+  }
+  
+  public List<Card> getCachedContentCards()
+  {
+    if (Companion.isDisabled()) {
+      return null;
+    }
+    ContentCardsUpdatedEvent localContentCardsUpdatedEvent = getCachedContentCardsUpdatedEvent();
+    if (localContentCardsUpdatedEvent != null) {
+      return localContentCardsUpdatedEvent.getAllCards();
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, d0.b, 2, null);
+    return null;
+  }
+  
+  public final BrazeConfigurationProvider getConfigurationProvider$android_sdk_base_release()
+  {
+    BrazeConfigurationProvider localBrazeConfigurationProvider = configurationProvider;
+    if (localBrazeConfigurationProvider != null) {
+      return localBrazeConfigurationProvider;
+    }
+    kotlin.x.d.i.o("configurationProvider");
+    return null;
+  }
+  
+  public BrazeUser getCurrentUser()
+  {
+    return (BrazeUser)runForResult(null, r.b, false, new s(this, null));
+  }
+  
+  public void getCurrentUser(IValueCallback<BrazeUser> paramIValueCallback)
+  {
+    kotlin.x.d.i.e(paramIValueCallback, "completionCallback");
+    if (Companion.isDisabled())
+    {
+      paramIValueCallback.onError();
+      return;
+    }
+    try
+    {
+      h.d(a5.a, null, null, new h0(paramIValueCallback, this, null), 3, null);
+      return;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, i0.b);
+      paramIValueCallback.onError();
+      publishError(localException);
+    }
+  }
+  
+  public final e2 getDeviceIdReader$android_sdk_base_release()
+  {
+    e2 localE2 = deviceIdReader;
+    if (localE2 != null) {
+      return localE2;
+    }
+    kotlin.x.d.i.o("deviceIdReader");
+    return null;
+  }
+  
+  public final h2 getExternalIEventMessenger$android_sdk_base_release()
+  {
+    return externalIEventMessenger;
+  }
+  
+  public IBrazeImageLoader getImageLoader()
+  {
+    IBrazeImageLoader localIBrazeImageLoader = imageLoader;
+    if (localIBrazeImageLoader != null) {
+      return localIBrazeImageLoader;
+    }
+    kotlin.x.d.i.o("imageLoader");
+    return null;
+  }
+  
+  public final z2 getUdm$android_sdk_base_release()
+  {
+    z2 localZ2 = udm;
+    if (localZ2 != null) {
+      return localZ2;
+    }
+    kotlin.x.d.i.o("udm");
+    return null;
+  }
+  
+  public final Boolean isApiKeyPresent$android_sdk_base_release()
+  {
+    return isApiKeyPresent;
+  }
+  
+  public void logCustomEvent(String paramString)
+  {
+    logCustomEvent(paramString, null);
+  }
+  
+  public void logCustomEvent(String paramString, final BrazeProperties paramBrazeProperties)
+  {
+    if (paramBrazeProperties != null) {
+      paramBrazeProperties = paramBrazeProperties.clone();
+    } else {
+      paramBrazeProperties = null;
+    }
+    run$android_sdk_base_release$default(this, new r0(paramString), false, new s0(paramString, this, paramBrazeProperties), 2, null);
+  }
+  
+  public void logFeedDisplayed()
+  {
+    run$android_sdk_base_release$default(this, x0.b, false, new y0(this), 2, null);
+  }
+  
+  public void logPurchase(String paramString1, final String paramString2, final BigDecimal paramBigDecimal, final int paramInt, final BrazeProperties paramBrazeProperties)
+  {
+    if (paramBrazeProperties != null) {
+      paramBrazeProperties = paramBrazeProperties.clone();
+    } else {
+      paramBrazeProperties = null;
+    }
+    run$android_sdk_base_release$default(this, new b1(paramString1), false, new c1(paramString1, paramString2, paramBigDecimal, paramInt, this, paramBrazeProperties), 2, null);
+  }
+  
+  public void logPushNotificationActionClicked(String paramString1, final String paramString2, final String paramString3)
+  {
+    run$android_sdk_base_release$default(this, d1.b, false, new e1(paramString1, this, paramString2, paramString3), 2, null);
+  }
+  
+  public void logPushNotificationOpened(Intent paramIntent)
+  {
+    run$android_sdk_base_release$default(this, new h1(paramIntent), false, new i1(paramIntent, this), 2, null);
+  }
+  
+  public void logPushStoryPageClicked(final String paramString1, final String paramString2)
+  {
+    run$android_sdk_base_release$default(this, new j1(paramString2, paramString1), false, new k1(paramString1, paramString2, this), 2, null);
+  }
+  
+  public void openSession(Activity paramActivity)
+  {
+    run$android_sdk_base_release$default(this, l1.b, false, new m1(paramActivity, this), 2, null);
+  }
+  
+  public void refreshFeatureFlags()
+  {
+    run$android_sdk_base_release$default(this, r1.b, false, new s1(this), 2, null);
+  }
+  
+  public <T> void removeSingleSubscription(IEventSubscriber<T> paramIEventSubscriber, Class<T> paramClass)
+  {
+    kotlin.x.d.i.e(paramClass, "eventClass");
+    if (paramIEventSubscriber != null) {
+      try
+      {
+        externalIEventMessenger.c(paramClass, paramIEventSubscriber);
+        return;
+      }
+      catch (Exception paramIEventSubscriber)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramIEventSubscriber, new x1(paramClass));
+        publishError(paramIEventSubscriber);
+      }
+    }
+  }
+  
+  public void requestContentCardsRefresh(boolean paramBoolean)
+  {
+    run$android_sdk_base_release$default(this, new y1(paramBoolean), false, new z1(paramBoolean, this), 2, null);
+  }
+  
+  public void requestFeedRefresh()
+  {
+    run$android_sdk_base_release$default(this, a2.b, false, new b2(this), 2, null);
+  }
+  
+  public void requestFeedRefreshFromCache()
+  {
+    run$android_sdk_base_release$default(this, c2.b, false, new d2(this), 2, null);
+  }
+  
+  public void requestImmediateDataFlush()
+  {
+    run$android_sdk_base_release$default(this, m2.b, false, new n2(this), 2, null);
+  }
+  
+  public final void setApiKeyPresent$android_sdk_base_release(Boolean paramBoolean)
+  {
+    isApiKeyPresent = paramBoolean;
+  }
+  
+  public final void setConfigurationProvider$android_sdk_base_release(BrazeConfigurationProvider paramBrazeConfigurationProvider)
+  {
+    kotlin.x.d.i.e(paramBrazeConfigurationProvider, "<set-?>");
+    configurationProvider = paramBrazeConfigurationProvider;
+  }
+  
+  public final void setDeviceIdReader$android_sdk_base_release(e2 paramE2)
+  {
+    kotlin.x.d.i.e(paramE2, "<set-?>");
+    deviceIdReader = paramE2;
+  }
+  
+  public void setImageLoader(IBrazeImageLoader paramIBrazeImageLoader)
+  {
+    kotlin.x.d.i.e(paramIBrazeImageLoader, "<set-?>");
+    imageLoader = paramIBrazeImageLoader;
+  }
+  
+  public void setRegisteredPushToken(final String paramString)
+  {
+    run$android_sdk_base_release$default(this, new v1(paramString), false, new w1(this, paramString), 2, null);
+  }
+  
+  public final void setUdm$android_sdk_base_release(z2 paramZ2)
+  {
+    kotlin.x.d.i.e(paramZ2, "<set-?>");
+    udm = paramZ2;
+  }
+  
+  public void subscribeToContentCardsUpdates(IEventSubscriber<ContentCardsUpdatedEvent> paramIEventSubscriber)
+  {
+    kotlin.x.d.i.e(paramIEventSubscriber, "subscriber");
+    try
+    {
+      externalIEventMessenger.a(ContentCardsUpdatedEvent.class, paramIEventSubscriber);
+      return;
+    }
+    catch (Exception paramIEventSubscriber)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramIEventSubscriber, c3.b);
+      publishError(paramIEventSubscriber);
+    }
+  }
+  
+  public void subscribeToFeedUpdates(IEventSubscriber<FeedUpdatedEvent> paramIEventSubscriber)
+  {
+    kotlin.x.d.i.e(paramIEventSubscriber, "subscriber");
+    try
+    {
+      externalIEventMessenger.a(FeedUpdatedEvent.class, paramIEventSubscriber);
+      return;
+    }
+    catch (Exception paramIEventSubscriber)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramIEventSubscriber, g3.b);
+      publishError(paramIEventSubscriber);
+    }
+  }
+  
+  public void subscribeToNewInAppMessages(IEventSubscriber<InAppMessageEvent> paramIEventSubscriber)
+  {
+    kotlin.x.d.i.e(paramIEventSubscriber, "subscriber");
+    try
+    {
+      externalIEventMessenger.a(InAppMessageEvent.class, paramIEventSubscriber);
+      return;
+    }
+    catch (Exception paramIEventSubscriber)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramIEventSubscriber, i3.b);
+      publishError(paramIEventSubscriber);
+    }
+  }
+  
+  public static final class Companion
+  {
+    private Companion() {}
+    
+    private final y4 getSdkEnablementProvider(Context paramContext)
+    {
+      y4 localY42 = getSdkEnablementProvider$android_sdk_base_release();
+      y4 localY41 = localY42;
+      if (localY42 == null)
+      {
+        localY41 = new y4(paramContext);
+        setSdkEnablementProvider$android_sdk_base_release(localY41);
+      }
+      return localY41;
+    }
+    
+    private static final Uri setConfiguredCustomEndpoint$lambda-12$lambda-11(String paramString, Uri paramUri)
+    {
+      kotlin.x.d.i.e(paramUri, "brazeEndpoint");
+      Object localObject = Uri.parse(paramString);
+      String str = ((Uri)localObject).getScheme();
+      localObject = ((Uri)localObject).getEncodedAuthority();
+      paramUri = paramUri.buildUpon();
+      int j = 0;
+      int i;
+      if ((str != null) && (!g.o(str))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i == 0)
+      {
+        if (localObject != null)
+        {
+          i = j;
+          if (!g.o((CharSequence)localObject)) {}
+        }
+        else
+        {
+          i = 1;
+        }
+        if (i == 0)
+        {
+          paramUri.encodedAuthority((String)localObject);
+          paramUri.scheme(str);
+          return paramUri.build();
+        }
+      }
+      return paramUri.encodedAuthority(paramString).build();
+    }
+    
+    private final boolean shouldAllowSingletonInitialization()
+    {
+      Braze localBraze = Braze.access$getInstance$cp();
+      if (localBraze == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, t.b, 2, null);
+        return true;
+      }
+      if (Braze.access$isInstanceStopped$p(localBraze))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, u.b, 3, null);
+        return true;
+      }
+      if (kotlin.x.d.i.a(Boolean.FALSE, localBraze.isApiKeyPresent$android_sdk_base_release()))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, v.b, 3, null);
+        return true;
+      }
+      return false;
+    }
+    
+    private static final boolean wipeData$lambda-9(File paramFile, String paramString)
+    {
+      kotlin.x.d.i.e(paramString, "name");
+      boolean bool2 = false;
+      boolean bool1;
+      if ((!g.v(paramString, "com.appboy", false, 2, null)) || (kotlin.x.d.i.a(paramString, "com.appboy.override.configuration.cache")))
+      {
+        bool1 = bool2;
+        if (g.v(paramString, "com.braze", false, 2, null))
+        {
+          bool1 = bool2;
+          if (kotlin.x.d.i.a(paramString, "com.braze.override.configuration.cache")) {}
+        }
+      }
+      else
+      {
+        bool1 = true;
+      }
+      return bool1;
+    }
+    
+    public final boolean configure(Context paramContext, BrazeConfig paramBrazeConfig)
+    {
+      kotlin.x.d.i.e(paramContext, "context");
+      BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+      BrazeLogger.Priority localPriority = BrazeLogger.Priority.I;
+      BrazeLogger.brazelog$default(localBrazeLogger, this, localPriority, null, new c(paramBrazeConfig), 2, null);
+      paramContext = Braze.access$getBrazeClassLock$cp();
+      paramContext.lock();
+      try
+      {
+        Braze localBraze = Braze.access$getInstance$cp();
+        if ((localBraze != null) && (!Braze.access$isInstanceStopped$p(localBraze)) && (kotlin.x.d.i.a(Boolean.TRUE, localBraze.isApiKeyPresent$android_sdk_base_release())))
+        {
+          BrazeLogger.brazelog$default(localBrazeLogger, Braze.Companion, localPriority, null, d.b, 2, null);
+          return false;
+        }
+        if (paramBrazeConfig != null)
+        {
+          Braze.access$getPendingConfigurations$cp().add(paramBrazeConfig);
+        }
+        else
+        {
+          BrazeLogger.brazelog$default(localBrazeLogger, Braze.Companion, localPriority, null, e.b, 2, null);
+          Braze.access$getPendingConfigurations$cp().add(Braze.access$getClearConfigSentinel$cp());
+        }
+        return true;
+      }
+      finally
+      {
+        paramContext.unlock();
+      }
+    }
+    
+    public final boolean enableMockNetworkRequestsAndDropEventsMode()
+    {
+      if (Braze.access$getInstance$cp() == null)
+      {
+        ReentrantLock localReentrantLock = Braze.access$getBrazeClassLock$cp();
+        localReentrantLock.lock();
+        try
+        {
+          if (Braze.access$getInstance$cp() == null)
+          {
+            if (Braze.access$getShouldMockNetworkRequestsAndDropEvents$cp())
+            {
+              BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, Braze.Companion, BrazeLogger.Priority.I, null, h.b, 2, null);
+            }
+            else
+            {
+              BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, Braze.Companion, BrazeLogger.Priority.I, null, i.b, 2, null);
+              Braze.access$setShouldMockNetworkRequestsAndDropEvents$cp(true);
+            }
+            return true;
+          }
+          t localT = t.a;
+        }
+        finally
+        {
+          localReentrantLock.unlock();
+        }
+      }
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, j.b, 2, null);
+      return false;
+    }
+    
+    public final Uri getApiEndpoint(Uri paramUri)
+    {
+      kotlin.x.d.i.e(paramUri, "brazeEndpoint");
+      ReentrantLock localReentrantLock = Braze.access$getEndpointProviderLock$cp();
+      localReentrantLock.lock();
+      try
+      {
+        Object localObject = Braze.access$getEndpointProvider$cp();
+        if (localObject != null) {
+          try
+          {
+            localObject = ((IBrazeEndpointProvider)localObject).getApiEndpoint(paramUri);
+            if (localObject != null) {
+              return localObject;
+            }
+          }
+          catch (Exception localException)
+          {
+            BrazeLogger.INSTANCE.brazelog(Braze.Companion, BrazeLogger.Priority.W, localException, m.b);
+          }
+        }
+        return paramUri;
+      }
+      finally
+      {
+        localReentrantLock.unlock();
+      }
+    }
+    
+    public final String getConfiguredApiKey(BrazeConfigurationProvider paramBrazeConfigurationProvider)
+    {
+      kotlin.x.d.i.e(paramBrazeConfigurationProvider, "configurationProvider");
+      try
+      {
+        paramBrazeConfigurationProvider = paramBrazeConfigurationProvider.getBrazeApiKey().toString();
+        return paramBrazeConfigurationProvider;
+      }
+      catch (Exception paramBrazeConfigurationProvider)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramBrazeConfigurationProvider, n.b);
+      }
+      return null;
+    }
+    
+    public final IBrazeNotificationFactory getCustomBrazeNotificationFactory()
+    {
+      return Braze.access$getCustomBrazeNotificationFactory$cp();
+    }
+    
+    public final Braze getInstance(Context paramContext)
+    {
+      kotlin.x.d.i.e(paramContext, "context");
+      if (shouldAllowSingletonInitialization())
+      {
+        ReentrantLock localReentrantLock = Braze.access$getBrazeClassLock$cp();
+        localReentrantLock.lock();
+        try
+        {
+          if (Braze.Companion.shouldAllowSingletonInitialization())
+          {
+            paramContext = new Braze(paramContext);
+            Braze.access$setInstanceStopped$p(paramContext, false);
+            Braze.access$setInstance$cp(paramContext);
+            return paramContext;
+          }
+          paramContext = t.a;
+        }
+        finally
+        {
+          localReentrantLock.unlock();
+        }
+      }
+      paramContext = Braze.access$getInstance$cp();
+      Objects.requireNonNull(paramContext, "null cannot be cast to non-null type com.braze.Braze");
+      return paramContext;
+    }
+    
+    public final boolean getOutboundNetworkRequestsOffline()
+    {
+      return Braze.access$getAreOutboundNetworkRequestsOffline$cp();
+    }
+    
+    public final y4 getSdkEnablementProvider$android_sdk_base_release()
+    {
+      return Braze.access$getSdkEnablementProvider$cp();
+    }
+    
+    public final boolean isDisabled()
+    {
+      y4 localY4 = getSdkEnablementProvider$android_sdk_base_release();
+      if (localY4 == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, o.b, 3, null);
+        return false;
+      }
+      Braze localBraze = Braze.access$getInstance$cp();
+      if ((localBraze != null) && (kotlin.x.d.i.a(Boolean.FALSE, localBraze.isApiKeyPresent$android_sdk_base_release())))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, p.b, 2, null);
+        return true;
+      }
+      boolean bool = localY4.a();
+      if (bool) {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, q.b, 2, null);
+      }
+      return bool;
+    }
+    
+    public final void requestTriggersIfInAppMessageTestPush$android_sdk_base_release(Intent paramIntent, z1 paramZ1)
+    {
+      kotlin.x.d.i.e(paramIntent, "intent");
+      kotlin.x.d.i.e(paramZ1, "brazeManager");
+      paramIntent = paramIntent.getStringExtra("ab_push_fetch_test_triggers_key");
+      if ((paramIntent != null) && (kotlin.x.d.i.a(paramIntent, "true")))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, s.b, 2, null);
+        paramZ1.a(new x3.a(null, null, null, null, 15, null).c());
+      }
+    }
+    
+    public final void setConfiguredCustomEndpoint$android_sdk_base_release(String paramString)
+    {
+      ReentrantLock localReentrantLock = Braze.access$getEndpointProviderLock$cp();
+      localReentrantLock.lock();
+      try
+      {
+        Braze.Companion.setEndpointProvider(new a(paramString));
+        paramString = t.a;
+        return;
+      }
+      finally
+      {
+        localReentrantLock.unlock();
+      }
+    }
+    
+    public final void setEndpointProvider(IBrazeEndpointProvider paramIBrazeEndpointProvider)
+    {
+      ReentrantLock localReentrantLock = Braze.access$getEndpointProviderLock$cp();
+      localReentrantLock.lock();
+      try
+      {
+        Braze.access$setEndpointProvider$cp(paramIBrazeEndpointProvider);
+        paramIBrazeEndpointProvider = t.a;
+        return;
+      }
+      finally
+      {
+        localReentrantLock.unlock();
+      }
+    }
+    
+    public final void setOutboundNetworkRequestsOffline(boolean paramBoolean)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, new r(paramBoolean), 2, null);
+      ReentrantLock localReentrantLock = Braze.access$getBrazeClassLock$cp();
+      localReentrantLock.lock();
+      try
+      {
+        Object localObject1 = Braze.Companion;
+        Braze.access$setAreOutboundNetworkRequestsOffline$cp(paramBoolean);
+        localObject1 = Braze.access$getInstance$cp();
+        if (localObject1 != null)
+        {
+          Braze.access$setSyncPolicyOfflineStatus((Braze)localObject1, paramBoolean);
+          localObject1 = t.a;
+        }
+        return;
+      }
+      finally
+      {
+        localReentrantLock.unlock();
+      }
+    }
+    
+    public final void setSdkEnablementProvider$android_sdk_base_release(y4 paramY4)
+    {
+      Braze.access$setSdkEnablementProvider$cp(paramY4);
+    }
+    
+    public final void stopInstance$android_sdk_base_release()
+    {
+      try
+      {
+        Object localObject1 = BrazeLogger.INSTANCE;
+        BrazeLogger.brazelog$default((BrazeLogger)localObject1, this, BrazeLogger.Priority.I, null, w.b, 2, null);
+        ReentrantLock localReentrantLock = Braze.access$getBrazeClassLock$cp();
+        localReentrantLock.lock();
+        try
+        {
+          BrazeCoroutineScope.cancelChildren();
+          Braze localBraze = Braze.access$getInstance$cp();
+          if (localBraze != null)
+          {
+            Companion localCompanion = Braze.Companion;
+            BrazeLogger.brazelog$default((BrazeLogger)localObject1, localCompanion, BrazeLogger.Priority.V, null, x.b, 2, null);
+            localBraze.getExternalIEventMessenger$android_sdk_base_release().a(new SdkDataWipeEvent(), SdkDataWipeEvent.class);
+            BrazeLogger.brazelog$default((BrazeLogger)localObject1, localCompanion, null, null, y.b, 3, null);
+            a5.a.a();
+            if (udm != null)
+            {
+              localBraze.getUdm$android_sdk_base_release().d().a(true);
+              localBraze.getUdm$android_sdk_base_release().f().a();
+              localBraze.getUdm$android_sdk_base_release().i().unregisterGeofences();
+            }
+            Braze.access$setInstanceStopped$p(localBraze, true);
+          }
+          localObject1 = t.a;
+          return;
+        }
+        finally
+        {
+          localReentrantLock.unlock();
+        }
+        return;
+      }
+      catch (Exception localException)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, z.b);
+      }
+    }
+    
+    public final void wipeData(Context paramContext)
+    {
+      kotlin.x.d.i.e(paramContext, "context");
+      stopInstance$android_sdk_base_release();
+      try
+      {
+        z5.e.a(paramContext);
+        DefaultBrazeImageLoader.Companion.a(paramContext);
+      }
+      catch (Exception localException)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, localException, a0.b);
+      }
+      try
+      {
+        Object localObject = new File(getApplicationInfodataDir, "shared_prefs");
+        if (((File)localObject).exists())
+        {
+          if (!((File)localObject).isDirectory()) {
+            return;
+          }
+          localObject = ((File)localObject).listFiles(b.a);
+          if (localObject != null)
+          {
+            localObject = c.a((Object[])localObject);
+            if (localObject != null)
+            {
+              localObject = ((Iterable)localObject).iterator();
+              while (((Iterator)localObject).hasNext())
+              {
+                File localFile = (File)((Iterator)localObject).next();
+                BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, Braze.Companion, BrazeLogger.Priority.V, null, new b0(localFile), 2, null);
+                kotlin.x.d.i.d(localFile, "file");
+                BrazeFileUtils.deleteSharedPreferencesFile(paramContext, localFile);
+              }
+            }
+          }
+        }
+        else {}
+      }
+      catch (Exception paramContext)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.W, paramContext, c0.b);
+      }
+    }
+    
+    static final class a0
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a0 b = new a0();
+      
+      a0()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Failed to delete data from the internal storage cache.";
+      }
+    }
+    
+    static final class b0
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      b0(File paramFile)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Deleting shared prefs file at: ");
+        localStringBuilder.append(b.getAbsolutePath());
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class c
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      c(BrazeConfig paramBrazeConfig)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Braze.configure() called with configuration: ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class c0
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final c0 b = new c0();
+      
+      c0()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Failed to delete shared preference data for the Braze SDK.";
+      }
+    }
+    
+    static final class d
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final d b = new d();
+      
+      d()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Braze.configure() cannot be called while the singleton is still live.";
+      }
+    }
+    
+    static final class e
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final e b = new e();
+      
+      e()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Braze.configure() called with a null config; Clearing all configuration values.";
+      }
+    }
+    
+    static final class h
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final h b = new h();
+      
+      h()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Braze network requests already being mocked. Note that events dispatched in this mode are dropped.";
+      }
+    }
+    
+    static final class i
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final i b = new i();
+      
+      i()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Braze network requests will be mocked. Events dispatchedin this mode will be dropped.";
+      }
+    }
+    
+    static final class j
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final j b = new j();
+      
+      j()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Attempt to enable mocking Braze network requests had no effect since getInstance() has already been called.";
+      }
+    }
+    
+    static final class m
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final m b = new m();
+      
+      m()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Caught exception trying to get a Braze API endpoint from the BrazeEndpointProvider. Using the original URI";
+      }
+    }
+    
+    static final class n
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final n b = new n();
+      
+      n()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Caught exception while retrieving API key.";
+      }
+    }
+    
+    static final class o
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final o b = new o();
+      
+      o()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "SDK enablement provider was null. Returning SDK as enabled.";
+      }
+    }
+    
+    static final class p
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final p b = new p();
+      
+      p()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "API key not present. Actions will not be performed on the SDK.";
+      }
+    }
+    
+    static final class q
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final q b = new q();
+      
+      q()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "SDK is disabled. Actions will not be performed on the SDK.";
+      }
+    }
+    
+    static final class r
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      r(boolean paramBoolean)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Braze SDK outbound network requests are now ");
+        String str;
+        if (b) {
+          str = "disabled";
+        } else {
+          str = "enabled";
+        }
+        localStringBuilder.append(str);
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class s
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final s b = new s();
+      
+      s()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Push contained key for fetching test triggers, fetching triggers.";
+      }
+    }
+    
+    static final class t
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final t b = new t();
+      
+      t()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "The instance is null. Allowing instance initialization";
+      }
+    }
+    
+    static final class u
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final u b = new u();
+      
+      u()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "The instance was stopped. Allowing instance initialization";
+      }
+    }
+    
+    static final class v
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final v b = new v();
+      
+      v()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "No API key was found previously. Allowing instance initialization";
+      }
+    }
+    
+    static final class w
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final w b = new w();
+      
+      w()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Shutting down all queued work on the Braze SDK";
+      }
+    }
+    
+    static final class x
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final x b = new x();
+      
+      x()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Sending sdk data wipe event to external subscribers";
+      }
+    }
+    
+    static final class y
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final y b = new y();
+      
+      y()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Shutting down the singleton work queue";
+      }
+    }
+    
+    static final class z
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final z b = new z();
+      
+      z()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Failed to shutdown queued work on the Braze SDK.";
+      }
+    }
+  }
+  
+  static final class a
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final a b = new a();
+    
+    a()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Braze SDK Initializing";
+    }
+  }
+  
+  static final class a2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final a2 b = new a2();
+    
+    a2()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to request refresh of feed.";
+    }
+  }
+  
+  static final class a3
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    a3(boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set sync policy offline to ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class b
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    b(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Device build model matches a known crawler. Enabling mock network request mode. Device it: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class b1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    b1(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to log purchase event of: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class b2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    b2(Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      b.getUdm$android_sdk_base_release().m().a(new x3.a(null, null, null, null, 15, null).b());
+    }
+  }
+  
+  static final class b3
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    b3(Braze paramBraze, boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      b.getUdm$android_sdk_base_release().m().b(paramBoolean);
+      b.getUdm$android_sdk_base_release().d().a(paramBoolean);
+      Braze localBraze = b;
+      if (imageLoader != null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, localBraze, null, null, new a(paramBoolean), 3, null);
+        b.getImageLoader().setOffline(paramBoolean);
+      }
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      a(boolean paramBoolean)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Setting the image loader deny network downloads to ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+  }
+  
+  static final class c
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final c b = new c();
+    
+    c()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to perform initial Braze singleton setup.";
+    }
+  }
+  
+  static final class c1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    c1(String paramString1, String paramString2, BigDecimal paramBigDecimal, int paramInt, Braze paramBraze, BrazeProperties paramBrazeProperties)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      String str1 = b;
+      if (!ValidationUtils.isValidLogPurchaseInput(str1, paramString2, paramBigDecimal, paramInt, jdField_this.getUdm$android_sdk_base_release().e()))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, a.b, 2, null);
+        return;
+      }
+      Object localObject = paramBrazeProperties;
+      int i = 1;
+      if ((localObject == null) || (((BrazeProperties)localObject).isInvalid() != true)) {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, b.b, 2, null);
+        return;
+      }
+      str1 = ValidationUtils.ensureBrazeFieldLength(str1);
+      localObject = bo.app.j.h;
+      String str2 = paramString2;
+      kotlin.x.d.i.b(str2);
+      BigDecimal localBigDecimal = paramBigDecimal;
+      kotlin.x.d.i.b(localBigDecimal);
+      localObject = ((j.a)localObject).a(str1, str2, localBigDecimal, paramInt, paramBrazeProperties);
+      if (localObject == null) {
+        return;
+      }
+      if (jdField_this.getUdm$android_sdk_base_release().m().a((x1)localObject)) {
+        jdField_this.getUdm$android_sdk_base_release().k().a(new c4(str1, paramBrazeProperties, (x1)localObject));
+      }
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Log purchase input was invalid. Not logging in-app purchase to Braze.";
+      }
+    }
+    
+    static final class b
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final b b = new b();
+      
+      b()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Purchase logged with invalid properties. Not logging custom event to Braze.";
+      }
+    }
+  }
+  
+  static final class c2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final c2 b = new c2();
+    
+    c2()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to retrieve and publish feed from offline cache.";
+    }
+  }
+  
+  static final class c3
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final c3 b = new c3();
+    
+    c3()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to add subscriber for Content Cards updates.";
+    }
+  }
+  
+  static final class d
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    d(Braze paramBraze, Context paramContext)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      b.applyPendingRuntimeConfiguration$android_sdk_base_release();
+      b.setConfigurationProvider$android_sdk_base_release(new BrazeConfigurationProvider(Braze.access$getApplicationContext$p(b)));
+      Object localObject2 = b;
+      Object localObject1 = Braze.Companion;
+      Object localObject3 = ((Braze.Companion)localObject1).getConfiguredApiKey(((Braze)localObject2).getConfigurationProvider$android_sdk_base_release());
+      int j = 0;
+      int i;
+      if ((localObject3 != null) && (!g.o((CharSequence)localObject3))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      ((Braze)localObject2).setApiKeyPresent$android_sdk_base_release(Boolean.valueOf(i ^ 0x1));
+      BrazeLogger.setInitialLogLevelFromConfiguration(b.getConfigurationProvider$android_sdk_base_release().getLoggerInitialLogLevel());
+      BrazeLogger.checkForSystemLogLevelProperty$default(false, 1, null);
+      if (Braze.Companion.access$getSdkEnablementProvider((Braze.Companion)localObject1, paramContext).a()) {
+        ((Braze.Companion)localObject1).setOutboundNetworkRequestsOffline(true);
+      }
+      b.setDeviceIdReader$android_sdk_base_release(new n0(Braze.access$getApplicationContext$p(b)));
+      Braze.access$setOfflineUserStorageProvider$p(b, new s3(Braze.access$getApplicationContext$p(b)));
+      Braze.access$setRegistrationDataProvider$p(b, new i4(Braze.access$getApplicationContext$p(b), b.getConfigurationProvider$android_sdk_base_release()));
+      localObject2 = b.getConfigurationProvider$android_sdk_base_release().getCustomEndpoint();
+      if (localObject2 != null)
+      {
+        i = j;
+        if (!g.o((CharSequence)localObject2)) {}
+      }
+      else
+      {
+        i = 1;
+      }
+      if (i == 0) {
+        ((Braze.Companion)localObject1).setConfiguredCustomEndpoint$android_sdk_base_release(b.getConfigurationProvider$android_sdk_base_release().getCustomEndpoint());
+      }
+      try
+      {
+        if (b.getConfigurationProvider$android_sdk_base_release().isFirebaseCloudMessagingRegistrationEnabled())
+        {
+          localObject3 = paramContext;
+          localObject2 = Braze.access$getRegistrationDataProvider$p(b);
+          localObject1 = localObject2;
+          if (localObject2 == null)
+          {
+            kotlin.x.d.i.o("registrationDataProvider");
+            localObject1 = null;
+          }
+          localObject1 = new n1((Context)localObject3, (k2)localObject1);
+          if (((n1)localObject1).a())
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.I, null, b.b, 2, null);
+            localObject2 = b.getConfigurationProvider$android_sdk_base_release().getFirebaseCloudMessagingSenderIdKey();
+            if (localObject2 != null) {
+              ((n1)localObject1).a((String)localObject2);
+            }
+          }
+          else
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.W, null, c.b, 2, null);
+          }
+        }
+        else
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.I, null, d.b, 2, null);
+        }
+        if (b.getConfigurationProvider$android_sdk_base_release().isAdmMessagingRegistrationEnabled())
+        {
+          if (bo.app.b.c.a(Braze.access$getApplicationContext$p(b)))
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.I, null, e.b, 2, null);
+            localObject3 = Braze.access$getApplicationContext$p(b);
+            localObject2 = Braze.access$getRegistrationDataProvider$p(b);
+            localObject1 = localObject2;
+            if (localObject2 == null)
+            {
+              kotlin.x.d.i.o("registrationDataProvider");
+              localObject1 = null;
+            }
+            new bo.app.b((Context)localObject3, (k2)localObject1).a();
+          }
+          else
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.W, null, f.b, 2, null);
+          }
+        }
+        else {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.I, null, g.b, 2, null);
+        }
+        Braze.access$verifyProperSdkSetup(b);
+      }
+      catch (Exception localException1)
+      {
+        BrazeLogger.INSTANCE.brazelog(b, BrazeLogger.Priority.E, localException1, h.b);
+      }
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.V, null, i.b, 2, null);
+      label719:
+      for (;;)
+      {
+        try
+        {
+          localObject3 = b;
+          Context localContext = Braze.access$getApplicationContext$p((Braze)localObject3);
+          s3 localS3 = Braze.access$getOfflineUserStorageProvider$p(b);
+          if (localS3 == null)
+          {
+            kotlin.x.d.i.o("offlineUserStorageProvider");
+            localS3 = null;
+            BrazeConfigurationProvider localBrazeConfigurationProvider = b.getConfigurationProvider$android_sdk_base_release();
+            h2 localH2 = b.getExternalIEventMessenger$android_sdk_base_release();
+            e2 localE2 = b.getDeviceIdReader$android_sdk_base_release();
+            localObject2 = Braze.access$getRegistrationDataProvider$p(b);
+            if (localObject2 != null) {
+              break label719;
+            }
+            kotlin.x.d.i.o("registrationDataProvider");
+            localObject2 = null;
+            Braze.access$setUserSpecificMemberVariablesAndStartDispatch((Braze)localObject3, new r6(localContext, localS3, localBrazeConfigurationProvider, localH2, localE2, (k2)localObject2, Braze.access$getShouldMockNetworkRequestsAndDropEvents$cp(), Braze.access$getAreOutboundNetworkRequestsOffline$cp()));
+            return;
+          }
+        }
+        catch (Exception localException2)
+        {
+          BrazeLogger.INSTANCE.brazelog(b, BrazeLogger.Priority.E, localException2, a.b);
+          Braze.access$publishError(b, localException2);
+          return;
+        }
+      }
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Failed to startup user dependency manager.";
+      }
+    }
+    
+    static final class b
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final b b = new b();
+      
+      b()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Firebase Cloud Messaging found. Setting up Firebase Cloud Messaging.";
+      }
+    }
+    
+    static final class c
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final c b = new c();
+      
+      c()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Firebase Cloud Messaging requirements not met. Braze will not register for Firebase Cloud Messaging.";
+      }
+    }
+    
+    static final class d
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final d b = new d();
+      
+      d()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Automatic Firebase Cloud Messaging registration not enabled in configuration. Braze will not register for Firebase Cloud Messaging.";
+      }
+    }
+    
+    static final class e
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final e b = new e();
+      
+      e()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Amazon Device Messaging found. Setting up Amazon Device Messaging";
+      }
+    }
+    
+    static final class f
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final f b = new f();
+      
+      f()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "ADM manifest requirements not met. Braze will not register for ADM.";
+      }
+    }
+    
+    static final class g
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final g b = new g();
+      
+      g()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Automatic ADM registration not enabled in configuration. Braze will not register for ADM.";
+      }
+    }
+    
+    static final class h
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final h b = new h();
+      
+      h()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Failed to setup pre SDK tasks";
+      }
+    }
+    
+    static final class i
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final i b = new i();
+      
+      i()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Starting up a new user dependency manager";
+      }
+    }
+  }
+  
+  static final class d0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final d0 b = new d0();
+    
+    d0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "The ContentCardsUpdatedEvent was null. Returning null for the list of cached cards.";
+    }
+  }
+  
+  static final class d1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final d1 b = new d1();
+    
+    d1()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to log push notification action clicked.";
+    }
+  }
+  
+  static final class d2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    d2(Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      b.getExternalIEventMessenger$android_sdk_base_release().a(b.getUdm$android_sdk_base_release().g().a(), FeedUpdatedEvent.class);
+    }
+  }
+  
+  static final class e
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    e(long paramLong1, long paramLong2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Braze SDK loaded in ");
+      localStringBuilder.append(TimeUnit.MILLISECONDS.convert(b - c, TimeUnit.NANOSECONDS));
+      localStringBuilder.append(" ms.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class e1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    e1(String paramString1, Braze paramBraze, String paramString2, String paramString3)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      String str = b;
+      int j = 0;
+      int i;
+      if ((str != null) && (!g.o(str))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, a.b, 2, null);
+        return;
+      }
+      str = paramString2;
+      if ((str != null) && (!g.o(str))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, b.b, 2, null);
+        return;
+      }
+      str = paramString3;
+      if (str != null)
+      {
+        i = j;
+        if (!g.o(str)) {}
+      }
+      else
+      {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, c.b, 2, null);
+        return;
+      }
+      jdField_this.getUdm$android_sdk_base_release().m().a(e4.k.a(b, paramString2, paramString3));
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "No campaign Id associated with this notification (this is expected for test sends). Not logging push notification action clicked.";
+      }
+    }
+    
+    static final class b
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final b b = new b();
+      
+      b()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Action ID cannot be null or blank.";
+      }
+    }
+    
+    static final class c
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final c b = new c();
+      
+      c()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Action Type cannot be null or blank.";
+      }
+    }
+  }
+  
+  static final class f
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    f(String paramString1, String paramString2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to update ContentCard storage provider with single card update. User id: ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" Serialized json: ");
+      localStringBuilder.append(c);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class g
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    g(String paramString1, Braze paramBraze, String paramString2)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      if (g.o(b))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, c, BrazeLogger.Priority.W, null, new a(d, b), 2, null);
+        return;
+      }
+      a0 localA0 = new a0(b);
+      c.getUdm$android_sdk_base_release().j().a(localA0, d);
+      c.getExternalIEventMessenger$android_sdk_base_release().a(c.getUdm$android_sdk_base_release().j().b(), ContentCardsUpdatedEvent.class);
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      a(String paramString1, String paramString2)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Cannot add null or blank card json to storage. Returning. User id: ");
+        localStringBuilder.append(b);
+        localStringBuilder.append(" Serialized json: ");
+        localStringBuilder.append(c);
+        return localStringBuilder.toString();
+      }
+    }
+  }
+  
+  static final class g2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    g2(boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to request geofence refresh with rate limit ignore: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class g3
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final g3 b = new g3();
+    
+    g3()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to add subscriber for feed updates.";
+    }
+  }
+  
+  static final class h
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    h(Class<T> paramClass)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to add synchronous subscriber for class: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  @kotlin.w.i.a.f(c="com.braze.Braze$getCurrentUser$1", f="Braze.kt", l={768}, m="invokeSuspend")
+  static final class h0
+    extends l
+    implements p<m0, d<? super t>, Object>
+  {
+    int b;
+    
+    h0(IValueCallback<BrazeUser> paramIValueCallback, Braze paramBraze, d<? super h0> paramD)
+    {
+      super(paramD);
+    }
+    
+    public final Object a(m0 paramM0, d<? super t> paramD)
+    {
+      return ((h0)create(paramM0, paramD)).invokeSuspend(t.a);
+    }
+    
+    public final d<t> create(Object paramObject, d<?> paramD)
+    {
+      return new h0(c, jdField_this, paramD);
+    }
+    
+    public final Object invokeSuspend(Object paramObject)
+    {
+      Object localObject = kotlin.coroutines.intrinsics.a.c();
+      int i = b;
+      if (i != 0)
+      {
+        if (i == 1) {
+          n.b(paramObject);
+        } else {
+          throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+        }
+      }
+      else
+      {
+        n.b(paramObject);
+        paramObject = BrazeCoroutineScope.INSTANCE.getCoroutineContext();
+        a localA = new a(c, jdField_this, null);
+        b = 1;
+        if (h.g(paramObject, localA, this) == localObject) {
+          return localObject;
+        }
+      }
+      return t.a;
+    }
+    
+    @kotlin.w.i.a.f(c="com.braze.Braze$getCurrentUser$1$1", f="Braze.kt", l={}, m="invokeSuspend")
+    static final class a
+      extends l
+      implements p<m0, d<? super t>, Object>
+    {
+      int b;
+      
+      a(IValueCallback<BrazeUser> paramIValueCallback, Braze paramBraze, d<? super a> paramD)
+      {
+        super(paramD);
+      }
+      
+      public final Object a(m0 paramM0, d<? super t> paramD)
+      {
+        return ((a)create(paramM0, paramD)).invokeSuspend(t.a);
+      }
+      
+      public final d<t> create(Object paramObject, d<?> paramD)
+      {
+        return new a(c, d, paramD);
+      }
+      
+      public final Object invokeSuspend(Object paramObject)
+      {
+        kotlin.coroutines.intrinsics.a.c();
+        if (b == 0)
+        {
+          n.b(paramObject);
+          IValueCallback localIValueCallback = c;
+          BrazeUser localBrazeUser = Braze.access$getBrazeUser$p(d);
+          paramObject = localBrazeUser;
+          if (localBrazeUser == null)
+          {
+            kotlin.x.d.i.o("brazeUser");
+            paramObject = null;
+          }
+          localIValueCallback.onSuccess(paramObject);
+          return t.a;
+        }
+        throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+      }
+    }
+  }
+  
+  static final class h1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    h1(Intent paramIntent)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Error logging push notification with intent: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class h2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    h2(Braze paramBraze, boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      b.getUdm$android_sdk_base_release().i().requestGeofenceRefresh(c);
+    }
+  }
+  
+  static final class i
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final i b = new i();
+    
+    i()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Applying any pending runtime configuration values";
+    }
+  }
+  
+  static final class i0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final i0 b = new i0();
+    
+    i0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to retrieve the current user.";
+    }
+  }
+  
+  static final class i1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    i1(Intent paramIntent, Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      Object localObject = b;
+      if (localObject == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.I, null, a.b, 2, null);
+        return;
+      }
+      localObject = ((Intent)localObject).getStringExtra("cid");
+      int i;
+      if ((localObject != null) && (!g.o((CharSequence)localObject))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i == 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.I, null, new b((String)localObject), 2, null);
+        jdField_this.getUdm$android_sdk_base_release().m().a(h4.j.a((String)localObject));
+      }
+      else
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.I, null, c.b, 2, null);
+      }
+      Braze.Companion.requestTriggersIfInAppMessageTestPush$android_sdk_base_release(b, jdField_this.getUdm$android_sdk_base_release().m());
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Cannot logPushNotificationOpened with null intent. Not logging push click.";
+      }
+    }
+    
+    static final class b
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      b(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Logging push click. Campaign Id: ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class c
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final c b = new c();
+      
+      c()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "No campaign Id associated with this notification (this is expected for test sends). Not logging push click.";
+      }
+    }
+  }
+  
+  static final class i3
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final i3 b = new i3();
+    
+    i3()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to add subscriber to new in-app messages.";
+    }
+  }
+  
+  static final class j
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final j b = new j();
+    
+    j()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Clearing config values";
+    }
+  }
+  
+  static final class j1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    j1(String paramString1, String paramString2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to log push story page clicked for pageId: ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" campaignId: ");
+      localStringBuilder.append(paramString1);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class k
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    k(BrazeConfig paramBrazeConfig)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Setting pending config object: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class k1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    k1(String paramString1, String paramString2, Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      if (!ValidationUtils.isValidPushStoryClickInput(b, paramString2))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, a.b, 2, null);
+        return;
+      }
+      Object localObject = bo.app.j.h;
+      String str1 = b;
+      kotlin.x.d.i.b(str1);
+      String str2 = paramString2;
+      kotlin.x.d.i.b(str2);
+      localObject = ((j.a)localObject).e(str1, str2);
+      if (localObject != null) {
+        jdField_this.getUdm$android_sdk_base_release().m().a((x1)localObject);
+      }
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Push story page click input was invalid. Not logging in-app purchase to Braze.";
+      }
+    }
+  }
+  
+  static final class l
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final l b = new l();
+    
+    l()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to retrieve the cached ContentCardsUpdatedEvent.";
+    }
+  }
+  
+  static final class l1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final l1 b = new l1();
+    
+    l1()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to open session.";
+    }
+  }
+  
+  @kotlin.w.i.a.f(c="com.braze.Braze$cachedContentCardsUpdatedEvent$2", f="Braze.kt", l={}, m="invokeSuspend")
+  static final class m
+    extends l
+    implements p<m0, d<? super ContentCardsUpdatedEvent>, Object>
+  {
+    int b;
+    
+    m(Braze paramBraze, d<? super m> paramD)
+    {
+      super(paramD);
+    }
+    
+    public final Object a(m0 paramM0, d<? super ContentCardsUpdatedEvent> paramD)
+    {
+      return ((m)create(paramM0, paramD)).invokeSuspend(t.a);
+    }
+    
+    public final d<t> create(Object paramObject, d<?> paramD)
+    {
+      return new m(c, paramD);
+    }
+    
+    public final Object invokeSuspend(Object paramObject)
+    {
+      kotlin.coroutines.intrinsics.a.c();
+      if (b == 0)
+      {
+        n.b(paramObject);
+        return c.getUdm$android_sdk_base_release().j().b();
+      }
+      throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+    }
+  }
+  
+  static final class m1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    m1(Activity paramActivity, Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      if (b == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.I, null, a.b, 2, null);
+        return;
+      }
+      jdField_this.getUdm$android_sdk_base_release().m().openSession(b);
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Cannot open session with null activity.";
+      }
+    }
+  }
+  
+  static final class m2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final m2 b = new m2();
+    
+    m2()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to request data flush.";
+    }
+  }
+  
+  static final class n
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    n(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set external id to: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class n0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final n0 b = new n0();
+    
+    n0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Error handling test in-app message push";
+    }
+  }
+  
+  static final class n1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final n1 b = new n1();
+    
+    n1()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "User dependency manager is uninitialized. Not publishing error.";
+    }
+  }
+  
+  static final class n2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    n2(Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.V, null, a.b, 2, null);
+      b.getUdm$android_sdk_base_release().m().b();
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "requestImmediateDataFlush() called";
+      }
+    }
+  }
+  
+  static final class n3
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    n3(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("The Braze SDK requires the permission ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(". Check your AndroidManifest.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class o
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    o(String paramString1, Braze paramBraze, String paramString2)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      Object localObject1 = b;
+      int k = 1;
+      int j = 1;
+      int i;
+      if ((localObject1 != null) && (((CharSequence)localObject1).length() != 0)) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, a.b, 2, null);
+        return;
+      }
+      if (StringUtils.getByteSize(b) > 997L)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, new b(b), 2, null);
+        return;
+      }
+      Object localObject2 = Braze.access$getBrazeUser$p(jdField_this);
+      localObject1 = localObject2;
+      if (localObject2 == null)
+      {
+        kotlin.x.d.i.o("brazeUser");
+        localObject1 = null;
+      }
+      localObject1 = ((BrazeUser)localObject1).getUserId();
+      if (kotlin.x.d.i.a(localObject1, b))
+      {
+        localObject1 = BrazeLogger.INSTANCE;
+        BrazeLogger.brazelog$default((BrazeLogger)localObject1, jdField_this, BrazeLogger.Priority.I, null, new c(b), 2, null);
+        localObject2 = paramString2;
+        i = j;
+        if (localObject2 != null) {
+          if (g.o((CharSequence)localObject2)) {
+            i = j;
+          } else {
+            i = 0;
+          }
+        }
+        if (i == 0)
+        {
+          BrazeLogger.brazelog$default((BrazeLogger)localObject1, jdField_this, null, null, new d(paramString2), 3, null);
+          jdField_this.getUdm$android_sdk_base_release().o().a(paramString2);
+        }
+      }
+      else
+      {
+        jdField_this.getUdm$android_sdk_base_release().l().b();
+        if (kotlin.x.d.i.a(localObject1, ""))
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.I, null, new e(b), 2, null);
+          localObject2 = Braze.access$getOfflineUserStorageProvider$p(jdField_this);
+          localObject1 = localObject2;
+          if (localObject2 == null)
+          {
+            kotlin.x.d.i.o("offlineUserStorageProvider");
+            localObject1 = null;
+          }
+          ((s3)localObject1).a(b);
+          localObject2 = Braze.access$getBrazeUser$p(jdField_this);
+          localObject1 = localObject2;
+          if (localObject2 == null)
+          {
+            kotlin.x.d.i.o("brazeUser");
+            localObject1 = null;
+          }
+          ((BrazeUser)localObject1).setUserId(b);
+        }
+        else
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.I, null, new f((String)localObject1, b), 2, null);
+          localObject1 = new FeedUpdatedEvent(new ArrayList(), b, false, DateTimeUtils.nowInSeconds());
+          jdField_this.getExternalIEventMessenger$android_sdk_base_release().a(localObject1, FeedUpdatedEvent.class);
+        }
+        jdField_this.getUdm$android_sdk_base_release().m().e();
+        localObject2 = Braze.access$getOfflineUserStorageProvider$p(jdField_this);
+        localObject1 = localObject2;
+        if (localObject2 == null)
+        {
+          kotlin.x.d.i.o("offlineUserStorageProvider");
+          localObject1 = null;
+        }
+        ((s3)localObject1).a(b);
+        z2 localZ2 = jdField_this.getUdm$android_sdk_base_release();
+        Context localContext = Braze.access$getApplicationContext$p(jdField_this);
+        localObject1 = Braze.access$getOfflineUserStorageProvider$p(jdField_this);
+        if (localObject1 == null)
+        {
+          kotlin.x.d.i.o("offlineUserStorageProvider");
+          localObject1 = null;
+        }
+        BrazeConfigurationProvider localBrazeConfigurationProvider = jdField_this.getConfigurationProvider$android_sdk_base_release();
+        h2 localH2 = jdField_this.getExternalIEventMessenger$android_sdk_base_release();
+        e2 localE2 = jdField_this.getDeviceIdReader$android_sdk_base_release();
+        localObject2 = Braze.access$getRegistrationDataProvider$p(jdField_this);
+        if (localObject2 == null)
+        {
+          kotlin.x.d.i.o("registrationDataProvider");
+          localObject2 = null;
+        }
+        localObject1 = new r6(localContext, (s3)localObject1, localBrazeConfigurationProvider, localH2, localE2, (k2)localObject2, Braze.access$getShouldMockNetworkRequestsAndDropEvents$cp(), Braze.access$getAreOutboundNetworkRequestsOffline$cp());
+        Braze.access$setUserSpecificMemberVariablesAndStartDispatch(jdField_this, (r6)localObject1);
+        localObject1 = paramString2;
+        i = k;
+        if (localObject1 != null) {
+          if (g.o((CharSequence)localObject1)) {
+            i = k;
+          } else {
+            i = 0;
+          }
+        }
+        if (i == 0)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, null, null, new g(paramString2), 3, null);
+          jdField_this.getUdm$android_sdk_base_release().o().a(paramString2);
+        }
+        jdField_this.getUdm$android_sdk_base_release().b().g();
+        jdField_this.getUdm$android_sdk_base_release().m().d();
+        jdField_this.getUdm$android_sdk_base_release().m().a(new x3.a(null, null, null, null, 15, null).b());
+        jdField_this.requestContentCardsRefresh(false);
+        localZ2.a();
+      }
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "userId passed to changeUser was null or empty. The current user will remain the active user.";
+      }
+    }
+    
+    static final class b
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      b(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Rejected user id with byte length longer than 997. Not changing user. Input user id: ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class c
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      c(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Received request to change current user ");
+        localStringBuilder.append(b);
+        localStringBuilder.append(" to the same user id. Not changing user.");
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class d
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      d(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Set sdk auth signature on changeUser call: ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class e
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      e(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Changing anonymous user to ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class f
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      f(String paramString1, String paramString2)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Changing current user ");
+        localStringBuilder.append(b);
+        localStringBuilder.append(" to new user ");
+        localStringBuilder.append(c);
+        localStringBuilder.append('.');
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class g
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      g(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Set sdk auth signature on changeUser call: ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+  }
+  
+  static final class o0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    o0(Intent paramIntent, Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      Braze.Companion.requestTriggersIfInAppMessageTestPush$android_sdk_base_release(b, c.getUdm$android_sdk_base_release().m());
+    }
+  }
+  
+  static final class o1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    o1(Throwable paramThrowable)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to log throwable: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class o3
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final o3 b = new o3();
+    
+    o3()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "The Braze SDK requires a non-empty API key. Check your braze.xml or BrazeConfig.";
+    }
+  }
+  
+  static final class p
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final p b = new p();
+    
+    p()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to close session.";
+    }
+  }
+  
+  static final class p0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final p0 b = new p0();
+    
+    p0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Ephemeral events enabled";
+    }
+  }
+  
+  static final class p3
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final p3 b = new p3();
+    
+    p3()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "The Braze SDK is not integrated correctly. Please visit https://www.braze.com/docs/developer_guide/platform_integration_guides/android/initial_sdk_setup/android_sdk_integration/";
+    }
+  }
+  
+  static final class q
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    q(Activity paramActivity, Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      if (b == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, a.b, 2, null);
+        return;
+      }
+      jdField_this.getUdm$android_sdk_base_release().m().closeSession(b);
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Cannot close session with null activity.";
+      }
+    }
+  }
+  
+  static final class q0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    q0(String paramString, Set<String> paramSet, boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Checking event key [");
+      localStringBuilder.append(b);
+      localStringBuilder.append("] against ephemeral event list ");
+      localStringBuilder.append(localSet);
+      localStringBuilder.append(" and got match?: ");
+      localStringBuilder.append(bool);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class r
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final r b = new r();
+    
+    r()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to retrieve the current user.";
+    }
+  }
+  
+  static final class r0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    r0(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to log custom event: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class r1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final r1 b = new r1();
+    
+    r1()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to refresh feature flags.";
+    }
+  }
+  
+  static final class r2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    r2(InAppMessageEvent paramInAppMessageEvent)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Error retrying In-App Message from event ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  @kotlin.w.i.a.f(c="com.braze.Braze$currentUser$2", f="Braze.kt", l={}, m="invokeSuspend")
+  static final class s
+    extends l
+    implements p<m0, d<? super BrazeUser>, Object>
+  {
+    int b;
+    
+    s(Braze paramBraze, d<? super s> paramD)
+    {
+      super(paramD);
+    }
+    
+    public final Object a(m0 paramM0, d<? super BrazeUser> paramD)
+    {
+      return ((s)create(paramM0, paramD)).invokeSuspend(t.a);
+    }
+    
+    public final d<t> create(Object paramObject, d<?> paramD)
+    {
+      return new s(c, paramD);
+    }
+    
+    public final Object invokeSuspend(Object paramObject)
+    {
+      kotlin.coroutines.intrinsics.a.c();
+      if (b == 0)
+      {
+        n.b(paramObject);
+        BrazeUser localBrazeUser = Braze.access$getBrazeUser$p(c);
+        paramObject = localBrazeUser;
+        if (localBrazeUser == null)
+        {
+          kotlin.x.d.i.o("brazeUser");
+          paramObject = null;
+        }
+        return paramObject;
+      }
+      throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+    }
+  }
+  
+  static final class s0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    s0(String paramString, Braze paramBraze, BrazeProperties paramBrazeProperties)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      s localS = new s();
+      Object localObject = b;
+      b = localObject;
+      if (!ValidationUtils.isValidLogCustomEventInput((String)localObject, jdField_this.getUdm$android_sdk_base_release().e()))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, new a(localS), 2, null);
+        return;
+      }
+      localObject = paramBrazeProperties;
+      int i = 1;
+      if ((localObject == null) || (((BrazeProperties)localObject).isInvalid() != true)) {
+        i = 0;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, BrazeLogger.Priority.W, null, new b(localS), 2, null);
+        return;
+      }
+      localObject = ValidationUtils.ensureBrazeFieldLength((String)b);
+      b = localObject;
+      localObject = bo.app.j.h.a((String)localObject, paramBrazeProperties);
+      if (localObject == null) {
+        return;
+      }
+      boolean bool;
+      if (Braze.access$isEphemeralEventKey(jdField_this, (String)b)) {
+        bool = jdField_this.getUdm$android_sdk_base_release().e().p();
+      } else {
+        bool = jdField_this.getUdm$android_sdk_base_release().m().a((x1)localObject);
+      }
+      if (bool) {
+        jdField_this.getUdm$android_sdk_base_release().k().a(new f0((String)b, paramBrazeProperties, (x1)localObject));
+      }
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      a(s<String> paramS)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Logged custom event with name ");
+        localStringBuilder.append((String)b.b);
+        localStringBuilder.append(" was invalid. Not logging custom event to Braze.");
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class b
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      b(s<String> paramS)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Custom event with name ");
+        localStringBuilder.append((String)b.b);
+        localStringBuilder.append(" logged with invalid properties. Not logging custom event to Braze.");
+        return localStringBuilder.toString();
+      }
+    }
+  }
+  
+  static final class s1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    s1(Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      if (b.getUdm$android_sdk_base_release().e().q())
+      {
+        b.getUdm$android_sdk_base_release().p().g();
+        return;
+      }
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, b, BrazeLogger.Priority.I, null, a.b, 2, null);
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Feature flags not enabled. Not refreshing feature flags.";
+      }
+    }
+  }
+  
+  static final class s2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    s2(Braze paramBraze, InAppMessageEvent paramInAppMessageEvent)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      b.getUdm$android_sdk_base_release().k().a(c.getTriggerEvent(), c.getTriggerAction());
+    }
+  }
+  
+  @kotlin.w.i.a.f(c="com.braze.Braze$run$1", f="Braze.kt", l={}, m="invokeSuspend")
+  static final class t2
+    extends l
+    implements p<m0, d<? super t>, Object>
+  {
+    int b;
+    
+    t2(kotlin.x.c.a<t> paramA, d<? super t2> paramD)
+    {
+      super(paramD);
+    }
+    
+    public final Object a(m0 paramM0, d<? super t> paramD)
+    {
+      return ((t2)create(paramM0, paramD)).invokeSuspend(t.a);
+    }
+    
+    public final d<t> create(Object paramObject, d<?> paramD)
+    {
+      return new t2(c, paramD);
+    }
+    
+    public final Object invokeSuspend(Object paramObject)
+    {
+      kotlin.coroutines.intrinsics.a.c();
+      if (b == 0)
+      {
+        n.b(paramObject);
+        h.f(null, new a(c, null), 1, null);
+        return t.a;
+      }
+      throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+    }
+    
+    @kotlin.w.i.a.f(c="com.braze.Braze$run$1$1", f="Braze.kt", l={}, m="invokeSuspend")
+    static final class a
+      extends l
+      implements p<m0, d<? super t>, Object>
+    {
+      int b;
+      
+      a(kotlin.x.c.a<t> paramA, d<? super a> paramD)
+      {
+        super(paramD);
+      }
+      
+      public final Object a(m0 paramM0, d<? super t> paramD)
+      {
+        return ((a)create(paramM0, paramD)).invokeSuspend(t.a);
+      }
+      
+      public final d<t> create(Object paramObject, d<?> paramD)
+      {
+        return new a(c, paramD);
+      }
+      
+      public final Object invokeSuspend(Object paramObject)
+      {
+        kotlin.coroutines.intrinsics.a.c();
+        if (b == 0)
+        {
+          n.b(paramObject);
+          c.invoke();
+          return t.a;
+        }
+        throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+      }
+    }
+  }
+  
+  static final class u2
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final u2 b = new u2();
+    
+    u2()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Got error in singleton run without result";
+    }
+  }
+  
+  static final class v1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    v1(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to set the push token ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  @kotlin.w.i.a.f(c="com.braze.Braze$runForResult$1", f="Braze.kt", l={1247}, m="invokeSuspend")
+  static final class v2
+    extends l
+    implements p<m0, d<? super T>, Object>
+  {
+    int b;
+    
+    v2(p<? super m0, ? super d<? super T>, ? extends Object> paramP, d<? super v2> paramD)
+    {
+      super(paramD);
+    }
+    
+    public final Object a(m0 paramM0, d<? super T> paramD)
+    {
+      return ((v2)create(paramM0, paramD)).invokeSuspend(t.a);
+    }
+    
+    public final d<t> create(Object paramObject, d<?> paramD)
+    {
+      return new v2(c, paramD);
+    }
+    
+    public final Object invokeSuspend(Object paramObject)
+    {
+      Object localObject = kotlin.coroutines.intrinsics.a.c();
+      int i = b;
+      if (i != 0)
+      {
+        if (i == 1)
+        {
+          n.b(paramObject);
+          return paramObject;
+        }
+        throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+      }
+      n.b(paramObject);
+      paramObject = h.b(a5.a, null, null, new a(c, null), 3, null);
+      b = 1;
+      paramObject = paramObject.C(this);
+      if (paramObject == localObject) {
+        return localObject;
+      }
+      return paramObject;
+    }
+    
+    @kotlin.w.i.a.f(c="com.braze.Braze$runForResult$1$1", f="Braze.kt", l={}, m="invokeSuspend")
+    static final class a
+      extends l
+      implements p<m0, d<? super T>, Object>
+    {
+      int b;
+      
+      a(p<? super m0, ? super d<? super T>, ? extends Object> paramP, d<? super a> paramD)
+      {
+        super(paramD);
+      }
+      
+      public final Object a(m0 paramM0, d<? super T> paramD)
+      {
+        return ((a)create(paramM0, paramD)).invokeSuspend(t.a);
+      }
+      
+      public final d<t> create(Object paramObject, d<?> paramD)
+      {
+        return new a(c, paramD);
+      }
+      
+      public final Object invokeSuspend(Object paramObject)
+      {
+        kotlin.coroutines.intrinsics.a.c();
+        if (b == 0)
+        {
+          n.b(paramObject);
+          return h.f(null, new a(c, null), 1, null);
+        }
+        throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+      }
+      
+      @kotlin.w.i.a.f(c="com.braze.Braze$runForResult$1$1$1", f="Braze.kt", l={1245}, m="invokeSuspend")
+      static final class a
+        extends l
+        implements p<m0, d<? super T>, Object>
+      {
+        int b;
+        
+        a(p<? super m0, ? super d<? super T>, ? extends Object> paramP, d<? super a> paramD)
+        {
+          super(paramD);
+        }
+        
+        public final Object a(m0 paramM0, d<? super T> paramD)
+        {
+          return ((a)create(paramM0, paramD)).invokeSuspend(t.a);
+        }
+        
+        public final d<t> create(Object paramObject, d<?> paramD)
+        {
+          paramD = new a(d, paramD);
+          c = paramObject;
+          return paramD;
+        }
+        
+        public final Object invokeSuspend(Object paramObject)
+        {
+          Object localObject = kotlin.coroutines.intrinsics.a.c();
+          int i = b;
+          if (i != 0)
+          {
+            if (i == 1)
+            {
+              n.b(paramObject);
+              return paramObject;
+            }
+            throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+          }
+          n.b(paramObject);
+          paramObject = (m0)c;
+          p localP = d;
+          b = 1;
+          paramObject = localP.invoke(paramObject, this);
+          if (paramObject == localObject) {
+            return localObject;
+          }
+          return paramObject;
+        }
+      }
+    }
+  }
+  
+  static final class w1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    w1(Braze paramBraze, String paramString)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      Object localObject1 = BrazeLogger.INSTANCE;
+      BrazeLogger.brazelog$default((BrazeLogger)localObject1, b, BrazeLogger.Priority.I, null, new a(paramString), 2, null);
+      Object localObject2 = paramString;
+      int i;
+      if ((localObject2 != null) && (!g.o((CharSequence)localObject2))) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+      if (i != 0)
+      {
+        BrazeLogger.brazelog$default((BrazeLogger)localObject1, b, BrazeLogger.Priority.W, null, b.b, 2, null);
+        return;
+      }
+      localObject2 = Braze.access$getRegistrationDataProvider$p(b);
+      localObject1 = localObject2;
+      if (localObject2 == null)
+      {
+        kotlin.x.d.i.o("registrationDataProvider");
+        localObject1 = null;
+      }
+      ((k2)localObject1).a(paramString);
+      b.getUdm$android_sdk_base_release().c().e();
+      b.requestImmediateDataFlush();
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      a(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Push token ");
+        localStringBuilder.append(b);
+        localStringBuilder.append(" registered and immediately being flushed.");
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class b
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final b b = new b();
+      
+      b()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Push token must not be null or blank. Not registering for push with Braze.";
+      }
+    }
+  }
+  
+  static final class x0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    public static final x0 b = new x0();
+    
+    x0()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Failed to log that the feed was displayed.";
+    }
+  }
+  
+  static final class x1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    x1(Class<T> paramClass)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to remove ");
+      localStringBuilder.append(b.getName());
+      localStringBuilder.append(" subscriber.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class y0
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    y0(Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      x1 localX1 = bo.app.j.h.a();
+      if (localX1 != null) {
+        b.getUdm$android_sdk_base_release().m().a(localX1);
+      }
+    }
+  }
+  
+  static final class y1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<String>
+  {
+    y1(boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to request Content Cards refresh. Requesting from cache: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class z1
+    extends kotlin.x.d.j
+    implements kotlin.x.c.a<t>
+  {
+    z1(boolean paramBoolean, Braze paramBraze)
+    {
+      super();
+    }
+    
+    public final void a()
+    {
+      if (b)
+      {
+        jdField_this.getExternalIEventMessenger$android_sdk_base_release().a(jdField_this.getUdm$android_sdk_base_release().j().b(), ContentCardsUpdatedEvent.class);
+        return;
+      }
+      if (jdField_this.getUdm$android_sdk_base_release().e().o())
+      {
+        a8.a(jdField_this.getUdm$android_sdk_base_release().m(), jdField_this.getUdm$android_sdk_base_release().j().e(), jdField_this.getUdm$android_sdk_base_release().j().f(), 0, true, 4, null);
+        return;
+      }
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, jdField_this, null, null, a.b, 3, null);
+    }
+    
+    static final class a
+      extends kotlin.x.d.j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Content Cards is not enabled, skipping API call to refresh";
+      }
+    }
+  }
+}

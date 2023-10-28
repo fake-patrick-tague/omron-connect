@@ -1,0 +1,1097 @@
+package com.alivecor.universal_monitor.bluetooth.ble;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanRecord;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings.Builder;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.ParcelUuid;
+import androidx.annotation.Keep;
+import com.alivecor.universal_monitor.bluetooth.BluetoothDeviceProperties;
+import d.b.a.b.b;
+import d.b.a.b.d;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
+public class EcgBleManager
+{
+  private static final int CMD_RESULT_FAILED = 2;
+  private static final int CMD_RESULT_INVALID_PARAMETER = 4;
+  private static final int CMD_RESULT_INVALID_STATE = 5;
+  private static final int CMD_RESULT_NOTSUPPORTED = 3;
+  private static final int CMD_RESULT_SUCCESS = 1;
+  private static final int CONNECT_RETRY_LIMIT = 3;
+  private BluetoothGattCharacteristic batteryLevelCharacteristic;
+  private final BluetoothGattCallback bleGattCallback = new BluetoothGattCallback()
+  {
+    public void onCharacteristicChanged(BluetoothGatt paramAnonymousBluetoothGatt, BluetoothGattCharacteristic paramAnonymousBluetoothGattCharacteristic)
+    {
+      BluetoothDevice localBluetoothDevice = paramAnonymousBluetoothGatt.getDevice();
+      UUID localUUID = paramAnonymousBluetoothGattCharacteristic.getUuid();
+      int i;
+      if ((batteryLevelCharacteristic != null) && (batteryLevelCharacteristic.equals(paramAnonymousBluetoothGattCharacteristic)))
+      {
+        i = paramAnonymousBluetoothGattCharacteristic.getIntValue(17, 0).intValue();
+        deviceProperties.batteryLevel = i;
+        paramAnonymousBluetoothGatt = EcgBleManager.this;
+      }
+      for (paramAnonymousBluetoothGattCharacteristic = new j(this, localUUID, i, localBluetoothDevice);; paramAnonymousBluetoothGattCharacteristic = new d(this, paramAnonymousBluetoothGattCharacteristic, localUUID, localBluetoothDevice))
+      {
+        paramAnonymousBluetoothGatt.runOnMainThread(paramAnonymousBluetoothGattCharacteristic);
+        return;
+        if ((ecgCharacteristic == null) || (!ecgCharacteristic.equals(paramAnonymousBluetoothGattCharacteristic))) {
+          break;
+        }
+        paramAnonymousBluetoothGattCharacteristic = paramAnonymousBluetoothGattCharacteristic.getValue();
+        paramAnonymousBluetoothGatt = EcgBleManager.this;
+      }
+      if ((cmdCharacteristic != null) && (cmdCharacteristic.equals(paramAnonymousBluetoothGattCharacteristic)))
+      {
+        paramAnonymousBluetoothGatt = paramAnonymousBluetoothGattCharacteristic.getValue();
+        EcgBleManager.this.runOnMainThread(new i(this, localUUID, paramAnonymousBluetoothGatt));
+        return;
+      }
+      paramAnonymousBluetoothGatt = new StringBuilder();
+      paramAnonymousBluetoothGatt.append("onCharacteristicChanged() uuid: ");
+      paramAnonymousBluetoothGatt.append(localUUID);
+      paramAnonymousBluetoothGatt.append(", unexpected");
+      d.b.a.a.f(paramAnonymousBluetoothGatt.toString(), new Object[0]);
+    }
+    
+    public final void onCharacteristicRead(BluetoothGatt paramAnonymousBluetoothGatt, BluetoothGattCharacteristic paramAnonymousBluetoothGattCharacteristic, int paramAnonymousInt)
+    {
+      paramAnonymousBluetoothGatt = paramAnonymousBluetoothGatt.getDevice();
+      Object localObject1 = paramAnonymousBluetoothGattCharacteristic.getUuid();
+      Object localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append("onCharacteristicRead() uuid: ");
+      ((StringBuilder)localObject2).append(localObject1);
+      ((StringBuilder)localObject2).append(", status: ");
+      ((StringBuilder)localObject2).append(GattError.gattStatusToString(paramAnonymousInt));
+      localObject1 = ((StringBuilder)localObject2).toString();
+      localObject2 = new Object[0];
+      if (paramAnonymousInt == 0) {
+        d.b.a.a.j((String)localObject1, (Object[])localObject2);
+      } else {
+        d.b.a.a.f((String)localObject1, (Object[])localObject2);
+      }
+      if (paramAnonymousInt == 0)
+      {
+        if (paramAnonymousBluetoothGattCharacteristic.equals(batteryLevelCharacteristic))
+        {
+          paramAnonymousInt = paramAnonymousBluetoothGattCharacteristic.getIntValue(17, 0).intValue();
+          deviceProperties.batteryLevel = paramAnonymousInt;
+          EcgBleManager.this.runOnMainThread(new h(this, paramAnonymousInt, paramAnonymousBluetoothGatt));
+          return;
+        }
+        if (paramAnonymousBluetoothGattCharacteristic.equals(infoFirmwareRevisionCharacteristic))
+        {
+          paramAnonymousBluetoothGatt = paramAnonymousBluetoothGattCharacteristic.getStringValue(0);
+          deviceProperties.firmwareRevision = paramAnonymousBluetoothGatt;
+          paramAnonymousBluetoothGatt = EcgBleManager.this;
+          paramAnonymousBluetoothGattCharacteristic = new g(this);
+        }
+        for (;;)
+        {
+          paramAnonymousBluetoothGatt.runOnMainThread(paramAnonymousBluetoothGattCharacteristic);
+          return;
+          if (paramAnonymousBluetoothGattCharacteristic.equals(infoSerialNumberCharacteristic))
+          {
+            paramAnonymousBluetoothGatt = paramAnonymousBluetoothGattCharacteristic.getStringValue(0);
+            deviceProperties.serialNumber = paramAnonymousBluetoothGatt;
+            paramAnonymousBluetoothGatt = EcgBleManager.this;
+            paramAnonymousBluetoothGattCharacteristic = new b(this);
+          }
+          else
+          {
+            if (!paramAnonymousBluetoothGattCharacteristic.equals(infoHardwareRevisionCharacteristic)) {
+              break;
+            }
+            paramAnonymousBluetoothGatt = paramAnonymousBluetoothGattCharacteristic.getStringValue(0);
+            deviceProperties.hardwareRevision = paramAnonymousBluetoothGatt;
+            paramAnonymousBluetoothGatt = EcgBleManager.this;
+            paramAnonymousBluetoothGattCharacteristic = new e(this);
+          }
+        }
+      }
+    }
+    
+    public final void onCharacteristicWrite(BluetoothGatt paramAnonymousBluetoothGatt, BluetoothGattCharacteristic paramAnonymousBluetoothGattCharacteristic, int paramAnonymousInt)
+    {
+      paramAnonymousBluetoothGatt = new StringBuilder();
+      paramAnonymousBluetoothGatt.append("onCharacteristicWrite() uuid: ");
+      paramAnonymousBluetoothGatt.append(paramAnonymousBluetoothGattCharacteristic.getUuid());
+      paramAnonymousBluetoothGatt.append(", status: ");
+      paramAnonymousBluetoothGatt.append(GattError.gattStatusToString(paramAnonymousInt));
+      paramAnonymousBluetoothGatt = paramAnonymousBluetoothGatt.toString();
+      paramAnonymousBluetoothGattCharacteristic = new Object[0];
+      if (paramAnonymousInt == 0)
+      {
+        d.b.a.a.j(paramAnonymousBluetoothGatt, paramAnonymousBluetoothGattCharacteristic);
+        return;
+      }
+      d.b.a.a.f(paramAnonymousBluetoothGatt, paramAnonymousBluetoothGattCharacteristic);
+    }
+    
+    public void onConnectionStateChange(BluetoothGatt paramAnonymousBluetoothGatt, int paramAnonymousInt1, int paramAnonymousInt2)
+    {
+      Object localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("onConnectionStateChange() device: ");
+      ((StringBuilder)localObject).append(paramAnonymousBluetoothGatt.getDevice());
+      ((StringBuilder)localObject).append(", status: ");
+      ((StringBuilder)localObject).append(GattError.connectionErrorToString(paramAnonymousInt1));
+      ((StringBuilder)localObject).append(", state: ");
+      ((StringBuilder)localObject).append(EcgBleManager.this.bluetoothStateToString(paramAnonymousInt2));
+      localObject = ((StringBuilder)localObject).toString();
+      Object[] arrayOfObject = new Object[0];
+      if (paramAnonymousInt1 == 0) {
+        d.b.a.a.j((String)localObject, arrayOfObject);
+      } else {
+        d.b.a.a.f((String)localObject, arrayOfObject);
+      }
+      if ((paramAnonymousInt1 == 0) && (paramAnonymousInt2 == 2) && (EcgBleManager.this.getState() == 2))
+      {
+        d.b.a.a.j("Connected", new Object[0]);
+        EcgBleManager.access$1902(EcgBleManager.this, 0L);
+        EcgBleManager.access$2002(EcgBleManager.this, 0L);
+        if (btEcgDevice.getBondState() == 12)
+        {
+          d.b.a.a.j("Bonded.  Discovering Services", new Object[0]);
+          EcgBleManager.this.setState(4);
+          callbackHandler.onDeviceConnected(paramAnonymousBluetoothGatt.getDevice());
+          handler.postDelayed(new k(paramAnonymousBluetoothGatt), 300L);
+          return;
+        }
+        d.b.a.a.j("Not Bonded. Creating bond", new Object[0]);
+        EcgBleManager.this.setState(3);
+        callbackHandler.onDeviceConnected(paramAnonymousBluetoothGatt.getDevice());
+        d.b.a.a.j("createBond()", new Object[0]);
+        btEcgDevice.createBond();
+        return;
+      }
+      if (paramAnonymousInt2 == 0)
+      {
+        int i = 1;
+        if ((paramAnonymousInt1 != 0) && (EcgBleManager.this.getState() != 5) && (EcgBleManager.this.getState() != 1) && (EcgBleManager.this.getState() != 0)) {
+          paramAnonymousInt2 = 1;
+        } else {
+          paramAnonymousInt2 = 0;
+        }
+        if ((EcgBleManager.this.getState() != 4) || (!taskQueue.isEmpty())) {
+          i = 0;
+        }
+        taskQueue.clear();
+        handler.removeCallbacksAndMessages(null);
+        EcgBleManager.this.closeGatt();
+        if ((paramAnonymousInt2 != 0) && (i == 0) && (connectRetryCount < 3))
+        {
+          EcgBleManager.access$2408(EcgBleManager.this);
+          EcgBleManager.this.setState(6);
+          handler.postDelayed(new f(this), 100L);
+          return;
+        }
+        EcgBleManager.this.setState(0);
+        callbackHandler.onDeviceDisconnected(paramAnonymousBluetoothGatt.getDevice());
+        callbackHandler.onError(btEcgDevice, "Device GATT error", paramAnonymousInt1);
+        return;
+      }
+      d.b.a.a.f("onConnectionStateChange() Unexpected", new Object[0]);
+      if ((paramAnonymousInt1 == 0) && (paramAnonymousInt2 == 2))
+      {
+        d.b.a.a.j("disconnect()", new Object[0]);
+        paramAnonymousBluetoothGatt.disconnect();
+      }
+    }
+    
+    @Keep
+    public final void onConnectionUpdated(BluetoothGatt paramAnonymousBluetoothGatt, int paramAnonymousInt1, int paramAnonymousInt2, int paramAnonymousInt3, int paramAnonymousInt4)
+    {
+      paramAnonymousBluetoothGatt = new StringBuilder();
+      paramAnonymousBluetoothGatt.append("onConnectionUpdated() interval: ");
+      paramAnonymousBluetoothGatt.append(paramAnonymousInt1);
+      paramAnonymousBluetoothGatt.append(", latency: ");
+      paramAnonymousBluetoothGatt.append(paramAnonymousInt2);
+      paramAnonymousBluetoothGatt.append(", timeout: ");
+      paramAnonymousBluetoothGatt.append(paramAnonymousInt3);
+      paramAnonymousBluetoothGatt.append(", status: ");
+      paramAnonymousBluetoothGatt.append(GattError.gattStatusToString(paramAnonymousInt4));
+      d.b.a.a.j(paramAnonymousBluetoothGatt.toString(), new Object[0]);
+    }
+    
+    public void onDescriptorRead(BluetoothGatt paramAnonymousBluetoothGatt, BluetoothGattDescriptor paramAnonymousBluetoothGattDescriptor, int paramAnonymousInt)
+    {
+      paramAnonymousBluetoothGatt = new StringBuilder();
+      paramAnonymousBluetoothGatt.append("onDescriptorRead() uuid: ");
+      paramAnonymousBluetoothGatt.append(paramAnonymousBluetoothGattDescriptor.getCharacteristic().getUuid());
+      paramAnonymousBluetoothGatt.append(", status: ");
+      paramAnonymousBluetoothGatt.append(GattError.gattStatusToString(paramAnonymousInt));
+      paramAnonymousBluetoothGatt = paramAnonymousBluetoothGatt.toString();
+      paramAnonymousBluetoothGattDescriptor = new Object[0];
+      if (paramAnonymousInt == 0)
+      {
+        d.b.a.a.j(paramAnonymousBluetoothGatt, paramAnonymousBluetoothGattDescriptor);
+        return;
+      }
+      d.b.a.a.f(paramAnonymousBluetoothGatt, paramAnonymousBluetoothGattDescriptor);
+    }
+    
+    public final void onDescriptorWrite(BluetoothGatt paramAnonymousBluetoothGatt, BluetoothGattDescriptor paramAnonymousBluetoothGattDescriptor, int paramAnonymousInt)
+    {
+      paramAnonymousBluetoothGatt = new StringBuilder();
+      paramAnonymousBluetoothGatt.append("onDescriptorWrite() uuid: ");
+      paramAnonymousBluetoothGatt.append(paramAnonymousBluetoothGattDescriptor.getCharacteristic().getUuid());
+      paramAnonymousBluetoothGatt.append(", status: ");
+      paramAnonymousBluetoothGatt.append(GattError.gattStatusToString(paramAnonymousInt));
+      paramAnonymousBluetoothGatt = paramAnonymousBluetoothGatt.toString();
+      Object[] arrayOfObject = new Object[0];
+      if (paramAnonymousInt == 0) {
+        d.b.a.a.j(paramAnonymousBluetoothGatt, arrayOfObject);
+      } else {
+        d.b.a.a.f(paramAnonymousBluetoothGatt, arrayOfObject);
+      }
+      if (paramAnonymousInt == 0)
+      {
+        paramAnonymousBluetoothGatt = paramAnonymousBluetoothGattDescriptor.getCharacteristic();
+        EcgBleManager.this.runOnMainThread(new c(this, paramAnonymousBluetoothGatt));
+      }
+    }
+    
+    public void onMtuChanged(BluetoothGatt paramAnonymousBluetoothGatt, int paramAnonymousInt1, int paramAnonymousInt2)
+    {
+      paramAnonymousBluetoothGatt = new StringBuilder();
+      paramAnonymousBluetoothGatt.append("onMtuChanged() mut: ");
+      paramAnonymousBluetoothGatt.append(paramAnonymousInt1);
+      paramAnonymousBluetoothGatt.append(", status: ");
+      paramAnonymousBluetoothGatt.append(GattError.gattStatusToString(paramAnonymousInt2));
+      d.b.a.a.j(paramAnonymousBluetoothGatt.toString(), new Object[0]);
+    }
+    
+    public void onReliableWriteCompleted(BluetoothGatt paramAnonymousBluetoothGatt, int paramAnonymousInt)
+    {
+      paramAnonymousBluetoothGatt = new StringBuilder();
+      paramAnonymousBluetoothGatt.append("onReliableWriteCompleted() status: ");
+      paramAnonymousBluetoothGatt.append(GattError.gattStatusToString(paramAnonymousInt));
+      d.b.a.a.j(paramAnonymousBluetoothGatt.toString(), new Object[0]);
+    }
+    
+    public void onServicesDiscovered(BluetoothGatt paramAnonymousBluetoothGatt, int paramAnonymousInt)
+    {
+      Object localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("onServicesDiscovered()  status: ");
+      ((StringBuilder)localObject).append(GattError.gattStatusToString(paramAnonymousInt));
+      localObject = ((StringBuilder)localObject).toString();
+      Object[] arrayOfObject = new Object[0];
+      if (paramAnonymousInt == 0) {
+        d.b.a.a.j((String)localObject, arrayOfObject);
+      } else {
+        d.b.a.a.f((String)localObject, arrayOfObject);
+      }
+      if (paramAnonymousInt == 0)
+      {
+        if (bluetoothGatt.getServices() == null) {
+          return;
+        }
+        localObject = bluetoothGatt.getService(TriangleConstants.ECG_6LEAD_SERVICE_UUID);
+        if (localObject != null)
+        {
+          EcgBleManager.access$1602(EcgBleManager.this, ((BluetoothGattService)localObject).getCharacteristic(TriangleConstants.ECG_6LEAD_ECG_CHARACTERISTIC_UUID));
+          EcgBleManager.access$1102(EcgBleManager.this, ((BluetoothGattService)localObject).getCharacteristic(TriangleConstants.ECG_6LEAD_CMD_CHARACTERISTIC_UUID));
+        }
+        localObject = bluetoothGatt.getService(TriangleConstants.BATTERY_SERVICE_UUID);
+        if (localObject != null) {
+          EcgBleManager.access$602(EcgBleManager.this, ((BluetoothGattService)localObject).getCharacteristic(TriangleConstants.BATTERY_LEVEL_CHARACTERISTIC_UUID));
+        }
+        localObject = bluetoothGatt.getService(TriangleConstants.DEVICE_INFO_SERVICE_UUID);
+        if (localObject != null)
+        {
+          EcgBleManager.access$802(EcgBleManager.this, ((BluetoothGattService)localObject).getCharacteristic(TriangleConstants.DEVICE_INFO_FIRMWARE_REVISION_CHARACTERISTIC_UUID));
+          EcgBleManager.access$1002(EcgBleManager.this, ((BluetoothGattService)localObject).getCharacteristic(TriangleConstants.DEVICE_INFO_HARDWARE_REVISION_CHARACTERISTIC_UUID));
+          EcgBleManager.access$902(EcgBleManager.this, ((BluetoothGattService)localObject).getCharacteristic(TriangleConstants.DEVICE_INFO_SERIAL_NUMBER_CHARACTERISTIC_UUID));
+        }
+        if (EcgBleManager.this.canEnqueueStreamingTasks()) {
+          callbackHandler.onDeviceReadyToStream(paramAnonymousBluetoothGatt.getDevice());
+        }
+      }
+    }
+  };
+  private final ScanCallback bleScanCallback = new ScanCallback()
+  {
+    public void onScanFailed(int paramAnonymousInt)
+    {
+      d.b.a.a.j("onScanFailed", new Object[0]);
+      callbackHandler.onError(null, "Scan failed to start for unknown reason", paramAnonymousInt);
+    }
+    
+    public void onScanResult(int paramAnonymousInt, ScanResult paramAnonymousScanResult)
+    {
+      synchronized (lock)
+      {
+        paramAnonymousInt = EcgBleManager.this.getState();
+        if (paramAnonymousInt != 1)
+        {
+          d.b.a.a.j("onScanResult() Not scanning, Result ignored.", new Object[0]);
+          return;
+        }
+        ScanRecord localScanRecord = paramAnonymousScanResult.getScanRecord();
+        Object localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append("onScanResult() device: ");
+        ((StringBuilder)localObject2).append(paramAnonymousScanResult.getDevice().getName());
+        ((StringBuilder)localObject2).append(", bt_address: ");
+        ((StringBuilder)localObject2).append(paramAnonymousScanResult.getDevice().getAddress());
+        ((StringBuilder)localObject2).append(", rssi: ");
+        ((StringBuilder)localObject2).append(paramAnonymousScanResult.getRssi());
+        d.b.a.a.j(((StringBuilder)localObject2).toString(), new Object[0]);
+        if (localScanRecord != null)
+        {
+          localObject2 = localScanRecord.getServiceUuids();
+          if (localObject2 != null)
+          {
+            localObject2 = ((List)localObject2).iterator();
+            while (((Iterator)localObject2).hasNext()) {
+              if (((ParcelUuid)((Iterator)localObject2).next()).getUuid().equals(TriangleConstants.ECG_6LEAD_SERVICE_UUID))
+              {
+                StringBuilder localStringBuilder = new StringBuilder();
+                localStringBuilder.append("onScanResult() scanRecord hex: ");
+                localStringBuilder.append(HexString.bytesToHex(localScanRecord.getBytes()));
+                d.b.a.a.b(localStringBuilder.toString(), new Object[0]);
+                localStringBuilder = new StringBuilder();
+                localStringBuilder.append("onScanResult() scanRecord device: ");
+                localStringBuilder.append(localScanRecord.getDeviceName());
+                localStringBuilder.append(" TxPowerLevel: ");
+                localStringBuilder.append(localScanRecord.getTxPowerLevel());
+                localStringBuilder.append(" Flags: ");
+                localStringBuilder.append(localScanRecord.getAdvertiseFlags());
+                d.b.a.a.b(localStringBuilder.toString(), new Object[0]);
+                callbackHandler.onDeviceDiscovered(paramAnonymousScanResult.getDevice());
+              }
+            }
+          }
+        }
+        return;
+      }
+    }
+  };
+  private BluetoothGatt bluetoothGatt;
+  private BluetoothDevice btEcgDevice;
+  private final EcgBleManagerCallback callbackHandler;
+  private BluetoothGattCharacteristic cmdCharacteristic;
+  private int connectRetryCount;
+  private final Context context;
+  private BluetoothDeviceProperties deviceProperties = new BluetoothDeviceProperties();
+  private BluetoothGattCharacteristic ecgCharacteristic;
+  private final Handler handler = new Handler(Looper.getMainLooper());
+  private BluetoothGattCharacteristic infoFirmwareRevisionCharacteristic;
+  private BluetoothGattCharacteristic infoHardwareRevisionCharacteristic;
+  private BluetoothGattCharacteristic infoSerialNumberCharacteristic;
+  private final Object lock = new Object();
+  private final BroadcastReceiver mBluetoothStateBroadcastReceiver = new BroadcastReceiver()
+  {
+    public void onReceive(Context paramAnonymousContext, Intent paramAnonymousIntent)
+    {
+      int i = paramAnonymousIntent.getIntExtra("android.bluetooth.adapter.extra.STATE", 10);
+      paramAnonymousIntent.getIntExtra("android.bluetooth.adapter.extra.PREVIOUS_STATE", 10);
+      paramAnonymousContext = new StringBuilder();
+      paramAnonymousContext.append("[Broadcast] Action received: android.bluetooth.adapter.action.STATE_CHANGED, state changed to ");
+      paramAnonymousContext.append(BleUtil.btAdapterStateToString(i));
+      d.b.a.a.b(paramAnonymousContext.toString(), new Object[0]);
+      if ((i != 10) && (i != 13)) {
+        return;
+      }
+      if (EcgBleManager.this.getState() == 1)
+      {
+        handler.removeCallbacksAndMessages(null);
+        EcgBleManager.this.stopScanning();
+      }
+    }
+  };
+  private final BroadcastReceiver mBondingBroadcastReceiver = new BroadcastReceiver()
+  {
+    public void onReceive(Context paramAnonymousContext, Intent paramAnonymousIntent)
+    {
+      paramAnonymousContext = (BluetoothDevice)paramAnonymousIntent.getParcelableExtra("android.bluetooth.device.extra.DEVICE");
+      int i = paramAnonymousIntent.getIntExtra("android.bluetooth.device.extra.BOND_STATE", -1);
+      int j = paramAnonymousIntent.getIntExtra("android.bluetooth.device.extra.PREVIOUS_BOND_STATE", -1);
+      paramAnonymousIntent = new StringBuilder();
+      paramAnonymousIntent.append("[Broadcast] Action received: android.bluetooth.device.action.BOND_STATE_CHANGED, bond state changed to: ");
+      paramAnonymousIntent.append(BleUtil.bondStateToString(i));
+      paramAnonymousIntent.append(" (");
+      paramAnonymousIntent.append(i);
+      paramAnonymousIntent.append(")");
+      d.b.a.a.b(paramAnonymousIntent.toString(), new Object[0]);
+      paramAnonymousIntent = new StringBuilder();
+      paramAnonymousIntent.append("Bond state changed for: ");
+      paramAnonymousIntent.append(paramAnonymousContext.getName());
+      paramAnonymousIntent.append(" from: ");
+      paramAnonymousIntent.append(BleUtil.bondStateToString(j));
+      paramAnonymousIntent.append(" to: ");
+      paramAnonymousIntent.append(BleUtil.bondStateToString(i));
+      d.b.a.a.j(paramAnonymousIntent.toString(), new Object[0]);
+      if (btEcgDevice != null)
+      {
+        if (!paramAnonymousContext.getAddress().equals(btEcgDevice.getAddress())) {
+          return;
+        }
+        if (i == 12)
+        {
+          if (EcgBleManager.this.getState() == 3)
+          {
+            EcgBleManager.this.setState(4);
+            handler.postDelayed(new a(this), 300L);
+          }
+        }
+        else if ((i == 10) && (EcgBleManager.this.getState() == 2))
+        {
+          d.b.a.a.j("bond was removed for workaround.  creating new bond", new Object[0]);
+          connectDevice(paramAnonymousContext);
+        }
+      }
+    }
+  };
+  private final BroadcastReceiver mPairingRequestBroadcastReceiver = new BroadcastReceiver()
+  {
+    private static final int PAIRING_VARIANT_CONSENT = 3;
+    private static final int PAIRING_VARIANT_DISPLAY_PASSKEY = 4;
+    private static final int PAIRING_VARIANT_DISPLAY_PIN = 5;
+    private static final int PAIRING_VARIANT_OOB_CONSENT = 6;
+    private static final int PAIRING_VARIANT_PASSKEY = 1;
+    private static final int PAIRING_VARIANT_PASSKEY_CONFIRMATION = 2;
+    private static final int PAIRING_VARIANT_PIN = 0;
+    
+    private String pairingVariantToString(int paramAnonymousInt)
+    {
+      switch (paramAnonymousInt)
+      {
+      default: 
+        return "UNKNOWN";
+      case 6: 
+        return "PAIRING_VARIANT_OOB_CONSENT";
+      case 5: 
+        return "PAIRING_VARIANT_DISPLAY_PIN";
+      case 4: 
+        return "PAIRING_VARIANT_DISPLAY_PASSKEY";
+      case 3: 
+        return "PAIRING_VARIANT_CONSENT";
+      case 2: 
+        return "PAIRING_VARIANT_PASSKEY_CONFIRMATION";
+      case 1: 
+        return "PAIRING_VARIANT_PASSKEY";
+      }
+      return "PAIRING_VARIANT_PIN";
+    }
+    
+    public void onReceive(Context paramAnonymousContext, Intent paramAnonymousIntent)
+    {
+      paramAnonymousContext = (BluetoothDevice)paramAnonymousIntent.getParcelableExtra("android.bluetooth.device.extra.DEVICE");
+      int i = paramAnonymousIntent.getIntExtra("android.bluetooth.device.extra.PAIRING_VARIANT", 0);
+      paramAnonymousContext = new StringBuilder();
+      paramAnonymousContext.append("[Broadcast] Action received: android.bluetooth.device.action.PAIRING_REQUEST, pairing variant: ");
+      paramAnonymousContext.append(pairingVariantToString(i));
+      paramAnonymousContext.append(" (");
+      paramAnonymousContext.append(i);
+      paramAnonymousContext.append(")");
+      d.b.a.a.b(paramAnonymousContext.toString(), new Object[0]);
+    }
+  };
+  private long scanStartTime;
+  private int state = 0;
+  private final GattTaskQueue taskQueue = new GattTaskQueue(new GattTaskQueue.Callback()
+  {
+    public void onGattError(GattTaskQueue.TaskType paramAnonymousTaskType, int paramAnonymousInt)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("onGattError(): ");
+      localStringBuilder.append(paramAnonymousTaskType.toString());
+      localStringBuilder.append(" Failed with code: ");
+      localStringBuilder.append(paramAnonymousInt);
+      d.b.a.a.j(localStringBuilder.toString(), new Object[0]);
+    }
+    
+    public boolean onGattTask(GattTaskQueue.TaskType paramAnonymousTaskType)
+    {
+      switch (EcgBleManager.7.$SwitchMap$com$alivecor$universal_monitor$bluetooth$ble$GattTaskQueue$TaskType[paramAnonymousTaskType.ordinal()])
+      {
+      default: 
+        return false;
+      case 8: 
+        localObject = EcgBleManager.this;
+        paramAnonymousTaskType = batteryLevelCharacteristic;
+        break;
+      case 7: 
+        localObject = EcgBleManager.this;
+        paramAnonymousTaskType = ecgCharacteristic;
+        return ((EcgBleManager)localObject).internalEnableNotifications(paramAnonymousTaskType);
+      case 6: 
+        paramAnonymousTaskType = EcgBleManager.this;
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Triangle");
+        ((StringBuilder)localObject).append(bluetoothGatt.getDevice().getName());
+        paramAnonymousTaskType = paramAnonymousTaskType.Sha256Hash(((StringBuilder)localObject).toString());
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("K");
+        ((StringBuilder)localObject).append(paramAnonymousTaskType.substring(0, Math.min(paramAnonymousTaskType.length(), 16)));
+        paramAnonymousTaskType = ((StringBuilder)localObject).toString();
+        localObject = triangleMode.settingString();
+        BluetoothGattCharacteristic localBluetoothGattCharacteristic = cmdCharacteristic;
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append((String)localObject);
+        localStringBuilder.append(" ");
+        localStringBuilder.append(paramAnonymousTaskType);
+        localBluetoothGattCharacteristic.setValue(localStringBuilder.toString());
+        paramAnonymousTaskType = EcgBleManager.this;
+        return paramAnonymousTaskType.internalWriteCharacteristic(cmdCharacteristic);
+      case 5: 
+        paramAnonymousTaskType = EcgBleManager.this;
+        return paramAnonymousTaskType.internalEnableIndications(cmdCharacteristic);
+      case 4: 
+        localObject = EcgBleManager.this;
+        paramAnonymousTaskType = infoHardwareRevisionCharacteristic;
+        break;
+      case 3: 
+        localObject = EcgBleManager.this;
+        paramAnonymousTaskType = infoSerialNumberCharacteristic;
+        break;
+      case 2: 
+        localObject = EcgBleManager.this;
+        paramAnonymousTaskType = infoFirmwareRevisionCharacteristic;
+        break;
+      }
+      Object localObject = EcgBleManager.this;
+      paramAnonymousTaskType = batteryLevelCharacteristic;
+      return ((EcgBleManager)localObject).internalReadCharacteristic(paramAnonymousTaskType);
+    }
+  });
+  private long totalBytes;
+  private long totalPackets;
+  private TriangleMode triangleMode;
+  
+  public EcgBleManager(Context paramContext, EcgBleManagerCallback paramEcgBleManagerCallback)
+  {
+    context = paramContext.getApplicationContext();
+    callbackHandler = paramEcgBleManagerCallback;
+    d.b.a.a.k(new b.b(paramContext).c(new b.d()).b("EcgBleManager").d(0).a());
+    d.b.a.a.m(true);
+  }
+  
+  private String Sha256Hash(String paramString)
+  {
+    try
+    {
+      MessageDigest localMessageDigest = MessageDigest.getInstance("SHA-256");
+      localMessageDigest.update(paramString.getBytes());
+      paramString = bytesToHex(localMessageDigest.digest());
+      return paramString;
+    }
+    catch (NoSuchAlgorithmException paramString)
+    {
+      d.b.a.a.g(paramString);
+    }
+    return "";
+  }
+  
+  private String bluetoothStateToString(int paramInt)
+  {
+    if (paramInt != 0)
+    {
+      if (paramInt != 1)
+      {
+        if (paramInt != 2)
+        {
+          if (paramInt != 3)
+          {
+            StringBuilder localStringBuilder = new StringBuilder();
+            localStringBuilder.append("UNKNOWN (");
+            localStringBuilder.append(paramInt);
+            localStringBuilder.append(")");
+            return localStringBuilder.toString();
+          }
+          return "DISCONNECTING";
+        }
+        return "CONNECTED";
+      }
+      return "CONNECTING";
+    }
+    return "DISCONNECTED";
+  }
+  
+  private String bytesToHex(byte[] paramArrayOfByte)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    int j = paramArrayOfByte.length;
+    int i = 0;
+    while (i < j)
+    {
+      localStringBuilder.append(Integer.toString((paramArrayOfByte[i] & 0xFF) + 256, 16).substring(1));
+      i += 1;
+    }
+    return localStringBuilder.toString();
+  }
+  
+  private boolean canEnqueueStreamingTasks()
+  {
+    return (cmdCharacteristic != null) && (ecgCharacteristic != null) && (batteryLevelCharacteristic != null) && (infoFirmwareRevisionCharacteristic != null) && (infoHardwareRevisionCharacteristic != null) && (infoSerialNumberCharacteristic != null);
+  }
+  
+  private void closeGatt()
+  {
+    synchronized (lock)
+    {
+      BluetoothGatt localBluetoothGatt = bluetoothGatt;
+      if (localBluetoothGatt != null)
+      {
+        d.b.a.a.b("gatt.close()", new Object[0]);
+        bluetoothGatt.close();
+        bluetoothGatt = null;
+      }
+      return;
+    }
+  }
+  
+  private void disconnect()
+  {
+    synchronized (lock)
+    {
+      BluetoothGatt localBluetoothGatt = bluetoothGatt;
+      if (localBluetoothGatt != null)
+      {
+        d.b.a.a.j("disconnectDevice()", new Object[0]);
+        handler.removeCallbacksAndMessages(null);
+        setState(5);
+        bluetoothGatt.disconnect();
+      }
+      return;
+    }
+  }
+  
+  private boolean ensureServiceChangedEnabled()
+  {
+    Object localObject = bluetoothGatt;
+    if (localObject == null) {
+      return false;
+    }
+    if (((BluetoothGatt)localObject).getDevice().getBondState() != 12) {
+      return false;
+    }
+    localObject = ((BluetoothGatt)localObject).getService(TriangleConstants.GENERIC_ATTRIBUTE_SERVICE_UUID);
+    if (localObject == null) {
+      return false;
+    }
+    localObject = ((BluetoothGattService)localObject).getCharacteristic(TriangleConstants.SERVICE_CHANGED_CHARACTERISTIC_UUID);
+    if (localObject == null) {
+      return false;
+    }
+    d.b.a.a.j("Service Changed characteristic found on a bonded device", new Object[0]);
+    return internalEnableIndications((BluetoothGattCharacteristic)localObject);
+  }
+  
+  private BluetoothLeScanner getBluetoothLeScanner()
+  {
+    BluetoothManager localBluetoothManager = (BluetoothManager)context.getSystemService("bluetooth");
+    if (localBluetoothManager != null) {
+      return localBluetoothManager.getAdapter().getBluetoothLeScanner();
+    }
+    return null;
+  }
+  
+  private int getState()
+  {
+    return state;
+  }
+  
+  private boolean internalEnableIndications(BluetoothGattCharacteristic paramBluetoothGattCharacteristic)
+  {
+    Object localObject = bluetoothGatt;
+    if (localObject == null)
+    {
+      d.b.a.a.f("internalEnableIndications() gatt: null", new Object[0]);
+      return false;
+    }
+    if (paramBluetoothGattCharacteristic == null)
+    {
+      d.b.a.a.f("internalEnableIndications() characteristic: null", new Object[0]);
+      return false;
+    }
+    if ((paramBluetoothGattCharacteristic.getProperties() & 0x20) == 0)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalEnableIndications() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", PROPERTY_INDICATE missing");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    if (!((BluetoothGatt)localObject).setCharacteristicNotification(paramBluetoothGattCharacteristic, true))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalEnableIndications - uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", setCharacteristicNotification(): false");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    localObject = paramBluetoothGattCharacteristic.getDescriptor(TriangleConstants.CLIENT_CHARACTERISTIC_CONFIG_DESCRIPTOR_UUID);
+    if (localObject == null)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalEnableIndications() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", getDescriptor(TriangleConstants.CLIENT_CHARACTERISTIC_CONFIG_DESCRIPTOR_UUID): null");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    ((BluetoothGattDescriptor)localObject).setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+    return internalWriteDescriptorWorkaround((BluetoothGattDescriptor)localObject);
+  }
+  
+  private boolean internalEnableNotifications(BluetoothGattCharacteristic paramBluetoothGattCharacteristic)
+  {
+    Object localObject = bluetoothGatt;
+    if (localObject == null)
+    {
+      d.b.a.a.f("internalEnableNotifications() gatt: null", new Object[0]);
+      return false;
+    }
+    if (paramBluetoothGattCharacteristic == null)
+    {
+      d.b.a.a.f("internalEnableNotifications() characteristic: null", new Object[0]);
+      return false;
+    }
+    if ((paramBluetoothGattCharacteristic.getProperties() & 0x10) == 0)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalEnableNotifications() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", PROPERTY_NOTIFY missing");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    if (!((BluetoothGatt)localObject).setCharacteristicNotification(paramBluetoothGattCharacteristic, true))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalEnableNotifications() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(",  setCharacteristicNotification(): false");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    localObject = paramBluetoothGattCharacteristic.getDescriptor(TriangleConstants.CLIENT_CHARACTERISTIC_CONFIG_DESCRIPTOR_UUID);
+    if (localObject == null)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalEnableNotifications() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", getDescriptor(TriangleConstants.CLIENT_CHARACTERISTIC_CONFIG_DESCRIPTOR_UUID): null");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    ((BluetoothGattDescriptor)localObject).setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+    return internalWriteDescriptorWorkaround((BluetoothGattDescriptor)localObject);
+  }
+  
+  private boolean internalReadCharacteristic(BluetoothGattCharacteristic paramBluetoothGattCharacteristic)
+  {
+    Object localObject = bluetoothGatt;
+    if (localObject == null)
+    {
+      d.b.a.a.f("internalReadCharacteristic() gatt: null", new Object[0]);
+      return false;
+    }
+    if (paramBluetoothGattCharacteristic == null)
+    {
+      d.b.a.a.f("internalReadCharacteristic() characteristic: null", new Object[0]);
+      return false;
+    }
+    if ((paramBluetoothGattCharacteristic.getProperties() & 0x2) == 0)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalReadCharacteristic() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", PROPERTY_READ missing");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    if (!((BluetoothGatt)localObject).readCharacteristic(paramBluetoothGattCharacteristic))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalReadCharacteristic() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", readCharacteristic(): false");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    return true;
+  }
+  
+  private void internalStartScanning()
+  {
+    synchronized (lock)
+    {
+      d.b.a.a.j("internalStartScanning()", new Object[0]);
+      BluetoothLeScanner localBluetoothLeScanner = getBluetoothLeScanner();
+      if (localBluetoothLeScanner == null) {
+        return;
+      }
+      deviceProperties = new BluetoothDeviceProperties();
+      setState(1);
+      scanStartTime = System.currentTimeMillis();
+      handler.postDelayed(new n(this), 30000L);
+      localBluetoothLeScanner.startScan(null, new ScanSettings.Builder().setScanMode(2).setReportDelay(0L).build(), bleScanCallback);
+      callbackHandler.onDeviceScanning();
+      return;
+    }
+  }
+  
+  private boolean internalWriteCharacteristic(BluetoothGattCharacteristic paramBluetoothGattCharacteristic)
+  {
+    Object localObject = bluetoothGatt;
+    if (localObject == null)
+    {
+      d.b.a.a.f("internalWriteCharacteristic() gatt: null", new Object[0]);
+      return false;
+    }
+    if (paramBluetoothGattCharacteristic == null)
+    {
+      d.b.a.a.f("internalWriteCharacteristic() characteristic: null", new Object[0]);
+      return false;
+    }
+    if ((paramBluetoothGattCharacteristic.getProperties() & 0xC) == 0)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalWriteCharacteristic() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", PROPERTY_WRITE or PROPERTY_WRITE_NO_RESPONSE missing");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    if (!((BluetoothGatt)localObject).writeCharacteristic(paramBluetoothGattCharacteristic))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("internalWriteCharacteristic() uuid: ");
+      ((StringBuilder)localObject).append(paramBluetoothGattCharacteristic.getUuid());
+      ((StringBuilder)localObject).append(", writeCharacteristic(): false");
+      d.b.a.a.f(((StringBuilder)localObject).toString(), new Object[0]);
+      return false;
+    }
+    return true;
+  }
+  
+  private boolean internalWriteDescriptorWorkaround(BluetoothGattDescriptor paramBluetoothGattDescriptor)
+  {
+    BluetoothGatt localBluetoothGatt = bluetoothGatt;
+    if (localBluetoothGatt == null)
+    {
+      d.b.a.a.f("internalWriteDescriptorWorkaround() gatt: null", new Object[0]);
+      return false;
+    }
+    if (paramBluetoothGattDescriptor == null)
+    {
+      d.b.a.a.f("internalWriteDescriptorWorkaround() descriptor: null", new Object[0]);
+      return false;
+    }
+    BluetoothGattCharacteristic localBluetoothGattCharacteristic = paramBluetoothGattDescriptor.getCharacteristic();
+    int i = localBluetoothGattCharacteristic.getWriteType();
+    localBluetoothGattCharacteristic.setWriteType(2);
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("internalWriteDescriptorWorkaround() writing descriptor with UUID: ");
+    localStringBuilder.append(paramBluetoothGattDescriptor.getUuid());
+    d.b.a.a.f(localStringBuilder.toString(), new Object[0]);
+    localStringBuilder = new StringBuilder();
+    localStringBuilder.append("internalWriteDescriptorWorkaround() ... of characteristic with UUID: ");
+    localStringBuilder.append(localBluetoothGattCharacteristic.getUuid());
+    d.b.a.a.f(localStringBuilder.toString(), new Object[0]);
+    boolean bool = localBluetoothGatt.writeDescriptor(paramBluetoothGattDescriptor);
+    localBluetoothGattCharacteristic.setWriteType(i);
+    if (!bool)
+    {
+      paramBluetoothGattDescriptor = new StringBuilder();
+      paramBluetoothGattDescriptor.append("internalWriteDescriptorWorkaround() uuid: ");
+      paramBluetoothGattDescriptor.append(localBluetoothGattCharacteristic.getUuid());
+      paramBluetoothGattDescriptor.append(", writeDescriptor(): false");
+      d.b.a.a.f(paramBluetoothGattDescriptor.toString(), new Object[0]);
+    }
+    return bool;
+  }
+  
+  private void maybeEnqueueStreamingTasks()
+  {
+    if ((canEnqueueStreamingTasks()) && (triangleMode != null))
+    {
+      d.b.a.a.o("maybeEnqueueStreamingTasks() Had enough data to continue.  Enqueuing tasks", new Object[0]);
+      handler.postDelayed(new m(this), 700L);
+      return;
+    }
+    d.b.a.a.q("maybeEnqueueStreamingTasks() Missing mode or GATT ids.  Not enqueueing", new Object[0]);
+  }
+  
+  private void onScanTimeout()
+  {
+    d.b.a.a.q("Scan timed out.  Stopping scan", new Object[0]);
+    stopScanning();
+  }
+  
+  private void runOnMainThread(Runnable paramRunnable)
+  {
+    if (Looper.myLooper() != Looper.getMainLooper())
+    {
+      handler.post(paramRunnable);
+      return;
+    }
+    paramRunnable.run();
+  }
+  
+  private void setState(int paramInt)
+  {
+    state = paramInt;
+  }
+  
+  private void stopScanning()
+  {
+    synchronized (lock)
+    {
+      d.b.a.a.j("stopScanning()", new Object[0]);
+      handler.removeCallbacksAndMessages(null);
+      if (getState() == 1)
+      {
+        BluetoothLeScanner localBluetoothLeScanner = getBluetoothLeScanner();
+        if (localBluetoothLeScanner != null) {
+          try
+          {
+            localBluetoothLeScanner.stopScan(bleScanCallback);
+            setState(0);
+            callbackHandler.onDeviceScanningStopped();
+          }
+          catch (IllegalStateException localIllegalStateException)
+          {
+            d.b.a.a.g(localIllegalStateException);
+          }
+        } else {
+          d.b.a.a.b("BluetoothLeScanner is null", new Object[0]);
+        }
+      }
+      return;
+    }
+  }
+  
+  private void updatedDeviceProperties()
+  {
+    BluetoothDeviceProperties localBluetoothDeviceProperties = deviceProperties;
+    if ((serialNumber != null) && (firmwareRevision != null) && (hardwareRevision != null)) {
+      callbackHandler.onDeviceProperties(btEcgDevice, localBluetoothDeviceProperties);
+    }
+  }
+  
+  public void connectDevice(BluetoothDevice paramBluetoothDevice)
+  {
+    btEcgDevice = paramBluetoothDevice;
+    handler.removeCallbacksAndMessages(null);
+    BluetoothLeScanner localBluetoothLeScanner = getBluetoothLeScanner();
+    if (localBluetoothLeScanner != null) {
+      try
+      {
+        localBluetoothLeScanner.stopScan(bleScanCallback);
+      }
+      catch (IllegalStateException localIllegalStateException)
+      {
+        d.b.a.a.g(localIllegalStateException);
+      }
+    }
+    setState(2);
+    callbackHandler.onDeviceConnecting(paramBluetoothDevice);
+    handler.post(new l(this, paramBluetoothDevice));
+  }
+  
+  public void enableCapture(TriangleMode paramTriangleMode)
+  {
+    triangleMode = paramTriangleMode;
+  }
+  
+  public void start()
+  {
+    if (getState() == 0)
+    {
+      d.b.a.a.j("start()", new Object[0]);
+      connectRetryCount = 0;
+      context.registerReceiver(mBluetoothStateBroadcastReceiver, new IntentFilter("android.bluetooth.adapter.action.STATE_CHANGED"));
+      context.registerReceiver(mBondingBroadcastReceiver, new IntentFilter("android.bluetooth.device.action.BOND_STATE_CHANGED"));
+      context.registerReceiver(mPairingRequestBroadcastReceiver, new IntentFilter("android.bluetooth.device.action.PAIRING_REQUEST"));
+      internalStartScanning();
+    }
+  }
+  
+  public void startCapture()
+  {
+    d.b.a.a.j("startCapture()", new Object[0]);
+    maybeEnqueueStreamingTasks();
+  }
+  
+  public void stop()
+  {
+    if (getState() != 0)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("stop() state: ");
+      localStringBuilder.append(getState());
+      d.b.a.a.j(localStringBuilder.toString(), new Object[0]);
+      handler.removeCallbacksAndMessages(null);
+    }
+    try
+    {
+      context.unregisterReceiver(mBluetoothStateBroadcastReceiver);
+      context.unregisterReceiver(mBondingBroadcastReceiver);
+      context.unregisterReceiver(mPairingRequestBroadcastReceiver);
+    }
+    catch (Exception localException)
+    {
+      for (;;) {}
+    }
+    d.b.a.a.b("receiver already unregistered", new Object[0]);
+    if (getState() == 1)
+    {
+      stopScanning();
+      return;
+    }
+    if (getState() == 6) {}
+    for (;;)
+    {
+      setState(0);
+      callbackHandler.onStopped();
+      return;
+      int i = getState();
+      disconnect();
+      if (i != 2) {
+        break;
+      }
+      closeGatt();
+    }
+  }
+  
+  @Retention(RetentionPolicy.SOURCE)
+  private static @interface State
+  {
+    public static final int CONNECTED_BONDED = 4;
+    public static final int CONNECTED_BONDING = 3;
+    public static final int CONNECTING = 2;
+    public static final int CONNECT_RETRY = 6;
+    public static final int DISCONNECTING = 5;
+    public static final int IDLE = 0;
+    public static final int SCANNING = 1;
+  }
+}

@@ -1,0 +1,32 @@
+package com.google.android.gms.fitness.request;
+
+import android.os.Parcel;
+import android.os.RemoteException;
+import com.google.android.gms.fitness.data.BleDevice;
+import com.google.android.gms.internal.fitness.zza;
+import com.google.android.gms.internal.fitness.zzd;
+
+public abstract class zzag
+  extends zza
+  implements zzad
+{
+  public zzag()
+  {
+    super("com.google.android.gms.fitness.request.IBleScanCallback");
+  }
+  
+  protected final boolean zza(int paramInt1, Parcel paramParcel1, Parcel paramParcel2, int paramInt2)
+    throws RemoteException
+  {
+    if (paramInt1 != 1)
+    {
+      if (paramInt1 != 2) {
+        return false;
+      }
+      onScanStopped();
+      return true;
+    }
+    onDeviceFound((BleDevice)zzd.zza(paramParcel1, BleDevice.CREATOR));
+    return true;
+  }
+}

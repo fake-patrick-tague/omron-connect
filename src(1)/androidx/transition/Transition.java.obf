@@ -1,0 +1,1391 @@
+package androidx.transition;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
+import android.graphics.Path;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import c.e.d;
+import c.e.g;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public abstract class Transition
+  implements Cloneable
+{
+  private static final int[] b = { 2, 1, 3, 4 };
+  private static final PathMotion c = new a();
+  private static ThreadLocal<c.e.a<Animator, d>> d = new ThreadLocal();
+  boolean A = false;
+  ArrayList<Animator> B = new ArrayList();
+  private int C = 0;
+  private boolean D = false;
+  private boolean E = false;
+  private ArrayList<f> F = null;
+  private ArrayList<Animator> G = new ArrayList();
+  k H;
+  private e I;
+  private c.e.a<String, String> J;
+  private PathMotion K = c;
+  private String e = getClass().getName();
+  private long f = -1L;
+  long g = -1L;
+  private TimeInterpolator h = null;
+  ArrayList<Integer> i = new ArrayList();
+  ArrayList<View> j = new ArrayList();
+  private ArrayList<String> k = null;
+  private ArrayList<Class<?>> l = null;
+  private ArrayList<Integer> m = null;
+  private ArrayList<View> n = null;
+  private ArrayList<Class<?>> o = null;
+  private ArrayList<String> p = null;
+  private ArrayList<Integer> q = null;
+  private ArrayList<View> r = null;
+  private ArrayList<Class<?>> s = null;
+  private n t = new n();
+  private n u = new n();
+  TransitionSet v = null;
+  private int[] w = b;
+  private ArrayList<m> x;
+  private ArrayList<m> y;
+  private ViewGroup z = null;
+  
+  public Transition() {}
+  
+  private static boolean J(m paramM1, m paramM2, String paramString)
+  {
+    paramM1 = a.get(paramString);
+    paramM2 = a.get(paramString);
+    boolean bool = true;
+    if ((paramM1 == null) && (paramM2 == null)) {
+      return false;
+    }
+    if (paramM1 != null)
+    {
+      if (paramM2 == null) {
+        return true;
+      }
+      bool = true ^ paramM1.equals(paramM2);
+    }
+    return bool;
+  }
+  
+  private void K(c.e.a<View, m> paramA1, c.e.a<View, m> paramA2, SparseArray<View> paramSparseArray1, SparseArray<View> paramSparseArray2)
+  {
+    int i2 = paramSparseArray1.size();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      View localView1 = (View)paramSparseArray1.valueAt(i1);
+      if ((localView1 != null) && (I(localView1)))
+      {
+        View localView2 = (View)paramSparseArray2.get(paramSparseArray1.keyAt(i1));
+        if ((localView2 != null) && (I(localView2)))
+        {
+          m localM1 = (m)paramA1.get(localView1);
+          m localM2 = (m)paramA2.get(localView2);
+          if ((localM1 != null) && (localM2 != null))
+          {
+            x.add(localM1);
+            y.add(localM2);
+            paramA1.remove(localView1);
+            paramA2.remove(localView2);
+          }
+        }
+      }
+      i1 += 1;
+    }
+  }
+  
+  private void L(c.e.a<View, m> paramA1, c.e.a<View, m> paramA2)
+  {
+    int i1 = paramA1.size() - 1;
+    while (i1 >= 0)
+    {
+      Object localObject = (View)paramA1.i(i1);
+      if ((localObject != null) && (I((View)localObject)))
+      {
+        localObject = (m)paramA2.remove(localObject);
+        if ((localObject != null) && (I(b)))
+        {
+          m localM = (m)paramA1.k(i1);
+          x.add(localM);
+          y.add(localObject);
+        }
+      }
+      i1 -= 1;
+    }
+  }
+  
+  private void M(c.e.a<View, m> paramA1, c.e.a<View, m> paramA2, d<View> paramD1, d<View> paramD2)
+  {
+    int i2 = paramD1.p();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      View localView1 = (View)paramD1.q(i1);
+      if ((localView1 != null) && (I(localView1)))
+      {
+        View localView2 = (View)paramD2.g(paramD1.l(i1));
+        if ((localView2 != null) && (I(localView2)))
+        {
+          m localM1 = (m)paramA1.get(localView1);
+          m localM2 = (m)paramA2.get(localView2);
+          if ((localM1 != null) && (localM2 != null))
+          {
+            x.add(localM1);
+            y.add(localM2);
+            paramA1.remove(localView1);
+            paramA2.remove(localView2);
+          }
+        }
+      }
+      i1 += 1;
+    }
+  }
+  
+  private void N(c.e.a<View, m> paramA1, c.e.a<View, m> paramA2, c.e.a<String, View> paramA3, c.e.a<String, View> paramA4)
+  {
+    int i2 = paramA3.size();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      View localView1 = (View)paramA3.m(i1);
+      if ((localView1 != null) && (I(localView1)))
+      {
+        View localView2 = (View)paramA4.get(paramA3.i(i1));
+        if ((localView2 != null) && (I(localView2)))
+        {
+          m localM1 = (m)paramA1.get(localView1);
+          m localM2 = (m)paramA2.get(localView2);
+          if ((localM1 != null) && (localM2 != null))
+          {
+            x.add(localM1);
+            y.add(localM2);
+            paramA1.remove(localView1);
+            paramA2.remove(localView2);
+          }
+        }
+      }
+      i1 += 1;
+    }
+  }
+  
+  private void O(n paramN1, n paramN2)
+  {
+    c.e.a localA1 = new c.e.a(a);
+    c.e.a localA2 = new c.e.a(a);
+    int i1 = 0;
+    for (;;)
+    {
+      int[] arrayOfInt = w;
+      if (i1 >= arrayOfInt.length) {
+        break;
+      }
+      int i2 = arrayOfInt[i1];
+      if (i2 != 1)
+      {
+        if (i2 != 2)
+        {
+          if (i2 != 3)
+          {
+            if (i2 == 4) {
+              M(localA1, localA2, c, c);
+            }
+          }
+          else {
+            K(localA1, localA2, b, b);
+          }
+        }
+        else {
+          N(localA1, localA2, d, d);
+        }
+      }
+      else {
+        L(localA1, localA2);
+      }
+      i1 += 1;
+    }
+    d(localA1, localA2);
+  }
+  
+  private void U(Animator paramAnimator, final c.e.a<Animator, d> paramA)
+  {
+    if (paramAnimator != null)
+    {
+      paramAnimator.addListener(new b(paramA));
+      f(paramAnimator);
+    }
+  }
+  
+  private void d(c.e.a<View, m> paramA1, c.e.a<View, m> paramA2)
+  {
+    int i3 = 0;
+    int i1 = 0;
+    int i2;
+    for (;;)
+    {
+      i2 = i3;
+      if (i1 >= paramA1.size()) {
+        break;
+      }
+      m localM = (m)paramA1.m(i1);
+      if (I(b))
+      {
+        x.add(localM);
+        y.add(null);
+      }
+      i1 += 1;
+    }
+    while (i2 < paramA2.size())
+    {
+      paramA1 = (m)paramA2.m(i2);
+      if (I(b))
+      {
+        y.add(paramA1);
+        x.add(null);
+      }
+      i2 += 1;
+    }
+  }
+  
+  private static void e(n paramN, View paramView, m paramM)
+  {
+    a.put(paramView, paramM);
+    int i1 = paramView.getId();
+    if (i1 >= 0) {
+      if (b.indexOfKey(i1) >= 0) {
+        b.put(i1, null);
+      } else {
+        b.put(i1, paramView);
+      }
+    }
+    paramM = c.h.q.f0.L(paramView);
+    if (paramM != null) {
+      if (d.containsKey(paramM)) {
+        d.put(paramM, null);
+      } else {
+        d.put(paramM, paramView);
+      }
+    }
+    if ((paramView.getParent() instanceof ListView))
+    {
+      paramM = (ListView)paramView.getParent();
+      if (paramM.getAdapter().hasStableIds())
+      {
+        long l1 = paramM.getItemIdAtPosition(paramM.getPositionForView(paramView));
+        if (c.j(l1) >= 0)
+        {
+          paramView = (View)c.g(l1);
+          if (paramView != null)
+          {
+            c.h.q.f0.z0(paramView, false);
+            c.m(l1, null);
+          }
+        }
+        else
+        {
+          c.h.q.f0.z0(paramView, true);
+          c.m(l1, paramView);
+        }
+      }
+    }
+  }
+  
+  private void j(View paramView, boolean paramBoolean)
+  {
+    if (paramView == null) {
+      return;
+    }
+    int i3 = paramView.getId();
+    Object localObject = m;
+    if ((localObject != null) && (((ArrayList)localObject).contains(Integer.valueOf(i3)))) {
+      return;
+    }
+    localObject = n;
+    if ((localObject != null) && (((ArrayList)localObject).contains(paramView))) {
+      return;
+    }
+    localObject = o;
+    int i2 = 0;
+    int i1;
+    if (localObject != null)
+    {
+      int i4 = ((ArrayList)localObject).size();
+      i1 = 0;
+      while (i1 < i4)
+      {
+        if (((Class)o.get(i1)).isInstance(paramView)) {
+          return;
+        }
+        i1 += 1;
+      }
+    }
+    if ((paramView.getParent() instanceof ViewGroup))
+    {
+      localObject = new m(paramView);
+      if (paramBoolean) {
+        l((m)localObject);
+      } else {
+        i((m)localObject);
+      }
+      c.add(this);
+      k((m)localObject);
+      if (paramBoolean) {
+        e(t, paramView, (m)localObject);
+      } else {
+        e(u, paramView, (m)localObject);
+      }
+    }
+    if ((paramView instanceof ViewGroup))
+    {
+      localObject = q;
+      if ((localObject != null) && (((ArrayList)localObject).contains(Integer.valueOf(i3)))) {
+        return;
+      }
+      localObject = r;
+      if ((localObject != null) && (((ArrayList)localObject).contains(paramView))) {
+        return;
+      }
+      localObject = s;
+      if (localObject != null)
+      {
+        i3 = ((ArrayList)localObject).size();
+        i1 = 0;
+        while (i1 < i3)
+        {
+          if (((Class)s.get(i1)).isInstance(paramView)) {
+            return;
+          }
+          i1 += 1;
+        }
+      }
+      paramView = (ViewGroup)paramView;
+      i1 = i2;
+      while (i1 < paramView.getChildCount())
+      {
+        j(paramView.getChildAt(i1), paramBoolean);
+        i1 += 1;
+      }
+    }
+  }
+  
+  private static c.e.a<Animator, d> z()
+  {
+    c.e.a localA2 = (c.e.a)d.get();
+    c.e.a localA1 = localA2;
+    if (localA2 == null)
+    {
+      localA1 = new c.e.a();
+      d.set(localA1);
+    }
+    return localA1;
+  }
+  
+  public long A()
+  {
+    return f;
+  }
+  
+  public List<Integer> B()
+  {
+    return i;
+  }
+  
+  public List<String> C()
+  {
+    return k;
+  }
+  
+  public List<Class<?>> D()
+  {
+    return l;
+  }
+  
+  public List<View> E()
+  {
+    return j;
+  }
+  
+  public String[] F()
+  {
+    return null;
+  }
+  
+  public m G(View paramView, boolean paramBoolean)
+  {
+    Object localObject = v;
+    if (localObject != null) {
+      return ((Transition)localObject).G(paramView, paramBoolean);
+    }
+    if (paramBoolean) {
+      localObject = t;
+    } else {
+      localObject = u;
+    }
+    return (m)a.get(paramView);
+  }
+  
+  public boolean H(m paramM1, m paramM2)
+  {
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (paramM1 != null)
+    {
+      bool1 = bool2;
+      if (paramM2 != null)
+      {
+        Object localObject = F();
+        if (localObject != null)
+        {
+          int i2 = localObject.length;
+          int i1 = 0;
+          for (;;)
+          {
+            bool1 = bool2;
+            if (i1 >= i2) {
+              break label120;
+            }
+            if (J(paramM1, paramM2, localObject[i1])) {
+              break;
+            }
+            i1 += 1;
+          }
+        }
+        localObject = a.keySet().iterator();
+        do
+        {
+          bool1 = bool2;
+          if (!((Iterator)localObject).hasNext()) {
+            break;
+          }
+        } while (!J(paramM1, paramM2, (String)((Iterator)localObject).next()));
+        bool1 = true;
+      }
+    }
+    label120:
+    return bool1;
+  }
+  
+  boolean I(View paramView)
+  {
+    int i2 = paramView.getId();
+    ArrayList localArrayList = m;
+    if ((localArrayList != null) && (localArrayList.contains(Integer.valueOf(i2)))) {
+      return false;
+    }
+    localArrayList = n;
+    if ((localArrayList != null) && (localArrayList.contains(paramView))) {
+      return false;
+    }
+    localArrayList = o;
+    int i1;
+    if (localArrayList != null)
+    {
+      int i3 = localArrayList.size();
+      i1 = 0;
+      while (i1 < i3)
+      {
+        if (((Class)o.get(i1)).isInstance(paramView)) {
+          return false;
+        }
+        i1 += 1;
+      }
+    }
+    if ((p != null) && (c.h.q.f0.L(paramView) != null) && (p.contains(c.h.q.f0.L(paramView)))) {
+      return false;
+    }
+    if ((i.size() == 0) && (j.size() == 0))
+    {
+      localArrayList = l;
+      if ((localArrayList == null) || (localArrayList.isEmpty()))
+      {
+        localArrayList = k;
+        if ((localArrayList == null) || (localArrayList.isEmpty())) {
+          return true;
+        }
+      }
+    }
+    if (!i.contains(Integer.valueOf(i2)))
+    {
+      if (j.contains(paramView)) {
+        return true;
+      }
+      localArrayList = k;
+      if ((localArrayList != null) && (localArrayList.contains(c.h.q.f0.L(paramView)))) {
+        return true;
+      }
+      if (l != null)
+      {
+        i1 = 0;
+        while (i1 < l.size())
+        {
+          if (((Class)l.get(i1)).isInstance(paramView)) {
+            return true;
+          }
+          i1 += 1;
+        }
+      }
+      return false;
+    }
+    return true;
+  }
+  
+  public void P(View paramView)
+  {
+    if (!E)
+    {
+      c.e.a localA = z();
+      int i1 = localA.size();
+      paramView = w.d(paramView);
+      i1 -= 1;
+      while (i1 >= 0)
+      {
+        d localD = (d)localA.m(i1);
+        if ((a != null) && (paramView.equals(d))) {
+          a.b((Animator)localA.i(i1));
+        }
+        i1 -= 1;
+      }
+      paramView = F;
+      if ((paramView != null) && (paramView.size() > 0))
+      {
+        paramView = (ArrayList)F.clone();
+        int i2 = paramView.size();
+        i1 = 0;
+        while (i1 < i2)
+        {
+          ((f)paramView.get(i1)).b(this);
+          i1 += 1;
+        }
+      }
+      D = true;
+    }
+  }
+  
+  void Q(ViewGroup paramViewGroup)
+  {
+    x = new ArrayList();
+    y = new ArrayList();
+    O(t, u);
+    c.e.a localA = z();
+    int i1 = localA.size();
+    f0 localF0 = w.d(paramViewGroup);
+    i1 -= 1;
+    while (i1 >= 0)
+    {
+      Animator localAnimator = (Animator)localA.i(i1);
+      if (localAnimator != null)
+      {
+        d localD = (d)localA.get(localAnimator);
+        if ((localD != null) && (a != null) && (localF0.equals(d)))
+        {
+          m localM3 = c;
+          View localView = a;
+          m localM4 = G(localView, true);
+          m localM2 = v(localView, true);
+          m localM1 = localM2;
+          if (localM4 == null)
+          {
+            localM1 = localM2;
+            if (localM2 == null) {
+              localM1 = (m)u.a.get(localView);
+            }
+          }
+          int i2;
+          if (((localM4 != null) || (localM1 != null)) && (e.H(localM3, localM1))) {
+            i2 = 1;
+          } else {
+            i2 = 0;
+          }
+          if (i2 != 0) {
+            if ((!localAnimator.isRunning()) && (!localAnimator.isStarted())) {
+              localA.remove(localAnimator);
+            } else {
+              localAnimator.cancel();
+            }
+          }
+        }
+      }
+      i1 -= 1;
+    }
+    q(paramViewGroup, t, u, x, y);
+    V();
+  }
+  
+  public Transition R(f paramF)
+  {
+    ArrayList localArrayList = F;
+    if (localArrayList == null) {
+      return this;
+    }
+    localArrayList.remove(paramF);
+    if (F.size() == 0) {
+      F = null;
+    }
+    return this;
+  }
+  
+  public Transition S(View paramView)
+  {
+    j.remove(paramView);
+    return this;
+  }
+  
+  public void T(View paramView)
+  {
+    if (D)
+    {
+      if (!E)
+      {
+        c.e.a localA = z();
+        int i1 = localA.size();
+        paramView = w.d(paramView);
+        i1 -= 1;
+        while (i1 >= 0)
+        {
+          d localD = (d)localA.m(i1);
+          if ((a != null) && (paramView.equals(d))) {
+            a.c((Animator)localA.i(i1));
+          }
+          i1 -= 1;
+        }
+        paramView = F;
+        if ((paramView != null) && (paramView.size() > 0))
+        {
+          paramView = (ArrayList)F.clone();
+          int i2 = paramView.size();
+          i1 = 0;
+          while (i1 < i2)
+          {
+            ((f)paramView.get(i1)).e(this);
+            i1 += 1;
+          }
+        }
+      }
+      D = false;
+    }
+  }
+  
+  protected void V()
+  {
+    e0();
+    c.e.a localA = z();
+    Iterator localIterator = G.iterator();
+    while (localIterator.hasNext())
+    {
+      Animator localAnimator = (Animator)localIterator.next();
+      if (localA.containsKey(localAnimator))
+      {
+        e0();
+        U(localAnimator, localA);
+      }
+    }
+    G.clear();
+    r();
+  }
+  
+  public Transition W(long paramLong)
+  {
+    g = paramLong;
+    return this;
+  }
+  
+  public void X(e paramE)
+  {
+    I = paramE;
+  }
+  
+  public Transition Y(TimeInterpolator paramTimeInterpolator)
+  {
+    h = paramTimeInterpolator;
+    return this;
+  }
+  
+  public void a0(PathMotion paramPathMotion)
+  {
+    if (paramPathMotion == null)
+    {
+      K = c;
+      return;
+    }
+    K = paramPathMotion;
+  }
+  
+  public Transition b(f paramF)
+  {
+    if (F == null) {
+      F = new ArrayList();
+    }
+    F.add(paramF);
+    return this;
+  }
+  
+  public void b0(k paramK) {}
+  
+  public Transition c(View paramView)
+  {
+    j.add(paramView);
+    return this;
+  }
+  
+  public Transition c0(long paramLong)
+  {
+    f = paramLong;
+    return this;
+  }
+  
+  protected void e0()
+  {
+    if (C == 0)
+    {
+      ArrayList localArrayList = F;
+      if ((localArrayList != null) && (localArrayList.size() > 0))
+      {
+        localArrayList = (ArrayList)F.clone();
+        int i2 = localArrayList.size();
+        int i1 = 0;
+        while (i1 < i2)
+        {
+          ((f)localArrayList.get(i1)).a(this);
+          i1 += 1;
+        }
+      }
+      E = false;
+    }
+    C += 1;
+  }
+  
+  protected void f(Animator paramAnimator)
+  {
+    if (paramAnimator == null)
+    {
+      r();
+      return;
+    }
+    if (s() >= 0L) {
+      paramAnimator.setDuration(s());
+    }
+    if (A() >= 0L) {
+      paramAnimator.setStartDelay(A() + paramAnimator.getStartDelay());
+    }
+    if (u() != null) {
+      paramAnimator.setInterpolator(u());
+    }
+    paramAnimator.addListener(new c());
+    paramAnimator.start();
+  }
+  
+  String f0(String paramString)
+  {
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append(paramString);
+    ((StringBuilder)localObject).append(getClass().getSimpleName());
+    ((StringBuilder)localObject).append("@");
+    ((StringBuilder)localObject).append(Integer.toHexString(hashCode()));
+    ((StringBuilder)localObject).append(": ");
+    localObject = ((StringBuilder)localObject).toString();
+    paramString = (String)localObject;
+    if (g != -1L)
+    {
+      paramString = new StringBuilder();
+      paramString.append((String)localObject);
+      paramString.append("dur(");
+      paramString.append(g);
+      paramString.append(") ");
+      paramString = paramString.toString();
+    }
+    localObject = paramString;
+    if (f != -1L)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append(paramString);
+      ((StringBuilder)localObject).append("dly(");
+      ((StringBuilder)localObject).append(f);
+      ((StringBuilder)localObject).append(") ");
+      localObject = ((StringBuilder)localObject).toString();
+    }
+    paramString = (String)localObject;
+    if (h != null)
+    {
+      paramString = new StringBuilder();
+      paramString.append((String)localObject);
+      paramString.append("interp(");
+      paramString.append(h);
+      paramString.append(") ");
+      paramString = paramString.toString();
+    }
+    if (i.size() <= 0)
+    {
+      localObject = paramString;
+      if (j.size() <= 0) {}
+    }
+    else
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append(paramString);
+      ((StringBuilder)localObject).append("tgts(");
+      paramString = ((StringBuilder)localObject).toString();
+      int i1 = i.size();
+      int i2 = 0;
+      localObject = paramString;
+      if (i1 > 0)
+      {
+        i1 = 0;
+        for (;;)
+        {
+          localObject = paramString;
+          if (i1 >= i.size()) {
+            break;
+          }
+          localObject = paramString;
+          if (i1 > 0)
+          {
+            localObject = new StringBuilder();
+            ((StringBuilder)localObject).append(paramString);
+            ((StringBuilder)localObject).append(", ");
+            localObject = ((StringBuilder)localObject).toString();
+          }
+          paramString = new StringBuilder();
+          paramString.append((String)localObject);
+          paramString.append(i.get(i1));
+          paramString = paramString.toString();
+          i1 += 1;
+        }
+      }
+      paramString = (String)localObject;
+      if (j.size() > 0)
+      {
+        i1 = i2;
+        for (;;)
+        {
+          paramString = (String)localObject;
+          if (i1 >= j.size()) {
+            break;
+          }
+          paramString = (String)localObject;
+          if (i1 > 0)
+          {
+            paramString = new StringBuilder();
+            paramString.append((String)localObject);
+            paramString.append(", ");
+            paramString = paramString.toString();
+          }
+          localObject = new StringBuilder();
+          ((StringBuilder)localObject).append(paramString);
+          ((StringBuilder)localObject).append(j.get(i1));
+          localObject = ((StringBuilder)localObject).toString();
+          i1 += 1;
+        }
+      }
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append(paramString);
+      ((StringBuilder)localObject).append(")");
+      localObject = ((StringBuilder)localObject).toString();
+    }
+    return localObject;
+  }
+  
+  protected void g()
+  {
+    int i1 = B.size() - 1;
+    while (i1 >= 0)
+    {
+      ((Animator)B.get(i1)).cancel();
+      i1 -= 1;
+    }
+    ArrayList localArrayList = F;
+    if ((localArrayList != null) && (localArrayList.size() > 0))
+    {
+      localArrayList = (ArrayList)F.clone();
+      int i2 = localArrayList.size();
+      i1 = 0;
+      while (i1 < i2)
+      {
+        ((f)localArrayList.get(i1)).d(this);
+        i1 += 1;
+      }
+    }
+  }
+  
+  public abstract void i(m paramM);
+  
+  void k(m paramM)
+  {
+    if (H != null)
+    {
+      if (a.isEmpty()) {
+        return;
+      }
+      throw null;
+    }
+  }
+  
+  public abstract void l(m paramM);
+  
+  void m(ViewGroup paramViewGroup, boolean paramBoolean)
+  {
+    n(paramBoolean);
+    int i1 = i.size();
+    int i3 = 0;
+    Object localObject1;
+    if ((i1 > 0) || (j.size() > 0))
+    {
+      localObject1 = k;
+      if ((localObject1 == null) || (((ArrayList)localObject1).isEmpty()))
+      {
+        localObject1 = l;
+        if ((localObject1 == null) || (((ArrayList)localObject1).isEmpty())) {
+          break label80;
+        }
+      }
+    }
+    j(paramViewGroup, paramBoolean);
+    break label304;
+    label80:
+    i1 = 0;
+    Object localObject2;
+    while (i1 < i.size())
+    {
+      localObject1 = paramViewGroup.findViewById(((Integer)i.get(i1)).intValue());
+      if (localObject1 != null)
+      {
+        localObject2 = new m((View)localObject1);
+        if (paramBoolean) {
+          l((m)localObject2);
+        } else {
+          i((m)localObject2);
+        }
+        c.add(this);
+        k((m)localObject2);
+        if (paramBoolean) {
+          e(t, (View)localObject1, (m)localObject2);
+        } else {
+          e(u, (View)localObject1, (m)localObject2);
+        }
+      }
+      i1 += 1;
+    }
+    i1 = 0;
+    while (i1 < j.size())
+    {
+      paramViewGroup = (View)j.get(i1);
+      localObject1 = new m(paramViewGroup);
+      if (paramBoolean) {
+        l((m)localObject1);
+      } else {
+        i((m)localObject1);
+      }
+      c.add(this);
+      k((m)localObject1);
+      if (paramBoolean) {
+        e(t, paramViewGroup, (m)localObject1);
+      } else {
+        e(u, paramViewGroup, (m)localObject1);
+      }
+      i1 += 1;
+    }
+    label304:
+    if (!paramBoolean)
+    {
+      paramViewGroup = J;
+      if (paramViewGroup != null)
+      {
+        int i4 = paramViewGroup.size();
+        paramViewGroup = new ArrayList(i4);
+        i1 = 0;
+        int i2;
+        for (;;)
+        {
+          i2 = i3;
+          if (i1 >= i4) {
+            break;
+          }
+          localObject1 = (String)J.i(i1);
+          paramViewGroup.add(t.d.remove(localObject1));
+          i1 += 1;
+        }
+        while (i2 < i4)
+        {
+          localObject1 = (View)paramViewGroup.get(i2);
+          if (localObject1 != null)
+          {
+            localObject2 = (String)J.m(i2);
+            t.d.put(localObject2, localObject1);
+          }
+          i2 += 1;
+        }
+      }
+    }
+  }
+  
+  void n(boolean paramBoolean)
+  {
+    if (paramBoolean)
+    {
+      t.a.clear();
+      t.b.clear();
+      t.c.c();
+      return;
+    }
+    u.a.clear();
+    u.b.clear();
+    u.c.c();
+  }
+  
+  public Transition o()
+  {
+    try
+    {
+      Transition localTransition = (Transition)super.clone();
+      G = new ArrayList();
+      t = new n();
+      u = new n();
+      x = null;
+      y = null;
+      return localTransition;
+    }
+    catch (CloneNotSupportedException localCloneNotSupportedException) {}
+    return null;
+  }
+  
+  public Animator p(ViewGroup paramViewGroup, m paramM1, m paramM2)
+  {
+    return null;
+  }
+  
+  protected void q(ViewGroup paramViewGroup, n paramN1, n paramN2, ArrayList<m> paramArrayList1, ArrayList<m> paramArrayList2)
+  {
+    c.e.a localA = z();
+    SparseIntArray localSparseIntArray = new SparseIntArray();
+    int i1 = paramArrayList1.size();
+    int i3 = 0;
+    int i2;
+    while (i3 < i1)
+    {
+      Object localObject2 = (m)paramArrayList1.get(i3);
+      paramN1 = (m)paramArrayList2.get(i3);
+      Object localObject1 = localObject2;
+      if (localObject2 != null)
+      {
+        localObject1 = localObject2;
+        if (!c.contains(this)) {
+          localObject1 = null;
+        }
+      }
+      localObject2 = paramN1;
+      if (paramN1 != null)
+      {
+        localObject2 = paramN1;
+        if (!c.contains(this)) {
+          localObject2 = null;
+        }
+      }
+      if ((localObject1 != null) || (localObject2 != null))
+      {
+        do
+        {
+          do
+          {
+            if ((localObject1 != null) && (localObject2 != null) && (!H((m)localObject1, (m)localObject2))) {
+              i2 = 0;
+            } else {
+              i2 = 1;
+            }
+          } while (i2 == 0);
+          paramN1 = p(paramViewGroup, (m)localObject1, (m)localObject2);
+        } while (paramN1 == null);
+        if (localObject2 != null)
+        {
+          View localView = b;
+          String[] arrayOfString = F();
+          if ((arrayOfString != null) && (arrayOfString.length > 0))
+          {
+            m localM = new m(localView);
+            localObject2 = (m)a.get(localView);
+            localObject1 = paramN1;
+            i2 = i1;
+            if (localObject2 != null)
+            {
+              i4 = 0;
+              for (;;)
+              {
+                localObject1 = paramN1;
+                i2 = i1;
+                if (i4 >= arrayOfString.length) {
+                  break;
+                }
+                a.put(arrayOfString[i4], a.get(arrayOfString[i4]));
+                i4 += 1;
+              }
+            }
+            int i4 = localA.size();
+            i1 = 0;
+            while (i1 < i4)
+            {
+              paramN1 = (d)localA.get((Animator)localA.i(i1));
+              if ((c != null) && (a == localView) && (b.equals(w())) && (c.equals(localM)))
+              {
+                paramN1 = null;
+                localObject1 = localM;
+                break label408;
+              }
+              i1 += 1;
+            }
+            paramN1 = (n)localObject1;
+            localObject1 = localM;
+          }
+          else
+          {
+            localObject1 = null;
+            i2 = i1;
+          }
+          label408:
+          localObject2 = localView;
+        }
+        else
+        {
+          localObject2 = b;
+          localObject1 = null;
+          i2 = i1;
+        }
+        i1 = i2;
+        if (paramN1 != null) {
+          if (H == null)
+          {
+            localA.put(paramN1, new d((View)localObject2, w(), this, w.d(paramViewGroup), (m)localObject1));
+            G.add(paramN1);
+            i1 = i2;
+          }
+          else
+          {
+            throw null;
+          }
+        }
+      }
+      i3 += 1;
+    }
+    if (localSparseIntArray.size() != 0)
+    {
+      i1 = 0;
+      while (i1 < localSparseIntArray.size())
+      {
+        i2 = localSparseIntArray.keyAt(i1);
+        paramViewGroup = (Animator)G.get(i2);
+        paramViewGroup.setStartDelay(localSparseIntArray.valueAt(i1) - Long.MAX_VALUE + paramViewGroup.getStartDelay());
+        i1 += 1;
+      }
+    }
+  }
+  
+  protected void r()
+  {
+    int i1 = C - 1;
+    C = i1;
+    if (i1 == 0)
+    {
+      Object localObject = F;
+      if ((localObject != null) && (((ArrayList)localObject).size() > 0))
+      {
+        localObject = (ArrayList)F.clone();
+        int i2 = ((ArrayList)localObject).size();
+        i1 = 0;
+        while (i1 < i2)
+        {
+          ((f)((ArrayList)localObject).get(i1)).c(this);
+          i1 += 1;
+        }
+      }
+      i1 = 0;
+      while (i1 < t.c.p())
+      {
+        localObject = (View)t.c.q(i1);
+        if (localObject != null) {
+          c.h.q.f0.z0((View)localObject, false);
+        }
+        i1 += 1;
+      }
+      i1 = 0;
+      while (i1 < u.c.p())
+      {
+        localObject = (View)u.c.q(i1);
+        if (localObject != null) {
+          c.h.q.f0.z0((View)localObject, false);
+        }
+        i1 += 1;
+      }
+      E = true;
+    }
+  }
+  
+  public long s()
+  {
+    return g;
+  }
+  
+  public e t()
+  {
+    return I;
+  }
+  
+  public String toString()
+  {
+    return f0("");
+  }
+  
+  public TimeInterpolator u()
+  {
+    return h;
+  }
+  
+  m v(View paramView, boolean paramBoolean)
+  {
+    Object localObject1 = v;
+    if (localObject1 != null) {
+      return ((Transition)localObject1).v(paramView, paramBoolean);
+    }
+    if (paramBoolean) {
+      localObject1 = x;
+    } else {
+      localObject1 = y;
+    }
+    Object localObject2 = null;
+    if (localObject1 == null) {
+      return null;
+    }
+    int i4 = ((ArrayList)localObject1).size();
+    int i3 = -1;
+    int i1 = 0;
+    int i2;
+    for (;;)
+    {
+      i2 = i3;
+      if (i1 >= i4) {
+        break;
+      }
+      m localM = (m)((ArrayList)localObject1).get(i1);
+      if (localM == null) {
+        return null;
+      }
+      if (b == paramView)
+      {
+        i2 = i1;
+        break;
+      }
+      i1 += 1;
+    }
+    paramView = localObject2;
+    if (i2 >= 0)
+    {
+      if (paramBoolean) {
+        paramView = y;
+      } else {
+        paramView = x;
+      }
+      paramView = (m)paramView.get(i2);
+    }
+    return paramView;
+  }
+  
+  public String w()
+  {
+    return e;
+  }
+  
+  public PathMotion x()
+  {
+    return K;
+  }
+  
+  public k y()
+  {
+    return H;
+  }
+  
+  static final class a
+    extends PathMotion
+  {
+    a() {}
+    
+    public Path a(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
+    {
+      Path localPath = new Path();
+      localPath.moveTo(paramFloat1, paramFloat2);
+      localPath.lineTo(paramFloat3, paramFloat4);
+      return localPath;
+    }
+  }
+  
+  class b
+    extends AnimatorListenerAdapter
+  {
+    b(c.e.a paramA) {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      paramA.remove(paramAnimator);
+      B.remove(paramAnimator);
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      B.add(paramAnimator);
+    }
+  }
+  
+  class c
+    extends AnimatorListenerAdapter
+  {
+    c() {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      r();
+      paramAnimator.removeListener(this);
+    }
+  }
+  
+  private static class d
+  {
+    View a;
+    String b;
+    m c;
+    f0 d;
+    Transition e;
+    
+    d(View paramView, String paramString, Transition paramTransition, f0 paramF0, m paramM)
+    {
+      a = paramView;
+      b = paramString;
+      c = paramM;
+      d = paramF0;
+      e = paramTransition;
+    }
+  }
+  
+  public static abstract class e
+  {
+    public e() {}
+  }
+  
+  public static abstract interface f
+  {
+    public abstract void a(Transition paramTransition);
+    
+    public abstract void b(Transition paramTransition);
+    
+    public abstract void c(Transition paramTransition);
+    
+    public abstract void d(Transition paramTransition);
+    
+    public abstract void e(Transition paramTransition);
+  }
+}

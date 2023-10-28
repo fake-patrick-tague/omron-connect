@@ -1,0 +1,152 @@
+package androidx.work.impl.n;
+
+import android.database.Cursor;
+import androidx.room.RoomDatabase;
+import androidx.room.k;
+import androidx.room.n;
+import androidx.room.q.c;
+import c.t.a.d;
+import c.t.a.f;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class i
+  implements h
+{
+  private final RoomDatabase a;
+  private final androidx.room.b<g> b;
+  private final n c;
+  
+  public i(RoomDatabase paramRoomDatabase)
+  {
+    a = paramRoomDatabase;
+    b = new a(paramRoomDatabase);
+    c = new b(paramRoomDatabase);
+  }
+  
+  public List<String> a()
+  {
+    k localK = k.n("SELECT DISTINCT work_spec_id FROM SystemIdInfo", 0);
+    a.b();
+    Cursor localCursor = c.b(a, localK, false, null);
+    try
+    {
+      ArrayList localArrayList = new ArrayList(localCursor.getCount());
+      while (localCursor.moveToNext()) {
+        localArrayList.add(localCursor.getString(0));
+      }
+      return localArrayList;
+    }
+    finally
+    {
+      localCursor.close();
+      localK.release();
+    }
+  }
+  
+  public void b(g paramG)
+  {
+    a.b();
+    a.c();
+    try
+    {
+      b.h(paramG);
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+    }
+  }
+  
+  public g c(String paramString)
+  {
+    k localK = k.n("SELECT `SystemIdInfo`.`work_spec_id` AS `work_spec_id`, `SystemIdInfo`.`system_id` AS `system_id` FROM SystemIdInfo WHERE work_spec_id=?", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    Object localObject = a;
+    paramString = null;
+    localObject = c.b((RoomDatabase)localObject, localK, false, null);
+    try
+    {
+      int i = androidx.room.q.b.c((Cursor)localObject, "work_spec_id");
+      int j = androidx.room.q.b.c((Cursor)localObject, "system_id");
+      if (((Cursor)localObject).moveToFirst()) {
+        paramString = new g(((Cursor)localObject).getString(i), ((Cursor)localObject).getInt(j));
+      }
+      return paramString;
+    }
+    finally
+    {
+      ((Cursor)localObject).close();
+      localK.release();
+    }
+  }
+  
+  public void d(String paramString)
+  {
+    a.b();
+    f localF = c.a();
+    if (paramString == null) {
+      localF.bindNull(1);
+    } else {
+      localF.bindString(1, paramString);
+    }
+    a.c();
+    try
+    {
+      localF.executeUpdateDelete();
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+      c.f(localF);
+    }
+  }
+  
+  class a
+    extends androidx.room.b<g>
+  {
+    a(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "INSERT OR REPLACE INTO `SystemIdInfo` (`work_spec_id`,`system_id`) VALUES (?,?)";
+    }
+    
+    public void i(f paramF, g paramG)
+    {
+      String str = a;
+      if (str == null) {
+        paramF.bindNull(1);
+      } else {
+        paramF.bindString(1, str);
+      }
+      paramF.bindLong(2, b);
+    }
+  }
+  
+  class b
+    extends n
+  {
+    b(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "DELETE FROM SystemIdInfo where work_spec_id=?";
+    }
+  }
+}

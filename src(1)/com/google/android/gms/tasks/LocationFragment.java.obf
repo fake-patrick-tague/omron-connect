@@ -1,0 +1,58 @@
+package com.google.android.gms.tasks;
+
+import android.app.Activity;
+import com.google.android.gms.common.api.internal.LifecycleCallback;
+import com.google.android.gms.common.api.internal.LifecycleFragment;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+final class zzv
+  extends LifecycleCallback
+{
+  private final List zza = new ArrayList();
+  
+  private zzv(LifecycleFragment paramLifecycleFragment)
+  {
+    super(paramLifecycleFragment);
+    mLifecycleFragment.addCallback("TaskOnStopCallback", this);
+  }
+  
+  public static zzv zza(Activity paramActivity)
+  {
+    LifecycleFragment localLifecycleFragment = LifecycleCallback.getFragment(paramActivity);
+    zzv localZzv = (zzv)localLifecycleFragment.getCallbackOrNull("TaskOnStopCallback", zzv.class);
+    paramActivity = localZzv;
+    if (localZzv == null) {
+      paramActivity = new zzv(localLifecycleFragment);
+    }
+    return paramActivity;
+  }
+  
+  public final void onStop()
+  {
+    synchronized (zza)
+    {
+      Iterator localIterator = zza.iterator();
+      while (localIterator.hasNext())
+      {
+        zzq localZzq = (zzq)((WeakReference)localIterator.next()).get();
+        if (localZzq != null) {
+          localZzq.zzc();
+        }
+      }
+      zza.clear();
+      return;
+    }
+  }
+  
+  public final void zzb(zzq paramZzq)
+  {
+    synchronized (zza)
+    {
+      zza.add(new WeakReference(paramZzq));
+      return;
+    }
+  }
+}

@@ -1,0 +1,335 @@
+package com.google.android.gms.tasks;
+
+import android.app.Activity;
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.Executor;
+
+final class zzw<TResult>
+  extends Task<TResult>
+{
+  private final Object zza = new Object();
+  private final zzr zzb = new zzr();
+  private boolean zzc;
+  private volatile boolean zzd;
+  private Object zze;
+  private Exception zzf;
+  
+  zzw() {}
+  
+  private final void zzf()
+  {
+    Preconditions.checkState(zzc, "Task is not yet complete");
+  }
+  
+  private final void zzg()
+  {
+    if (!zzd) {
+      return;
+    }
+    throw new CancellationException("Task is already canceled.");
+  }
+  
+  private final void zzh()
+  {
+    if (!zzc) {
+      return;
+    }
+    throw DuplicateTaskCompletionException.of(this);
+  }
+  
+  private final void zzi()
+  {
+    synchronized (zza)
+    {
+      if (!zzc) {
+        return;
+      }
+      zzb.zzb(this);
+      return;
+    }
+  }
+  
+  public final Task<TResult> addOnCanceledListener(Activity paramActivity, OnCanceledListener paramOnCanceledListener)
+  {
+    paramOnCanceledListener = new zzh(TaskExecutors.MAIN_THREAD, paramOnCanceledListener);
+    zzb.zza(paramOnCanceledListener);
+    zzv.zza(paramActivity).zzb(paramOnCanceledListener);
+    zzi();
+    return this;
+  }
+  
+  public final Task<TResult> addOnCanceledListener(OnCanceledListener paramOnCanceledListener)
+  {
+    addOnCanceledListener(TaskExecutors.MAIN_THREAD, paramOnCanceledListener);
+    return this;
+  }
+  
+  public final Task<TResult> addOnCanceledListener(Executor paramExecutor, OnCanceledListener paramOnCanceledListener)
+  {
+    zzb.zza(new zzh(paramExecutor, paramOnCanceledListener));
+    zzi();
+    return this;
+  }
+  
+  public final Task<TResult> addOnCompleteListener(Activity paramActivity, OnCompleteListener<TResult> paramOnCompleteListener)
+  {
+    paramOnCompleteListener = new zzj(TaskExecutors.MAIN_THREAD, paramOnCompleteListener);
+    zzb.zza(paramOnCompleteListener);
+    zzv.zza(paramActivity).zzb(paramOnCompleteListener);
+    zzi();
+    return this;
+  }
+  
+  public final Task<TResult> addOnCompleteListener(OnCompleteListener<TResult> paramOnCompleteListener)
+  {
+    Executor localExecutor = TaskExecutors.MAIN_THREAD;
+    zzb.zza(new zzj(localExecutor, paramOnCompleteListener));
+    zzi();
+    return this;
+  }
+  
+  public final Task<TResult> addOnCompleteListener(Executor paramExecutor, OnCompleteListener<TResult> paramOnCompleteListener)
+  {
+    zzb.zza(new zzj(paramExecutor, paramOnCompleteListener));
+    zzi();
+    return this;
+  }
+  
+  public final Task<TResult> addOnFailureListener(Activity paramActivity, OnFailureListener paramOnFailureListener)
+  {
+    paramOnFailureListener = new zzl(TaskExecutors.MAIN_THREAD, paramOnFailureListener);
+    zzb.zza(paramOnFailureListener);
+    zzv.zza(paramActivity).zzb(paramOnFailureListener);
+    zzi();
+    return this;
+  }
+  
+  public final Task<TResult> addOnFailureListener(OnFailureListener paramOnFailureListener)
+  {
+    addOnFailureListener(TaskExecutors.MAIN_THREAD, paramOnFailureListener);
+    return this;
+  }
+  
+  public final Task<TResult> addOnFailureListener(Executor paramExecutor, OnFailureListener paramOnFailureListener)
+  {
+    zzb.zza(new zzl(paramExecutor, paramOnFailureListener));
+    zzi();
+    return this;
+  }
+  
+  public final Task<TResult> addOnSuccessListener(Activity paramActivity, OnSuccessListener<? super TResult> paramOnSuccessListener)
+  {
+    paramOnSuccessListener = new zzn(TaskExecutors.MAIN_THREAD, paramOnSuccessListener);
+    zzb.zza(paramOnSuccessListener);
+    zzv.zza(paramActivity).zzb(paramOnSuccessListener);
+    zzi();
+    return this;
+  }
+  
+  public final Task<TResult> addOnSuccessListener(OnSuccessListener<? super TResult> paramOnSuccessListener)
+  {
+    addOnSuccessListener(TaskExecutors.MAIN_THREAD, paramOnSuccessListener);
+    return this;
+  }
+  
+  public final Task<TResult> addOnSuccessListener(Executor paramExecutor, OnSuccessListener<? super TResult> paramOnSuccessListener)
+  {
+    zzb.zza(new zzn(paramExecutor, paramOnSuccessListener));
+    zzi();
+    return this;
+  }
+  
+  public final <TContinuationResult> Task<TContinuationResult> continueWith(Continuation<TResult, TContinuationResult> paramContinuation)
+  {
+    return continueWith(TaskExecutors.MAIN_THREAD, paramContinuation);
+  }
+  
+  public final <TContinuationResult> Task<TContinuationResult> continueWith(Executor paramExecutor, Continuation<TResult, TContinuationResult> paramContinuation)
+  {
+    zzw localZzw = new zzw();
+    zzb.zza(new zzd(paramExecutor, paramContinuation, localZzw));
+    zzi();
+    return localZzw;
+  }
+  
+  public final <TContinuationResult> Task<TContinuationResult> continueWithTask(Continuation<TResult, Task<TContinuationResult>> paramContinuation)
+  {
+    return continueWithTask(TaskExecutors.MAIN_THREAD, paramContinuation);
+  }
+  
+  public final <TContinuationResult> Task<TContinuationResult> continueWithTask(Executor paramExecutor, Continuation<TResult, Task<TContinuationResult>> paramContinuation)
+  {
+    zzw localZzw = new zzw();
+    zzb.zza(new zzf(paramExecutor, paramContinuation, localZzw));
+    zzi();
+    return localZzw;
+  }
+  
+  public final Exception getException()
+  {
+    synchronized (zza)
+    {
+      Exception localException = zzf;
+      return localException;
+    }
+  }
+  
+  public final TResult getResult()
+  {
+    synchronized (zza)
+    {
+      zzf();
+      zzg();
+      Object localObject2 = zzf;
+      if (localObject2 == null)
+      {
+        localObject2 = zze;
+        return localObject2;
+      }
+      throw new RuntimeExecutionException((Throwable)localObject2);
+    }
+  }
+  
+  public final <X extends Throwable> TResult getResult(Class<X> paramClass)
+    throws Throwable
+  {
+    synchronized (zza)
+    {
+      zzf();
+      zzg();
+      if (!paramClass.isInstance(zzf))
+      {
+        paramClass = zzf;
+        if (paramClass == null)
+        {
+          paramClass = zze;
+          return paramClass;
+        }
+        throw new RuntimeExecutionException(paramClass);
+      }
+      throw ((Throwable)paramClass.cast(zzf));
+    }
+  }
+  
+  public final boolean isCanceled()
+  {
+    return zzd;
+  }
+  
+  public final boolean isComplete()
+  {
+    synchronized (zza)
+    {
+      boolean bool = zzc;
+      return bool;
+    }
+  }
+  
+  public final boolean isSuccessful()
+  {
+    synchronized (zza)
+    {
+      boolean bool3 = zzc;
+      boolean bool2 = false;
+      boolean bool1 = bool2;
+      if (bool3)
+      {
+        bool1 = bool2;
+        if (!zzd)
+        {
+          bool1 = bool2;
+          if (zzf == null) {
+            bool1 = true;
+          }
+        }
+      }
+      return bool1;
+    }
+  }
+  
+  public final <TContinuationResult> Task<TContinuationResult> onSuccessTask(SuccessContinuation<TResult, TContinuationResult> paramSuccessContinuation)
+  {
+    Executor localExecutor = TaskExecutors.MAIN_THREAD;
+    zzw localZzw = new zzw();
+    zzb.zza(new zzp(localExecutor, paramSuccessContinuation, localZzw));
+    zzi();
+    return localZzw;
+  }
+  
+  public final <TContinuationResult> Task<TContinuationResult> onSuccessTask(Executor paramExecutor, SuccessContinuation<TResult, TContinuationResult> paramSuccessContinuation)
+  {
+    zzw localZzw = new zzw();
+    zzb.zza(new zzp(paramExecutor, paramSuccessContinuation, localZzw));
+    zzi();
+    return localZzw;
+  }
+  
+  public final void zza(Exception paramException)
+  {
+    Preconditions.checkNotNull(paramException, "Exception must not be null");
+    synchronized (zza)
+    {
+      zzh();
+      zzc = true;
+      zzf = paramException;
+      zzb.zzb(this);
+      return;
+    }
+  }
+  
+  public final void zzb(Object paramObject)
+  {
+    synchronized (zza)
+    {
+      zzh();
+      zzc = true;
+      zze = paramObject;
+      zzb.zzb(this);
+      return;
+    }
+  }
+  
+  public final boolean zzc()
+  {
+    synchronized (zza)
+    {
+      if (zzc) {
+        return false;
+      }
+      zzc = true;
+      zzd = true;
+      zzb.zzb(this);
+      return true;
+    }
+  }
+  
+  public final boolean zzd(Exception paramException)
+  {
+    Preconditions.checkNotNull(paramException, "Exception must not be null");
+    synchronized (zza)
+    {
+      if (zzc) {
+        return false;
+      }
+      zzc = true;
+      zzf = paramException;
+      zzb.zzb(this);
+      return true;
+    }
+  }
+  
+  public final boolean zze(Object paramObject)
+  {
+    synchronized (zza)
+    {
+      if (zzc) {
+        return false;
+      }
+      zzc = true;
+      zze = paramObject;
+      zzb.zzb(this);
+      return true;
+    }
+  }
+}

@@ -1,0 +1,200 @@
+package com.google.android.material.datepicker;
+
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.TextView;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
+
+class h
+  extends BaseAdapter
+{
+  static final int b = n.k().getMaximum(4);
+  final Month c;
+  final DateSelector<?> d;
+  private Collection<Long> e;
+  b f;
+  final CalendarConstraints g;
+  
+  h(Month paramMonth, DateSelector<?> paramDateSelector, CalendarConstraints paramCalendarConstraints)
+  {
+    c = paramMonth;
+    d = paramDateSelector;
+    g = paramCalendarConstraints;
+    e = paramDateSelector.i0();
+  }
+  
+  private void e(Context paramContext)
+  {
+    if (f == null) {
+      f = new b(paramContext);
+    }
+  }
+  
+  private boolean h(long paramLong)
+  {
+    Iterator localIterator = d.i0().iterator();
+    while (localIterator.hasNext())
+    {
+      long l = ((Long)localIterator.next()).longValue();
+      if (n.a(paramLong) == n.a(l)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  private void k(TextView paramTextView, long paramLong)
+  {
+    if (paramTextView == null) {
+      return;
+    }
+    a localA;
+    if (g.f().b0(paramLong))
+    {
+      paramTextView.setEnabled(true);
+      if (h(paramLong)) {
+        localA = f.b;
+      } else if (n.i().getTimeInMillis() == paramLong) {
+        localA = f.c;
+      } else {
+        localA = f.a;
+      }
+    }
+    else
+    {
+      paramTextView.setEnabled(false);
+      localA = f.g;
+    }
+    localA.d(paramTextView);
+  }
+  
+  private void l(MaterialCalendarGridView paramMaterialCalendarGridView, long paramLong)
+  {
+    if (Month.c(paramLong).equals(c))
+    {
+      int i = c.g(paramLong);
+      k((TextView)paramMaterialCalendarGridView.getChildAt(paramMaterialCalendarGridView.b().a(i) - paramMaterialCalendarGridView.getFirstVisiblePosition()), paramLong);
+    }
+  }
+  
+  int a(int paramInt)
+  {
+    return b() + (paramInt - 1);
+  }
+  
+  int b()
+  {
+    return c.e();
+  }
+  
+  public Long c(int paramInt)
+  {
+    if ((paramInt >= c.e()) && (paramInt <= i())) {
+      return Long.valueOf(c.f(j(paramInt)));
+    }
+    return null;
+  }
+  
+  public TextView d(int paramInt, View paramView, ViewGroup paramViewGroup)
+  {
+    e(paramViewGroup.getContext());
+    TextView localTextView = (TextView)paramView;
+    if (paramView == null) {
+      localTextView = (TextView)LayoutInflater.from(paramViewGroup.getContext()).inflate(d.c.a.a.h.m, paramViewGroup, false);
+    }
+    int i = paramInt - b();
+    if (i >= 0)
+    {
+      paramView = c;
+      if (i < f)
+      {
+        i += 1;
+        localTextView.setTag(paramView);
+        localTextView.setText(String.format(getResourcesgetConfigurationlocale, "%d", new Object[] { Integer.valueOf(i) }));
+        long l = c.f(i);
+        if (c.d == dd) {
+          localTextView.setContentDescription(c.a(l));
+        } else {
+          localTextView.setContentDescription(c.d(l));
+        }
+        localTextView.setVisibility(0);
+        localTextView.setEnabled(true);
+        break label191;
+      }
+    }
+    localTextView.setVisibility(8);
+    localTextView.setEnabled(false);
+    label191:
+    paramView = c(paramInt);
+    if (paramView == null) {
+      return localTextView;
+    }
+    k(localTextView, paramView.longValue());
+    return localTextView;
+  }
+  
+  boolean f(int paramInt)
+  {
+    return paramInt % c.e == 0;
+  }
+  
+  boolean g(int paramInt)
+  {
+    return (paramInt + 1) % c.e == 0;
+  }
+  
+  public int getCount()
+  {
+    return c.f + b();
+  }
+  
+  public long getItemId(int paramInt)
+  {
+    return paramInt / c.e;
+  }
+  
+  public boolean hasStableIds()
+  {
+    return true;
+  }
+  
+  int i()
+  {
+    return c.e() + c.f - 1;
+  }
+  
+  int j(int paramInt)
+  {
+    return paramInt - c.e() + 1;
+  }
+  
+  public void m(MaterialCalendarGridView paramMaterialCalendarGridView)
+  {
+    Object localObject = e.iterator();
+    while (((Iterator)localObject).hasNext()) {
+      l(paramMaterialCalendarGridView, ((Long)((Iterator)localObject).next()).longValue());
+    }
+    localObject = d;
+    if (localObject != null)
+    {
+      localObject = ((DateSelector)localObject).i0().iterator();
+      while (((Iterator)localObject).hasNext()) {
+        l(paramMaterialCalendarGridView, ((Long)((Iterator)localObject).next()).longValue());
+      }
+      e = d.i0();
+    }
+  }
+  
+  boolean n(int paramInt)
+  {
+    return (paramInt >= b()) && (paramInt <= i());
+  }
+}

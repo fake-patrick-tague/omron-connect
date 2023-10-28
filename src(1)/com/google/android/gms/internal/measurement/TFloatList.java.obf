@@ -1,0 +1,106 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public final class zzi
+{
+  public static zzap zza(zzgx paramZzgx)
+  {
+    if (paramZzgx == null) {
+      return zzap.zzf;
+    }
+    int i = paramZzgx.zzj() - 1;
+    if (i != 1)
+    {
+      if (i != 2)
+      {
+        if (i != 3)
+        {
+          if (i == 4)
+          {
+            Object localObject = paramZzgx.zze();
+            ArrayList localArrayList = new ArrayList();
+            localObject = ((List)localObject).iterator();
+            while (((Iterator)localObject).hasNext()) {
+              localArrayList.add(zza((zzgx)((Iterator)localObject).next()));
+            }
+            return new zzaq(paramZzgx.zzc(), localArrayList);
+          }
+          throw new IllegalArgumentException("Unknown type found. Cannot convert entity");
+        }
+        if (paramZzgx.zzg()) {
+          return new zzaf(Boolean.valueOf(paramZzgx.zzf()));
+        }
+        return new zzaf(null);
+      }
+      if (paramZzgx.zzh()) {
+        return new zzah(Double.valueOf(paramZzgx.zza()));
+      }
+      return new zzah(null);
+    }
+    if (paramZzgx.zzi()) {
+      return new zzat(paramZzgx.zzd());
+    }
+    return zzap.zzm;
+  }
+  
+  public static zzap zzb(Object paramObject)
+  {
+    if (paramObject == null) {
+      return zzap.zzg;
+    }
+    if ((paramObject instanceof String)) {
+      return new zzat((String)paramObject);
+    }
+    if ((paramObject instanceof Double)) {
+      return new zzah((Double)paramObject);
+    }
+    if ((paramObject instanceof Long)) {
+      return new zzah(Double.valueOf(((Long)paramObject).doubleValue()));
+    }
+    if ((paramObject instanceof Integer)) {
+      return new zzah(Double.valueOf(((Integer)paramObject).doubleValue()));
+    }
+    if ((paramObject instanceof Boolean)) {
+      return new zzaf((Boolean)paramObject);
+    }
+    Object localObject2;
+    Object localObject1;
+    if ((paramObject instanceof Map))
+    {
+      localObject2 = new zzam();
+      Map localMap = (Map)paramObject;
+      Iterator localIterator = localMap.keySet().iterator();
+      while (localIterator.hasNext())
+      {
+        localObject1 = localIterator.next();
+        zzap localZzap = zzb(localMap.get(localObject1));
+        if (localObject1 != null)
+        {
+          paramObject = localObject1;
+          if (!(localObject1 instanceof String)) {
+            paramObject = localObject1.toString();
+          }
+          ((zzam)localObject2).zzr((String)paramObject, localZzap);
+        }
+      }
+      return localObject2;
+    }
+    if ((paramObject instanceof List))
+    {
+      localObject1 = new zzae();
+      paramObject = ((List)paramObject).iterator();
+      while (paramObject.hasNext())
+      {
+        localObject2 = zzb(paramObject.next());
+        ((zzae)localObject1).zzq(((zzae)localObject1).zzc(), (zzap)localObject2);
+      }
+      return localObject1;
+    }
+    throw new IllegalArgumentException("Invalid value type");
+  }
+}

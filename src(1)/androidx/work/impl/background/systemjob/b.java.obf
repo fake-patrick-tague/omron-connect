@@ -1,0 +1,516 @@
+package androidx.work.impl.background.systemjob;
+
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.PersistableBundle;
+import android.text.TextUtils;
+import androidx.room.RoomDatabase;
+import androidx.work.WorkInfo.State;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.e;
+import androidx.work.impl.n.g;
+import androidx.work.impl.n.h;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.q;
+import androidx.work.impl.utils.c;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+public class b
+  implements e
+{
+  private static final String b = androidx.work.j.f("SystemJobScheduler");
+  private final Context c;
+  private final JobScheduler d;
+  private final androidx.work.impl.j e;
+  private final a f;
+  
+  public b(Context paramContext, androidx.work.impl.j paramJ)
+  {
+    this(paramContext, paramJ, (JobScheduler)paramContext.getSystemService("jobscheduler"), new a(paramContext));
+  }
+  
+  public b(Context paramContext, androidx.work.impl.j paramJ, JobScheduler paramJobScheduler, a paramA)
+  {
+    c = paramContext;
+    e = paramJ;
+    d = paramJobScheduler;
+    f = paramA;
+  }
+  
+  public static void b(Context paramContext)
+  {
+    JobScheduler localJobScheduler = (JobScheduler)paramContext.getSystemService("jobscheduler");
+    if (localJobScheduler != null)
+    {
+      paramContext = g(paramContext, localJobScheduler);
+      if ((paramContext != null) && (!paramContext.isEmpty()))
+      {
+        paramContext = paramContext.iterator();
+        while (paramContext.hasNext()) {
+          d(localJobScheduler, ((JobInfo)paramContext.next()).getId());
+        }
+      }
+    }
+  }
+  
+  private static void d(JobScheduler paramJobScheduler, int paramInt)
+  {
+    try
+    {
+      paramJobScheduler.cancel(paramInt);
+      return;
+    }
+    finally
+    {
+      androidx.work.j.c().b(b, String.format(Locale.getDefault(), "Exception while trying to cancel job (%d)", new Object[] { Integer.valueOf(paramInt) }), new Throwable[] { paramJobScheduler });
+    }
+  }
+  
+  private static List<Integer> f(Context paramContext, JobScheduler paramJobScheduler, String paramString)
+  {
+    paramJobScheduler = g(paramContext, paramJobScheduler);
+    if (paramJobScheduler == null) {
+      return null;
+    }
+    paramContext = new ArrayList(2);
+    paramJobScheduler = paramJobScheduler.iterator();
+    while (paramJobScheduler.hasNext())
+    {
+      JobInfo localJobInfo = (JobInfo)paramJobScheduler.next();
+      if (paramString.equals(h(localJobInfo))) {
+        paramContext.add(Integer.valueOf(localJobInfo.getId()));
+      }
+    }
+    return paramContext;
+  }
+  
+  /* Error */
+  private static List<JobInfo> g(Context paramContext, JobScheduler paramJobScheduler)
+  {
+    // Byte code:
+    //   0: aload_1
+    //   1: invokevirtual 144	android/app/job/JobScheduler:getAllPendingJobs	()Ljava/util/List;
+    //   4: astore_1
+    //   5: goto +25 -> 30
+    //   8: astore_1
+    //   9: invokestatic 97	androidx/work/j:c	()Landroidx/work/j;
+    //   12: getstatic 27	androidx/work/impl/background/systemjob/b:b	Ljava/lang/String;
+    //   15: ldc -110
+    //   17: iconst_1
+    //   18: anewarray 119	java/lang/Throwable
+    //   21: dup
+    //   22: iconst_0
+    //   23: aload_1
+    //   24: aastore
+    //   25: invokevirtual 122	androidx/work/j:b	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   28: aconst_null
+    //   29: astore_1
+    //   30: aload_1
+    //   31: ifnonnull +5 -> 36
+    //   34: aconst_null
+    //   35: areturn
+    //   36: new 125	java/util/ArrayList
+    //   39: dup
+    //   40: aload_1
+    //   41: invokeinterface 149 1 0
+    //   46: invokespecial 127	java/util/ArrayList:<init>	(I)V
+    //   49: astore_2
+    //   50: new 151	android/content/ComponentName
+    //   53: dup
+    //   54: aload_0
+    //   55: ldc -103
+    //   57: invokespecial 156	android/content/ComponentName:<init>	(Landroid/content/Context;Ljava/lang/Class;)V
+    //   60: astore_0
+    //   61: aload_1
+    //   62: invokeinterface 72 1 0
+    //   67: astore_1
+    //   68: aload_1
+    //   69: invokeinterface 77 1 0
+    //   74: ifeq +35 -> 109
+    //   77: aload_1
+    //   78: invokeinterface 81 1 0
+    //   83: checkcast 83	android/app/job/JobInfo
+    //   86: astore_3
+    //   87: aload_0
+    //   88: aload_3
+    //   89: invokevirtual 160	android/app/job/JobInfo:getService	()Landroid/content/ComponentName;
+    //   92: invokevirtual 161	android/content/ComponentName:equals	(Ljava/lang/Object;)Z
+    //   95: ifeq -27 -> 68
+    //   98: aload_2
+    //   99: aload_3
+    //   100: invokeinterface 138 2 0
+    //   105: pop
+    //   106: goto -38 -> 68
+    //   109: aload_2
+    //   110: areturn
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	111	0	paramContext	Context
+    //   0	111	1	paramJobScheduler	JobScheduler
+    //   49	61	2	localArrayList	ArrayList
+    //   86	14	3	localJobInfo	JobInfo
+    // Exception table:
+    //   from	to	target	type
+    //   0	5	8	finally
+  }
+  
+  private static String h(JobInfo paramJobInfo)
+  {
+    paramJobInfo = paramJobInfo.getExtras();
+    if (paramJobInfo != null) {}
+    try
+    {
+      if (paramJobInfo.containsKey("EXTRA_WORK_SPEC_ID"))
+      {
+        paramJobInfo = paramJobInfo.getString("EXTRA_WORK_SPEC_ID");
+        return paramJobInfo;
+      }
+    }
+    catch (NullPointerException paramJobInfo)
+    {
+      for (;;) {}
+    }
+    return null;
+  }
+  
+  public static boolean i(Context paramContext, androidx.work.impl.j paramJ)
+  {
+    Object localObject1 = (JobScheduler)paramContext.getSystemService("jobscheduler");
+    Object localObject2 = g(paramContext, (JobScheduler)localObject1);
+    paramContext = paramJ.p().y().a();
+    boolean bool2 = false;
+    int i;
+    if (localObject2 != null) {
+      i = ((List)localObject2).size();
+    } else {
+      i = 0;
+    }
+    HashSet localHashSet = new HashSet(i);
+    if ((localObject2 != null) && (!((List)localObject2).isEmpty()))
+    {
+      localObject2 = ((List)localObject2).iterator();
+      while (((Iterator)localObject2).hasNext())
+      {
+        JobInfo localJobInfo = (JobInfo)((Iterator)localObject2).next();
+        String str = h(localJobInfo);
+        if (!TextUtils.isEmpty(str)) {
+          localHashSet.add(str);
+        } else {
+          d((JobScheduler)localObject1, localJobInfo.getId());
+        }
+      }
+    }
+    localObject1 = paramContext.iterator();
+    do
+    {
+      bool1 = bool2;
+      if (!((Iterator)localObject1).hasNext()) {
+        break;
+      }
+    } while (localHashSet.contains((String)((Iterator)localObject1).next()));
+    androidx.work.j.c().a(b, "Reconciling jobs", new Throwable[0]);
+    boolean bool1 = true;
+    if (bool1)
+    {
+      paramJ = paramJ.p();
+      paramJ.c();
+      try
+      {
+        localObject1 = paramJ.B();
+        paramContext = paramContext.iterator();
+        while (paramContext.hasNext()) {
+          ((q)localObject1).c((String)paramContext.next(), -1L);
+        }
+        paramJ.r();
+        return bool1;
+      }
+      finally
+      {
+        paramJ.g();
+      }
+    }
+    return bool1;
+  }
+  
+  public void a(p... paramVarArgs)
+  {
+    WorkDatabase localWorkDatabase = e.p();
+    c localC = new c(localWorkDatabase);
+    int k = paramVarArgs.length;
+    int i = 0;
+    while (i < k)
+    {
+      p localP = paramVarArgs[i];
+      localWorkDatabase.c();
+      try
+      {
+        Object localObject = localWorkDatabase.B().n(c);
+        String str;
+        StringBuilder localStringBuilder;
+        if (localObject == null)
+        {
+          localObject = androidx.work.j.c();
+          str = b;
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Skipping scheduling ");
+          localStringBuilder.append(c);
+          localStringBuilder.append(" because it's no longer in the DB");
+          ((androidx.work.j)localObject).h(str, localStringBuilder.toString(), new Throwable[0]);
+          localWorkDatabase.r();
+        }
+        else if (d != WorkInfo.State.b)
+        {
+          localObject = androidx.work.j.c();
+          str = b;
+          localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Skipping scheduling ");
+          localStringBuilder.append(c);
+          localStringBuilder.append(" because it is no longer enqueued");
+          ((androidx.work.j)localObject).h(str, localStringBuilder.toString(), new Throwable[0]);
+          localWorkDatabase.r();
+        }
+        else
+        {
+          localObject = localWorkDatabase.y().c(c);
+          int j;
+          if (localObject != null) {
+            j = b;
+          } else {
+            j = localC.d(e.j().i(), e.j().g());
+          }
+          if (localObject == null)
+          {
+            localObject = new g(c, j);
+            e.p().y().b((g)localObject);
+          }
+          j(localP, j);
+          if (Build.VERSION.SDK_INT == 23)
+          {
+            localObject = f(c, d, c);
+            if (localObject != null)
+            {
+              j = ((List)localObject).indexOf(Integer.valueOf(j));
+              if (j >= 0) {
+                ((List)localObject).remove(j);
+              }
+              if (!((List)localObject).isEmpty()) {
+                j = ((Integer)((List)localObject).get(0)).intValue();
+              } else {
+                j = localC.d(e.j().i(), e.j().g());
+              }
+              j(localP, j);
+            }
+          }
+          localWorkDatabase.r();
+        }
+        localWorkDatabase.g();
+        i += 1;
+      }
+      finally
+      {
+        localWorkDatabase.g();
+      }
+    }
+  }
+  
+  public boolean c()
+  {
+    return true;
+  }
+  
+  public void e(String paramString)
+  {
+    Object localObject = f(c, d, paramString);
+    if ((localObject != null) && (!((List)localObject).isEmpty()))
+    {
+      localObject = ((List)localObject).iterator();
+      while (((Iterator)localObject).hasNext())
+      {
+        int i = ((Integer)((Iterator)localObject).next()).intValue();
+        d(d, i);
+      }
+      e.p().y().d(paramString);
+    }
+  }
+  
+  /* Error */
+  public void j(p paramP, int paramInt)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: getfield 58	androidx/work/impl/background/systemjob/b:f	Landroidx/work/impl/background/systemjob/a;
+    //   4: aload_1
+    //   5: iload_2
+    //   6: invokevirtual 335	androidx/work/impl/background/systemjob/a:a	(Landroidx/work/impl/n/p;I)Landroid/app/job/JobInfo;
+    //   9: astore 4
+    //   11: invokestatic 97	androidx/work/j:c	()Landroidx/work/j;
+    //   14: astore 5
+    //   16: getstatic 27	androidx/work/impl/background/systemjob/b:b	Ljava/lang/String;
+    //   19: astore_3
+    //   20: aload 5
+    //   22: aload_3
+    //   23: ldc_w 337
+    //   26: iconst_2
+    //   27: anewarray 4	java/lang/Object
+    //   30: dup
+    //   31: iconst_0
+    //   32: aload_1
+    //   33: getfield 246	androidx/work/impl/n/p:c	Ljava/lang/String;
+    //   36: aastore
+    //   37: dup
+    //   38: iconst_1
+    //   39: iload_2
+    //   40: invokestatic 111	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   43: aastore
+    //   44: invokestatic 340	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+    //   47: iconst_0
+    //   48: anewarray 119	java/lang/Throwable
+    //   51: invokevirtual 216	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   54: aload_0
+    //   55: getfield 56	androidx/work/impl/background/systemjob/b:d	Landroid/app/job/JobScheduler;
+    //   58: aload 4
+    //   60: invokevirtual 344	android/app/job/JobScheduler:schedule	(Landroid/app/job/JobInfo;)I
+    //   63: ifne +124 -> 187
+    //   66: invokestatic 97	androidx/work/j:c	()Landroidx/work/j;
+    //   69: aload_3
+    //   70: ldc_w 346
+    //   73: iconst_1
+    //   74: anewarray 4	java/lang/Object
+    //   77: dup
+    //   78: iconst_0
+    //   79: aload_1
+    //   80: getfield 246	androidx/work/impl/n/p:c	Ljava/lang/String;
+    //   83: aastore
+    //   84: invokestatic 340	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+    //   87: iconst_0
+    //   88: anewarray 119	java/lang/Throwable
+    //   91: invokevirtual 267	androidx/work/j:h	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   94: aload_1
+    //   95: getfield 350	androidx/work/impl/n/p:s	Z
+    //   98: ifeq +89 -> 187
+    //   101: aload_1
+    //   102: getfield 354	androidx/work/impl/n/p:t	Landroidx/work/OutOfQuotaPolicy;
+    //   105: getstatic 358	androidx/work/OutOfQuotaPolicy:b	Landroidx/work/OutOfQuotaPolicy;
+    //   108: if_acmpne +79 -> 187
+    //   111: aload_1
+    //   112: iconst_0
+    //   113: putfield 350	androidx/work/impl/n/p:s	Z
+    //   116: ldc_w 360
+    //   119: iconst_1
+    //   120: anewarray 4	java/lang/Object
+    //   123: dup
+    //   124: iconst_0
+    //   125: aload_1
+    //   126: getfield 246	androidx/work/impl/n/p:c	Ljava/lang/String;
+    //   129: aastore
+    //   130: invokestatic 340	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+    //   133: astore 4
+    //   135: invokestatic 97	androidx/work/j:c	()Landroidx/work/j;
+    //   138: aload_3
+    //   139: aload 4
+    //   141: iconst_0
+    //   142: anewarray 119	java/lang/Throwable
+    //   145: invokevirtual 216	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   148: aload_0
+    //   149: aload_1
+    //   150: iload_2
+    //   151: invokevirtual 306	androidx/work/impl/background/systemjob/b:j	(Landroidx/work/impl/n/p;I)V
+    //   154: return
+    //   155: astore_3
+    //   156: invokestatic 97	androidx/work/j:c	()Landroidx/work/j;
+    //   159: getstatic 27	androidx/work/impl/background/systemjob/b:b	Ljava/lang/String;
+    //   162: ldc_w 362
+    //   165: iconst_1
+    //   166: anewarray 4	java/lang/Object
+    //   169: dup
+    //   170: iconst_0
+    //   171: aload_1
+    //   172: aastore
+    //   173: invokestatic 340	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+    //   176: iconst_1
+    //   177: anewarray 119	java/lang/Throwable
+    //   180: dup
+    //   181: iconst_0
+    //   182: aload_3
+    //   183: aastore
+    //   184: invokevirtual 122	androidx/work/j:b	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   187: return
+    //   188: astore_1
+    //   189: aload_0
+    //   190: getfield 52	androidx/work/impl/background/systemjob/b:c	Landroid/content/Context;
+    //   193: aload_0
+    //   194: getfield 56	androidx/work/impl/background/systemjob/b:d	Landroid/app/job/JobScheduler;
+    //   197: invokestatic 62	androidx/work/impl/background/systemjob/b:g	(Landroid/content/Context;Landroid/app/job/JobScheduler;)Ljava/util/List;
+    //   200: astore_3
+    //   201: aload_3
+    //   202: ifnull +13 -> 215
+    //   205: aload_3
+    //   206: invokeinterface 149 1 0
+    //   211: istore_2
+    //   212: goto +5 -> 217
+    //   215: iconst_0
+    //   216: istore_2
+    //   217: invokestatic 103	java/util/Locale:getDefault	()Ljava/util/Locale;
+    //   220: ldc_w 364
+    //   223: iconst_3
+    //   224: anewarray 4	java/lang/Object
+    //   227: dup
+    //   228: iconst_0
+    //   229: iload_2
+    //   230: invokestatic 111	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   233: aastore
+    //   234: dup
+    //   235: iconst_1
+    //   236: aload_0
+    //   237: getfield 54	androidx/work/impl/background/systemjob/b:e	Landroidx/work/impl/j;
+    //   240: invokevirtual 187	androidx/work/impl/j:p	()Landroidx/work/impl/WorkDatabase;
+    //   243: invokevirtual 224	androidx/work/impl/WorkDatabase:B	()Landroidx/work/impl/n/q;
+    //   246: invokeinterface 366 1 0
+    //   251: invokeinterface 149 1 0
+    //   256: invokestatic 111	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   259: aastore
+    //   260: dup
+    //   261: iconst_2
+    //   262: aload_0
+    //   263: getfield 54	androidx/work/impl/background/systemjob/b:e	Landroidx/work/impl/j;
+    //   266: invokevirtual 288	androidx/work/impl/j:j	()Landroidx/work/a;
+    //   269: invokevirtual 368	androidx/work/a:h	()I
+    //   272: invokestatic 111	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   275: aastore
+    //   276: invokestatic 117	java/lang/String:format	(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+    //   279: astore_3
+    //   280: invokestatic 97	androidx/work/j:c	()Landroidx/work/j;
+    //   283: getstatic 27	androidx/work/impl/background/systemjob/b:b	Ljava/lang/String;
+    //   286: aload_3
+    //   287: iconst_0
+    //   288: anewarray 119	java/lang/Throwable
+    //   291: invokevirtual 122	androidx/work/j:b	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+    //   294: new 332	java/lang/IllegalStateException
+    //   297: dup
+    //   298: aload_3
+    //   299: aload_1
+    //   300: invokespecial 371	java/lang/IllegalStateException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   303: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	304	0	this	b
+    //   0	304	1	paramP	p
+    //   0	304	2	paramInt	int
+    //   19	120	3	str	String
+    //   155	28	3	localObject1	Object
+    //   200	99	3	localObject2	Object
+    //   9	131	4	localObject3	Object
+    //   14	7	5	localJ	androidx.work.j
+    // Exception table:
+    //   from	to	target	type
+    //   54	154	155	finally
+    //   54	154	188	java/lang/IllegalStateException
+  }
+}

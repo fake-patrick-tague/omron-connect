@@ -1,0 +1,178 @@
+package com.google.android.gms.internal.fitness;
+
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public enum zzkn
+{
+  private static final zzfc<zzkn> zzaiw;
+  private static final zzfh<Integer> zzaix = zzfh.create(Integer.valueOf(zzahizzaiy), Integer.valueOf(zzahjzzaiy), Integer.valueOf(zzahkzzaiy), Integer.valueOf(zzahlzzaiy), Integer.valueOf(zzahmzzaiy));
+  private final int zzaiy;
+  private final String zzaiz;
+  
+  static
+  {
+    int i = 0;
+    zzaed = new zzkn("AEROBICS", 0, 9, "aerobics");
+    zzaee = new zzkn("ARCHERY", 1, 119, "archery");
+    zzaef = new zzkn("BADMINTON", 2, 10, "badminton");
+    zzaeg = new zzkn("BASEBALL", 3, 11, "baseball");
+    zzaeh = new zzkn("BASKETBALL", 4, 12, "basketball");
+    zzaei = new zzkn("BIATHLON", 5, 13, "biathlon");
+    zzaej = new zzkn("BIKING", 6, 1, "biking");
+    zzaek = new zzkn("BIKING_HAND", 7, 14, "biking.hand");
+    zzael = new zzkn("BIKING_MOUNTAIN", 8, 15, "biking.mountain");
+    zzaem = new zzkn("BIKING_ROAD", 9, 16, "biking.road");
+    zzaen = new zzkn("BIKING_SPINNING", 10, 17, "biking.spinning");
+    zzaeo = new zzkn("BIKING_STATIONARY", 11, 18, "biking.stationary");
+    zzaep = new zzkn("BIKING_UTILITY", 12, 19, "biking.utility");
+    zzaeq = new zzkn("BOXING", 13, 20, "boxing");
+    zzaer = new zzkn("CALISTHENICS", 14, 21, "calisthenics");
+    zzaes = new zzkn("CIRCUIT_TRAINING", 15, 22, "circuit_training");
+    zzaet = new zzkn("CRICKET", 16, 23, "cricket");
+    zzaeu = new zzkn("CROSSFIT", 17, 113, "crossfit");
+    zzaev = new zzkn("CURLING", 18, 106, "curling");
+    zzaew = new zzkn("DANCING", 19, 24, "dancing");
+    zzaex = new zzkn("DIVING", 20, 102, "diving");
+    zzaey = new zzkn("ELEVATOR", 21, 117, "elevator");
+    zzaez = new zzkn("ELLIPTICAL", 22, 25, "elliptical");
+    zzafa = new zzkn("ERGOMETER", 23, 103, "ergometer");
+    zzafb = new zzkn("ESCALATOR", 24, 118, "escalator");
+    zzafc = new zzkn("EXITING_VEHICLE", 25, 6, "exiting_vehicle");
+    zzafd = new zzkn("FENCING", 26, 26, "fencing");
+    zzafe = new zzkn("FLOSSING", 27, 121, "flossing");
+    zzaff = new zzkn("FOOTBALL_AMERICAN", 28, 27, "football.american");
+    zzafg = new zzkn("FOOTBALL_AUSTRALIAN", 29, 28, "football.australian");
+    zzafh = new zzkn("FOOTBALL_SOCCER", 30, 29, "football.soccer");
+    zzafi = new zzkn("FRISBEE_DISC", 31, 30, "frisbee_disc");
+    zzafj = new zzkn("GARDENING", 32, 31, "gardening");
+    zzafk = new zzkn("GOLF", 33, 32, "golf");
+    zzafl = new zzkn("GUIDED_BREATHING", 34, 122, "guided_breathing");
+    zzafm = new zzkn("GYMNASTICS", 35, 33, "gymnastics");
+    zzafn = new zzkn("HANDBALL", 36, 34, "handball");
+    zzafo = new zzkn("HIGH_INTENSITY_INTERVAL_TRAINING", 37, 114, "interval_training.high_intensity");
+    zzafp = new zzkn("HIKING", 38, 35, "hiking");
+    zzafq = new zzkn("HOCKEY", 39, 36, "hockey");
+    zzafr = new zzkn("HORSEBACK_RIDING", 40, 37, "horseback_riding");
+    zzafs = new zzkn("HOUSEWORK", 41, 38, "housework");
+    zzaft = new zzkn("ICE_SKATING", 42, 104, "ice_skating");
+    zzafu = new zzkn("INTERVAL_TRAINING", 43, 115, "interval_training");
+    zzafv = new zzkn("IN_VEHICLE", 44, 0, "in_vehicle");
+    zzafw = new zzkn("JUMP_ROPE", 45, 39, "jump_rope");
+    zzafx = new zzkn("KAYAKING", 46, 40, "kayaking");
+    zzafy = new zzkn("KETTLEBELL_TRAINING", 47, 41, "kettlebell_training");
+    zzafz = new zzkn("KICKBOXING", 48, 42, "kickboxing");
+    zzaga = new zzkn("KICK_SCOOTER", 49, 107, "kick_scooter");
+    zzagb = new zzkn("KITESURFING", 50, 43, "kitesurfing");
+    zzagc = new zzkn("MARTIAL_ARTS", 51, 44, "martial_arts");
+    zzagd = new zzkn("MEDITATION", 52, 45, "meditation");
+    zzage = new zzkn("MIXED_MARTIAL_ARTS", 53, 46, "martial_arts.mixed");
+    zzagf = new zzkn("ON_FOOT", 54, 2, "on_foot");
+    zzagg = new zzkn("OTHER", 55, 108, "other");
+    zzagh = new zzkn("P90X", 56, 47, "p90x");
+    zzagi = new zzkn("PARAGLIDING", 57, 48, "paragliding");
+    zzagj = new zzkn("PILATES", 58, 49, "pilates");
+    zzagk = new zzkn("POLO", 59, 50, "polo");
+    zzagl = new zzkn("RACQUETBALL", 60, 51, "racquetball");
+    zzagm = new zzkn("ROCK_CLIMBING", 61, 52, "rock_climbing");
+    zzagn = new zzkn("ROWING", 62, 53, "rowing");
+    zzago = new zzkn("ROWING_MACHINE", 63, 54, "rowing.machine");
+    zzagp = new zzkn("RUGBY", 64, 55, "rugby");
+    zzagq = new zzkn("RUNNING", 65, 8, "running");
+    zzagr = new zzkn("RUNNING_JOGGING", 66, 56, "running.jogging");
+    zzags = new zzkn("RUNNING_SAND", 67, 57, "running.sand");
+    zzagt = new zzkn("RUNNING_TREADMILL", 68, 58, "running.treadmill");
+    zzagu = new zzkn("SAILING", 69, 59, "sailing");
+    zzagv = new zzkn("SCUBA_DIVING", 70, 60, "scuba_diving");
+    zzagw = new zzkn("SKATEBOARDING", 71, 61, "skateboarding");
+    zzagx = new zzkn("SKATING", 72, 62, "skating");
+    zzagy = new zzkn("SKATING_CROSS", 73, 63, "skating.cross");
+    zzagz = new zzkn("SKATING_INDOOR", 74, 105, "skating.indoor");
+    zzaha = new zzkn("SKATING_INLINE", 75, 64, "skating.inline");
+    zzahb = new zzkn("SKIING", 76, 65, "skiing");
+    zzahc = new zzkn("SKIING_BACK_COUNTRY", 77, 66, "skiing.back_country");
+    zzahd = new zzkn("SKIING_CROSS_COUNTRY", 78, 67, "skiing.cross_country");
+    zzahe = new zzkn("SKIING_DOWNHILL", 79, 68, "skiing.downhill");
+    zzahf = new zzkn("SKIING_KITE", 80, 69, "skiing.kite");
+    zzahg = new zzkn("SKIING_ROLLER", 81, 70, "skiing.roller");
+    zzahh = new zzkn("SLEDDING", 82, 71, "sledding");
+    zzahi = new zzkn("SLEEP", 83, 72, "sleep");
+    zzahj = new zzkn("SLEEP_AWAKE", 84, 112, "sleep.awake");
+    zzahk = new zzkn("SLEEP_DEEP", 85, 110, "sleep.deep");
+    zzahl = new zzkn("SLEEP_LIGHT", 86, 109, "sleep.light");
+    zzahm = new zzkn("SLEEP_REM", 87, 111, "sleep.rem");
+    zzahn = new zzkn("SNOWBOARDING", 88, 73, "snowboarding");
+    zzaho = new zzkn("SNOWMOBILE", 89, 74, "snowmobile");
+    zzahp = new zzkn("SNOWSHOEING", 90, 75, "snowshoeing");
+    zzahq = new zzkn("SOFTBALL", 91, 120, "softball");
+    zzahr = new zzkn("SQUASH", 92, 76, "squash");
+    zzahs = new zzkn("STAIR_CLIMBING", 93, 77, "stair_climbing");
+    zzaht = new zzkn("STAIR_CLIMBING_MACHINE", 94, 78, "stair_climbing.machine");
+    zzahu = new zzkn("STANDUP_PADDLEBOARDING", 95, 79, "standup_paddleboarding");
+    zzahv = new zzkn("STILL", 96, 3, "still");
+    zzahw = new zzkn("STRENGTH_TRAINING", 97, 80, "strength_training");
+    zzahx = new zzkn("SURFING", 98, 81, "surfing");
+    zzahy = new zzkn("SWIMMING", 99, 82, "swimming");
+    zzahz = new zzkn("SWIMMING_OPEN_WATER", 100, 84, "swimming.open_water");
+    zzaia = new zzkn("SWIMMING_POOL", 101, 83, "swimming.pool");
+    zzaib = new zzkn("TABLE_TENNIS", 102, 85, "table_tennis");
+    zzaic = new zzkn("TEAM_SPORTS", 103, 86, "team_sports");
+    zzaid = new zzkn("TENNIS", 104, 87, "tennis");
+    zzaie = new zzkn("TILTING", 105, 5, "tilting");
+    zzaif = new zzkn("TREADMILL", 106, 88, "treadmill");
+    zzaig = new zzkn("UNKNOWN", 107, 4, "unknown");
+    zzaih = new zzkn("VOLLEYBALL", 108, 89, "volleyball");
+    zzaii = new zzkn("VOLLEYBALL_BEACH", 109, 90, "volleyball.beach");
+    zzaij = new zzkn("VOLLEYBALL_INDOOR", 110, 91, "volleyball.indoor");
+    zzaik = new zzkn("WAKEBOARDING", 111, 92, "wakeboarding");
+    zzail = new zzkn("WALKING", 112, 7, "walking");
+    zzaim = new zzkn("WALKING_FITNESS", 113, 93, "walking.fitness");
+    zzain = new zzkn("WALKING_NORDIC", 114, 94, "walking.nordic");
+    zzaio = new zzkn("WALKING_STROLLER", 115, 116, "walking.stroller");
+    zzaip = new zzkn("WALKING_TREADMILL", 116, 95, "walking.treadmill");
+    zzaiq = new zzkn("WATER_POLO", 117, 96, "water_polo");
+    zzair = new zzkn("WEIGHTLIFTING", 118, 97, "weightlifting");
+    zzais = new zzkn("WHEELCHAIR", 119, 98, "wheelchair");
+    zzait = new zzkn("WINDSURFING", 120, 99, "windsurfing");
+    zzaiu = new zzkn("YOGA", 121, 100, "yoga");
+    zzaiv = new zzkn("ZUMBA", 122, 101, "zumba");
+    zzaja = new zzkn[] { zzaed, zzaee, zzaef, zzaeg, zzaeh, zzaei, zzaej, zzaek, zzael, zzaem, zzaen, zzaeo, zzaep, zzaeq, zzaer, zzaes, zzaet, zzaeu, zzaev, zzaew, zzaex, zzaey, zzaez, zzafa, zzafb, zzafc, zzafd, zzafe, zzaff, zzafg, zzafh, zzafi, zzafj, zzafk, zzafl, zzafm, zzafn, zzafo, zzafp, zzafq, zzafr, zzafs, zzaft, zzafu, zzafv, zzafw, zzafx, zzafy, zzafz, zzaga, zzagb, zzagc, zzagd, zzage, zzagf, zzagg, zzagh, zzagi, zzagj, zzagk, zzagl, zzagm, zzagn, zzago, zzagp, zzagq, zzagr, zzags, zzagt, zzagu, zzagv, zzagw, zzagx, zzagy, zzagz, zzaha, zzahb, zzahc, zzahd, zzahe, zzahf, zzahg, zzahh, zzahi, zzahj, zzahk, zzahl, zzahm, zzahn, zzaho, zzahp, zzahq, zzahr, zzahs, zzaht, zzahu, zzahv, zzahw, zzahx, zzahy, zzahz, zzaia, zzaib, zzaic, zzaid, zzaie, zzaif, zzaig, zzaih, zzaii, zzaij, zzaik, zzail, zzaim, zzain, zzaio, zzaip, zzaiq, zzair, zzais, zzait, zzaiu, zzaiv };
+    ArrayList localArrayList = new ArrayList(Collections.nCopies(values().length, null));
+    zzkn[] arrayOfZzkn = values();
+    int j = arrayOfZzkn.length;
+    while (i < j)
+    {
+      zzkn localZzkn = arrayOfZzkn[i];
+      localArrayList.set(zzaiy, localZzkn);
+      i += 1;
+    }
+    zzaiw = zzfc.getNames(localArrayList);
+  }
+  
+  private zzkn(int paramInt, String paramString)
+  {
+    zzaiy = paramInt;
+    zzaiz = paramString;
+  }
+  
+  public static zzkn getKey(int paramInt, zzkn paramZzkn)
+  {
+    Object localObject = paramZzkn;
+    if (paramInt >= 0)
+    {
+      localObject = zzaiw;
+      if (paramInt >= ((AbstractCollection)localObject).size()) {
+        return paramZzkn;
+      }
+      localObject = (zzkn)((List)localObject).get(paramInt);
+    }
+    return localObject;
+  }
+  
+  public final boolean zzdz()
+  {
+    return zzaix.contains(Integer.valueOf(zzaiy));
+  }
+}

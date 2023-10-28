@@ -1,0 +1,660 @@
+package androidx.appcompat.widget;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.graphics.drawable.LayerDrawable;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.util.TypedValue;
+import android.util.Xml;
+import c.a.m.c;
+import c.e.e;
+import c.e.g;
+import c.w.a.a.b;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
+import java.util.WeakHashMap;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+public final class d0
+{
+  private static final PorterDuff.Mode a = PorterDuff.Mode.SRC_IN;
+  private static d0 b;
+  private static final c c = new c(6);
+  private WeakHashMap<Context, c.e.h<ColorStateList>> d;
+  private g<String, e> e;
+  private c.e.h<String> f;
+  private final WeakHashMap<Context, c.e.d<WeakReference<Drawable.ConstantState>>> g = new WeakHashMap(0);
+  private TypedValue h;
+  private boolean i;
+  private f j;
+  
+  public d0() {}
+  
+  private void a(String paramString, e paramE)
+  {
+    if (e == null) {
+      e = new g();
+    }
+    e.put(paramString, paramE);
+  }
+  
+  private boolean b(Context paramContext, long paramLong, Drawable paramDrawable)
+  {
+    try
+    {
+      Drawable.ConstantState localConstantState = paramDrawable.getConstantState();
+      if (localConstantState != null)
+      {
+        c.e.d localD = (c.e.d)g.get(paramContext);
+        paramDrawable = localD;
+        if (localD == null)
+        {
+          paramDrawable = new c.e.d();
+          g.put(paramContext, paramDrawable);
+        }
+        paramDrawable.m(paramLong, new WeakReference(localConstantState));
+        return true;
+      }
+      return false;
+    }
+    finally {}
+  }
+  
+  private void c(Context paramContext, int paramInt, ColorStateList paramColorStateList)
+  {
+    if (d == null) {
+      d = new WeakHashMap();
+    }
+    c.e.h localH2 = (c.e.h)d.get(paramContext);
+    c.e.h localH1 = localH2;
+    if (localH2 == null)
+    {
+      localH1 = new c.e.h();
+      d.put(paramContext, localH1);
+    }
+    localH1.b(paramInt, paramColorStateList);
+  }
+  
+  private void d(Context paramContext)
+  {
+    if (i) {
+      return;
+    }
+    i = true;
+    paramContext = j(paramContext, c.a.m.d.a);
+    if ((paramContext != null) && (q(paramContext))) {
+      return;
+    }
+    i = false;
+    throw new IllegalStateException("This app has been built with an incorrect configuration. Please configure your build for VectorDrawableCompat.");
+  }
+  
+  private static long e(TypedValue paramTypedValue)
+  {
+    return assetCookie << 32 | data;
+  }
+  
+  private Drawable f(Context paramContext, int paramInt)
+  {
+    if (h == null) {
+      h = new TypedValue();
+    }
+    TypedValue localTypedValue = h;
+    paramContext.getResources().getValue(paramInt, localTypedValue, true);
+    long l = e(localTypedValue);
+    Object localObject = i(paramContext, l);
+    if (localObject != null) {
+      return localObject;
+    }
+    localObject = j;
+    if (localObject == null) {
+      localObject = null;
+    } else {
+      localObject = ((f)localObject).c(this, paramContext, paramInt);
+    }
+    if (localObject != null)
+    {
+      ((Drawable)localObject).setChangingConfigurations(changingConfigurations);
+      b(paramContext, l, (Drawable)localObject);
+    }
+    return localObject;
+  }
+  
+  private static PorterDuffColorFilter g(ColorStateList paramColorStateList, PorterDuff.Mode paramMode, int[] paramArrayOfInt)
+  {
+    if ((paramColorStateList != null) && (paramMode != null)) {
+      return l(paramColorStateList.getColorForState(paramArrayOfInt, 0), paramMode);
+    }
+    return null;
+  }
+  
+  public static d0 h()
+  {
+    try
+    {
+      if (b == null)
+      {
+        localD0 = new d0();
+        b = localD0;
+        p(localD0);
+      }
+      d0 localD0 = b;
+      return localD0;
+    }
+    finally {}
+  }
+  
+  private Drawable i(Context paramContext, long paramLong)
+  {
+    try
+    {
+      c.e.d localD = (c.e.d)g.get(paramContext);
+      if (localD == null) {
+        return null;
+      }
+      Object localObject = (WeakReference)localD.g(paramLong);
+      if (localObject != null)
+      {
+        localObject = (Drawable.ConstantState)((WeakReference)localObject).get();
+        if (localObject != null)
+        {
+          paramContext = ((Drawable.ConstantState)localObject).newDrawable(paramContext.getResources());
+          return paramContext;
+        }
+        localD.n(paramLong);
+      }
+      return null;
+    }
+    finally {}
+  }
+  
+  public static PorterDuffColorFilter l(int paramInt, PorterDuff.Mode paramMode)
+  {
+    try
+    {
+      c localC = c;
+      PorterDuffColorFilter localPorterDuffColorFilter2 = localC.b(paramInt, paramMode);
+      PorterDuffColorFilter localPorterDuffColorFilter1 = localPorterDuffColorFilter2;
+      if (localPorterDuffColorFilter2 == null)
+      {
+        localPorterDuffColorFilter1 = new PorterDuffColorFilter(paramInt, paramMode);
+        localC.c(paramInt, paramMode, localPorterDuffColorFilter1);
+      }
+      return localPorterDuffColorFilter1;
+    }
+    finally {}
+  }
+  
+  private ColorStateList n(Context paramContext, int paramInt)
+  {
+    WeakHashMap localWeakHashMap = d;
+    Object localObject2 = null;
+    Object localObject1 = localObject2;
+    if (localWeakHashMap != null)
+    {
+      paramContext = (c.e.h)localWeakHashMap.get(paramContext);
+      localObject1 = localObject2;
+      if (paramContext != null) {
+        localObject1 = (ColorStateList)paramContext.f(paramInt);
+      }
+    }
+    return localObject1;
+  }
+  
+  private static void p(d0 paramD0)
+  {
+    if (Build.VERSION.SDK_INT < 24)
+    {
+      paramD0.a("vector", new g());
+      paramD0.a("animated-vector", new b());
+      paramD0.a("animated-selector", new a());
+      paramD0.a("drawable", new d());
+    }
+  }
+  
+  private static boolean q(Drawable paramDrawable)
+  {
+    return ((paramDrawable instanceof c.w.a.a.h)) || ("android.graphics.drawable.VectorDrawable".equals(paramDrawable.getClass().getName()));
+  }
+  
+  private Drawable r(Context paramContext, int paramInt)
+  {
+    Object localObject1 = e;
+    if ((localObject1 != null) && (!((g)localObject1).isEmpty()))
+    {
+      localObject1 = f;
+      if (localObject1 != null)
+      {
+        localObject1 = (String)((c.e.h)localObject1).f(paramInt);
+        if (("appcompat_skip_skip".equals(localObject1)) || ((localObject1 != null) && (e.get(localObject1) == null))) {
+          return null;
+        }
+      }
+      else
+      {
+        f = new c.e.h();
+      }
+      if (h == null) {
+        h = new TypedValue();
+      }
+      TypedValue localTypedValue = h;
+      localObject1 = paramContext.getResources();
+      ((Resources)localObject1).getValue(paramInt, localTypedValue, true);
+      long l = e(localTypedValue);
+      Drawable localDrawable = i(paramContext, l);
+      if (localDrawable != null) {
+        return localDrawable;
+      }
+      Object localObject3 = string;
+      Object localObject2 = localDrawable;
+      if (localObject3 != null)
+      {
+        localObject2 = localDrawable;
+        if (((CharSequence)localObject3).toString().endsWith(".xml"))
+        {
+          localObject2 = localDrawable;
+          try
+          {
+            localObject3 = ((Resources)localObject1).getXml(paramInt);
+            localObject2 = localDrawable;
+            AttributeSet localAttributeSet = Xml.asAttributeSet((XmlPullParser)localObject3);
+            int k;
+            do
+            {
+              localObject2 = localDrawable;
+              k = ((XmlPullParser)localObject3).next();
+            } while ((k != 2) && (k != 1));
+            if (k == 2)
+            {
+              localObject2 = localDrawable;
+              localObject1 = ((XmlPullParser)localObject3).getName();
+              localObject2 = localDrawable;
+              f.b(paramInt, localObject1);
+              localObject2 = localDrawable;
+              e localE = (e)e.get(localObject1);
+              localObject1 = localDrawable;
+              if (localE != null)
+              {
+                localObject2 = localDrawable;
+                localObject1 = localE.a(paramContext, (XmlPullParser)localObject3, localAttributeSet, paramContext.getTheme());
+              }
+              localObject2 = localObject1;
+              if (localObject1 != null)
+              {
+                localObject2 = localObject1;
+                ((Drawable)localObject1).setChangingConfigurations(changingConfigurations);
+                localObject2 = localObject1;
+                b(paramContext, l, (Drawable)localObject1);
+                localObject2 = localObject1;
+              }
+            }
+            else
+            {
+              localObject2 = localDrawable;
+              throw new XmlPullParserException("No start tag found");
+            }
+          }
+          catch (Exception paramContext)
+          {
+            Log.e("ResourceManagerInternal", "Exception while inflating drawable", paramContext);
+          }
+        }
+      }
+      if (localObject2 == null) {
+        f.b(paramInt, "appcompat_skip_skip");
+      }
+      return localObject2;
+    }
+    return null;
+  }
+  
+  private Drawable v(Context paramContext, int paramInt, boolean paramBoolean, Drawable paramDrawable)
+  {
+    Object localObject = m(paramContext, paramInt);
+    if (localObject != null)
+    {
+      paramContext = paramDrawable;
+      if (x.a(paramDrawable)) {
+        paramContext = paramDrawable.mutate();
+      }
+      paramContext = androidx.core.graphics.drawable.a.r(paramContext);
+      androidx.core.graphics.drawable.a.o(paramContext, (ColorStateList)localObject);
+      paramDrawable = o(paramInt);
+      localObject = paramContext;
+      if (paramDrawable != null)
+      {
+        androidx.core.graphics.drawable.a.p(paramContext, paramDrawable);
+        return paramContext;
+      }
+    }
+    else
+    {
+      localObject = j;
+      if ((localObject != null) && (((f)localObject).e(paramContext, paramInt, paramDrawable))) {
+        return paramDrawable;
+      }
+      localObject = paramDrawable;
+      if (!x(paramContext, paramInt, paramDrawable))
+      {
+        localObject = paramDrawable;
+        if (paramBoolean) {
+          localObject = null;
+        }
+      }
+    }
+    return localObject;
+  }
+  
+  static void w(Drawable paramDrawable, l0 paramL0, int[] paramArrayOfInt)
+  {
+    Object localObject = paramDrawable.getState();
+    if (x.a(paramDrawable))
+    {
+      int k;
+      if (paramDrawable.mutate() == paramDrawable) {
+        k = 1;
+      } else {
+        k = 0;
+      }
+      if (k == 0)
+      {
+        Log.d("ResourceManagerInternal", "Mutated drawable is not the same instance as the input.");
+        return;
+      }
+    }
+    if (((paramDrawable instanceof LayerDrawable)) && (paramDrawable.isStateful()))
+    {
+      paramDrawable.setState(new int[0]);
+      paramDrawable.setState((int[])localObject);
+    }
+    boolean bool = d;
+    if ((!bool) && (!c))
+    {
+      paramDrawable.clearColorFilter();
+    }
+    else
+    {
+      if (bool) {
+        localObject = a;
+      } else {
+        localObject = null;
+      }
+      if (c) {
+        paramL0 = b;
+      } else {
+        paramL0 = a;
+      }
+      paramDrawable.setColorFilter(g((ColorStateList)localObject, paramL0, paramArrayOfInt));
+    }
+    if (Build.VERSION.SDK_INT <= 23) {
+      paramDrawable.invalidateSelf();
+    }
+  }
+  
+  public Drawable j(Context paramContext, int paramInt)
+  {
+    try
+    {
+      paramContext = k(paramContext, paramInt, false);
+      return paramContext;
+    }
+    finally
+    {
+      paramContext = finally;
+      throw paramContext;
+    }
+  }
+  
+  Drawable k(Context paramContext, int paramInt, boolean paramBoolean)
+  {
+    try
+    {
+      d(paramContext);
+      Object localObject2 = r(paramContext, paramInt);
+      Object localObject1 = localObject2;
+      if (localObject2 == null) {
+        localObject1 = f(paramContext, paramInt);
+      }
+      localObject2 = localObject1;
+      if (localObject1 == null) {
+        localObject2 = androidx.core.content.a.f(paramContext, paramInt);
+      }
+      localObject1 = localObject2;
+      if (localObject2 != null) {
+        localObject1 = v(paramContext, paramInt, paramBoolean, (Drawable)localObject2);
+      }
+      if (localObject1 != null) {
+        x.b((Drawable)localObject1);
+      }
+      return localObject1;
+    }
+    finally {}
+  }
+  
+  ColorStateList m(Context paramContext, int paramInt)
+  {
+    try
+    {
+      Object localObject1 = n(paramContext, paramInt);
+      Object localObject2 = localObject1;
+      if (localObject1 == null)
+      {
+        localObject1 = j;
+        if (localObject1 == null) {
+          localObject1 = null;
+        } else {
+          localObject1 = ((f)localObject1).d(paramContext, paramInt);
+        }
+        localObject2 = localObject1;
+        if (localObject1 != null)
+        {
+          c(paramContext, paramInt, (ColorStateList)localObject1);
+          localObject2 = localObject1;
+        }
+      }
+      return localObject2;
+    }
+    finally {}
+  }
+  
+  PorterDuff.Mode o(int paramInt)
+  {
+    f localF = j;
+    if (localF == null) {
+      return null;
+    }
+    return localF.b(paramInt);
+  }
+  
+  public void s(Context paramContext)
+  {
+    try
+    {
+      paramContext = (c.e.d)g.get(paramContext);
+      if (paramContext != null) {
+        paramContext.c();
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  Drawable t(Context paramContext, s0 paramS0, int paramInt)
+  {
+    try
+    {
+      Drawable localDrawable2 = r(paramContext, paramInt);
+      Drawable localDrawable1 = localDrawable2;
+      if (localDrawable2 == null) {
+        localDrawable1 = paramS0.a(paramInt);
+      }
+      if (localDrawable1 != null)
+      {
+        paramContext = v(paramContext, paramInt, false, localDrawable1);
+        return paramContext;
+      }
+      return null;
+    }
+    finally {}
+  }
+  
+  public void u(f paramF)
+  {
+    try
+    {
+      j = paramF;
+      return;
+    }
+    finally
+    {
+      paramF = finally;
+      throw paramF;
+    }
+  }
+  
+  boolean x(Context paramContext, int paramInt, Drawable paramDrawable)
+  {
+    f localF = j;
+    return (localF != null) && (localF.a(paramContext, paramInt, paramDrawable));
+  }
+  
+  static class a
+    implements d0.e
+  {
+    a() {}
+    
+    public Drawable a(Context paramContext, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    {
+      try
+      {
+        paramContext = c.a.l.a.a.m(paramContext, paramContext.getResources(), paramXmlPullParser, paramAttributeSet, paramTheme);
+        return paramContext;
+      }
+      catch (Exception paramContext)
+      {
+        Log.e("AsldcInflateDelegate", "Exception while inflating <animated-selector>", paramContext);
+      }
+      return null;
+    }
+  }
+  
+  private static class b
+    implements d0.e
+  {
+    b() {}
+    
+    public Drawable a(Context paramContext, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    {
+      try
+      {
+        paramContext = b.a(paramContext, paramContext.getResources(), paramXmlPullParser, paramAttributeSet, paramTheme);
+        return paramContext;
+      }
+      catch (Exception paramContext)
+      {
+        Log.e("AvdcInflateDelegate", "Exception while inflating <animated-vector>", paramContext);
+      }
+      return null;
+    }
+  }
+  
+  private static class c
+    extends e<Integer, PorterDuffColorFilter>
+  {
+    public c(int paramInt)
+    {
+      super();
+    }
+    
+    private static int a(int paramInt, PorterDuff.Mode paramMode)
+    {
+      return (paramInt + 31) * 31 + paramMode.hashCode();
+    }
+    
+    PorterDuffColorFilter b(int paramInt, PorterDuff.Mode paramMode)
+    {
+      return (PorterDuffColorFilter)get(Integer.valueOf(a(paramInt, paramMode)));
+    }
+    
+    PorterDuffColorFilter c(int paramInt, PorterDuff.Mode paramMode, PorterDuffColorFilter paramPorterDuffColorFilter)
+    {
+      return (PorterDuffColorFilter)put(Integer.valueOf(a(paramInt, paramMode)), paramPorterDuffColorFilter);
+    }
+  }
+  
+  static class d
+    implements d0.e
+  {
+    d() {}
+    
+    public Drawable a(Context paramContext, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    {
+      Object localObject = paramAttributeSet.getClassAttribute();
+      if (localObject != null) {
+        try
+        {
+          localObject = (Drawable)d.class.getClassLoader().loadClass((String)localObject).asSubclass(Drawable.class).getDeclaredConstructor(new Class[0]).newInstance(new Object[0]);
+          if (Build.VERSION.SDK_INT >= 21)
+          {
+            c.c((Drawable)localObject, paramContext.getResources(), paramXmlPullParser, paramAttributeSet, paramTheme);
+            return localObject;
+          }
+          ((Drawable)localObject).inflate(paramContext.getResources(), paramXmlPullParser, paramAttributeSet);
+          return localObject;
+        }
+        catch (Exception paramContext)
+        {
+          Log.e("DrawableDelegate", "Exception while inflating <drawable>", paramContext);
+        }
+      }
+      return null;
+    }
+  }
+  
+  private static abstract interface e
+  {
+    public abstract Drawable a(Context paramContext, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme);
+  }
+  
+  public static abstract interface f
+  {
+    public abstract boolean a(Context paramContext, int paramInt, Drawable paramDrawable);
+    
+    public abstract PorterDuff.Mode b(int paramInt);
+    
+    public abstract Drawable c(d0 paramD0, Context paramContext, int paramInt);
+    
+    public abstract ColorStateList d(Context paramContext, int paramInt);
+    
+    public abstract boolean e(Context paramContext, int paramInt, Drawable paramDrawable);
+  }
+  
+  private static class g
+    implements d0.e
+  {
+    g() {}
+    
+    public Drawable a(Context paramContext, XmlPullParser paramXmlPullParser, AttributeSet paramAttributeSet, Resources.Theme paramTheme)
+    {
+      try
+      {
+        paramContext = c.w.a.a.h.c(paramContext.getResources(), paramXmlPullParser, paramAttributeSet, paramTheme);
+        return paramContext;
+      }
+      catch (Exception paramContext)
+      {
+        Log.e("VdcInflateDelegate", "Exception while inflating <vector>", paramContext);
+      }
+      return null;
+    }
+  }
+}

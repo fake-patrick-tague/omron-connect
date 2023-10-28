@@ -1,0 +1,260 @@
+package androidx.fragment.app;
+
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.content.res.TypedArray;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
+import c.h.q.c0;
+import c.m.a;
+import c.m.b;
+
+class n
+{
+  private static int a(Fragment paramFragment, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    if (paramBoolean2)
+    {
+      if (paramBoolean1) {
+        return paramFragment.getPopEnterAnim();
+      }
+      return paramFragment.getPopExitAnim();
+    }
+    if (paramBoolean1) {
+      return paramFragment.getEnterAnim();
+    }
+    return paramFragment.getExitAnim();
+  }
+  
+  static a b(Context paramContext, Fragment paramFragment, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    int m = paramFragment.getNextTransition();
+    j = a(paramFragment, paramBoolean1, paramBoolean2);
+    k = 0;
+    paramFragment.setAnimations(0, 0, 0, 0);
+    Object localObject = mContainer;
+    if (localObject != null)
+    {
+      i = b.c;
+      if (((ViewGroup)localObject).getTag(i) != null) {
+        mContainer.setTag(i, null);
+      }
+    }
+    localObject = mContainer;
+    if ((localObject != null) && (((ViewGroup)localObject).getLayoutTransition() != null)) {
+      return null;
+    }
+    localObject = paramFragment.onCreateAnimation(m, paramBoolean1, j);
+    if (localObject != null) {
+      return new a((Animation)localObject);
+    }
+    paramFragment = paramFragment.onCreateAnimator(m, paramBoolean1, j);
+    if (paramFragment != null) {
+      return new a(paramFragment);
+    }
+    int i = j;
+    if (j == 0)
+    {
+      i = j;
+      if (m != 0) {
+        i = d(paramContext, m, paramBoolean1);
+      }
+    }
+    if (i != 0)
+    {
+      paramBoolean1 = "anim".equals(paramContext.getResources().getResourceTypeName(i));
+      j = k;
+      if (!paramBoolean1) {}
+    }
+    try
+    {
+      try
+      {
+        paramFragment = AnimationUtils.loadAnimation(paramContext, i);
+        if (paramFragment != null)
+        {
+          paramFragment = new a(paramFragment);
+          return paramFragment;
+        }
+        j = 1;
+      }
+      catch (Resources.NotFoundException paramContext)
+      {
+        throw paramContext;
+      }
+    }
+    catch (RuntimeException paramFragment)
+    {
+      for (;;)
+      {
+        j = k;
+      }
+    }
+    if (j == 0) {
+      try
+      {
+        paramFragment = AnimatorInflater.loadAnimator(paramContext, i);
+        if (paramFragment != null)
+        {
+          paramFragment = new a(paramFragment);
+          return paramFragment;
+        }
+      }
+      catch (RuntimeException paramFragment)
+      {
+        if (!paramBoolean1)
+        {
+          paramContext = AnimationUtils.loadAnimation(paramContext, i);
+          if (paramContext != null) {
+            return new a(paramContext);
+          }
+        }
+        else
+        {
+          throw paramFragment;
+        }
+      }
+    }
+    return null;
+  }
+  
+  private static int c(Context paramContext, int paramInt)
+  {
+    paramContext = paramContext.obtainStyledAttributes(16973825, new int[] { paramInt });
+    paramInt = paramContext.getResourceId(0, -1);
+    paramContext.recycle();
+    return paramInt;
+  }
+  
+  private static int d(Context paramContext, int paramInt, boolean paramBoolean)
+  {
+    if (paramInt != 4097)
+    {
+      if (paramInt != 8194)
+      {
+        if (paramInt != 8197)
+        {
+          if (paramInt != 4099)
+          {
+            if (paramInt != 4100) {
+              return -1;
+            }
+            if (paramBoolean) {
+              return c(paramContext, 16842936);
+            }
+            return c(paramContext, 16842937);
+          }
+          if (paramBoolean) {
+            return a.c;
+          }
+          return a.d;
+        }
+        if (paramBoolean) {
+          return c(paramContext, 16842938);
+        }
+        return c(paramContext, 16842939);
+      }
+      if (paramBoolean) {
+        return a.a;
+      }
+      return a.b;
+    }
+    if (paramBoolean) {
+      return a.e;
+    }
+    return a.f;
+  }
+  
+  static class a
+  {
+    public final Animation a;
+    public final Animator b;
+    
+    a(Animator paramAnimator)
+    {
+      a = null;
+      b = paramAnimator;
+      if (paramAnimator != null) {
+        return;
+      }
+      throw new IllegalStateException("Animator cannot be null");
+    }
+    
+    a(Animation paramAnimation)
+    {
+      a = paramAnimation;
+      b = null;
+      if (paramAnimation != null) {
+        return;
+      }
+      throw new IllegalStateException("Animation cannot be null");
+    }
+  }
+  
+  static class b
+    extends AnimationSet
+    implements Runnable
+  {
+    private final ViewGroup b;
+    private final View c;
+    private boolean d;
+    private boolean e;
+    private boolean f = true;
+    
+    b(Animation paramAnimation, ViewGroup paramViewGroup, View paramView)
+    {
+      super();
+      b = paramViewGroup;
+      c = paramView;
+      addAnimation(paramAnimation);
+      paramViewGroup.post(this);
+    }
+    
+    public boolean getTransformation(long paramLong, Transformation paramTransformation)
+    {
+      f = true;
+      if (d) {
+        return e ^ true;
+      }
+      if (!super.getTransformation(paramLong, paramTransformation))
+      {
+        d = true;
+        c0.a(b, this);
+      }
+      return true;
+    }
+    
+    public boolean getTransformation(long paramLong, Transformation paramTransformation, float paramFloat)
+    {
+      f = true;
+      if (d) {
+        return e ^ true;
+      }
+      if (!super.getTransformation(paramLong, paramTransformation, paramFloat))
+      {
+        d = true;
+        c0.a(b, this);
+      }
+      return true;
+    }
+    
+    public void run()
+    {
+      if ((!d) && (f))
+      {
+        f = false;
+        b.post(this);
+        return;
+      }
+      b.endViewTransition(c);
+      e = true;
+    }
+  }
+}

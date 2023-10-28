@@ -1,0 +1,76 @@
+package com.google.android.gms.fitness;
+
+import android.app.Activity;
+import android.content.Context;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Api.ApiOptions.HasGoogleSignInAccountOptions;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApi.Settings;
+import com.google.android.gms.common.internal.PendingResultUtil;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.fitness.data.DataSource;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Subscription;
+import com.google.android.gms.internal.fitness.zzaj;
+import com.google.android.gms.internal.fitness.zzdo;
+import com.google.android.gms.tasks.Task;
+import java.util.List;
+
+public class RecordingClient
+  extends GoogleApi<Api.ApiOptions.HasGoogleSignInAccountOptions>
+{
+  private static final RecordingApi zzkv = new zzdo();
+  
+  RecordingClient(Activity paramActivity, Api.ApiOptions.HasGoogleSignInAccountOptions paramHasGoogleSignInAccountOptions)
+  {
+    super(paramActivity, zzaj.zzoz, paramHasGoogleSignInAccountOptions, GoogleApi.Settings.DEFAULT_SETTINGS);
+  }
+  
+  @ShowFirstParty
+  protected RecordingClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull Api.ApiOptions.HasGoogleSignInAccountOptions paramHasGoogleSignInAccountOptions)
+  {
+    super(paramContext, zzaj.zzoz, paramHasGoogleSignInAccountOptions, GoogleApi.Settings.DEFAULT_SETTINGS);
+  }
+  
+  @RecentlyNonNull
+  public Task<List<Subscription>> listSubscriptions()
+  {
+    return PendingResultUtil.toTask(zzkv.listSubscriptions(asGoogleApiClient()), zzk.zzjz);
+  }
+  
+  @RecentlyNonNull
+  public Task<List<Subscription>> listSubscriptions(@RecentlyNonNull DataType paramDataType)
+  {
+    return PendingResultUtil.toTask(zzkv.listSubscriptions(asGoogleApiClient(), paramDataType), zzl.zzjz);
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> subscribe(@RecentlyNonNull DataSource paramDataSource)
+  {
+    return PendingResultUtil.toVoidTask(zzkv.subscribe(asGoogleApiClient(), paramDataSource));
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> subscribe(@RecentlyNonNull DataType paramDataType)
+  {
+    return PendingResultUtil.toVoidTask(zzkv.subscribe(asGoogleApiClient(), paramDataType));
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> unsubscribe(@RecentlyNonNull DataSource paramDataSource)
+  {
+    return PendingResultUtil.toVoidTask(zzkv.unsubscribe(asGoogleApiClient(), paramDataSource));
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> unsubscribe(@RecentlyNonNull DataType paramDataType)
+  {
+    return PendingResultUtil.toVoidTask(zzkv.unsubscribe(asGoogleApiClient(), paramDataType));
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> unsubscribe(@RecentlyNonNull Subscription paramSubscription)
+  {
+    return PendingResultUtil.toVoidTask(zzkv.unsubscribe(asGoogleApiClient(), paramSubscription));
+  }
+}

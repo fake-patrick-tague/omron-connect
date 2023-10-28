@@ -1,0 +1,56 @@
+package com.google.android.gms.auth.api.signin;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import androidx.annotation.RecentlyNullable;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+
+@SafeParcelable.Class(creator="SignInAccountCreator")
+@SafeParcelable.Reserved({1})
+public class SignInAccount
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<SignInAccount> CREATOR = new zbc();
+  @Deprecated
+  @SafeParcelable.Field(defaultValue="", id=4)
+  String zba;
+  @Deprecated
+  @SafeParcelable.Field(defaultValue="", id=8)
+  String zbb;
+  @SafeParcelable.Field(getter="getGoogleSignInAccount", id=7)
+  private GoogleSignInAccount zbc;
+  
+  @SafeParcelable.Constructor
+  SignInAccount(@SafeParcelable.Param(id=4) String paramString1, @SafeParcelable.Param(id=7) GoogleSignInAccount paramGoogleSignInAccount, @SafeParcelable.Param(id=8) String paramString2)
+  {
+    zbc = paramGoogleSignInAccount;
+    zba = Preconditions.checkNotEmpty(paramString1, "8.3 and 8.4 SDKs require non-null email");
+    zbb = Preconditions.checkNotEmpty(paramString2, "8.3 and 8.4 SDKs require non-null userId");
+  }
+  
+  public final void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeString(paramParcel, 4, zba, false);
+    SafeParcelWriter.writeParcelable(paramParcel, 7, zbc, paramInt, false);
+    SafeParcelWriter.writeString(paramParcel, 8, zbb, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  @RecentlyNullable
+  public final GoogleSignInAccount zba()
+  {
+    return zbc;
+  }
+}

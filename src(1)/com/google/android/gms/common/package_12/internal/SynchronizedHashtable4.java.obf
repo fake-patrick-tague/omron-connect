@@ -1,0 +1,72 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.DeadObjectException;
+import android.util.Log;
+import com.google.android.gms.common.api.Api.AnyClient;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Preconditions;
+
+public final class zae<A extends BaseImplementation.ApiMethodImpl<? extends Result, Api.AnyClient>>
+  extends zai
+{
+  protected final A zaa;
+  
+  public zae(int paramInt, A paramA)
+  {
+    super(paramInt);
+    zaa = ((BaseImplementation.ApiMethodImpl)Preconditions.checkNotNull(paramA, "Null methods are not runnable."));
+  }
+  
+  public final void zad(Status paramStatus)
+  {
+    try
+    {
+      zaa.setFailedResult(paramStatus);
+      return;
+    }
+    catch (IllegalStateException paramStatus)
+    {
+      Log.w("ApiCallRunner", "Exception reporting failure", paramStatus);
+    }
+  }
+  
+  public final void zae(Exception paramException)
+  {
+    String str = paramException.getClass().getSimpleName();
+    paramException = paramException.getLocalizedMessage();
+    StringBuilder localStringBuilder = new StringBuilder(str.length() + 2 + String.valueOf(paramException).length());
+    localStringBuilder.append(str);
+    localStringBuilder.append(": ");
+    localStringBuilder.append(paramException);
+    paramException = new Status(10, localStringBuilder.toString());
+    try
+    {
+      zaa.setFailedResult(paramException);
+      return;
+    }
+    catch (IllegalStateException paramException)
+    {
+      Log.w("ApiCallRunner", "Exception reporting failure", paramException);
+    }
+  }
+  
+  public final void zaf(zabq<?> paramZabq)
+    throws DeadObjectException
+  {
+    try
+    {
+      zaa.run(paramZabq.zaf());
+      return;
+    }
+    catch (RuntimeException paramZabq)
+    {
+      zae(paramZabq);
+    }
+  }
+  
+  public final void zag(zaad paramZaad, boolean paramBoolean)
+  {
+    paramZaad.zac(zaa, paramBoolean);
+  }
+}

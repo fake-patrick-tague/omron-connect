@@ -1,0 +1,482 @@
+package com.google.firebase.messaging;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import com.google.android.datatransport.b;
+import com.google.android.datatransport.c;
+import com.google.android.datatransport.e;
+import com.google.android.datatransport.f;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.i;
+import com.google.firebase.installations.h;
+import com.google.firebase.k;
+import com.google.firebase.messaging.reporting.MessagingClientEvent;
+import com.google.firebase.messaging.reporting.MessagingClientEvent.Event;
+import com.google.firebase.messaging.reporting.MessagingClientEvent.MessageType;
+import com.google.firebase.messaging.reporting.MessagingClientEvent.SDKPlatform;
+import com.google.firebase.messaging.reporting.MessagingClientEvent.a;
+import com.google.firebase.messaging.reporting.a.a;
+import java.util.concurrent.ExecutionException;
+
+public class q0
+{
+  public static boolean A(Intent paramIntent)
+  {
+    if ((paramIntent != null) && (!r(paramIntent))) {
+      return a();
+    }
+    return false;
+  }
+  
+  public static boolean B(Intent paramIntent)
+  {
+    if ((paramIntent != null) && (!r(paramIntent))) {
+      return C(paramIntent.getExtras());
+    }
+    return false;
+  }
+  
+  public static boolean C(Bundle paramBundle)
+  {
+    if (paramBundle == null) {
+      return false;
+    }
+    return "1".equals(paramBundle.getString("google.c.a.e"));
+  }
+  
+  static boolean a()
+  {
+    for (;;)
+    {
+      try
+      {
+        i.i();
+        localObject1 = i.i().h();
+        localObject2 = ((Context)localObject1).getSharedPreferences("com.google.firebase.messaging", 0);
+        if (((SharedPreferences)localObject2).contains("export_to_big_query")) {
+          return ((SharedPreferences)localObject2).getBoolean("export_to_big_query", false);
+        }
+      }
+      catch (IllegalStateException localIllegalStateException)
+      {
+        Object localObject1;
+        Object localObject2;
+        continue;
+      }
+      try
+      {
+        localObject2 = ((Context)localObject1).getPackageManager();
+        if (localObject2 != null)
+        {
+          localObject1 = ((PackageManager)localObject2).getApplicationInfo(((Context)localObject1).getPackageName(), 128);
+          if (localObject1 != null)
+          {
+            localObject2 = metaData;
+            if ((localObject2 != null) && (((Bundle)localObject2).containsKey("delivery_metrics_exported_to_big_query_enabled")))
+            {
+              boolean bool = metaData.getBoolean("delivery_metrics_exported_to_big_query_enabled", false);
+              return bool;
+            }
+          }
+        }
+        return false;
+      }
+      catch (PackageManager.NameNotFoundException localNameNotFoundException) {}
+    }
+    Log.i("FirebaseMessaging", "FirebaseApp has not being initialized. Device might be in direct boot mode. Skip exporting delivery metrics to Big Query");
+    return false;
+    return false;
+  }
+  
+  static MessagingClientEvent b(MessagingClientEvent.Event paramEvent, Intent paramIntent)
+  {
+    if (paramIntent == null) {
+      return null;
+    }
+    Object localObject = paramIntent.getExtras();
+    paramIntent = (Intent)localObject;
+    if (localObject == null) {
+      paramIntent = Bundle.EMPTY;
+    }
+    paramEvent = MessagingClientEvent.p().m(p(paramIntent)).e(paramEvent).f(f(paramIntent)).i(m()).k(MessagingClientEvent.SDKPlatform.c).h(k(paramIntent));
+    localObject = h(paramIntent);
+    if (localObject != null) {
+      paramEvent.g((String)localObject);
+    }
+    localObject = o(paramIntent);
+    if (localObject != null) {
+      paramEvent.l((String)localObject);
+    }
+    localObject = c(paramIntent);
+    if (localObject != null) {
+      paramEvent.c((String)localObject);
+    }
+    localObject = i(paramIntent);
+    if (localObject != null) {
+      paramEvent.b((String)localObject);
+    }
+    localObject = e(paramIntent);
+    if (localObject != null) {
+      paramEvent.d((String)localObject);
+    }
+    long l = n(paramIntent);
+    if (l > 0L) {
+      paramEvent.j(l);
+    }
+    return paramEvent.a();
+  }
+  
+  static String c(Bundle paramBundle)
+  {
+    return paramBundle.getString("collapse_key");
+  }
+  
+  static String d(Bundle paramBundle)
+  {
+    return paramBundle.getString("google.c.a.c_id");
+  }
+  
+  static String e(Bundle paramBundle)
+  {
+    return paramBundle.getString("google.c.a.c_l");
+  }
+  
+  static String f(Bundle paramBundle)
+  {
+    paramBundle = paramBundle.getString("google.to");
+    if (!TextUtils.isEmpty(paramBundle)) {
+      return paramBundle;
+    }
+    try
+    {
+      paramBundle = (String)Tasks.await(h.m(i.i()).getId());
+      return paramBundle;
+    }
+    catch (InterruptedException paramBundle) {}catch (ExecutionException paramBundle) {}
+    throw new RuntimeException(paramBundle);
+  }
+  
+  static String g(Bundle paramBundle)
+  {
+    return paramBundle.getString("google.c.a.m_c");
+  }
+  
+  static String h(Bundle paramBundle)
+  {
+    String str2 = paramBundle.getString("google.message_id");
+    String str1 = str2;
+    if (str2 == null) {
+      str1 = paramBundle.getString("message_id");
+    }
+    return str1;
+  }
+  
+  static String i(Bundle paramBundle)
+  {
+    return paramBundle.getString("google.c.a.m_l");
+  }
+  
+  static String j(Bundle paramBundle)
+  {
+    return paramBundle.getString("google.c.a.ts");
+  }
+  
+  static MessagingClientEvent.MessageType k(Bundle paramBundle)
+  {
+    if ((paramBundle != null) && (s0.t(paramBundle))) {
+      return MessagingClientEvent.MessageType.e;
+    }
+    return MessagingClientEvent.MessageType.c;
+  }
+  
+  static String l(Bundle paramBundle)
+  {
+    if ((paramBundle != null) && (s0.t(paramBundle))) {
+      return "display";
+    }
+    return "data";
+  }
+  
+  static String m()
+  {
+    return i.i().h().getPackageName();
+  }
+  
+  static long n(Bundle paramBundle)
+  {
+    long l;
+    if (paramBundle.containsKey("google.c.sender.id")) {
+      try
+      {
+        l = Long.parseLong(paramBundle.getString("google.c.sender.id"));
+        return l;
+      }
+      catch (NumberFormatException paramBundle)
+      {
+        Log.w("FirebaseMessaging", "error parsing project number", paramBundle);
+      }
+    }
+    paramBundle = i.i();
+    String str = paramBundle.k().d();
+    if (str != null) {
+      try
+      {
+        l = Long.parseLong(str);
+        return l;
+      }
+      catch (NumberFormatException localNumberFormatException)
+      {
+        Log.w("FirebaseMessaging", "error parsing sender ID", localNumberFormatException);
+      }
+    }
+    paramBundle = paramBundle.k().c();
+    if (!paramBundle.startsWith("1:")) {
+      try
+      {
+        l = Long.parseLong(paramBundle);
+        return l;
+      }
+      catch (NumberFormatException paramBundle)
+      {
+        Log.w("FirebaseMessaging", "error parsing app ID", paramBundle);
+        return 0L;
+      }
+    }
+    paramBundle = paramBundle.split(":");
+    if (paramBundle.length < 2) {
+      return 0L;
+    }
+    paramBundle = paramBundle[1];
+    if (paramBundle.isEmpty()) {
+      return 0L;
+    }
+    try
+    {
+      l = Long.parseLong(paramBundle);
+      return l;
+    }
+    catch (NumberFormatException paramBundle)
+    {
+      Log.w("FirebaseMessaging", "error parsing app ID", paramBundle);
+    }
+    return 0L;
+  }
+  
+  static String o(Bundle paramBundle)
+  {
+    paramBundle = paramBundle.getString("from");
+    if ((paramBundle != null) && (paramBundle.startsWith("/topics/"))) {
+      return paramBundle;
+    }
+    return null;
+  }
+  
+  static int p(Bundle paramBundle)
+  {
+    paramBundle = paramBundle.get("google.ttl");
+    if ((paramBundle instanceof Integer)) {
+      return ((Integer)paramBundle).intValue();
+    }
+    if ((paramBundle instanceof String)) {}
+    try
+    {
+      int i = Integer.parseInt((String)paramBundle);
+      return i;
+    }
+    catch (NumberFormatException localNumberFormatException)
+    {
+      StringBuilder localStringBuilder;
+      for (;;) {}
+    }
+    localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Invalid TTL: ");
+    localStringBuilder.append(paramBundle);
+    Log.w("FirebaseMessaging", localStringBuilder.toString());
+    return 0;
+  }
+  
+  static String q(Bundle paramBundle)
+  {
+    if (paramBundle.containsKey("google.c.a.udt")) {
+      return paramBundle.getString("google.c.a.udt");
+    }
+    return null;
+  }
+  
+  private static boolean r(Intent paramIntent)
+  {
+    return "com.google.firebase.messaging.RECEIVE_DIRECT_BOOT".equals(paramIntent.getAction());
+  }
+  
+  public static void s(Intent paramIntent)
+  {
+    x("_nd", paramIntent.getExtras());
+  }
+  
+  public static void t(Intent paramIntent)
+  {
+    x("_nf", paramIntent.getExtras());
+  }
+  
+  public static void u(Bundle paramBundle)
+  {
+    z(paramBundle);
+    x("_no", paramBundle);
+  }
+  
+  public static void v(Intent paramIntent)
+  {
+    if (B(paramIntent)) {
+      x("_nr", paramIntent.getExtras());
+    }
+    if (A(paramIntent)) {
+      w(MessagingClientEvent.Event.c, paramIntent, FirebaseMessaging.getTransportFactory());
+    }
+  }
+  
+  private static void w(MessagingClientEvent.Event paramEvent, Intent paramIntent, f paramF)
+  {
+    if (paramF == null)
+    {
+      Log.e("FirebaseMessaging", "TransportFactory is null. Skip exporting message delivery metrics to Big Query");
+      return;
+    }
+    paramEvent = b(paramEvent, paramIntent);
+    if (paramEvent == null) {
+      return;
+    }
+    try
+    {
+      paramF.b("FCM_CLIENT_EVENT_LOGGING", com.google.firebase.messaging.reporting.a.class, b.b("proto"), a.a).a(c.d(com.google.firebase.messaging.reporting.a.b().b(paramEvent).a()));
+      return;
+    }
+    catch (RuntimeException paramEvent)
+    {
+      Log.w("FirebaseMessaging", "Failed to send big query analytics payload.", paramEvent);
+    }
+  }
+  
+  static void x(String paramString, Bundle paramBundle)
+  {
+    try
+    {
+      i.i();
+      Object localObject = paramBundle;
+      if (paramBundle == null) {
+        localObject = new Bundle();
+      }
+      paramBundle = new Bundle();
+      String str1 = d((Bundle)localObject);
+      if (str1 != null) {
+        paramBundle.putString("_nmid", str1);
+      }
+      str1 = e((Bundle)localObject);
+      if (str1 != null) {
+        paramBundle.putString("_nmn", str1);
+      }
+      str1 = i((Bundle)localObject);
+      if (!TextUtils.isEmpty(str1)) {
+        paramBundle.putString("label", str1);
+      }
+      str1 = g((Bundle)localObject);
+      if (!TextUtils.isEmpty(str1)) {
+        paramBundle.putString("message_channel", str1);
+      }
+      str1 = o((Bundle)localObject);
+      if (str1 != null) {
+        paramBundle.putString("_nt", str1);
+      }
+      str1 = j((Bundle)localObject);
+      if (str1 != null) {
+        try
+        {
+          paramBundle.putInt("_nmt", Integer.parseInt(str1));
+        }
+        catch (NumberFormatException localNumberFormatException1)
+        {
+          Log.w("FirebaseMessaging", "Error while parsing timestamp in GCM event", localNumberFormatException1);
+        }
+      }
+      String str2 = q((Bundle)localObject);
+      if (str2 != null) {
+        try
+        {
+          paramBundle.putInt("_ndt", Integer.parseInt(str2));
+        }
+        catch (NumberFormatException localNumberFormatException2)
+        {
+          Log.w("FirebaseMessaging", "Error while parsing use_device_time in GCM event", localNumberFormatException2);
+        }
+      }
+      localObject = l((Bundle)localObject);
+      if (("_nr".equals(paramString)) || ("_nf".equals(paramString))) {
+        paramBundle.putString("_nmc", (String)localObject);
+      }
+      if (Log.isLoggable("FirebaseMessaging", 3))
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Logging to scion event=");
+        ((StringBuilder)localObject).append(paramString);
+        ((StringBuilder)localObject).append(" scionPayload=");
+        ((StringBuilder)localObject).append(paramBundle);
+        Log.d("FirebaseMessaging", ((StringBuilder)localObject).toString());
+      }
+      localObject = (com.google.firebase.analytics.a.a)i.i().g(com.google.firebase.analytics.a.a.class);
+      if (localObject != null)
+      {
+        ((com.google.firebase.analytics.a.a)localObject).b("fcm", paramString, paramBundle);
+        return;
+      }
+      Log.w("FirebaseMessaging", "Unable to log event: analytics library is missing");
+      return;
+    }
+    catch (IllegalStateException paramString)
+    {
+      for (;;) {}
+    }
+    Log.e("FirebaseMessaging", "Default FirebaseApp has not been initialized. Skip logging event to GA.");
+  }
+  
+  static void y(boolean paramBoolean)
+  {
+    i.i().h().getSharedPreferences("com.google.firebase.messaging", 0).edit().putBoolean("export_to_big_query", paramBoolean).apply();
+  }
+  
+  private static void z(Bundle paramBundle)
+  {
+    if (paramBundle == null) {
+      return;
+    }
+    if ("1".equals(paramBundle.getString("google.c.a.tc")))
+    {
+      com.google.firebase.analytics.a.a localA = (com.google.firebase.analytics.a.a)i.i().g(com.google.firebase.analytics.a.a.class);
+      if (Log.isLoggable("FirebaseMessaging", 3)) {
+        Log.d("FirebaseMessaging", "Received event with track-conversion=true. Setting user property and reengagement event");
+      }
+      if (localA != null)
+      {
+        paramBundle = paramBundle.getString("google.c.a.c_id");
+        localA.e("fcm", "_ln", paramBundle);
+        Bundle localBundle = new Bundle();
+        localBundle.putString("source", "Firebase");
+        localBundle.putString("medium", "notification");
+        localBundle.putString("campaign", paramBundle);
+        localA.b("fcm", "_cmp", localBundle);
+        return;
+      }
+      Log.w("FirebaseMessaging", "Unable to set user property for conversion tracking:  analytics library is missing");
+      return;
+    }
+    if (Log.isLoggable("FirebaseMessaging", 3)) {
+      Log.d("FirebaseMessaging", "Received event with track-conversion=false. Do not set user property");
+    }
+  }
+}

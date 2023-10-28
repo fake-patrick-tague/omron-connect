@@ -1,0 +1,102 @@
+package com.google.android.gms.fitness;
+
+import android.app.Activity;
+import android.content.Context;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Api.ApiOptions.HasGoogleSignInAccountOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApi.Settings;
+import com.google.android.gms.common.api.internal.ListenerHolders;
+import com.google.android.gms.common.api.internal.RegistrationMethods;
+import com.google.android.gms.common.api.internal.RegistrationMethods.Builder;
+import com.google.android.gms.common.internal.PendingResultUtil;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.util.PlatformVersion;
+import com.google.android.gms.fitness.data.BleDevice;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.request.BleScanCallback;
+import com.google.android.gms.internal.fitness.zzco;
+import com.google.android.gms.internal.fitness.zzen;
+import com.google.android.gms.internal.fitness.zzk;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import java.util.List;
+
+@Deprecated
+public class BleClient
+  extends GoogleApi<Api.ApiOptions.HasGoogleSignInAccountOptions>
+{
+  private static final BleApi zzka;
+  
+  static
+  {
+    Object localObject;
+    if (PlatformVersion.isAtLeastJellyBeanMR2()) {
+      localObject = new zzco();
+    } else {
+      localObject = new zzen();
+    }
+    zzka = (BleApi)localObject;
+  }
+  
+  BleClient(Activity paramActivity, Api.ApiOptions.HasGoogleSignInAccountOptions paramHasGoogleSignInAccountOptions)
+  {
+    super(paramActivity, zzk.zzoz, paramHasGoogleSignInAccountOptions, GoogleApi.Settings.DEFAULT_SETTINGS);
+  }
+  
+  @ShowFirstParty
+  protected BleClient(@RecentlyNonNull Context paramContext, @RecentlyNonNull Api.ApiOptions.HasGoogleSignInAccountOptions paramHasGoogleSignInAccountOptions)
+  {
+    super(paramContext, zzk.zzoz, paramHasGoogleSignInAccountOptions, GoogleApi.Settings.DEFAULT_SETTINGS);
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> claimBleDevice(@RecentlyNonNull BleDevice paramBleDevice)
+  {
+    return PendingResultUtil.toVoidTask(zzka.claimBleDevice(asGoogleApiClient(), paramBleDevice));
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> claimBleDevice(@RecentlyNonNull String paramString)
+  {
+    return PendingResultUtil.toVoidTask(zzka.claimBleDevice(asGoogleApiClient(), paramString));
+  }
+  
+  @RecentlyNonNull
+  public Task<List<BleDevice>> listClaimedBleDevices()
+  {
+    return PendingResultUtil.toTask(zzka.listClaimedBleDevices(asGoogleApiClient()), zza.zzjz);
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> startBleScan(@RecentlyNonNull List<DataType> paramList, int paramInt, @RecentlyNonNull BleScanCallback paramBleScanCallback)
+  {
+    if (!PlatformVersion.isAtLeastJellyBeanMR2()) {
+      return Tasks.forException(new ApiException(zzen.zzqh));
+    }
+    paramBleScanCallback = registerListener(paramBleScanCallback, BleScanCallback.class.getSimpleName());
+    return doRegisterEventListener(RegistrationMethods.builder().withHolder(paramBleScanCallback).register(new zzb(this, paramBleScanCallback, paramList, paramInt)).unregister(new zzc(this, paramBleScanCallback)).build());
+  }
+  
+  @RecentlyNonNull
+  public Task<Boolean> stopBleScan(@RecentlyNonNull BleScanCallback paramBleScanCallback)
+  {
+    if (!PlatformVersion.isAtLeastJellyBeanMR2()) {
+      return Tasks.forException(new ApiException(zzen.zzqh));
+    }
+    return doUnregisterEventListener(ListenerHolders.createListenerKey(paramBleScanCallback, BleScanCallback.class.getSimpleName()));
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> unclaimBleDevice(@RecentlyNonNull BleDevice paramBleDevice)
+  {
+    return PendingResultUtil.toVoidTask(zzka.unclaimBleDevice(asGoogleApiClient(), paramBleDevice));
+  }
+  
+  @RecentlyNonNull
+  public Task<Void> unclaimBleDevice(@RecentlyNonNull String paramString)
+  {
+    return PendingResultUtil.toVoidTask(zzka.unclaimBleDevice(asGoogleApiClient(), paramString));
+  }
+}

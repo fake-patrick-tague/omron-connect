@@ -1,0 +1,69 @@
+package com.google.android.gms.fitness.request;
+
+import android.os.Looper;
+import com.google.android.gms.common.api.internal.ListenerHolder;
+import com.google.android.gms.common.api.internal.ListenerHolder.ListenerKey;
+import com.google.android.gms.common.api.internal.ListenerHolders;
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.HashMap;
+import java.util.Map;
+
+public final class zze
+{
+  private static final zze zzqm = new zze();
+  private final Map<ListenerHolder.ListenerKey<BleScanCallback>, zza> zzqn = new HashMap();
+  
+  private zze() {}
+  
+  private static ListenerHolder<BleScanCallback> zzc(BleScanCallback paramBleScanCallback, Looper paramLooper)
+  {
+    return ListenerHolders.createListenerHolder(paramBleScanCallback, paramLooper, BleScanCallback.class.getSimpleName());
+  }
+  
+  public static zze zzu()
+  {
+    return zzqm;
+  }
+  
+  public final zza zza(ListenerHolder<BleScanCallback> paramListenerHolder)
+  {
+    synchronized (zzqn)
+    {
+      ListenerHolder.ListenerKey localListenerKey = (ListenerHolder.ListenerKey)Preconditions.checkNotNull(paramListenerHolder.getListenerKey(), "Key must not be null");
+      zza localZza2 = (zza)zzqn.get(localListenerKey);
+      zza localZza1 = localZza2;
+      if (localZza2 == null)
+      {
+        localZza1 = new zza(paramListenerHolder, null);
+        zzqn.put(localListenerKey, localZza1);
+      }
+      return localZza1;
+    }
+  }
+  
+  public final zza zza(BleScanCallback paramBleScanCallback, Looper paramLooper)
+  {
+    return zza(zzc(paramBleScanCallback, paramLooper));
+  }
+  
+  public final zza zzb(ListenerHolder<BleScanCallback> paramListenerHolder)
+  {
+    synchronized (zzqn)
+    {
+      paramListenerHolder = paramListenerHolder.getListenerKey();
+      if (paramListenerHolder == null) {
+        return null;
+      }
+      paramListenerHolder = (zza)zzqn.get(paramListenerHolder);
+      if (paramListenerHolder != null) {
+        paramListenerHolder.release();
+      }
+      return paramListenerHolder;
+    }
+  }
+  
+  public final zza zzb(BleScanCallback paramBleScanCallback, Looper paramLooper)
+  {
+    return zzb(zzc(paramBleScanCallback, paramLooper));
+  }
+}

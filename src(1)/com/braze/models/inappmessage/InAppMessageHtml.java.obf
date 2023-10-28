@@ -1,0 +1,79 @@
+package com.braze.models.inappmessage;
+
+import bo.app.z1;
+import com.braze.enums.inappmessage.MessageType;
+import com.braze.support.JsonUtils;
+import java.util.List;
+import java.util.Map;
+import kotlin.collections.a0;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class InAppMessageHtml
+  extends InAppMessageHtmlBase
+{
+  public static final a Companion = new a(null);
+  private List<String> assetUrls = kotlin.collections.i.d();
+  private JSONObject messageFields;
+  private Map<String, String> remotePathToLocalAssetMap = a0.d();
+  
+  public InAppMessageHtml()
+  {
+    messageFields = new JSONObject();
+    assetUrls = kotlin.collections.i.d();
+  }
+  
+  public InAppMessageHtml(JSONObject paramJSONObject, z1 paramZ1)
+  {
+    this(paramJSONObject, paramZ1, paramJSONObject.optJSONObject("message_fields"), JsonUtils.convertStringJsonArrayToList(paramJSONObject.optJSONArray("asset_urls")));
+  }
+  
+  private InAppMessageHtml(JSONObject paramJSONObject1, z1 paramZ1, JSONObject paramJSONObject2, List<String> paramList)
+  {
+    super(paramJSONObject1, paramZ1);
+    messageFields = paramJSONObject2;
+    assetUrls = paramList;
+  }
+  
+  public JSONObject forJsonPut()
+  {
+    JSONObject localJSONObject = getJsonObject();
+    if (localJSONObject != null) {
+      return localJSONObject;
+    }
+    localJSONObject = super.forJsonPut();
+    try
+    {
+      localJSONObject.put("type", getMessageType().name());
+      return localJSONObject;
+    }
+    catch (JSONException localJSONException) {}
+    return localJSONObject;
+  }
+  
+  public Map<String, String> getLocalPrefetchedAssetPaths()
+  {
+    return remotePathToLocalAssetMap;
+  }
+  
+  public MessageType getMessageType()
+  {
+    return MessageType.HTML;
+  }
+  
+  public List<String> getRemoteAssetPathsForPrefetch()
+  {
+    return assetUrls;
+  }
+  
+  public void setLocalPrefetchedAssetPaths(Map<String, String> paramMap)
+  {
+    kotlin.x.d.i.e(paramMap, "remotePathToLocalAssetMap");
+    remotePathToLocalAssetMap = paramMap;
+  }
+  
+  public static final class a
+  {
+    private a() {}
+  }
+}

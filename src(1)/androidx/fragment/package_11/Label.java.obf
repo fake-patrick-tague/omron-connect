@@ -1,0 +1,255 @@
+package androidx.fragment.app;
+
+import android.util.Log;
+import androidx.lifecycle.e0;
+import androidx.lifecycle.f0;
+import androidx.lifecycle.f0.b;
+import androidx.lifecycle.i0;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
+final class v
+  extends e0
+{
+  private static final f0.b a = new a();
+  private final HashMap<String, Fragment> b = new HashMap();
+  private final HashMap<String, v> c = new HashMap();
+  private final HashMap<String, i0> d = new HashMap();
+  private final boolean e;
+  private boolean f = false;
+  private boolean g = false;
+  private boolean h = false;
+  
+  v(boolean paramBoolean)
+  {
+    e = paramBoolean;
+  }
+  
+  private void d(String paramString)
+  {
+    Object localObject = (v)c.get(paramString);
+    if (localObject != null)
+    {
+      ((v)localObject).onCleared();
+      c.remove(paramString);
+    }
+    localObject = (i0)d.get(paramString);
+    if (localObject != null)
+    {
+      ((i0)localObject).a();
+      d.remove(paramString);
+    }
+  }
+  
+  static v g(i0 paramI0)
+  {
+    return (v)new f0(paramI0, a).a(v.class);
+  }
+  
+  void a(Fragment paramFragment)
+  {
+    if (h)
+    {
+      if (FragmentManager.E0(2)) {
+        Log.v("FragmentManager", "Ignoring addRetainedFragment as the state is already saved");
+      }
+      return;
+    }
+    if (b.containsKey(mWho)) {
+      return;
+    }
+    b.put(mWho, paramFragment);
+    if (FragmentManager.E0(2))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Updating retained Fragments: Added ");
+      localStringBuilder.append(paramFragment);
+      Log.v("FragmentManager", localStringBuilder.toString());
+    }
+  }
+  
+  void b(Fragment paramFragment)
+  {
+    if (FragmentManager.E0(3))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Clearing non-config state for ");
+      localStringBuilder.append(paramFragment);
+      Log.d("FragmentManager", localStringBuilder.toString());
+    }
+    d(mWho);
+  }
+  
+  void c(String paramString)
+  {
+    if (FragmentManager.E0(3))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Clearing non-config state for saved state of Fragment ");
+      localStringBuilder.append(paramString);
+      Log.d("FragmentManager", localStringBuilder.toString());
+    }
+    d(paramString);
+  }
+  
+  Fragment e(String paramString)
+  {
+    return (Fragment)b.get(paramString);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (paramObject != null)
+    {
+      if (v.class != paramObject.getClass()) {
+        return false;
+      }
+      paramObject = (v)paramObject;
+      return (b.equals(b)) && (c.equals(c)) && (d.equals(d));
+    }
+    return false;
+  }
+  
+  v f(Fragment paramFragment)
+  {
+    v localV2 = (v)c.get(mWho);
+    v localV1 = localV2;
+    if (localV2 == null)
+    {
+      localV1 = new v(e);
+      c.put(mWho, localV1);
+    }
+    return localV1;
+  }
+  
+  Collection<Fragment> h()
+  {
+    return new ArrayList(b.values());
+  }
+  
+  public int hashCode()
+  {
+    return (b.hashCode() * 31 + c.hashCode()) * 31 + d.hashCode();
+  }
+  
+  i0 i(Fragment paramFragment)
+  {
+    i0 localI02 = (i0)d.get(mWho);
+    i0 localI01 = localI02;
+    if (localI02 == null)
+    {
+      localI01 = new i0();
+      d.put(mWho, localI01);
+    }
+    return localI01;
+  }
+  
+  boolean j()
+  {
+    return f;
+  }
+  
+  void k(Fragment paramFragment)
+  {
+    if (h)
+    {
+      if (FragmentManager.E0(2)) {
+        Log.v("FragmentManager", "Ignoring removeRetainedFragment as the state is already saved");
+      }
+      return;
+    }
+    int i;
+    if (b.remove(mWho) != null) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if ((i != 0) && (FragmentManager.E0(2)))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Updating retained Fragments: Removed ");
+      localStringBuilder.append(paramFragment);
+      Log.v("FragmentManager", localStringBuilder.toString());
+    }
+  }
+  
+  void l(boolean paramBoolean)
+  {
+    h = paramBoolean;
+  }
+  
+  boolean m(Fragment paramFragment)
+  {
+    if (!b.containsKey(mWho)) {
+      return true;
+    }
+    if (e) {
+      return f;
+    }
+    return g ^ true;
+  }
+  
+  protected void onCleared()
+  {
+    if (FragmentManager.E0(3))
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("onCleared called for ");
+      localStringBuilder.append(this);
+      Log.d("FragmentManager", localStringBuilder.toString());
+    }
+    f = true;
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder("FragmentManagerViewModel{");
+    localStringBuilder.append(Integer.toHexString(System.identityHashCode(this)));
+    localStringBuilder.append("} Fragments (");
+    Iterator localIterator = b.values().iterator();
+    while (localIterator.hasNext())
+    {
+      localStringBuilder.append(localIterator.next());
+      if (localIterator.hasNext()) {
+        localStringBuilder.append(", ");
+      }
+    }
+    localStringBuilder.append(") Child Non Config (");
+    localIterator = c.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      localStringBuilder.append((String)localIterator.next());
+      if (localIterator.hasNext()) {
+        localStringBuilder.append(", ");
+      }
+    }
+    localStringBuilder.append(") ViewModelStores (");
+    localIterator = d.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      localStringBuilder.append((String)localIterator.next());
+      if (localIterator.hasNext()) {
+        localStringBuilder.append(", ");
+      }
+    }
+    localStringBuilder.append(')');
+    return localStringBuilder.toString();
+  }
+  
+  class a
+    implements f0.b
+  {
+    a() {}
+    
+    public <T extends e0> T a(Class<T> paramClass)
+    {
+      return new v(true);
+    }
+  }
+}

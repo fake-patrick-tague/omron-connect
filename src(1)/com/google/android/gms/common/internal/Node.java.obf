@@ -1,0 +1,130 @@
+package com.google.android.gms.common.internal;
+
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.net.Uri.Builder;
+import android.os.Bundle;
+import android.util.Log;
+
+public final class zzn
+{
+  private static final Uri zza = new Uri.Builder().scheme("content").authority("com.google.android.gms.chimera").build();
+  private final String zzb;
+  private final String zzc;
+  private final ComponentName zzd;
+  private final int zze;
+  private final boolean zzf;
+  
+  public zzn(ComponentName paramComponentName, int paramInt)
+  {
+    zzb = null;
+    zzc = null;
+    Preconditions.checkNotNull(paramComponentName);
+    zzd = paramComponentName;
+    zze = paramInt;
+    zzf = false;
+  }
+  
+  public zzn(String paramString, int paramInt, boolean paramBoolean)
+  {
+    this(paramString, "com.google.android.gms", paramInt, false);
+  }
+  
+  public zzn(String paramString1, String paramString2, int paramInt, boolean paramBoolean)
+  {
+    Preconditions.checkNotEmpty(paramString1);
+    zzb = paramString1;
+    Preconditions.checkNotEmpty(paramString2);
+    zzc = paramString2;
+    zzd = null;
+    zze = paramInt;
+    zzf = paramBoolean;
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof zzn)) {
+      return false;
+    }
+    paramObject = (zzn)paramObject;
+    return (Objects.equal(zzb, zzb)) && (Objects.equal(zzc, zzc)) && (Objects.equal(zzd, zzd)) && (zze == zze) && (zzf == zzf);
+  }
+  
+  public final int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzb, zzc, zzd, Integer.valueOf(zze), Boolean.valueOf(zzf) });
+  }
+  
+  public final String toString()
+  {
+    String str2 = zzb;
+    String str1 = str2;
+    if (str2 == null)
+    {
+      Preconditions.checkNotNull(zzd);
+      str1 = zzd.flattenToString();
+    }
+    return str1;
+  }
+  
+  public final int zza()
+  {
+    return zze;
+  }
+  
+  public final ComponentName zzb()
+  {
+    return zzd;
+  }
+  
+  public final Intent zzc(Context paramContext)
+  {
+    if (zzb != null)
+    {
+      boolean bool = zzf;
+      Object localObject1 = null;
+      Object localObject2 = null;
+      if (bool)
+      {
+        localObject1 = new Bundle();
+        ((Bundle)localObject1).putString("serviceActionBundleKey", zzb);
+        try
+        {
+          paramContext = paramContext.getContentResolver().call(zza, "serviceIntentCall", null, (Bundle)localObject1);
+        }
+        catch (IllegalArgumentException paramContext)
+        {
+          Log.w("ConnectionStatusConfig", "Dynamic intent resolution failed: ".concat(paramContext.toString()));
+          paramContext = null;
+        }
+        if (paramContext == null) {
+          paramContext = localObject2;
+        } else {
+          paramContext = (Intent)paramContext.getParcelable("serviceResponseIntentKey");
+        }
+        localObject1 = paramContext;
+        if (paramContext == null)
+        {
+          Log.w("ConnectionStatusConfig", "Dynamic lookup for intent failed for action: ".concat(String.valueOf(zzb)));
+          localObject1 = paramContext;
+        }
+      }
+      if (localObject1 != null) {
+        return localObject1;
+      }
+      return new Intent(zzb).setPackage(zzc);
+    }
+    return new Intent().setComponent(zzd);
+  }
+  
+  public final String zzd()
+  {
+    return zzc;
+  }
+}

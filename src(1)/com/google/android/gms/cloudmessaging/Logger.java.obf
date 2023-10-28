@@ -1,0 +1,91 @@
+package com.google.android.gms.cloudmessaging;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import com.google.android.gms.common.util.concurrent.NamedThreadFactory;
+import com.google.android.gms.internal.cloudmessaging.zze;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+public final class zzs
+{
+  private static zzs zza;
+  private final Context zzb;
+  private final ScheduledExecutorService zzc;
+  private zzm zzd = new zzm(this, null);
+  private int zze = 1;
+  
+  zzs(Context paramContext, ScheduledExecutorService paramScheduledExecutorService)
+  {
+    zzc = paramScheduledExecutorService;
+    zzb = paramContext.getApplicationContext();
+  }
+  
+  public static zzs zzb(Context paramContext)
+  {
+    try
+    {
+      if (zza == null)
+      {
+        zze.zza();
+        zza = new zzs(paramContext, Executors.unconfigurableScheduledExecutorService(Executors.newScheduledThreadPool(1, new NamedThreadFactory("MessengerIpcClient"))));
+      }
+      paramContext = zza;
+      return paramContext;
+    }
+    finally {}
+  }
+  
+  private final int zzf()
+  {
+    try
+    {
+      int i = zze;
+      zze = (i + 1);
+      return i;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  private final <T> Task<T> zzg(zzp<T> paramZzp)
+  {
+    try
+    {
+      Object localObject;
+      if (Log.isLoggable("MessengerIpcClient", 3))
+      {
+        localObject = String.valueOf(paramZzp);
+        StringBuilder localStringBuilder = new StringBuilder(((String)localObject).length() + 9);
+        localStringBuilder.append("Queueing ");
+        localStringBuilder.append((String)localObject);
+        Log.d("MessengerIpcClient", localStringBuilder.toString());
+      }
+      if (!zzd.zzg(paramZzp))
+      {
+        localObject = new zzm(this, null);
+        zzd = ((zzm)localObject);
+        ((zzm)localObject).zzg(paramZzp);
+      }
+      paramZzp = zzb.getTask();
+      return paramZzp;
+    }
+    finally {}
+  }
+  
+  public final Task<Void> zzc(int paramInt, Bundle paramBundle)
+  {
+    return zzg(new zzo(zzf(), 2, paramBundle));
+  }
+  
+  public final Task<Bundle> zzd(int paramInt, Bundle paramBundle)
+  {
+    return zzg(new zzr(zzf(), 1, paramBundle));
+  }
+}

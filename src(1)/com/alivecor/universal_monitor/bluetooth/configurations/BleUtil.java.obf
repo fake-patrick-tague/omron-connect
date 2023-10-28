@@ -1,0 +1,149 @@
+package com.alivecor.universal_monitor.bluetooth.ble;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import c.e.b;
+import d.b.a.a;
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Set;
+
+public class BleUtil
+{
+  public BleUtil() {}
+  
+  public static String bondStateToString(int paramInt)
+  {
+    switch (paramInt)
+    {
+    default: 
+      return "UNKNOWN";
+    case 12: 
+      return "BOND_BONDED";
+    case 11: 
+      return "BOND_BONDING";
+    }
+    return "BOND_NONE";
+  }
+  
+  public static String btAdapterStateToString(int paramInt)
+  {
+    switch (paramInt)
+    {
+    default: 
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("UNKNOWN (");
+      localStringBuilder.append(paramInt);
+      localStringBuilder.append(")");
+      return localStringBuilder.toString();
+    case 13: 
+      return "TURNING OFF";
+    case 12: 
+      return "ON";
+    case 11: 
+      return "TURNING ON";
+    }
+    return "OFF";
+  }
+  
+  public static Set<BluetoothDevice> getBondedDevices(Context paramContext, String paramString)
+  {
+    b localB = new b();
+    paramContext = (BluetoothManager)paramContext.getApplicationContext().getSystemService("bluetooth");
+    if (paramContext != null)
+    {
+      paramContext = paramContext.getAdapter().getBondedDevices();
+      if (paramContext.size() > 0)
+      {
+        paramContext = paramContext.iterator();
+        while (paramContext.hasNext())
+        {
+          BluetoothDevice localBluetoothDevice = (BluetoothDevice)paramContext.next();
+          if ((localBluetoothDevice.getBondState() == 12) && ((paramString == null) || (localBluetoothDevice.getName().startsWith(paramString)))) {
+            localB.add(localBluetoothDevice);
+          }
+        }
+      }
+    }
+    return localB;
+  }
+  
+  public static boolean isBleSupported(Context paramContext)
+  {
+    return paramContext.getPackageManager().hasSystemFeature("android.hardware.bluetooth_le");
+  }
+  
+  public static boolean isBluetoothEnabled(Context paramContext)
+  {
+    paramContext = (BluetoothManager)paramContext.getSystemService("bluetooth");
+    if (paramContext != null) {
+      paramContext = paramContext.getAdapter();
+    } else {
+      paramContext = null;
+    }
+    return (paramContext != null) && (paramContext.isEnabled());
+  }
+  
+  public static boolean refreshDeviceCache(BluetoothGatt paramBluetoothGatt)
+  {
+    a.b("Refreshing device cache...", new Object[0]);
+    try
+    {
+      Class localClass = paramBluetoothGatt.getClass();
+      boolean bool = ((Boolean)localClass.getMethod("refresh", new Class[0]).invoke(paramBluetoothGatt, new Object[0])).booleanValue();
+      return bool;
+    }
+    catch (Exception paramBluetoothGatt)
+    {
+      a.d("An exception occurred while refreshing device", paramBluetoothGatt);
+      a.q("gatt.refresh() method not found", new Object[0]);
+    }
+    return false;
+  }
+  
+  public static boolean removeBond(BluetoothDevice paramBluetoothDevice)
+  {
+    if (paramBluetoothDevice == null) {
+      return false;
+    }
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("Removing bond information for device: ");
+    ((StringBuilder)localObject).append(paramBluetoothDevice.getName());
+    a.j(((StringBuilder)localObject).toString(), new Object[0]);
+    if (paramBluetoothDevice.getBondState() == 10)
+    {
+      a.q("Device is not bonded", new Object[0]);
+      return true;
+    }
+    try
+    {
+      localObject = paramBluetoothDevice.getClass();
+      boolean bool = ((Boolean)((Class)localObject).getMethod("removeBond", new Class[0]).invoke(paramBluetoothDevice, new Object[0])).booleanValue();
+      return bool;
+    }
+    catch (Exception paramBluetoothDevice)
+    {
+      a.d("An exception occurred while removing bond", paramBluetoothDevice);
+    }
+    return false;
+  }
+  
+  public static void removeBondedDevices(Set<BluetoothDevice> paramSet)
+  {
+    if (paramSet.size() > 0)
+    {
+      paramSet = paramSet.iterator();
+      while (paramSet.hasNext())
+      {
+        BluetoothDevice localBluetoothDevice = (BluetoothDevice)paramSet.next();
+        if (localBluetoothDevice.getBondState() == 12) {
+          removeBond(localBluetoothDevice);
+        }
+      }
+    }
+  }
+}

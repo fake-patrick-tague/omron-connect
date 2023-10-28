@@ -1,0 +1,995 @@
+package com.braze.ui.inappmessage;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.view.View;
+import com.braze.Braze;
+import com.braze.Braze.Companion;
+import com.braze.configuration.BrazeConfigurationProvider;
+import com.braze.enums.inappmessage.Orientation;
+import com.braze.events.IEventSubscriber;
+import com.braze.events.InAppMessageEvent;
+import com.braze.events.SdkDataWipeEvent;
+import com.braze.models.IPutIntoJson;
+import com.braze.models.inappmessage.IInAppMessage;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.support.JsonUtils;
+import com.braze.ui.inappmessage.listeners.DefaultInAppMessageViewLifecycleListener;
+import com.braze.ui.inappmessage.listeners.IInAppMessageManagerListener;
+import com.braze.ui.inappmessage.listeners.IInAppMessageViewLifecycleListener;
+import com.braze.ui.inappmessage.utils.BackgroundInAppMessagePreparer;
+import com.braze.ui.inappmessage.views.InAppMessageHtmlBaseView;
+import com.braze.ui.support.ViewUtils;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import kotlin.t;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+import org.json.JSONObject;
+
+public class BrazeInAppMessageManager
+  extends InAppMessageManagerBase
+{
+  public static final Companion Companion = new Companion(null);
+  private static volatile BrazeInAppMessageManager instance;
+  private static final ReentrantLock instanceLock = new ReentrantLock();
+  private IInAppMessage carryoverInAppMessage;
+  private BrazeConfigurationProvider configurationProvider;
+  public final AtomicBoolean displayingInAppMessage = new AtomicBoolean(false);
+  private final Map<IInAppMessage, InAppMessageEvent> inAppMessageEventMap = new LinkedHashMap();
+  private IEventSubscriber<InAppMessageEvent> inAppMessageEventSubscriber;
+  private final Stack<IInAppMessage> inAppMessageStack = new Stack();
+  private final IInAppMessageViewLifecycleListener inAppMessageViewLifecycleListener = new DefaultInAppMessageViewLifecycleListener();
+  private IInAppMessageViewWrapper inAppMessageViewWrapper;
+  private Integer originalOrientation;
+  private IEventSubscriber<SdkDataWipeEvent> sdkDataWipeEventSubscriber;
+  private IInAppMessage unregisteredInAppMessage;
+  
+  public BrazeInAppMessageManager() {}
+  
+  private final IEventSubscriber<InAppMessageEvent> createInAppMessageEventSubscriber()
+  {
+    return new a(this);
+  }
+  
+  private static final void createInAppMessageEventSubscriber$lambda-8(BrazeInAppMessageManager paramBrazeInAppMessageManager, InAppMessageEvent paramInAppMessageEvent)
+  {
+    i.e(paramBrazeInAppMessageManager, "this$0");
+    i.e(paramInAppMessageEvent, "event");
+    IInAppMessage localIInAppMessage = paramInAppMessageEvent.getInAppMessage();
+    inAppMessageEventMap.put(localIInAppMessage, paramInAppMessageEvent);
+    paramBrazeInAppMessageManager.addInAppMessage(localIInAppMessage);
+  }
+  
+  private static final void displayInAppMessage$lambda-7(IInAppMessageViewWrapper paramIInAppMessageViewWrapper, BrazeInAppMessageManager paramBrazeInAppMessageManager, Activity paramActivity)
+  {
+    i.e(paramBrazeInAppMessageManager, "this$0");
+    if (paramIInAppMessageViewWrapper != null) {
+      try
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, paramBrazeInAppMessageManager, null, null, displayInAppMessage.14.1.INSTANCE, 3, null);
+        paramIInAppMessageViewWrapper.open(paramActivity);
+        return;
+      }
+      catch (Exception paramIInAppMessageViewWrapper)
+      {
+        BrazeLogger.INSTANCE.brazelog(paramBrazeInAppMessageManager, BrazeLogger.Priority.E, paramIInAppMessageViewWrapper, displayInAppMessage.14.2.INSTANCE);
+      }
+    }
+  }
+  
+  private static final void ensureSubscribedToInAppMessageEvents$lambda-1(BrazeInAppMessageManager paramBrazeInAppMessageManager, SdkDataWipeEvent paramSdkDataWipeEvent)
+  {
+    i.e(paramBrazeInAppMessageManager, "this$0");
+    i.e(paramSdkDataWipeEvent, "it");
+    inAppMessageStack.clear();
+    carryoverInAppMessage = null;
+    unregisteredInAppMessage = null;
+  }
+  
+  public static final BrazeInAppMessageManager getInstance()
+  {
+    return Companion.getInstance();
+  }
+  
+  public void addInAppMessage(IInAppMessage paramIInAppMessage)
+  {
+    if (paramIInAppMessage != null)
+    {
+      inAppMessageStack.push(paramIInAppMessage);
+      requestDisplayInAppMessage();
+    }
+  }
+  
+  /* Error */
+  public void displayInAppMessage(IInAppMessage paramIInAppMessage, boolean paramBoolean)
+  {
+    // Byte code:
+    //   0: aload_1
+    //   1: astore 8
+    //   3: aload 8
+    //   5: ldc_w 280
+    //   8: invokestatic 204	kotlin/x/d/i:e	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   11: getstatic 230	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   14: astore 12
+    //   16: aload 12
+    //   18: aload_0
+    //   19: getstatic 283	com/braze/support/BrazeLogger$Priority:V	Lcom/braze/support/BrazeLogger$Priority;
+    //   22: aconst_null
+    //   23: new 12	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$1
+    //   26: dup
+    //   27: aload 8
+    //   29: invokespecial 285	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$1:<init>	(Lcom/braze/models/inappmessage/IInAppMessage;)V
+    //   32: iconst_2
+    //   33: aconst_null
+    //   34: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   37: aload_0
+    //   38: getfield 155	com/braze/ui/inappmessage/BrazeInAppMessageManager:displayingInAppMessage	Ljava/util/concurrent/atomic/AtomicBoolean;
+    //   41: iconst_0
+    //   42: iconst_1
+    //   43: invokevirtual 289	java/util/concurrent/atomic/AtomicBoolean:compareAndSet	(ZZ)Z
+    //   46: ifne +27 -> 73
+    //   49: aload 12
+    //   51: aload_0
+    //   52: aconst_null
+    //   53: aconst_null
+    //   54: getstatic 292	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$2:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$2;
+    //   57: iconst_3
+    //   58: aconst_null
+    //   59: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   62: aload_0
+    //   63: getfield 160	com/braze/ui/inappmessage/BrazeInAppMessageManager:inAppMessageStack	Ljava/util/Stack;
+    //   66: aload 8
+    //   68: invokevirtual 272	java/util/Stack:push	(Ljava/lang/Object;)Ljava/lang/Object;
+    //   71: pop
+    //   72: return
+    //   73: aload_0
+    //   74: getfield 296	com/braze/ui/inappmessage/InAppMessageManagerBase:mActivity	Landroid/app/Activity;
+    //   77: astore 9
+    //   79: aload 9
+    //   81: ifnull +853 -> 934
+    //   84: iload_2
+    //   85: ifne +106 -> 191
+    //   88: aload_1
+    //   89: invokeinterface 302 1 0
+    //   94: lstore 4
+    //   96: lload 4
+    //   98: lconst_0
+    //   99: lcmp
+    //   100: ifle +75 -> 175
+    //   103: invokestatic 307	java/lang/System:currentTimeMillis	()J
+    //   106: lstore 6
+    //   108: lload 6
+    //   110: lload 4
+    //   112: lcmp
+    //   113: ifgt +6 -> 119
+    //   116: goto +88 -> 204
+    //   119: new 309	java/lang/StringBuilder
+    //   122: dup
+    //   123: invokespecial 310	java/lang/StringBuilder:<init>	()V
+    //   126: astore 8
+    //   128: aload 8
+    //   130: ldc_w 312
+    //   133: invokevirtual 316	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   136: pop
+    //   137: aload 8
+    //   139: lload 4
+    //   141: invokevirtual 319	java/lang/StringBuilder:append	(J)Ljava/lang/StringBuilder;
+    //   144: pop
+    //   145: aload 8
+    //   147: ldc_w 321
+    //   150: invokevirtual 316	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   153: pop
+    //   154: aload 8
+    //   156: lload 6
+    //   158: invokevirtual 319	java/lang/StringBuilder:append	(J)Ljava/lang/StringBuilder;
+    //   161: pop
+    //   162: new 224	java/lang/Exception
+    //   165: dup
+    //   166: aload 8
+    //   168: invokevirtual 325	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   171: invokespecial 328	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   174: athrow
+    //   175: aload 12
+    //   177: aload_0
+    //   178: aconst_null
+    //   179: aconst_null
+    //   180: getstatic 331	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$3:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$3;
+    //   183: iconst_3
+    //   184: aconst_null
+    //   185: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   188: goto +16 -> 204
+    //   191: aload 12
+    //   193: aload_0
+    //   194: aconst_null
+    //   195: aconst_null
+    //   196: getstatic 334	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$4:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$4;
+    //   199: iconst_3
+    //   200: aconst_null
+    //   201: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   204: aload_0
+    //   205: aload_1
+    //   206: invokevirtual 338	com/braze/ui/inappmessage/BrazeInAppMessageManager:verifyOrientationStatus	(Lcom/braze/models/inappmessage/IInAppMessage;)Z
+    //   209: ifeq +711 -> 920
+    //   212: aload_1
+    //   213: invokeinterface 341 1 0
+    //   218: ifeq +28 -> 246
+    //   221: aload 12
+    //   223: aload_0
+    //   224: aconst_null
+    //   225: aconst_null
+    //   226: getstatic 344	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$5:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$5;
+    //   229: iconst_3
+    //   230: aconst_null
+    //   231: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   234: aload_1
+    //   235: invokeinterface 347 1 0
+    //   240: pop
+    //   241: aload_0
+    //   242: invokevirtual 350	com/braze/ui/inappmessage/BrazeInAppMessageManager:resetAfterInAppMessageClose	()V
+    //   245: return
+    //   246: aload_1
+    //   247: invokestatic 355	com/braze/ui/actions/brazeactions/BrazeActionUtils:containsInvalidBrazeAction	(Lcom/braze/models/inappmessage/IInAppMessage;)Z
+    //   250: istore_2
+    //   251: iload_2
+    //   252: ifeq +84 -> 336
+    //   255: aload_0
+    //   256: getfield 165	com/braze/ui/inappmessage/BrazeInAppMessageManager:inAppMessageEventMap	Ljava/util/Map;
+    //   259: aload 8
+    //   261: invokeinterface 358 2 0
+    //   266: checkcast 208	com/braze/events/InAppMessageEvent
+    //   269: astore 8
+    //   271: getstatic 361	com/braze/support/BrazeLogger$Priority:I	Lcom/braze/support/BrazeLogger$Priority;
+    //   274: astore 10
+    //   276: aload 12
+    //   278: aload_0
+    //   279: aload 10
+    //   281: aconst_null
+    //   282: getstatic 364	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$6:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$6;
+    //   285: iconst_2
+    //   286: aconst_null
+    //   287: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   290: aload 8
+    //   292: ifnull +39 -> 331
+    //   295: aload 12
+    //   297: aload_0
+    //   298: aload 10
+    //   300: aconst_null
+    //   301: getstatic 367	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$7:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$7;
+    //   304: iconst_2
+    //   305: aconst_null
+    //   306: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   309: aload 9
+    //   311: invokevirtual 373	android/app/Activity:getApplicationContext	()Landroid/content/Context;
+    //   314: astore 9
+    //   316: aload 9
+    //   318: ldc_w 375
+    //   321: invokestatic 378	kotlin/x/d/i:d	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   324: aload 9
+    //   326: aload 8
+    //   328: invokestatic 384	com/braze/BrazeInternal:retryInAppMessage	(Landroid/content/Context;Lcom/braze/events/InAppMessageEvent;)V
+    //   331: aload_0
+    //   332: invokevirtual 350	com/braze/ui/inappmessage/BrazeInAppMessageManager:resetAfterInAppMessageClose	()V
+    //   335: return
+    //   336: aload_1
+    //   337: invokestatic 387	com/braze/ui/actions/brazeactions/BrazeActionUtils:containsAnyPushPermissionBrazeActions	(Lcom/braze/models/inappmessage/IInAppMessage;)Z
+    //   340: ifeq +92 -> 432
+    //   343: aload 9
+    //   345: invokestatic 393	com/braze/support/PermissionUtils:wouldPushPermissionPromptDisplay	(Landroid/app/Activity;)Z
+    //   348: ifne +84 -> 432
+    //   351: aload_0
+    //   352: getfield 165	com/braze/ui/inappmessage/BrazeInAppMessageManager:inAppMessageEventMap	Ljava/util/Map;
+    //   355: aload 8
+    //   357: invokeinterface 358 2 0
+    //   362: checkcast 208	com/braze/events/InAppMessageEvent
+    //   365: astore 8
+    //   367: getstatic 361	com/braze/support/BrazeLogger$Priority:I	Lcom/braze/support/BrazeLogger$Priority;
+    //   370: astore 10
+    //   372: aload 12
+    //   374: aload_0
+    //   375: aload 10
+    //   377: aconst_null
+    //   378: getstatic 396	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$8:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$8;
+    //   381: iconst_2
+    //   382: aconst_null
+    //   383: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   386: aload 8
+    //   388: ifnull +39 -> 427
+    //   391: aload 12
+    //   393: aload_0
+    //   394: aload 10
+    //   396: aconst_null
+    //   397: getstatic 399	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$9:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$9;
+    //   400: iconst_2
+    //   401: aconst_null
+    //   402: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   405: aload 9
+    //   407: invokevirtual 373	android/app/Activity:getApplicationContext	()Landroid/content/Context;
+    //   410: astore 9
+    //   412: aload 9
+    //   414: ldc_w 375
+    //   417: invokestatic 378	kotlin/x/d/i:d	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   420: aload 9
+    //   422: aload 8
+    //   424: invokestatic 384	com/braze/BrazeInternal:retryInAppMessage	(Landroid/content/Context;Lcom/braze/events/InAppMessageEvent;)V
+    //   427: aload_0
+    //   428: invokevirtual 350	com/braze/ui/inappmessage/BrazeInAppMessageManager:resetAfterInAppMessageClose	()V
+    //   431: return
+    //   432: aload_0
+    //   433: aload_1
+    //   434: invokevirtual 403	com/braze/ui/inappmessage/InAppMessageManagerBase:getInAppMessageViewFactory	(Lcom/braze/models/inappmessage/IInAppMessage;)Lcom/braze/ui/inappmessage/IInAppMessageViewFactory;
+    //   437: astore 10
+    //   439: aload 10
+    //   441: ifnull +451 -> 892
+    //   444: aload 10
+    //   446: aload 9
+    //   448: aload 8
+    //   450: invokeinterface 409 3 0
+    //   455: astore 10
+    //   457: aload 10
+    //   459: ifnull +405 -> 864
+    //   462: aload 10
+    //   464: invokevirtual 415	android/view/View:getParent	()Landroid/view/ViewParent;
+    //   467: ifnonnull +369 -> 836
+    //   470: aload_0
+    //   471: getfield 417	com/braze/ui/inappmessage/BrazeInAppMessageManager:configurationProvider	Lcom/braze/configuration/BrazeConfigurationProvider;
+    //   474: astore 11
+    //   476: aload 11
+    //   478: ifnull +344 -> 822
+    //   481: aload_0
+    //   482: invokevirtual 421	com/braze/ui/inappmessage/InAppMessageManagerBase:getInAppMessageAnimationFactory	()Lcom/braze/ui/inappmessage/IInAppMessageAnimationFactory;
+    //   485: aload 8
+    //   487: invokeinterface 427 2 0
+    //   492: astore 13
+    //   494: aload_0
+    //   495: invokevirtual 421	com/braze/ui/inappmessage/InAppMessageManagerBase:getInAppMessageAnimationFactory	()Lcom/braze/ui/inappmessage/IInAppMessageAnimationFactory;
+    //   498: aload 8
+    //   500: invokeinterface 430 2 0
+    //   505: astore 14
+    //   507: aload_0
+    //   508: invokevirtual 434	com/braze/ui/inappmessage/InAppMessageManagerBase:getInAppMessageViewWrapperFactory	()Lcom/braze/ui/inappmessage/IInAppMessageViewWrapperFactory;
+    //   511: astore 15
+    //   513: aload 10
+    //   515: instanceof 436
+    //   518: ifeq +100 -> 618
+    //   521: aload 12
+    //   523: aload_0
+    //   524: aconst_null
+    //   525: aconst_null
+    //   526: getstatic 439	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$10:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$10;
+    //   529: iconst_3
+    //   530: aconst_null
+    //   531: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   534: aload 10
+    //   536: checkcast 436	com/braze/ui/inappmessage/views/IInAppMessageImmersiveView
+    //   539: astore 16
+    //   541: aload 8
+    //   543: checkcast 441	com/braze/models/inappmessage/InAppMessageImmersiveBase
+    //   546: invokevirtual 445	com/braze/models/inappmessage/InAppMessageImmersiveBase:getMessageButtons	()Ljava/util/List;
+    //   549: invokeinterface 451 1 0
+    //   554: istore_3
+    //   555: aload_0
+    //   556: getfield 148	com/braze/ui/inappmessage/BrazeInAppMessageManager:inAppMessageViewLifecycleListener	Lcom/braze/ui/inappmessage/listeners/IInAppMessageViewLifecycleListener;
+    //   559: astore 8
+    //   561: aload 16
+    //   563: invokeinterface 457 1 0
+    //   568: astore 17
+    //   570: aload 16
+    //   572: iload_3
+    //   573: invokeinterface 461 2 0
+    //   578: astore 18
+    //   580: aload 16
+    //   582: invokeinterface 464 1 0
+    //   587: astore 16
+    //   589: aload 15
+    //   591: aload 10
+    //   593: aload_1
+    //   594: aload 8
+    //   596: aload 11
+    //   598: aload 13
+    //   600: aload 14
+    //   602: aload 17
+    //   604: aload 18
+    //   606: aload 16
+    //   608: invokeinterface 470 10 0
+    //   613: astore 8
+    //   615: goto +120 -> 735
+    //   618: aload 10
+    //   620: instanceof 453
+    //   623: ifeq +67 -> 690
+    //   626: getstatic 473	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$11:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$11;
+    //   629: astore 8
+    //   631: aload 12
+    //   633: aload_0
+    //   634: aconst_null
+    //   635: aconst_null
+    //   636: aload 8
+    //   638: iconst_3
+    //   639: aconst_null
+    //   640: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   643: aload 10
+    //   645: checkcast 453	com/braze/ui/inappmessage/views/IInAppMessageView
+    //   648: astore 16
+    //   650: aload_0
+    //   651: getfield 148	com/braze/ui/inappmessage/BrazeInAppMessageManager:inAppMessageViewLifecycleListener	Lcom/braze/ui/inappmessage/listeners/IInAppMessageViewLifecycleListener;
+    //   654: astore 8
+    //   656: aload 16
+    //   658: invokeinterface 457 1 0
+    //   663: astore 16
+    //   665: aload 15
+    //   667: aload 10
+    //   669: aload_1
+    //   670: aload 8
+    //   672: aload 11
+    //   674: aload 13
+    //   676: aload 14
+    //   678: aload 16
+    //   680: invokeinterface 476 8 0
+    //   685: astore 8
+    //   687: goto +48 -> 735
+    //   690: getstatic 479	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$12:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$12;
+    //   693: astore 8
+    //   695: aload 12
+    //   697: aload_0
+    //   698: aconst_null
+    //   699: aconst_null
+    //   700: aload 8
+    //   702: iconst_3
+    //   703: aconst_null
+    //   704: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   707: aload_0
+    //   708: getfield 148	com/braze/ui/inappmessage/BrazeInAppMessageManager:inAppMessageViewLifecycleListener	Lcom/braze/ui/inappmessage/listeners/IInAppMessageViewLifecycleListener;
+    //   711: astore 8
+    //   713: aload 15
+    //   715: aload 10
+    //   717: aload_1
+    //   718: aload 8
+    //   720: aload 11
+    //   722: aload 13
+    //   724: aload 14
+    //   726: aload 10
+    //   728: invokeinterface 476 8 0
+    //   733: astore 8
+    //   735: aload 10
+    //   737: astore 11
+    //   739: aload 9
+    //   741: astore 10
+    //   743: aload_1
+    //   744: astore 9
+    //   746: aload_0
+    //   747: aload 8
+    //   749: putfield 481	com/braze/ui/inappmessage/BrazeInAppMessageManager:inAppMessageViewWrapper	Lcom/braze/ui/inappmessage/IInAppMessageViewWrapper;
+    //   752: aload 11
+    //   754: instanceof 483
+    //   757: ifeq +47 -> 804
+    //   760: getstatic 486	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$13:INSTANCE	Lcom/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$13;
+    //   763: astore 13
+    //   765: aload 9
+    //   767: astore_1
+    //   768: aload 12
+    //   770: aload_0
+    //   771: aconst_null
+    //   772: aconst_null
+    //   773: aload 13
+    //   775: iconst_3
+    //   776: aconst_null
+    //   777: invokestatic 237	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   780: aload 9
+    //   782: astore_1
+    //   783: aload 11
+    //   785: checkcast 483	com/braze/ui/inappmessage/views/InAppMessageHtmlBaseView
+    //   788: new 488	com/braze/ui/inappmessage/c
+    //   791: dup
+    //   792: aload 8
+    //   794: aload_0
+    //   795: aload 10
+    //   797: invokespecial 490	com/braze/ui/inappmessage/c:<init>	(Lcom/braze/ui/inappmessage/IInAppMessageViewWrapper;Lcom/braze/ui/inappmessage/BrazeInAppMessageManager;Landroid/app/Activity;)V
+    //   800: invokevirtual 494	com/braze/ui/inappmessage/views/InAppMessageHtmlBaseView:setHtmlPageFinishedListener	(Lcom/braze/ui/inappmessage/listeners/IWebViewClientStateListener;)V
+    //   803: return
+    //   804: aload 9
+    //   806: astore_1
+    //   807: aload 8
+    //   809: ifnull +179 -> 988
+    //   812: aload 8
+    //   814: aload 10
+    //   816: invokeinterface 243 2 0
+    //   821: return
+    //   822: aload 8
+    //   824: astore_1
+    //   825: new 224	java/lang/Exception
+    //   828: dup
+    //   829: ldc_w 496
+    //   832: invokespecial 328	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   835: athrow
+    //   836: aload 8
+    //   838: astore_1
+    //   839: aload 8
+    //   841: getstatic 502	com/braze/enums/inappmessage/InAppMessageFailureType:DISPLAY_VIEW_GENERATION	Lcom/braze/enums/inappmessage/InAppMessageFailureType;
+    //   844: invokeinterface 506 2 0
+    //   849: pop
+    //   850: aload 8
+    //   852: astore_1
+    //   853: new 224	java/lang/Exception
+    //   856: dup
+    //   857: ldc_w 508
+    //   860: invokespecial 328	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   863: athrow
+    //   864: aload 8
+    //   866: astore_1
+    //   867: aload 8
+    //   869: getstatic 502	com/braze/enums/inappmessage/InAppMessageFailureType:DISPLAY_VIEW_GENERATION	Lcom/braze/enums/inappmessage/InAppMessageFailureType;
+    //   872: invokeinterface 506 2 0
+    //   877: pop
+    //   878: aload 8
+    //   880: astore_1
+    //   881: new 224	java/lang/Exception
+    //   884: dup
+    //   885: ldc_w 510
+    //   888: invokespecial 328	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   891: athrow
+    //   892: aload 8
+    //   894: astore_1
+    //   895: aload 8
+    //   897: getstatic 502	com/braze/enums/inappmessage/InAppMessageFailureType:DISPLAY_VIEW_GENERATION	Lcom/braze/enums/inappmessage/InAppMessageFailureType;
+    //   900: invokeinterface 506 2 0
+    //   905: pop
+    //   906: aload 8
+    //   908: astore_1
+    //   909: new 224	java/lang/Exception
+    //   912: dup
+    //   913: ldc_w 512
+    //   916: invokespecial 328	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   919: athrow
+    //   920: aload 8
+    //   922: astore_1
+    //   923: new 224	java/lang/Exception
+    //   926: dup
+    //   927: ldc_w 514
+    //   930: invokespecial 328	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   933: athrow
+    //   934: aload 8
+    //   936: astore_1
+    //   937: aload_0
+    //   938: aload 8
+    //   940: putfield 263	com/braze/ui/inappmessage/BrazeInAppMessageManager:carryoverInAppMessage	Lcom/braze/models/inappmessage/IInAppMessage;
+    //   943: aload 8
+    //   945: astore_1
+    //   946: new 224	java/lang/Exception
+    //   949: dup
+    //   950: ldc_w 516
+    //   953: invokespecial 328	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   956: athrow
+    //   957: astore 8
+    //   959: goto +5 -> 964
+    //   962: astore 8
+    //   964: getstatic 230	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   967: aload_0
+    //   968: getstatic 249	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   971: aload 8
+    //   973: new 26	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$15
+    //   976: dup
+    //   977: aload_1
+    //   978: invokespecial 517	com/braze/ui/inappmessage/BrazeInAppMessageManager$displayInAppMessage$15:<init>	(Lcom/braze/models/inappmessage/IInAppMessage;)V
+    //   981: invokevirtual 256	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/Object;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   984: aload_0
+    //   985: invokevirtual 350	com/braze/ui/inappmessage/BrazeInAppMessageManager:resetAfterInAppMessageClose	()V
+    //   988: return
+    //   989: astore 8
+    //   991: goto -27 -> 964
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	994	0	this	BrazeInAppMessageManager
+    //   0	994	1	paramIInAppMessage	IInAppMessage
+    //   0	994	2	paramBoolean	boolean
+    //   554	19	3	i	int
+    //   94	46	4	l1	long
+    //   106	51	6	l2	long
+    //   1	943	8	localObject1	Object
+    //   957	1	8	localObject2	Object
+    //   962	10	8	localThrowable	Throwable
+    //   989	1	8	localObject3	Object
+    //   77	728	9	localObject4	Object
+    //   274	541	10	localObject5	Object
+    //   474	310	11	localObject6	Object
+    //   14	755	12	localBrazeLogger	BrazeLogger
+    //   492	282	13	localObject7	Object
+    //   505	220	14	localAnimation	android.view.animation.Animation
+    //   511	203	15	localIInAppMessageViewWrapperFactory	IInAppMessageViewWrapperFactory
+    //   539	140	16	localObject8	Object
+    //   568	35	17	localView	View
+    //   578	27	18	localList	java.util.List
+    // Exception table:
+    //   from	to	target	type
+    //   768	780	957	finally
+    //   783	803	957	finally
+    //   812	821	957	finally
+    //   825	836	957	finally
+    //   839	850	957	finally
+    //   853	864	957	finally
+    //   867	878	957	finally
+    //   881	892	957	finally
+    //   895	906	957	finally
+    //   909	920	957	finally
+    //   923	934	957	finally
+    //   937	943	957	finally
+    //   946	957	957	finally
+    //   73	79	962	finally
+    //   88	96	962	finally
+    //   103	108	962	finally
+    //   119	175	962	finally
+    //   175	188	962	finally
+    //   191	204	962	finally
+    //   204	245	962	finally
+    //   246	251	962	finally
+    //   255	290	962	finally
+    //   295	331	962	finally
+    //   331	335	962	finally
+    //   336	386	962	finally
+    //   391	427	962	finally
+    //   427	431	962	finally
+    //   432	439	962	finally
+    //   444	457	962	finally
+    //   462	476	962	finally
+    //   481	589	962	finally
+    //   631	665	962	finally
+    //   695	713	962	finally
+    //   589	615	989	finally
+    //   618	631	989	finally
+    //   665	687	989	finally
+    //   690	695	989	finally
+    //   713	735	989	finally
+    //   746	765	989	finally
+  }
+  
+  public void ensureSubscribedToInAppMessageEvents(Context paramContext)
+  {
+    i.e(paramContext, "context");
+    if (inAppMessageEventSubscriber != null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, ensureSubscribedToInAppMessageEvents.1.INSTANCE, 3, null);
+      Braze.Companion.getInstance(paramContext).removeSingleSubscription(inAppMessageEventSubscriber, InAppMessageEvent.class);
+    }
+    Object localObject = BrazeLogger.INSTANCE;
+    BrazeLogger.brazelog$default((BrazeLogger)localObject, this, null, null, ensureSubscribedToInAppMessageEvents.2.INSTANCE, 3, null);
+    IEventSubscriber localIEventSubscriber = createInAppMessageEventSubscriber();
+    Braze.Companion localCompanion = Braze.Companion;
+    localCompanion.getInstance(paramContext).subscribeToNewInAppMessages(localIEventSubscriber);
+    inAppMessageEventSubscriber = localIEventSubscriber;
+    if (sdkDataWipeEventSubscriber != null)
+    {
+      BrazeLogger.brazelog$default((BrazeLogger)localObject, this, BrazeLogger.Priority.V, null, ensureSubscribedToInAppMessageEvents.4.INSTANCE, 2, null);
+      localCompanion.getInstance(paramContext).removeSingleSubscription(sdkDataWipeEventSubscriber, SdkDataWipeEvent.class);
+    }
+    BrazeLogger.brazelog$default((BrazeLogger)localObject, this, BrazeLogger.Priority.V, null, ensureSubscribedToInAppMessageEvents.5.INSTANCE, 2, null);
+    localObject = new b(this);
+    localCompanion.getInstance(paramContext).addSingleSynchronousSubscription((IEventSubscriber)localObject, SdkDataWipeEvent.class);
+    sdkDataWipeEventSubscriber = ((IEventSubscriber)localObject);
+  }
+  
+  public final Stack<IInAppMessage> getInAppMessageStack()
+  {
+    return inAppMessageStack;
+  }
+  
+  public void hideCurrentlyDisplayingInAppMessage(boolean paramBoolean)
+  {
+    setShouldNextUnregisterBeSkipped(false);
+    IInAppMessageViewWrapper localIInAppMessageViewWrapper = inAppMessageViewWrapper;
+    if (localIInAppMessageViewWrapper != null)
+    {
+      if (paramBoolean) {
+        inAppMessageViewLifecycleListener.onDismissed(localIInAppMessageViewWrapper.getInAppMessageView(), localIInAppMessageViewWrapper.getInAppMessage());
+      }
+      localIInAppMessageViewWrapper.close();
+    }
+  }
+  
+  public void registerInAppMessageManager(Activity paramActivity)
+  {
+    if (paramActivity == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, registerInAppMessageManager.1.INSTANCE, 2, null);
+      return;
+    }
+    BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+    BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.V, null, new j(paramActivity)
+    {
+      public final String invoke()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Registering InAppMessageManager with activity: ");
+        localStringBuilder.append($activity.getLocalClassName());
+        return localStringBuilder.toString();
+      }
+    }, 2, null);
+    mActivity = paramActivity;
+    if (mApplicationContext == null)
+    {
+      paramActivity = paramActivity.getApplicationContext();
+      mApplicationContext = paramActivity;
+      if (paramActivity == null)
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.W, null, registerInAppMessageManager.3.INSTANCE, 2, null);
+        return;
+      }
+    }
+    if (configurationProvider == null)
+    {
+      paramActivity = mApplicationContext;
+      if (paramActivity != null) {
+        paramActivity = new BrazeConfigurationProvider(paramActivity);
+      } else {
+        paramActivity = null;
+      }
+      configurationProvider = paramActivity;
+    }
+    paramActivity = carryoverInAppMessage;
+    if (paramActivity != null)
+    {
+      if (paramActivity != null)
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, registerInAppMessageManager.5.1.INSTANCE, 3, null);
+        paramActivity.setAnimateIn(false);
+        displayInAppMessage(paramActivity, true);
+      }
+      carryoverInAppMessage = null;
+    }
+    else
+    {
+      paramActivity = unregisteredInAppMessage;
+      if (paramActivity != null)
+      {
+        BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, registerInAppMessageManager.6.1.INSTANCE, 3, null);
+        addInAppMessage(paramActivity);
+        unregisteredInAppMessage = null;
+      }
+    }
+    paramActivity = mApplicationContext;
+    if (paramActivity != null) {
+      ensureSubscribedToInAppMessageEvents(paramActivity);
+    }
+  }
+  
+  public boolean requestDisplayInAppMessage()
+  {
+    try
+    {
+      if (mActivity == null)
+      {
+        if (!inAppMessageStack.empty())
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, requestDisplayInAppMessage.1.INSTANCE, 2, null);
+          unregisteredInAppMessage = ((IInAppMessage)inAppMessageStack.pop());
+          return false;
+        }
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, requestDisplayInAppMessage.2.INSTANCE, 3, null);
+        return false;
+      }
+      if (displayingInAppMessage.get())
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, requestDisplayInAppMessage.3.INSTANCE, 3, null);
+        return false;
+      }
+      if (inAppMessageStack.isEmpty())
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, requestDisplayInAppMessage.4.INSTANCE, 3, null);
+        return false;
+      }
+      IInAppMessage localIInAppMessage = (IInAppMessage)inAppMessageStack.pop();
+      boolean bool = localIInAppMessage.isControl();
+      Object localObject;
+      if (!bool)
+      {
+        localObject = getInAppMessageManagerListener();
+        i.d(localIInAppMessage, "inAppMessage");
+        localObject = ((IInAppMessageManagerListener)localObject).beforeInAppMessageDisplayed(localIInAppMessage);
+      }
+      else
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, requestDisplayInAppMessage.inAppMessageOperation.1.INSTANCE, 3, null);
+        localObject = getControlInAppMessageManagerListener();
+        i.d(localIInAppMessage, "inAppMessage");
+        localObject = ((IInAppMessageManagerListener)localObject).beforeInAppMessageDisplayed(localIInAppMessage);
+      }
+      int i = WhenMappings.$EnumSwitchMapping$0[localObject.ordinal()];
+      if (i != 1)
+      {
+        if (i != 2)
+        {
+          if (i == 3)
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, requestDisplayInAppMessage.7.INSTANCE, 3, null);
+            return false;
+          }
+        }
+        else
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, requestDisplayInAppMessage.6.INSTANCE, 3, null);
+          inAppMessageStack.push(localIInAppMessage);
+          return false;
+        }
+      }
+      else {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, requestDisplayInAppMessage.5.INSTANCE, 3, null);
+      }
+      BackgroundInAppMessagePreparer.prepareInAppMessageForDisplay(localIInAppMessage);
+      return true;
+    }
+    catch (Exception localException)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, localException, requestDisplayInAppMessage.8.INSTANCE);
+    }
+    return false;
+  }
+  
+  public void resetAfterInAppMessageClose()
+  {
+    BrazeLogger localBrazeLogger = BrazeLogger.INSTANCE;
+    BrazeLogger.brazelog$default(localBrazeLogger, this, BrazeLogger.Priority.V, null, resetAfterInAppMessageClose.1.INSTANCE, 2, null);
+    inAppMessageViewWrapper = null;
+    Activity localActivity = mActivity;
+    Integer localInteger = originalOrientation;
+    displayingInAppMessage.set(false);
+    if ((localActivity != null) && (localInteger != null))
+    {
+      BrazeLogger.brazelog$default(localBrazeLogger, this, null, null, new j(localInteger)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Setting requested orientation to original orientation ");
+          localStringBuilder.append($origOrientation);
+          return localStringBuilder.toString();
+        }
+      }, 3, null);
+      ViewUtils.setActivityRequestedOrientation(localActivity, localInteger.intValue());
+      originalOrientation = null;
+    }
+  }
+  
+  public void unregisterInAppMessageManager(Activity paramActivity)
+  {
+    if (getShouldNextUnregisterBeSkipped())
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new j(paramActivity)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Skipping unregistration due to setShouldNextUnregisterBeSkipped being true. Activity: ");
+          Object localObject = $activity;
+          if (localObject != null) {
+            localObject = ((Activity)localObject).getLocalClassName();
+          } else {
+            localObject = null;
+          }
+          localStringBuilder.append((String)localObject);
+          return localStringBuilder.toString();
+        }
+      }, 3, null);
+      setShouldNextUnregisterBeSkipped(false);
+      return;
+    }
+    if (paramActivity == null) {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, unregisterInAppMessageManager.2.INSTANCE, 2, null);
+    } else {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, new j(paramActivity)
+      {
+        public final String invoke()
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Unregistering InAppMessageManager from activity: ");
+          localStringBuilder.append($activity.getLocalClassName());
+          return localStringBuilder.toString();
+        }
+      }, 2, null);
+    }
+    paramActivity = inAppMessageViewWrapper;
+    if (paramActivity != null)
+    {
+      View localView = paramActivity.getInAppMessageView();
+      if ((localView instanceof InAppMessageHtmlBaseView))
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, unregisterInAppMessageManager.4.INSTANCE, 3, null);
+        ((InAppMessageHtmlBaseView)localView).setHtmlPageFinishedListener(null);
+      }
+      ViewUtils.removeViewFromParent(localView);
+      if (paramActivity.isAnimatingClose())
+      {
+        inAppMessageViewLifecycleListener.afterClosed(paramActivity.getInAppMessage());
+        paramActivity = null;
+      }
+      else
+      {
+        paramActivity = paramActivity.getInAppMessage();
+      }
+      carryoverInAppMessage = paramActivity;
+      inAppMessageViewWrapper = null;
+    }
+    else
+    {
+      carryoverInAppMessage = null;
+    }
+    mActivity = null;
+    displayingInAppMessage.set(false);
+  }
+  
+  public boolean verifyOrientationStatus(IInAppMessage paramIInAppMessage)
+  {
+    i.e(paramIInAppMessage, "inAppMessage");
+    Activity localActivity = mActivity;
+    paramIInAppMessage = paramIInAppMessage.getOrientation();
+    boolean bool = true;
+    if (localActivity == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.W, null, verifyOrientationStatus.1.INSTANCE, 2, null);
+      return true;
+    }
+    if (ViewUtils.isRunningOnTablet(localActivity))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, verifyOrientationStatus.2.INSTANCE, 3, null);
+      return true;
+    }
+    if (paramIInAppMessage == Orientation.ANY)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, verifyOrientationStatus.3.INSTANCE, 3, null);
+      return true;
+    }
+    if (ViewUtils.isCurrentOrientationValid(getResourcesgetConfigurationorientation, paramIInAppMessage))
+    {
+      if (originalOrientation == null)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, verifyOrientationStatus.4.INSTANCE, 3, null);
+        originalOrientation = Integer.valueOf(localActivity.getRequestedOrientation());
+        ViewUtils.setActivityRequestedOrientation(localActivity, 14);
+        return true;
+      }
+    }
+    else {
+      bool = false;
+    }
+    return bool;
+  }
+  
+  public static final class Companion
+  {
+    private Companion() {}
+    
+    public final BrazeInAppMessageManager getInstance()
+    {
+      if (BrazeInAppMessageManager.access$getInstance$cp() != null)
+      {
+        localObject1 = BrazeInAppMessageManager.access$getInstance$cp();
+        Objects.requireNonNull(localObject1, "null cannot be cast to non-null type com.braze.ui.inappmessage.BrazeInAppMessageManager");
+        return localObject1;
+      }
+      Object localObject1 = BrazeInAppMessageManager.access$getInstanceLock$cp();
+      ((Lock)localObject1).lock();
+      try
+      {
+        if (BrazeInAppMessageManager.access$getInstance$cp() == null)
+        {
+          localObject2 = BrazeInAppMessageManager.Companion;
+          BrazeInAppMessageManager.access$setInstance$cp(new BrazeInAppMessageManager());
+        }
+        Object localObject2 = t.a;
+        ((Lock)localObject1).unlock();
+        localObject1 = BrazeInAppMessageManager.access$getInstance$cp();
+        Objects.requireNonNull(localObject1, "null cannot be cast to non-null type com.braze.ui.inappmessage.BrazeInAppMessageManager");
+        return localObject1;
+      }
+      finally
+      {
+        ((Lock)localObject1).unlock();
+      }
+    }
+  }
+}

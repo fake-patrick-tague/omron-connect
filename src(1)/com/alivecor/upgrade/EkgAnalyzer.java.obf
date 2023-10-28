@@ -1,0 +1,68 @@
+package com.alivecor.api;
+
+import com.alivecor.ai.ClassifierData.b;
+import com.alivecor.ai.l;
+import com.alivecor.ai.l.a;
+import com.alivecor.ai.r;
+import com.alivecor.ecg.core.model.MainsFilterFrequency;
+import com.alivecor.ecgcore.ECGSignal;
+import com.alivecor.ecgcore.ECGSignalMV;
+
+public class EkgAnalyzer
+{
+  private final l classifyRunner;
+  private final InternalRecordApiUtil util = InternalRecordApiUtil.get();
+  
+  EkgAnalyzer(l paramL)
+  {
+    classifyRunner = paramL;
+  }
+  
+  public Result classifySamples(double[] paramArrayOfDouble, int paramInt1, int paramInt2, SampleRate paramSampleRate)
+  {
+    Object localObject = MainsFilterFrequency.fromFrequency(paramInt2);
+    paramArrayOfDouble = new ECGSignalMV(paramArrayOfDouble, util.internalSampleRate(paramSampleRate)).resample(com.alivecor.ecgcore.SampleRate.RATE_300_HZ);
+    paramArrayOfDouble = classifyRunner.a(paramArrayOfDouble.getMVSamples(), paramInt1, paramArrayOfDouble.sampleRate(), (MainsFilterFrequency)localObject);
+    paramSampleRate = util.externalDetermination(((ClassifierData.b)a.d()).getDetermination());
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append(a.a());
+    ((StringBuilder)localObject).append(".");
+    ((StringBuilder)localObject).append(a.b());
+    ((StringBuilder)localObject).append(".");
+    ((StringBuilder)localObject).append(a.c());
+    return new Result(paramSampleRate, ((StringBuilder)localObject).toString(), b, c);
+  }
+  
+  public static class Result
+  {
+    public final AliveCorDetermination determination;
+    public final String errorMsg;
+    public final int hr;
+    public final String kardiaAiVersion;
+    
+    public Result(AliveCorDetermination paramAliveCorDetermination, String paramString1, int paramInt, String paramString2)
+    {
+      determination = paramAliveCorDetermination;
+      kardiaAiVersion = paramString1;
+      hr = paramInt;
+      errorMsg = paramString2;
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Result{determination=");
+      localStringBuilder.append(determination);
+      localStringBuilder.append(", kardiaAiVersion='");
+      localStringBuilder.append(kardiaAiVersion);
+      localStringBuilder.append('\'');
+      localStringBuilder.append(", hr=");
+      localStringBuilder.append(hr);
+      localStringBuilder.append(", errorMsg='");
+      localStringBuilder.append(errorMsg);
+      localStringBuilder.append('\'');
+      localStringBuilder.append('}');
+      return localStringBuilder.toString();
+    }
+  }
+}

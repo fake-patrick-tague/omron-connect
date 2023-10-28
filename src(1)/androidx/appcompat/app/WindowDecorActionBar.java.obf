@@ -1,0 +1,942 @@
+package androidx.appcompat.app;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
+import androidx.appcompat.view.menu.g.a;
+import androidx.appcompat.widget.ActionBarContainer;
+import androidx.appcompat.widget.ActionBarContextView;
+import androidx.appcompat.widget.ActionBarOverlayLayout;
+import androidx.appcompat.widget.ActionBarOverlayLayout.d;
+import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.g0;
+import androidx.appcompat.widget.w;
+import c.a.f;
+import c.a.j;
+import c.a.n.b;
+import c.a.n.b.a;
+import c.a.n.h;
+import c.h.q.f0;
+import c.h.q.j0;
+import c.h.q.k0;
+import c.h.q.l0;
+import c.h.q.m0;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+
+public class u
+  extends ActionBar
+  implements ActionBarOverlayLayout.d
+{
+  private static final Interpolator a = new AccelerateInterpolator();
+  private static final Interpolator b = new DecelerateInterpolator();
+  h A;
+  private boolean B;
+  boolean C;
+  final k0 D = new a();
+  final k0 E = new b();
+  final m0 F = new c();
+  Context c;
+  private Context d;
+  private Activity e;
+  ActionBarOverlayLayout f;
+  ActionBarContainer g;
+  w h;
+  ActionBarContextView i;
+  View j;
+  g0 k;
+  private ArrayList<?> l = new ArrayList();
+  private int m = -1;
+  private boolean n;
+  d o;
+  b p;
+  b.a q;
+  private boolean r;
+  private ArrayList<ActionBar.a> s = new ArrayList();
+  private boolean t;
+  private int u = 0;
+  boolean v = true;
+  boolean w;
+  boolean x;
+  private boolean y;
+  private boolean z = true;
+  
+  public u(Activity paramActivity, boolean paramBoolean)
+  {
+    e = paramActivity;
+    paramActivity = paramActivity.getWindow().getDecorView();
+    U(paramActivity);
+    if (!paramBoolean) {
+      j = paramActivity.findViewById(16908290);
+    }
+  }
+  
+  public u(Dialog paramDialog)
+  {
+    U(paramDialog.getWindow().getDecorView());
+  }
+  
+  static boolean N(boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
+  {
+    if (paramBoolean3) {
+      return true;
+    }
+    return (!paramBoolean1) && (!paramBoolean2);
+  }
+  
+  private w R(View paramView)
+  {
+    if ((paramView instanceof w)) {
+      return (w)paramView;
+    }
+    if ((paramView instanceof Toolbar)) {
+      return ((Toolbar)paramView).getWrapper();
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Can't make a decor toolbar out of ");
+    if (paramView != null) {
+      paramView = paramView.getClass().getSimpleName();
+    } else {
+      paramView = "null";
+    }
+    localStringBuilder.append(paramView);
+    throw new IllegalStateException(localStringBuilder.toString());
+  }
+  
+  private void T()
+  {
+    if (y)
+    {
+      y = false;
+      ActionBarOverlayLayout localActionBarOverlayLayout = f;
+      if (localActionBarOverlayLayout != null) {
+        localActionBarOverlayLayout.setShowingForActionMode(false);
+      }
+      a0(false);
+    }
+  }
+  
+  private void U(View paramView)
+  {
+    Object localObject = (ActionBarOverlayLayout)paramView.findViewById(f.p);
+    f = ((ActionBarOverlayLayout)localObject);
+    if (localObject != null) {
+      ((ActionBarOverlayLayout)localObject).setActionBarVisibilityCallback(this);
+    }
+    h = R(paramView.findViewById(f.a));
+    i = ((ActionBarContextView)paramView.findViewById(f.f));
+    paramView = (ActionBarContainer)paramView.findViewById(f.c);
+    g = paramView;
+    localObject = h;
+    if ((localObject != null) && (i != null) && (paramView != null))
+    {
+      c = ((w)localObject).getContext();
+      if ((h.x() & 0x4) != 0) {
+        i1 = 1;
+      } else {
+        i1 = 0;
+      }
+      if (i1 != 0) {
+        n = true;
+      }
+      paramView = c.a.n.a.b(c);
+      boolean bool;
+      if ((!paramView.a()) && (i1 == 0)) {
+        bool = false;
+      } else {
+        bool = true;
+      }
+      E(bool);
+      W(paramView.g());
+      paramView = c.obtainStyledAttributes(null, j.a, c.a.a.c, 0);
+      if (paramView.getBoolean(j.k, false)) {
+        X(true);
+      }
+      int i1 = paramView.getDimensionPixelSize(j.i, 0);
+      if (i1 != 0) {
+        C(i1);
+      }
+      paramView.recycle();
+      return;
+    }
+    paramView = new StringBuilder();
+    paramView.append(u.class.getSimpleName());
+    paramView.append(" can only be used with a compatible window decor layout");
+    throw new IllegalStateException(paramView.toString());
+  }
+  
+  private void W(boolean paramBoolean)
+  {
+    t = paramBoolean;
+    if (!paramBoolean)
+    {
+      h.k(null);
+      g.setTabContainer(k);
+    }
+    else
+    {
+      g.setTabContainer(null);
+      h.k(k);
+    }
+    int i1 = S();
+    boolean bool = true;
+    if (i1 == 2) {
+      i1 = 1;
+    } else {
+      i1 = 0;
+    }
+    Object localObject = k;
+    if (localObject != null) {
+      if (i1 != 0)
+      {
+        ((HorizontalScrollView)localObject).setVisibility(0);
+        localObject = f;
+        if (localObject != null) {
+          f0.m0((View)localObject);
+        }
+      }
+      else
+      {
+        ((HorizontalScrollView)localObject).setVisibility(8);
+      }
+    }
+    localObject = h;
+    if ((!t) && (i1 != 0)) {
+      paramBoolean = true;
+    } else {
+      paramBoolean = false;
+    }
+    ((w)localObject).B(paramBoolean);
+    localObject = f;
+    if ((!t) && (i1 != 0)) {
+      paramBoolean = bool;
+    } else {
+      paramBoolean = false;
+    }
+    ((ActionBarOverlayLayout)localObject).setHasNonEmbeddedTabs(paramBoolean);
+  }
+  
+  private boolean Y()
+  {
+    return f0.T(g);
+  }
+  
+  private void Z()
+  {
+    if (!y)
+    {
+      y = true;
+      ActionBarOverlayLayout localActionBarOverlayLayout = f;
+      if (localActionBarOverlayLayout != null) {
+        localActionBarOverlayLayout.setShowingForActionMode(true);
+      }
+      a0(false);
+    }
+  }
+  
+  private void a0(boolean paramBoolean)
+  {
+    if (N(w, x, y))
+    {
+      if (!z)
+      {
+        z = true;
+        Q(paramBoolean);
+      }
+    }
+    else if (z)
+    {
+      z = false;
+      P(paramBoolean);
+    }
+  }
+  
+  public void A(boolean paramBoolean)
+  {
+    int i1;
+    if (paramBoolean) {
+      i1 = 2;
+    } else {
+      i1 = 0;
+    }
+    V(i1, 2);
+  }
+  
+  public void B(boolean paramBoolean)
+  {
+    int i1;
+    if (paramBoolean) {
+      i1 = 8;
+    } else {
+      i1 = 0;
+    }
+    V(i1, 8);
+  }
+  
+  public void C(float paramFloat)
+  {
+    f0.x0(g, paramFloat);
+  }
+  
+  public void D(int paramInt)
+  {
+    h.s(paramInt);
+  }
+  
+  public void E(boolean paramBoolean)
+  {
+    h.w(paramBoolean);
+  }
+  
+  public void F(Drawable paramDrawable)
+  {
+    h.l(paramDrawable);
+  }
+  
+  public void G(boolean paramBoolean)
+  {
+    B = paramBoolean;
+    if (!paramBoolean)
+    {
+      h localH = A;
+      if (localH != null) {
+        localH.a();
+      }
+    }
+  }
+  
+  public void H(int paramInt)
+  {
+    I(c.getString(paramInt));
+  }
+  
+  public void I(CharSequence paramCharSequence)
+  {
+    h.setTitle(paramCharSequence);
+  }
+  
+  public void J(CharSequence paramCharSequence)
+  {
+    h.setWindowTitle(paramCharSequence);
+  }
+  
+  public void K()
+  {
+    if (w)
+    {
+      w = false;
+      a0(false);
+    }
+  }
+  
+  public b L(b.a paramA)
+  {
+    d localD = o;
+    if (localD != null) {
+      localD.c();
+    }
+    f.setHideOnContentScrollEnabled(false);
+    i.k();
+    paramA = new d(i.getContext(), paramA);
+    if (paramA.t())
+    {
+      o = paramA;
+      paramA.k();
+      i.h(paramA);
+      M(true);
+      return paramA;
+    }
+    return null;
+  }
+  
+  public void M(boolean paramBoolean)
+  {
+    if (paramBoolean) {
+      Z();
+    } else {
+      T();
+    }
+    if (Y())
+    {
+      j0 localJ02;
+      j0 localJ01;
+      if (paramBoolean)
+      {
+        localJ02 = h.r(4, 100L);
+        localJ01 = i.f(0, 200L);
+      }
+      else
+      {
+        localJ01 = h.r(0, 200L);
+        localJ02 = i.f(8, 100L);
+      }
+      h localH = new h();
+      localH.d(localJ02, localJ01);
+      localH.h();
+      return;
+    }
+    if (paramBoolean)
+    {
+      h.u(4);
+      i.setVisibility(0);
+      return;
+    }
+    h.u(0);
+    i.setVisibility(8);
+  }
+  
+  void O()
+  {
+    b.a localA = q;
+    if (localA != null)
+    {
+      localA.a(p);
+      p = null;
+      q = null;
+    }
+  }
+  
+  public void P(boolean paramBoolean)
+  {
+    h localH = A;
+    if (localH != null) {
+      localH.a();
+    }
+    if ((u == 0) && ((B) || (paramBoolean)))
+    {
+      g.setAlpha(1.0F);
+      g.setTransitioning(true);
+      localH = new h();
+      float f2 = -g.getHeight();
+      float f1 = f2;
+      if (paramBoolean)
+      {
+        localObject = new int[2];
+        Object tmp82_80 = localObject;
+        tmp82_80[0] = 0;
+        Object tmp86_82 = tmp82_80;
+        tmp86_82[1] = 0;
+        tmp86_82;
+        g.getLocationInWindow((int[])localObject);
+        f1 = f2 - localObject[1];
+      }
+      Object localObject = f0.d(g).l(f1);
+      ((j0)localObject).j(F);
+      localH.c((j0)localObject);
+      if (v)
+      {
+        localObject = j;
+        if (localObject != null) {
+          localH.c(f0.d((View)localObject).l(f1));
+        }
+      }
+      localH.f(a);
+      localH.e(250L);
+      localH.g(D);
+      A = localH;
+      localH.h();
+      return;
+    }
+    D.b(null);
+  }
+  
+  public void Q(boolean paramBoolean)
+  {
+    Object localObject1 = A;
+    if (localObject1 != null) {
+      ((h)localObject1).a();
+    }
+    g.setVisibility(0);
+    if ((u == 0) && ((B) || (paramBoolean)))
+    {
+      g.setTranslationY(0.0F);
+      float f2 = -g.getHeight();
+      float f1 = f2;
+      if (paramBoolean)
+      {
+        localObject1 = new int[2];
+        Object tmp73_71 = localObject1;
+        tmp73_71[0] = 0;
+        Object tmp77_73 = tmp73_71;
+        tmp77_73[1] = 0;
+        tmp77_73;
+        g.getLocationInWindow((int[])localObject1);
+        f1 = f2 - localObject1[1];
+      }
+      g.setTranslationY(f1);
+      localObject1 = new h();
+      Object localObject2 = f0.d(g).l(0.0F);
+      ((j0)localObject2).j(F);
+      ((h)localObject1).c((j0)localObject2);
+      if (v)
+      {
+        localObject2 = j;
+        if (localObject2 != null)
+        {
+          ((View)localObject2).setTranslationY(f1);
+          ((h)localObject1).c(f0.d(j).l(0.0F));
+        }
+      }
+      ((h)localObject1).f(b);
+      ((h)localObject1).e(250L);
+      ((h)localObject1).g(E);
+      A = ((h)localObject1);
+      ((h)localObject1).h();
+    }
+    else
+    {
+      g.setAlpha(1.0F);
+      g.setTranslationY(0.0F);
+      if (v)
+      {
+        localObject1 = j;
+        if (localObject1 != null) {
+          ((View)localObject1).setTranslationY(0.0F);
+        }
+      }
+      E.b(null);
+    }
+    localObject1 = f;
+    if (localObject1 != null) {
+      f0.m0((View)localObject1);
+    }
+  }
+  
+  public int S()
+  {
+    return h.q();
+  }
+  
+  public void V(int paramInt1, int paramInt2)
+  {
+    int i1 = h.x();
+    if ((paramInt2 & 0x4) != 0) {
+      n = true;
+    }
+    h.n(paramInt1 & paramInt2 | paramInt2 & i1);
+  }
+  
+  public void X(boolean paramBoolean)
+  {
+    if ((paramBoolean) && (!f.w())) {
+      throw new IllegalStateException("Action bar must be in overlay mode (Window.FEATURE_OVERLAY_ACTION_BAR) to enable hide on content scroll");
+    }
+    C = paramBoolean;
+    f.setHideOnContentScrollEnabled(paramBoolean);
+  }
+  
+  public void a()
+  {
+    if (x)
+    {
+      x = false;
+      a0(true);
+    }
+  }
+  
+  public void b() {}
+  
+  public void c(boolean paramBoolean)
+  {
+    v = paramBoolean;
+  }
+  
+  public void d()
+  {
+    if (!x)
+    {
+      x = true;
+      a0(true);
+    }
+  }
+  
+  public void e()
+  {
+    h localH = A;
+    if (localH != null)
+    {
+      localH.a();
+      A = null;
+    }
+  }
+  
+  public void f(int paramInt)
+  {
+    u = paramInt;
+  }
+  
+  public boolean h()
+  {
+    w localW = h;
+    if ((localW != null) && (localW.m()))
+    {
+      h.collapseActionView();
+      return true;
+    }
+    return false;
+  }
+  
+  public void i(boolean paramBoolean)
+  {
+    if (paramBoolean == r) {
+      return;
+    }
+    r = paramBoolean;
+    int i2 = s.size();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      ((ActionBar.a)s.get(i1)).a(paramBoolean);
+      i1 += 1;
+    }
+  }
+  
+  public View j()
+  {
+    return h.j();
+  }
+  
+  public int k()
+  {
+    return h.x();
+  }
+  
+  public int l()
+  {
+    return g.getHeight();
+  }
+  
+  public Context m()
+  {
+    if (d == null)
+    {
+      TypedValue localTypedValue = new TypedValue();
+      c.getTheme().resolveAttribute(c.a.a.g, localTypedValue, true);
+      int i1 = resourceId;
+      if (i1 != 0) {
+        d = new ContextThemeWrapper(c, i1);
+      } else {
+        d = c;
+      }
+    }
+    return d;
+  }
+  
+  public void n()
+  {
+    if (!w)
+    {
+      w = true;
+      a0(false);
+    }
+  }
+  
+  public void p(Configuration paramConfiguration)
+  {
+    W(c.a.n.a.b(c).g());
+  }
+  
+  public boolean r(int paramInt, KeyEvent paramKeyEvent)
+  {
+    Object localObject = o;
+    if (localObject == null) {
+      return false;
+    }
+    localObject = ((d)localObject).e();
+    if (localObject != null)
+    {
+      if (paramKeyEvent != null) {
+        i1 = paramKeyEvent.getDeviceId();
+      } else {
+        i1 = -1;
+      }
+      int i1 = KeyCharacterMap.load(i1).getKeyboardType();
+      boolean bool = true;
+      if (i1 == 1) {
+        bool = false;
+      }
+      ((Menu)localObject).setQwertyMode(bool);
+      return ((Menu)localObject).performShortcut(paramInt, paramKeyEvent, 0);
+    }
+    return false;
+  }
+  
+  public void u(Drawable paramDrawable)
+  {
+    g.setPrimaryBackground(paramDrawable);
+  }
+  
+  public void v(View paramView, ActionBar.LayoutParams paramLayoutParams)
+  {
+    paramView.setLayoutParams(paramLayoutParams);
+    h.y(paramView);
+  }
+  
+  public void w(boolean paramBoolean)
+  {
+    if (!n) {
+      x(paramBoolean);
+    }
+  }
+  
+  public void x(boolean paramBoolean)
+  {
+    int i1;
+    if (paramBoolean) {
+      i1 = 4;
+    } else {
+      i1 = 0;
+    }
+    V(i1, 4);
+  }
+  
+  public void y(int paramInt)
+  {
+    if ((paramInt & 0x4) != 0) {
+      n = true;
+    }
+    h.n(paramInt);
+  }
+  
+  public void z(boolean paramBoolean)
+  {
+    int i1;
+    if (paramBoolean) {
+      i1 = 16;
+    } else {
+      i1 = 0;
+    }
+    V(i1, 16);
+  }
+  
+  class a
+    extends l0
+  {
+    a() {}
+    
+    public void b(View paramView)
+    {
+      paramView = u.this;
+      if (v)
+      {
+        paramView = j;
+        if (paramView != null)
+        {
+          paramView.setTranslationY(0.0F);
+          g.setTranslationY(0.0F);
+        }
+      }
+      g.setVisibility(8);
+      g.setTransitioning(false);
+      paramView = u.this;
+      A = null;
+      paramView.O();
+      paramView = f;
+      if (paramView != null) {
+        f0.m0(paramView);
+      }
+    }
+  }
+  
+  class b
+    extends l0
+  {
+    b() {}
+    
+    public void b(View paramView)
+    {
+      paramView = u.this;
+      A = null;
+      g.requestLayout();
+    }
+  }
+  
+  class c
+    implements m0
+  {
+    c() {}
+    
+    public void a(View paramView)
+    {
+      ((View)g.getParent()).invalidate();
+    }
+  }
+  
+  public class d
+    extends b
+    implements g.a
+  {
+    private final Context d;
+    private final androidx.appcompat.view.menu.g e;
+    private b.a f;
+    private WeakReference<View> g;
+    
+    public d(Context paramContext, b.a paramA)
+    {
+      d = paramContext;
+      f = paramA;
+      this$1 = new androidx.appcompat.view.menu.g(paramContext).W(1);
+      e = u.this;
+      V(this);
+    }
+    
+    public boolean a(androidx.appcompat.view.menu.g paramG, MenuItem paramMenuItem)
+    {
+      paramG = f;
+      if (paramG != null) {
+        return paramG.d(this, paramMenuItem);
+      }
+      return false;
+    }
+    
+    public void b(androidx.appcompat.view.menu.g paramG)
+    {
+      if (f == null) {
+        return;
+      }
+      k();
+      i.l();
+    }
+    
+    public void c()
+    {
+      u localU = u.this;
+      if (o != this) {
+        return;
+      }
+      if (!u.N(w, x, false))
+      {
+        localU = u.this;
+        p = this;
+        q = f;
+      }
+      else
+      {
+        f.a(this);
+      }
+      f = null;
+      M(false);
+      i.g();
+      localU = u.this;
+      f.setHideOnContentScrollEnabled(C);
+      o = null;
+    }
+    
+    public View d()
+    {
+      WeakReference localWeakReference = g;
+      if (localWeakReference != null) {
+        return (View)localWeakReference.get();
+      }
+      return null;
+    }
+    
+    public Menu e()
+    {
+      return e;
+    }
+    
+    public MenuInflater f()
+    {
+      return new c.a.n.g(d);
+    }
+    
+    public CharSequence g()
+    {
+      return i.getSubtitle();
+    }
+    
+    public CharSequence i()
+    {
+      return i.getTitle();
+    }
+    
+    public void k()
+    {
+      if (o != this) {
+        return;
+      }
+      e.h0();
+      try
+      {
+        f.c(this, e);
+        return;
+      }
+      finally
+      {
+        e.g0();
+      }
+    }
+    
+    public boolean l()
+    {
+      return i.j();
+    }
+    
+    public void m(View paramView)
+    {
+      i.setCustomView(paramView);
+      g = new WeakReference(paramView);
+    }
+    
+    public void n(int paramInt)
+    {
+      o(c.getResources().getString(paramInt));
+    }
+    
+    public void o(CharSequence paramCharSequence)
+    {
+      i.setSubtitle(paramCharSequence);
+    }
+    
+    public void q(int paramInt)
+    {
+      r(c.getResources().getString(paramInt));
+    }
+    
+    public void r(CharSequence paramCharSequence)
+    {
+      i.setTitle(paramCharSequence);
+    }
+    
+    public void s(boolean paramBoolean)
+    {
+      super.s(paramBoolean);
+      i.setTitleOptional(paramBoolean);
+    }
+    
+    public boolean t()
+    {
+      e.h0();
+      try
+      {
+        boolean bool = f.b(this, e);
+        return bool;
+      }
+      finally
+      {
+        e.g0();
+      }
+    }
+  }
+}

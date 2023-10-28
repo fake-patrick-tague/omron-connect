@@ -1,0 +1,74 @@
+package androidx.lifecycle;
+
+import android.os.Bundle;
+import androidx.savedstate.c;
+import androidx.savedstate.c.a;
+import androidx.savedstate.e;
+import java.util.Iterator;
+import java.util.Set;
+
+class LegacySavedStateHandleController
+{
+  static void a(e0 paramE0, c paramC, Lifecycle paramLifecycle)
+  {
+    paramE0 = (SavedStateHandleController)paramE0.getTag("androidx.lifecycle.savedstate.vm.tag");
+    if ((paramE0 != null) && (!paramE0.j()))
+    {
+      paramE0.h(paramC, paramLifecycle);
+      c(paramC, paramLifecycle);
+    }
+  }
+  
+  static SavedStateHandleController b(c paramC, Lifecycle paramLifecycle, String paramString, Bundle paramBundle)
+  {
+    paramString = new SavedStateHandleController(paramString, x.b(paramC.a(paramString), paramBundle));
+    paramString.h(paramC, paramLifecycle);
+    c(paramC, paramLifecycle);
+    return paramString;
+  }
+  
+  private static void c(final c paramC, Lifecycle paramLifecycle)
+  {
+    Lifecycle.State localState = paramLifecycle.b();
+    if ((localState != Lifecycle.State.c) && (!localState.a(Lifecycle.State.e)))
+    {
+      paramLifecycle.a(new k()
+      {
+        public void c(m paramAnonymousM, Lifecycle.Event paramAnonymousEvent)
+        {
+          if (paramAnonymousEvent == Lifecycle.Event.ON_START)
+          {
+            c(this);
+            paramC.i(LegacySavedStateHandleController.a.class);
+          }
+        }
+      });
+      return;
+    }
+    paramC.i(a.class);
+  }
+  
+  static final class a
+    implements c.a
+  {
+    a() {}
+    
+    public void a(e paramE)
+    {
+      if ((paramE instanceof j0))
+      {
+        i0 localI0 = ((j0)paramE).getViewModelStore();
+        c localC = paramE.getSavedStateRegistry();
+        Iterator localIterator = localI0.c().iterator();
+        while (localIterator.hasNext()) {
+          LegacySavedStateHandleController.a(localI0.b((String)localIterator.next()), localC, paramE.getLifecycle());
+        }
+        if (!localI0.c().isEmpty()) {
+          localC.i(a.class);
+        }
+        return;
+      }
+      throw new IllegalStateException("Internal error: OnRecreation should be registered only on components that implement ViewModelStoreOwner");
+    }
+  }
+}

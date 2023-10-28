@@ -1,0 +1,58 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import java.util.ArrayList;
+import java.util.List;
+
+@KeepForSdk
+@SafeParcelable.Class(creator="TelemetryDataCreator")
+public class TelemetryData
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<TelemetryData> CREATOR = new zaab();
+  @SafeParcelable.Field(getter="getTelemetryConfigVersion", id=1)
+  private final int zaa;
+  @SafeParcelable.Field(getter="getMethodInvocations", id=2)
+  private List<MethodInvocation> zab;
+  
+  @SafeParcelable.Constructor
+  public TelemetryData(@SafeParcelable.Param(id=1) int paramInt, @SafeParcelable.Param(id=2) List<MethodInvocation> paramList)
+  {
+    zaa = paramInt;
+    zab = paramList;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zaa);
+    SafeParcelWriter.writeTypedList(paramParcel, 2, zab, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+  
+  public final int zaa()
+  {
+    return zaa;
+  }
+  
+  public final List<MethodInvocation> zab()
+  {
+    return zab;
+  }
+  
+  public final void zac(MethodInvocation paramMethodInvocation)
+  {
+    if (zab == null) {
+      zab = new ArrayList();
+    }
+    zab.add(paramMethodInvocation);
+  }
+}

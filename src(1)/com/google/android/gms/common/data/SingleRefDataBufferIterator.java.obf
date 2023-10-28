@@ -1,0 +1,50 @@
+package com.google.android.gms.common.data;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.NoSuchElementException;
+
+@KeepForSdk
+public class SingleRefDataBufferIterator<T>
+  extends DataBufferIterator<T>
+{
+  private T zac;
+  
+  public SingleRefDataBufferIterator(DataBuffer<T> paramDataBuffer)
+  {
+    super(paramDataBuffer);
+  }
+  
+  public final T next()
+  {
+    if (hasNext())
+    {
+      i = zab + 1;
+      zab = i;
+      if (i == 0)
+      {
+        localObject = Preconditions.checkNotNull(zaa.get(0));
+        zac = localObject;
+        if (!(localObject instanceof DataBufferRef))
+        {
+          localObject = String.valueOf(localObject.getClass());
+          StringBuilder localStringBuilder = new StringBuilder(((String)localObject).length() + 44);
+          localStringBuilder.append("DataBuffer reference of type ");
+          localStringBuilder.append((String)localObject);
+          localStringBuilder.append(" is not movable");
+          throw new IllegalStateException(localStringBuilder.toString());
+        }
+      }
+      else
+      {
+        ((DataBufferRef)Preconditions.checkNotNull(zac)).zaa(zab);
+      }
+      return zac;
+    }
+    int i = zab;
+    Object localObject = new StringBuilder(46);
+    ((StringBuilder)localObject).append("Cannot advance the iterator beyond ");
+    ((StringBuilder)localObject).append(i);
+    throw new NoSuchElementException(((StringBuilder)localObject).toString());
+  }
+}

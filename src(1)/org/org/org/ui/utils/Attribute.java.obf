@@ -1,0 +1,155 @@
+package d.c.a.a.m;
+
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.Log;
+import c.e.g;
+import java.util.ArrayList;
+import java.util.List;
+
+public class h
+{
+  private final g<String, i> a = new g();
+  private final g<String, PropertyValuesHolder[]> b = new g();
+  
+  public h() {}
+  
+  private static void a(h paramH, Animator paramAnimator)
+  {
+    if ((paramAnimator instanceof ObjectAnimator))
+    {
+      paramAnimator = (ObjectAnimator)paramAnimator;
+      paramH.h(paramAnimator.getPropertyName(), paramAnimator.getValues());
+      paramH.i(paramAnimator.getPropertyName(), i.b(paramAnimator));
+      return;
+    }
+    paramH = new StringBuilder();
+    paramH.append("Animator must be an ObjectAnimator: ");
+    paramH.append(paramAnimator);
+    throw new IllegalArgumentException(paramH.toString());
+  }
+  
+  public static h b(Context paramContext, TypedArray paramTypedArray, int paramInt)
+  {
+    if (paramTypedArray.hasValue(paramInt))
+    {
+      paramInt = paramTypedArray.getResourceId(paramInt, 0);
+      if (paramInt != 0) {
+        return c(paramContext, paramInt);
+      }
+    }
+    return null;
+  }
+  
+  public static h c(Context paramContext, int paramInt)
+  {
+    try
+    {
+      paramContext = AnimatorInflater.loadAnimator(paramContext, paramInt);
+      if ((paramContext instanceof AnimatorSet)) {
+        return d(((AnimatorSet)paramContext).getChildAnimations());
+      }
+      if (paramContext != null)
+      {
+        localObject = new ArrayList();
+        ((List)localObject).add(paramContext);
+        paramContext = d((List)localObject);
+        return paramContext;
+      }
+      return null;
+    }
+    catch (Exception paramContext)
+    {
+      Object localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Can't load animation resource ID #0x");
+      ((StringBuilder)localObject).append(Integer.toHexString(paramInt));
+      Log.w("MotionSpec", ((StringBuilder)localObject).toString(), paramContext);
+    }
+    return null;
+  }
+  
+  private static h d(List<Animator> paramList)
+  {
+    h localH = new h();
+    int j = paramList.size();
+    int i = 0;
+    while (i < j)
+    {
+      a(localH, (Animator)paramList.get(i));
+      i += 1;
+    }
+    return localH;
+  }
+  
+  public i e(String paramString)
+  {
+    if (g(paramString)) {
+      return (i)a.get(paramString);
+    }
+    throw new IllegalArgumentException();
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof h)) {
+      return false;
+    }
+    paramObject = (h)paramObject;
+    return a.equals(a);
+  }
+  
+  public long f()
+  {
+    int j = a.size();
+    long l = 0L;
+    int i = 0;
+    while (i < j)
+    {
+      i localI = (i)a.m(i);
+      l = Math.max(l, localI.c() + localI.d());
+      i += 1;
+    }
+    return l;
+  }
+  
+  public boolean g(String paramString)
+  {
+    return a.get(paramString) != null;
+  }
+  
+  public void h(String paramString, PropertyValuesHolder[] paramArrayOfPropertyValuesHolder)
+  {
+    b.put(paramString, paramArrayOfPropertyValuesHolder);
+  }
+  
+  public int hashCode()
+  {
+    return a.hashCode();
+  }
+  
+  public void i(String paramString, i paramI)
+  {
+    a.put(paramString, paramI);
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append('\n');
+    localStringBuilder.append(h.class.getName());
+    localStringBuilder.append('{');
+    localStringBuilder.append(Integer.toHexString(System.identityHashCode(this)));
+    localStringBuilder.append(" timings: ");
+    localStringBuilder.append(a);
+    localStringBuilder.append("}\n");
+    return localStringBuilder.toString();
+  }
+}

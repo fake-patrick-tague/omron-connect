@@ -1,0 +1,51 @@
+package androidx.startup;
+
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+
+public class InitializationProvider
+  extends ContentProvider
+{
+  public InitializationProvider() {}
+  
+  public final int delete(Uri paramUri, String paramString, String[] paramArrayOfString)
+  {
+    throw new IllegalStateException("Not allowed.");
+  }
+  
+  public final String getType(Uri paramUri)
+  {
+    throw new IllegalStateException("Not allowed.");
+  }
+  
+  public final Uri insert(Uri paramUri, ContentValues paramContentValues)
+  {
+    throw new IllegalStateException("Not allowed.");
+  }
+  
+  public final boolean onCreate()
+  {
+    Context localContext = getContext();
+    if (localContext != null)
+    {
+      if (localContext.getApplicationContext() != null) {
+        f.a(localContext).a();
+      }
+      return true;
+    }
+    throw new CollapsingToolbarLayout("Context cannot be null");
+  }
+  
+  public final Cursor query(Uri paramUri, String[] paramArrayOfString1, String paramString1, String[] paramArrayOfString2, String paramString2)
+  {
+    throw new IllegalStateException("Not allowed.");
+  }
+  
+  public final int update(Uri paramUri, ContentValues paramContentValues, String paramString, String[] paramArrayOfString)
+  {
+    throw new IllegalStateException("Not allowed.");
+  }
+}

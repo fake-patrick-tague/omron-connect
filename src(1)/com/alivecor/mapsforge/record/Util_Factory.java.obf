@@ -1,0 +1,30 @@
+package com.alivecor.ecg.record;
+
+import g.a.a;
+
+public final class Util_Factory
+{
+  private final a<AppPreferences> appPreferencesProvider;
+  
+  public Util_Factory(a<AppPreferences> paramA)
+  {
+    appPreferencesProvider = paramA;
+  }
+  
+  public static Util_Factory create(a<AppPreferences> paramA)
+  {
+    return new Util_Factory(paramA);
+  }
+  
+  public static Util newInstance()
+  {
+    return new Util();
+  }
+  
+  public Util get()
+  {
+    Util localUtil = newInstance();
+    Util_MembersInjector.injectAppPreferences(localUtil, appPreferencesProvider.get());
+    return localUtil;
+  }
+}

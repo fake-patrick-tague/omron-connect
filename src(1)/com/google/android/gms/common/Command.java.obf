@@ -1,0 +1,93 @@
+package com.google.android.gms.common;
+
+import android.os.IBinder;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import android.os.RemoteException;
+import android.util.Log;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.zzy;
+import com.google.android.gms.common.internal.zzz;
+import com.google.android.gms.dynamic.ObjectWrapper;
+
+@SafeParcelable.Class(creator="GoogleCertificatesQueryCreator")
+public final class zzs
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<zzs> CREATOR = new zzt();
+  @SafeParcelable.Field(getter="getCallingPackage", id=1)
+  private final String zza;
+  @SafeParcelable.Field(getter="getCallingCertificateBinder", id=2, type="android.os.IBinder")
+  private final zzj zzb;
+  @SafeParcelable.Field(getter="getAllowTestKeys", id=3)
+  private final boolean zzc;
+  @SafeParcelable.Field(defaultValue="false", getter="getIgnoreTestKeysOverride", id=4)
+  private final boolean zzd;
+  
+  @SafeParcelable.Constructor
+  zzs(@SafeParcelable.Param(id=1) String paramString, @SafeParcelable.Param(id=2) IBinder paramIBinder, @SafeParcelable.Param(id=3) boolean paramBoolean1, @SafeParcelable.Param(id=4) boolean paramBoolean2)
+  {
+    zza = paramString;
+    Object localObject = null;
+    if (paramIBinder == null) {
+      paramString = localObject;
+    } else {
+      try
+      {
+        paramString = zzy.zzg(paramIBinder).zzd();
+        if (paramString == null) {
+          paramString = null;
+        } else {
+          paramString = (byte[])ObjectWrapper.unwrap(paramString);
+        }
+        if (paramString != null)
+        {
+          paramString = new zzk(paramString);
+        }
+        else
+        {
+          Log.e("GoogleCertificatesQuery", "Could not unwrap certificate");
+          paramString = localObject;
+        }
+      }
+      catch (RemoteException paramString)
+      {
+        Log.e("GoogleCertificatesQuery", "Could not unwrap certificate", paramString);
+        paramString = localObject;
+      }
+    }
+    zzb = paramString;
+    zzc = paramBoolean1;
+    zzd = paramBoolean2;
+  }
+  
+  zzs(String paramString, zzj paramZzj, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    zza = paramString;
+    zzb = paramZzj;
+    zzc = paramBoolean1;
+    zzd = paramBoolean2;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeString(paramParcel, 1, zza, false);
+    zzj localZzj2 = zzb;
+    zzj localZzj1 = localZzj2;
+    if (localZzj2 == null)
+    {
+      Log.w("GoogleCertificatesQuery", "certificate binder is null");
+      localZzj1 = null;
+    }
+    SafeParcelWriter.writeIBinder(paramParcel, 2, localZzj1, false);
+    SafeParcelWriter.writeBoolean(paramParcel, 3, zzc);
+    SafeParcelWriter.writeBoolean(paramParcel, 4, zzd);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+}

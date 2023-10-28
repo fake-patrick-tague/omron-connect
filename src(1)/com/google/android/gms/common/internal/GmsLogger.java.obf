@@ -1,0 +1,180 @@
+package com.google.android.gms.common.internal;
+
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+
+@KeepForSdk
+public final class GmsLogger
+{
+  private final String zza;
+  private final String zzb;
+  
+  @KeepForSdk
+  public GmsLogger(String paramString)
+  {
+    this(paramString, null);
+  }
+  
+  @KeepForSdk
+  public GmsLogger(String paramString1, String paramString2)
+  {
+    Preconditions.checkNotNull(paramString1, "log tag cannot be null");
+    boolean bool;
+    if (paramString1.length() <= 23) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    Preconditions.checkArgument(bool, "tag \"%s\" is longer than the %d character maximum", new Object[] { paramString1, Integer.valueOf(23) });
+    zza = paramString1;
+    if ((paramString2 != null) && (paramString2.length() > 0))
+    {
+      zzb = paramString2;
+      return;
+    }
+    zzb = null;
+  }
+  
+  private final String zza(String paramString)
+  {
+    String str = zzb;
+    if (str == null) {
+      return paramString;
+    }
+    return str.concat(paramString);
+  }
+  
+  private final String zzb(String paramString, Object... paramVarArgs)
+  {
+    paramString = String.format(paramString, paramVarArgs);
+    paramVarArgs = zzb;
+    if (paramVarArgs == null) {
+      return paramString;
+    }
+    return paramVarArgs.concat(paramString);
+  }
+  
+  @KeepForSdk
+  public boolean canLog(int paramInt)
+  {
+    return Log.isLoggable(zza, paramInt);
+  }
+  
+  @KeepForSdk
+  public boolean canLogPii()
+  {
+    return false;
+  }
+  
+  @KeepForSdk
+  public void d(String paramString1, String paramString2)
+  {
+    if (canLog(3)) {
+      Log.d(paramString1, zza(paramString2));
+    }
+  }
+  
+  @KeepForSdk
+  public void d(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    if (canLog(3)) {
+      Log.d(paramString1, zza(paramString2), paramThrowable);
+    }
+  }
+  
+  @KeepForSdk
+  public void e(String paramString1, String paramString2)
+  {
+    if (canLog(6)) {
+      Log.e(paramString1, zza(paramString2));
+    }
+  }
+  
+  @KeepForSdk
+  public void e(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    if (canLog(6)) {
+      Log.e(paramString1, zza(paramString2), paramThrowable);
+    }
+  }
+  
+  @KeepForSdk
+  public void efmt(String paramString1, String paramString2, Object... paramVarArgs)
+  {
+    if (canLog(6)) {
+      Log.e(paramString1, zzb(paramString2, paramVarArgs));
+    }
+  }
+  
+  @KeepForSdk
+  public void i(String paramString1, String paramString2)
+  {
+    if (canLog(4)) {
+      Log.i(paramString1, zza(paramString2));
+    }
+  }
+  
+  @KeepForSdk
+  public void i(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    if (canLog(4)) {
+      Log.i(paramString1, zza(paramString2), paramThrowable);
+    }
+  }
+  
+  @KeepForSdk
+  public void pii(String paramString1, String paramString2) {}
+  
+  @KeepForSdk
+  public void pii(String paramString1, String paramString2, Throwable paramThrowable) {}
+  
+  @KeepForSdk
+  public void v(String paramString1, String paramString2)
+  {
+    if (canLog(2)) {
+      Log.v(paramString1, zza(paramString2));
+    }
+  }
+  
+  @KeepForSdk
+  public void v(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    if (canLog(2)) {
+      Log.v(paramString1, zza(paramString2), paramThrowable);
+    }
+  }
+  
+  @KeepForSdk
+  public void w(String paramString1, String paramString2)
+  {
+    if (canLog(5)) {
+      Log.w(paramString1, zza(paramString2));
+    }
+  }
+  
+  @KeepForSdk
+  public void w(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    if (canLog(5)) {
+      Log.w(paramString1, zza(paramString2), paramThrowable);
+    }
+  }
+  
+  @KeepForSdk
+  public void wfmt(String paramString1, String paramString2, Object... paramVarArgs)
+  {
+    if (canLog(5)) {
+      Log.w(zza, zzb(paramString2, paramVarArgs));
+    }
+  }
+  
+  @KeepForSdk
+  public void wtf(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    if (canLog(7))
+    {
+      Log.e(paramString1, zza(paramString2), paramThrowable);
+      Log.wtf(paramString1, zza(paramString2), paramThrowable);
+    }
+  }
+}

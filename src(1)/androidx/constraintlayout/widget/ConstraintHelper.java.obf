@@ -1,0 +1,437 @@
+package androidx.constraintlayout.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewParent;
+import androidx.constraintlayout.solver.widgets.ConstraintWidget;
+import androidx.constraintlayout.solver.widgets.f;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
+
+public abstract class ConstraintHelper
+  extends View
+{
+  protected int[] b = new int[32];
+  protected int c;
+  protected Context d;
+  protected f e;
+  protected boolean f = false;
+  protected String g;
+  protected String h;
+  private View[] i = null;
+  private HashMap<Integer, String> j = new HashMap();
+  
+  public ConstraintHelper(Context paramContext)
+  {
+    super(paramContext);
+    d = paramContext;
+    h(null);
+  }
+  
+  public ConstraintHelper(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+    d = paramContext;
+    h(paramAttributeSet);
+  }
+  
+  private void a(String paramString)
+  {
+    if (paramString != null)
+    {
+      if (paramString.length() == 0) {
+        return;
+      }
+      if (d == null) {
+        return;
+      }
+      paramString = paramString.trim();
+      if ((getParent() instanceof ConstraintLayout)) {
+        localObject = (ConstraintLayout)getParent();
+      }
+      int k = g(paramString);
+      if (k != 0)
+      {
+        j.put(Integer.valueOf(k), paramString);
+        b(k);
+        return;
+      }
+      Object localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Could not find id of \"");
+      ((StringBuilder)localObject).append(paramString);
+      ((StringBuilder)localObject).append("\"");
+      Log.w("ConstraintHelper", ((StringBuilder)localObject).toString());
+    }
+  }
+  
+  private void b(int paramInt)
+  {
+    if (paramInt == getId()) {
+      return;
+    }
+    int k = c;
+    int[] arrayOfInt = b;
+    if (k + 1 > arrayOfInt.length) {
+      b = Arrays.copyOf(arrayOfInt, arrayOfInt.length * 2);
+    }
+    arrayOfInt = b;
+    k = c;
+    arrayOfInt[k] = paramInt;
+    c = (k + 1);
+  }
+  
+  private void c(String paramString)
+  {
+    if (paramString != null)
+    {
+      if (paramString.length() == 0) {
+        return;
+      }
+      if (d == null) {
+        return;
+      }
+      String str = paramString.trim();
+      paramString = null;
+      if ((getParent() instanceof ConstraintLayout)) {
+        paramString = (ConstraintLayout)getParent();
+      }
+      if (paramString == null)
+      {
+        Log.w("ConstraintHelper", "Parent not a ConstraintLayout");
+        return;
+      }
+      int m = paramString.getChildCount();
+      int k = 0;
+      while (k < m)
+      {
+        View localView = paramString.getChildAt(k);
+        Object localObject = localView.getLayoutParams();
+        if (((localObject instanceof ConstraintLayout.LayoutParams)) && (str.equals(V))) {
+          if (localView.getId() == -1)
+          {
+            localObject = new StringBuilder();
+            ((StringBuilder)localObject).append("to use ConstraintTag view ");
+            ((StringBuilder)localObject).append(localView.getClass().getSimpleName());
+            ((StringBuilder)localObject).append(" must have an ID");
+            Log.w("ConstraintHelper", ((StringBuilder)localObject).toString());
+          }
+          else
+          {
+            b(localView.getId());
+          }
+        }
+        k += 1;
+      }
+    }
+  }
+  
+  private int f(ConstraintLayout paramConstraintLayout, String paramString)
+  {
+    if (paramString != null)
+    {
+      if (paramConstraintLayout == null) {
+        return 0;
+      }
+      Resources localResources = d.getResources();
+      if (localResources == null) {
+        return 0;
+      }
+      int m = paramConstraintLayout.getChildCount();
+      int k = 0;
+      while (k < m)
+      {
+        View localView = paramConstraintLayout.getChildAt(k);
+        Object localObject;
+        if (localView.getId() != -1) {
+          localObject = null;
+        }
+        try
+        {
+          String str = localResources.getResourceEntryName(localView.getId());
+          localObject = str;
+        }
+        catch (Resources.NotFoundException localNotFoundException)
+        {
+          for (;;) {}
+        }
+        if (paramString.equals(localObject)) {
+          return localView.getId();
+        }
+        k += 1;
+      }
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  
+  private int g(String paramString)
+  {
+    ConstraintLayout localConstraintLayout;
+    if ((getParent() instanceof ConstraintLayout)) {
+      localConstraintLayout = (ConstraintLayout)getParent();
+    } else {
+      localConstraintLayout = null;
+    }
+    boolean bool = isInEditMode();
+    int k = 0;
+    int m = k;
+    if (bool)
+    {
+      m = k;
+      if (localConstraintLayout != null)
+      {
+        Object localObject = localConstraintLayout.g(0, paramString);
+        m = k;
+        if ((localObject instanceof Integer)) {
+          m = ((Integer)localObject).intValue();
+        }
+      }
+    }
+    k = m;
+    if (m == 0)
+    {
+      k = m;
+      if (localConstraintLayout != null) {
+        k = f(localConstraintLayout, paramString);
+      }
+    }
+    m = k;
+    if (k == 0) {}
+    try
+    {
+      m = d.class.getField(paramString).getInt(null);
+      k = m;
+      if (m == 0) {
+        k = d.getResources().getIdentifier(paramString, "id", d.getPackageName());
+      }
+      return k;
+    }
+    catch (Exception localException)
+    {
+      for (;;)
+      {
+        m = k;
+      }
+    }
+  }
+  
+  protected void d()
+  {
+    ViewParent localViewParent = getParent();
+    if ((localViewParent != null) && ((localViewParent instanceof ConstraintLayout))) {
+      e((ConstraintLayout)localViewParent);
+    }
+  }
+  
+  protected void e(ConstraintLayout paramConstraintLayout)
+  {
+    int m = getVisibility();
+    float f1;
+    if (Build.VERSION.SDK_INT >= 21) {
+      f1 = getElevation();
+    } else {
+      f1 = 0.0F;
+    }
+    int k = 0;
+    while (k < c)
+    {
+      View localView = paramConstraintLayout.i(b[k]);
+      if (localView != null)
+      {
+        localView.setVisibility(m);
+        if ((f1 > 0.0F) && (Build.VERSION.SDK_INT >= 21)) {
+          localView.setTranslationZ(localView.getTranslationZ() + f1);
+        }
+      }
+      k += 1;
+    }
+  }
+  
+  public int[] getReferencedIds()
+  {
+    return Arrays.copyOf(b, c);
+  }
+  
+  protected void h(AttributeSet paramAttributeSet)
+  {
+    if (paramAttributeSet != null)
+    {
+      paramAttributeSet = getContext().obtainStyledAttributes(paramAttributeSet, e.a1);
+      int m = paramAttributeSet.getIndexCount();
+      int k = 0;
+      while (k < m)
+      {
+        int n = paramAttributeSet.getIndex(k);
+        String str;
+        if (n == e.m1)
+        {
+          str = paramAttributeSet.getString(n);
+          g = str;
+          setIds(str);
+        }
+        else if (n == e.n1)
+        {
+          str = paramAttributeSet.getString(n);
+          h = str;
+          setReferenceTags(str);
+        }
+        k += 1;
+      }
+      paramAttributeSet.recycle();
+    }
+  }
+  
+  public void i(ConstraintWidget paramConstraintWidget, boolean paramBoolean) {}
+  
+  public void j(ConstraintLayout paramConstraintLayout) {}
+  
+  public void k(ConstraintLayout paramConstraintLayout) {}
+  
+  public void l(ConstraintLayout paramConstraintLayout) {}
+  
+  public void m(ConstraintLayout paramConstraintLayout)
+  {
+    if (isInEditMode()) {
+      setIds(g);
+    }
+    Object localObject = e;
+    if (localObject == null) {
+      return;
+    }
+    ((f)localObject).b();
+    int k = 0;
+    while (k < c)
+    {
+      int m = b[k];
+      View localView = paramConstraintLayout.i(m);
+      localObject = localView;
+      if (localView == null)
+      {
+        String str = (String)j.get(Integer.valueOf(m));
+        m = f(paramConstraintLayout, str);
+        localObject = localView;
+        if (m != 0)
+        {
+          b[k] = m;
+          j.put(Integer.valueOf(m), str);
+          localObject = paramConstraintLayout.i(m);
+        }
+      }
+      if (localObject != null) {
+        e.a(paramConstraintLayout.j((View)localObject));
+      }
+      k += 1;
+    }
+    e.c(d);
+  }
+  
+  public void n()
+  {
+    if (e == null) {
+      return;
+    }
+    ViewGroup.LayoutParams localLayoutParams = getLayoutParams();
+    if ((localLayoutParams instanceof ConstraintLayout.LayoutParams)) {
+      n0 = ((ConstraintWidget)e);
+    }
+  }
+  
+  protected void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    String str = g;
+    if (str != null) {
+      setIds(str);
+    }
+    str = h;
+    if (str != null) {
+      setReferenceTags(str);
+    }
+  }
+  
+  public void onDraw(Canvas paramCanvas) {}
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    if (f)
+    {
+      super.onMeasure(paramInt1, paramInt2);
+      return;
+    }
+    setMeasuredDimension(0, 0);
+  }
+  
+  protected void setIds(String paramString)
+  {
+    g = paramString;
+    if (paramString == null) {
+      return;
+    }
+    int k = 0;
+    c = 0;
+    for (;;)
+    {
+      int m = paramString.indexOf(',', k);
+      if (m == -1)
+      {
+        a(paramString.substring(k));
+        return;
+      }
+      a(paramString.substring(k, m));
+      k = m + 1;
+    }
+  }
+  
+  protected void setReferenceTags(String paramString)
+  {
+    h = paramString;
+    if (paramString == null) {
+      return;
+    }
+    int k = 0;
+    c = 0;
+    for (;;)
+    {
+      int m = paramString.indexOf(',', k);
+      if (m == -1)
+      {
+        c(paramString.substring(k));
+        return;
+      }
+      c(paramString.substring(k, m));
+      k = m + 1;
+    }
+  }
+  
+  public void setReferencedIds(int[] paramArrayOfInt)
+  {
+    g = null;
+    int k = 0;
+    c = 0;
+    while (k < paramArrayOfInt.length)
+    {
+      b(paramArrayOfInt[k]);
+      k += 1;
+    }
+  }
+  
+  public void setTag(int paramInt, Object paramObject)
+  {
+    super.setTag(paramInt, paramObject);
+    if ((paramObject == null) && (g == null)) {
+      b(paramInt);
+    }
+  }
+}

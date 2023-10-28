@@ -1,0 +1,42 @@
+package com.google.android.gms.auth.api.identity;
+
+import android.app.PendingIntent;
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+
+@SafeParcelable.Class(creator="BeginSignInResultCreator")
+public final class BeginSignInResult
+  extends AbstractSafeParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<BeginSignInResult> CREATOR = new zbb();
+  @SafeParcelable.Field(getter="getPendingIntent", id=1)
+  private final PendingIntent zba;
+  
+  @SafeParcelable.Constructor
+  public BeginSignInResult(@RecentlyNonNull @SafeParcelable.Param(id=1) PendingIntent paramPendingIntent)
+  {
+    zba = ((PendingIntent)Preconditions.checkNotNull(paramPendingIntent));
+  }
+  
+  @RecentlyNonNull
+  public PendingIntent getPendingIntent()
+  {
+    return zba;
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeParcelable(paramParcel, 1, getPendingIntent(), paramInt, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

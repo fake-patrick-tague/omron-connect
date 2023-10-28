@@ -1,0 +1,501 @@
+package c.p.a;
+
+import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.e0;
+import androidx.lifecycle.f0;
+import androidx.lifecycle.f0.b;
+import androidx.lifecycle.i0;
+import androidx.lifecycle.m;
+import androidx.lifecycle.s;
+import androidx.lifecycle.t;
+import c.e.h;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.lang.reflect.Modifier;
+
+class b
+  extends a
+{
+  static boolean a = false;
+  private final m b;
+  private final c c;
+  
+  b(m paramM, i0 paramI0)
+  {
+    b = paramM;
+    c = c.c(paramI0);
+  }
+  
+  private <D> androidx.loader.content.b<D> f(int paramInt, Bundle paramBundle, a.a<D> paramA, androidx.loader.content.b<D> paramB)
+  {
+    try
+    {
+      c.i();
+      androidx.loader.content.b localB = paramA.onCreateLoader(paramInt, paramBundle);
+      if (localB != null)
+      {
+        if ((localB.getClass().isMemberClass()) && (!Modifier.isStatic(localB.getClass().getModifiers())))
+        {
+          paramBundle = new StringBuilder();
+          paramBundle.append("Object returned from onCreateLoader must not be a non-static inner member class: ");
+          paramBundle.append(localB);
+          throw new IllegalArgumentException(paramBundle.toString());
+        }
+        paramBundle = new a(paramInt, paramBundle, localB, paramB);
+        if (a)
+        {
+          paramB = new StringBuilder();
+          paramB.append("  Created new loader ");
+          paramB.append(paramBundle);
+          Log.v("LoaderManager", paramB.toString());
+        }
+        c.g(paramInt, paramBundle);
+        return paramBundle.f(b, paramA);
+      }
+      throw new IllegalArgumentException("Object returned from onCreateLoader must not be null");
+    }
+    finally
+    {
+      c.b();
+    }
+  }
+  
+  public void a(int paramInt)
+  {
+    if (!c.e())
+    {
+      if (Looper.getMainLooper() == Looper.myLooper())
+      {
+        if (a)
+        {
+          localObject = new StringBuilder();
+          ((StringBuilder)localObject).append("destroyLoader in ");
+          ((StringBuilder)localObject).append(this);
+          ((StringBuilder)localObject).append(" of ");
+          ((StringBuilder)localObject).append(paramInt);
+          Log.v("LoaderManager", ((StringBuilder)localObject).toString());
+        }
+        Object localObject = c.d(paramInt);
+        if (localObject != null)
+        {
+          ((a)localObject).b(true);
+          c.h(paramInt);
+        }
+        return;
+      }
+      throw new IllegalStateException("destroyLoader must be called on the main thread");
+    }
+    throw new IllegalStateException("Called while creating a loader");
+  }
+  
+  @Deprecated
+  public void b(String paramString, FileDescriptor paramFileDescriptor, PrintWriter paramPrintWriter, String[] paramArrayOfString)
+  {
+    c.a(paramString, paramFileDescriptor, paramPrintWriter, paramArrayOfString);
+  }
+  
+  public <D> androidx.loader.content.b<D> d(int paramInt, Bundle paramBundle, a.a<D> paramA)
+  {
+    if (!c.e())
+    {
+      if (Looper.getMainLooper() == Looper.myLooper())
+      {
+        a localA = c.d(paramInt);
+        if (a)
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("initLoader in ");
+          localStringBuilder.append(this);
+          localStringBuilder.append(": args=");
+          localStringBuilder.append(paramBundle);
+          Log.v("LoaderManager", localStringBuilder.toString());
+        }
+        if (localA == null) {
+          return f(paramInt, paramBundle, paramA, null);
+        }
+        if (a)
+        {
+          paramBundle = new StringBuilder();
+          paramBundle.append("  Re-using existing loader ");
+          paramBundle.append(localA);
+          Log.v("LoaderManager", paramBundle.toString());
+        }
+        return localA.f(b, paramA);
+      }
+      throw new IllegalStateException("initLoader must be called on the main thread");
+    }
+    throw new IllegalStateException("Called while creating a loader");
+  }
+  
+  public void e()
+  {
+    c.f();
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder(128);
+    localStringBuilder.append("LoaderManager{");
+    localStringBuilder.append(Integer.toHexString(System.identityHashCode(this)));
+    localStringBuilder.append(" in ");
+    c.h.p.b.a(b, localStringBuilder);
+    localStringBuilder.append("}}");
+    return localStringBuilder.toString();
+  }
+  
+  public static class a<D>
+    extends s<D>
+    implements androidx.loader.content.b.b<D>
+  {
+    private final int a;
+    private final Bundle b;
+    private final androidx.loader.content.b<D> c;
+    private m d;
+    private b.b<D> e;
+    private androidx.loader.content.b<D> f;
+    
+    a(int paramInt, Bundle paramBundle, androidx.loader.content.b<D> paramB1, androidx.loader.content.b<D> paramB2)
+    {
+      a = paramInt;
+      b = paramBundle;
+      c = paramB1;
+      f = paramB2;
+      paramB1.registerListener(paramInt, this);
+    }
+    
+    public void a(androidx.loader.content.b<D> paramB, D paramD)
+    {
+      if (b.a)
+      {
+        paramB = new StringBuilder();
+        paramB.append("onLoadComplete: ");
+        paramB.append(this);
+        Log.v("LoaderManager", paramB.toString());
+      }
+      if (Looper.myLooper() == Looper.getMainLooper())
+      {
+        setValue(paramD);
+        return;
+      }
+      if (b.a) {
+        Log.w("LoaderManager", "onLoadComplete was incorrectly called on a background thread");
+      }
+      postValue(paramD);
+    }
+    
+    androidx.loader.content.b<D> b(boolean paramBoolean)
+    {
+      if (b.a)
+      {
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("  Destroying: ");
+        ((StringBuilder)localObject).append(this);
+        Log.v("LoaderManager", ((StringBuilder)localObject).toString());
+      }
+      c.cancelLoad();
+      c.abandon();
+      Object localObject = e;
+      if (localObject != null)
+      {
+        removeObserver((t)localObject);
+        if (paramBoolean) {
+          ((b.b)localObject).c();
+        }
+      }
+      c.unregisterListener(this);
+      if (((localObject != null) && (!((b.b)localObject).b())) || (paramBoolean))
+      {
+        c.reset();
+        return f;
+      }
+      return c;
+    }
+    
+    public void c(String paramString, FileDescriptor paramFileDescriptor, PrintWriter paramPrintWriter, String[] paramArrayOfString)
+    {
+      paramPrintWriter.print(paramString);
+      paramPrintWriter.print("mId=");
+      paramPrintWriter.print(a);
+      paramPrintWriter.print(" mArgs=");
+      paramPrintWriter.println(b);
+      paramPrintWriter.print(paramString);
+      paramPrintWriter.print("mLoader=");
+      paramPrintWriter.println(c);
+      androidx.loader.content.b localB = c;
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append(paramString);
+      localStringBuilder.append("  ");
+      localB.dump(localStringBuilder.toString(), paramFileDescriptor, paramPrintWriter, paramArrayOfString);
+      if (e != null)
+      {
+        paramPrintWriter.print(paramString);
+        paramPrintWriter.print("mCallbacks=");
+        paramPrintWriter.println(e);
+        paramFileDescriptor = e;
+        paramArrayOfString = new StringBuilder();
+        paramArrayOfString.append(paramString);
+        paramArrayOfString.append("  ");
+        paramFileDescriptor.a(paramArrayOfString.toString(), paramPrintWriter);
+      }
+      paramPrintWriter.print(paramString);
+      paramPrintWriter.print("mData=");
+      paramPrintWriter.println(d().dataToString(getValue()));
+      paramPrintWriter.print(paramString);
+      paramPrintWriter.print("mStarted=");
+      paramPrintWriter.println(hasActiveObservers());
+    }
+    
+    androidx.loader.content.b<D> d()
+    {
+      return c;
+    }
+    
+    void e()
+    {
+      m localM = d;
+      b.b localB = e;
+      if ((localM != null) && (localB != null))
+      {
+        super.removeObserver(localB);
+        observe(localM, localB);
+      }
+    }
+    
+    androidx.loader.content.b<D> f(m paramM, a.a<D> paramA)
+    {
+      paramA = new b.b(c, paramA);
+      observe(paramM, paramA);
+      b.b localB = e;
+      if (localB != null) {
+        removeObserver(localB);
+      }
+      d = paramM;
+      e = paramA;
+      return c;
+    }
+    
+    protected void onActive()
+    {
+      if (b.a)
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("  Starting: ");
+        localStringBuilder.append(this);
+        Log.v("LoaderManager", localStringBuilder.toString());
+      }
+      c.startLoading();
+    }
+    
+    protected void onInactive()
+    {
+      if (b.a)
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("  Stopping: ");
+        localStringBuilder.append(this);
+        Log.v("LoaderManager", localStringBuilder.toString());
+      }
+      c.stopLoading();
+    }
+    
+    public void removeObserver(t<? super D> paramT)
+    {
+      super.removeObserver(paramT);
+      d = null;
+      e = null;
+    }
+    
+    public void setValue(D paramD)
+    {
+      super.setValue(paramD);
+      paramD = f;
+      if (paramD != null)
+      {
+        paramD.reset();
+        f = null;
+      }
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder(64);
+      localStringBuilder.append("LoaderInfo{");
+      localStringBuilder.append(Integer.toHexString(System.identityHashCode(this)));
+      localStringBuilder.append(" #");
+      localStringBuilder.append(a);
+      localStringBuilder.append(" : ");
+      c.h.p.b.a(c, localStringBuilder);
+      localStringBuilder.append("}}");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static class b<D>
+    implements t<D>
+  {
+    private final androidx.loader.content.b<D> a;
+    private final a.a<D> b;
+    private boolean c = false;
+    
+    b(androidx.loader.content.b<D> paramB, a.a<D> paramA)
+    {
+      a = paramB;
+      b = paramA;
+    }
+    
+    public void a(String paramString, PrintWriter paramPrintWriter)
+    {
+      paramPrintWriter.print(paramString);
+      paramPrintWriter.print("mDeliveredData=");
+      paramPrintWriter.println(c);
+    }
+    
+    boolean b()
+    {
+      return c;
+    }
+    
+    void c()
+    {
+      if (c)
+      {
+        if (b.a)
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("  Resetting: ");
+          localStringBuilder.append(a);
+          Log.v("LoaderManager", localStringBuilder.toString());
+        }
+        b.onLoaderReset(a);
+      }
+    }
+    
+    public void onChanged(D paramD)
+    {
+      if (b.a)
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("  onLoadFinished in ");
+        localStringBuilder.append(a);
+        localStringBuilder.append(": ");
+        localStringBuilder.append(a.dataToString(paramD));
+        Log.v("LoaderManager", localStringBuilder.toString());
+      }
+      b.onLoadFinished(a, paramD);
+      c = true;
+    }
+    
+    public String toString()
+    {
+      return b.toString();
+    }
+  }
+  
+  static class c
+    extends e0
+  {
+    private static final f0.b a = new a();
+    private h<b.a> b = new h();
+    private boolean c = false;
+    
+    c() {}
+    
+    static c c(i0 paramI0)
+    {
+      return (c)new f0(paramI0, a).a(c.class);
+    }
+    
+    public void a(String paramString, FileDescriptor paramFileDescriptor, PrintWriter paramPrintWriter, String[] paramArrayOfString)
+    {
+      if (b.m() > 0)
+      {
+        paramPrintWriter.print(paramString);
+        paramPrintWriter.println("Loaders:");
+        Object localObject = new StringBuilder();
+        ((StringBuilder)localObject).append(paramString);
+        ((StringBuilder)localObject).append("    ");
+        localObject = ((StringBuilder)localObject).toString();
+        int i = 0;
+        while (i < b.m())
+        {
+          b.a localA = (b.a)b.n(i);
+          paramPrintWriter.print(paramString);
+          paramPrintWriter.print("  #");
+          paramPrintWriter.print(b.j(i));
+          paramPrintWriter.print(": ");
+          paramPrintWriter.println(localA.toString());
+          localA.c((String)localObject, paramFileDescriptor, paramPrintWriter, paramArrayOfString);
+          i += 1;
+        }
+      }
+    }
+    
+    void b()
+    {
+      c = false;
+    }
+    
+    <D> b.a<D> d(int paramInt)
+    {
+      return (b.a)b.f(paramInt);
+    }
+    
+    boolean e()
+    {
+      return c;
+    }
+    
+    void f()
+    {
+      int j = b.m();
+      int i = 0;
+      while (i < j)
+      {
+        ((b.a)b.n(i)).e();
+        i += 1;
+      }
+    }
+    
+    void g(int paramInt, b.a paramA)
+    {
+      b.k(paramInt, paramA);
+    }
+    
+    void h(int paramInt)
+    {
+      b.l(paramInt);
+    }
+    
+    void i()
+    {
+      c = true;
+    }
+    
+    protected void onCleared()
+    {
+      super.onCleared();
+      int j = b.m();
+      int i = 0;
+      while (i < j)
+      {
+        ((b.a)b.n(i)).b(true);
+        i += 1;
+      }
+      b.c();
+    }
+    
+    static final class a
+      implements f0.b
+    {
+      a() {}
+      
+      public <T extends e0> T a(Class<T> paramClass)
+      {
+        return new b.c();
+      }
+    }
+  }
+}

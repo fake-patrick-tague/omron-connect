@@ -1,0 +1,125 @@
+package d.c.a.a.w;
+
+import android.graphics.Canvas;
+import android.graphics.LinearGradient;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.RadialGradient;
+import android.graphics.RectF;
+import android.graphics.Region.Op;
+import android.graphics.Shader.TileMode;
+
+public class a
+{
+  private static final int[] a = new int[3];
+  private static final float[] b = { 0.0F, 0.5F, 1.0F };
+  private static final int[] c = new int[4];
+  private static final float[] d = { 0.0F, 0.0F, 0.5F, 1.0F };
+  private final Paint e = new Paint();
+  private final Paint f;
+  private final Paint g;
+  private int h;
+  private int i;
+  private int j;
+  private final Path k = new Path();
+  private Paint l = new Paint();
+  
+  public a()
+  {
+    this(-16777216);
+  }
+  
+  public a(int paramInt)
+  {
+    d(paramInt);
+    l.setColor(0);
+    Paint localPaint = new Paint(4);
+    f = localPaint;
+    localPaint.setStyle(Paint.Style.FILL);
+    g = new Paint(localPaint);
+  }
+  
+  public void a(Canvas paramCanvas, Matrix paramMatrix, RectF paramRectF, int paramInt, float paramFloat1, float paramFloat2)
+  {
+    int m;
+    if (paramFloat2 < 0.0F) {
+      m = 1;
+    } else {
+      m = 0;
+    }
+    Path localPath = k;
+    if (m != 0)
+    {
+      localObject = c;
+      localObject[0] = 0;
+      localObject[1] = j;
+      localObject[2] = i;
+      localObject[3] = h;
+    }
+    else
+    {
+      localPath.rewind();
+      localPath.moveTo(paramRectF.centerX(), paramRectF.centerY());
+      localPath.arcTo(paramRectF, paramFloat1, paramFloat2);
+      localPath.close();
+      f1 = -paramInt;
+      paramRectF.inset(f1, f1);
+      localObject = c;
+      localObject[0] = 0;
+      localObject[1] = h;
+      localObject[2] = i;
+      localObject[3] = j;
+    }
+    float f1 = paramRectF.width() / 2.0F;
+    if (f1 <= 0.0F) {
+      return;
+    }
+    float f2 = 1.0F - paramInt / f1;
+    float f3 = (1.0F - f2) / 2.0F;
+    Object localObject = d;
+    localObject[1] = f2;
+    localObject[2] = (f3 + f2);
+    f.setShader(new RadialGradient(paramRectF.centerX(), paramRectF.centerY(), f1, c, (float[])localObject, Shader.TileMode.CLAMP));
+    paramCanvas.save();
+    paramCanvas.concat(paramMatrix);
+    if (m == 0)
+    {
+      paramCanvas.clipPath(localPath, Region.Op.DIFFERENCE);
+      paramCanvas.drawPath(localPath, l);
+    }
+    paramCanvas.drawArc(paramRectF, paramFloat1, paramFloat2, true, f);
+    paramCanvas.restore();
+  }
+  
+  public void b(Canvas paramCanvas, Matrix paramMatrix, RectF paramRectF, int paramInt)
+  {
+    bottom += paramInt;
+    paramRectF.offset(0.0F, -paramInt);
+    int[] arrayOfInt = a;
+    arrayOfInt[0] = j;
+    arrayOfInt[1] = i;
+    arrayOfInt[2] = h;
+    Paint localPaint = g;
+    float f1 = left;
+    localPaint.setShader(new LinearGradient(f1, top, f1, bottom, arrayOfInt, b, Shader.TileMode.CLAMP));
+    paramCanvas.save();
+    paramCanvas.concat(paramMatrix);
+    paramCanvas.drawRect(paramRectF, g);
+    paramCanvas.restore();
+  }
+  
+  public Paint c()
+  {
+    return e;
+  }
+  
+  public void d(int paramInt)
+  {
+    h = androidx.core.graphics.a.f(paramInt, 68);
+    i = androidx.core.graphics.a.f(paramInt, 20);
+    j = androidx.core.graphics.a.f(paramInt, 0);
+    e.setColor(h);
+  }
+}

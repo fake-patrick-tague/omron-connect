@@ -1,0 +1,204 @@
+package androidx.recyclerview.widget;
+
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import c.h.q.f;
+import c.h.q.f0;
+import c.h.q.p0.c;
+import c.h.q.p0.d;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+public class u
+  extends f
+{
+  final RecyclerView d;
+  private final a e;
+  
+  public u(RecyclerView paramRecyclerView)
+  {
+    d = paramRecyclerView;
+    paramRecyclerView = n();
+    if ((paramRecyclerView != null) && ((paramRecyclerView instanceof a)))
+    {
+      e = ((a)paramRecyclerView);
+      return;
+    }
+    e = new a(this);
+  }
+  
+  public void f(View paramView, AccessibilityEvent paramAccessibilityEvent)
+  {
+    super.f(paramView, paramAccessibilityEvent);
+    if (((paramView instanceof RecyclerView)) && (!o()))
+    {
+      paramView = (RecyclerView)paramView;
+      if (paramView.getLayoutManager() != null) {
+        paramView.getLayoutManager().e1(paramAccessibilityEvent);
+      }
+    }
+  }
+  
+  public void g(View paramView, c paramC)
+  {
+    super.g(paramView, paramC);
+    if ((!o()) && (d.getLayoutManager() != null)) {
+      d.getLayoutManager().g1(paramC);
+    }
+  }
+  
+  public boolean j(View paramView, int paramInt, Bundle paramBundle)
+  {
+    if (super.j(paramView, paramInt, paramBundle)) {
+      return true;
+    }
+    if ((!o()) && (d.getLayoutManager() != null)) {
+      return d.getLayoutManager().A1(paramInt, paramBundle);
+    }
+    return false;
+  }
+  
+  public f n()
+  {
+    return e;
+  }
+  
+  boolean o()
+  {
+    return d.o0();
+  }
+  
+  public static class a
+    extends f
+  {
+    final u d;
+    private Map<View, f> e = new WeakHashMap();
+    
+    public a(u paramU)
+    {
+      d = paramU;
+    }
+    
+    public boolean a(View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      f localF = (f)e.get(paramView);
+      if (localF != null) {
+        return localF.a(paramView, paramAccessibilityEvent);
+      }
+      return super.a(paramView, paramAccessibilityEvent);
+    }
+    
+    public d b(View paramView)
+    {
+      f localF = (f)e.get(paramView);
+      if (localF != null) {
+        return localF.b(paramView);
+      }
+      return super.b(paramView);
+    }
+    
+    public void f(View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      f localF = (f)e.get(paramView);
+      if (localF != null)
+      {
+        localF.f(paramView, paramAccessibilityEvent);
+        return;
+      }
+      super.f(paramView, paramAccessibilityEvent);
+    }
+    
+    public void g(View paramView, c paramC)
+    {
+      if ((!d.o()) && (d.d.getLayoutManager() != null))
+      {
+        d.d.getLayoutManager().i1(paramView, paramC);
+        f localF = (f)e.get(paramView);
+        if (localF != null)
+        {
+          localF.g(paramView, paramC);
+          return;
+        }
+        super.g(paramView, paramC);
+        return;
+      }
+      super.g(paramView, paramC);
+    }
+    
+    public void h(View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      f localF = (f)e.get(paramView);
+      if (localF != null)
+      {
+        localF.h(paramView, paramAccessibilityEvent);
+        return;
+      }
+      super.h(paramView, paramAccessibilityEvent);
+    }
+    
+    public boolean i(ViewGroup paramViewGroup, View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      f localF = (f)e.get(paramViewGroup);
+      if (localF != null) {
+        return localF.i(paramViewGroup, paramView, paramAccessibilityEvent);
+      }
+      return super.i(paramViewGroup, paramView, paramAccessibilityEvent);
+    }
+    
+    public boolean j(View paramView, int paramInt, Bundle paramBundle)
+    {
+      if ((!d.o()) && (d.d.getLayoutManager() != null))
+      {
+        f localF = (f)e.get(paramView);
+        if (localF != null)
+        {
+          if (localF.j(paramView, paramInt, paramBundle)) {
+            return true;
+          }
+        }
+        else if (super.j(paramView, paramInt, paramBundle)) {
+          return true;
+        }
+        return d.d.getLayoutManager().C1(paramView, paramInt, paramBundle);
+      }
+      return super.j(paramView, paramInt, paramBundle);
+    }
+    
+    public void l(View paramView, int paramInt)
+    {
+      f localF = (f)e.get(paramView);
+      if (localF != null)
+      {
+        localF.l(paramView, paramInt);
+        return;
+      }
+      super.l(paramView, paramInt);
+    }
+    
+    public void m(View paramView, AccessibilityEvent paramAccessibilityEvent)
+    {
+      f localF = (f)e.get(paramView);
+      if (localF != null)
+      {
+        localF.m(paramView, paramAccessibilityEvent);
+        return;
+      }
+      super.m(paramView, paramAccessibilityEvent);
+    }
+    
+    f n(View paramView)
+    {
+      return (f)e.remove(paramView);
+    }
+    
+    void o(View paramView)
+    {
+      f localF = f0.m(paramView);
+      if ((localF != null) && (localF != this)) {
+        e.put(paramView, localF);
+      }
+    }
+  }
+}

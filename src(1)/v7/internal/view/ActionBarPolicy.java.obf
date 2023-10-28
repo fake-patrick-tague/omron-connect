@@ -1,0 +1,88 @@
+package c.a.n;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.os.Build.VERSION;
+import android.util.DisplayMetrics;
+import android.view.ViewConfiguration;
+import c.a.b;
+import c.a.d;
+import c.a.j;
+
+public class a
+{
+  private Context a;
+  
+  private a(Context paramContext)
+  {
+    a = paramContext;
+  }
+  
+  public static a b(Context paramContext)
+  {
+    return new a(paramContext);
+  }
+  
+  public boolean a()
+  {
+    return a.getApplicationInfo().targetSdkVersion < 14;
+  }
+  
+  public int c()
+  {
+    return a.getResources().getDisplayMetrics().widthPixels / 2;
+  }
+  
+  public int d()
+  {
+    Configuration localConfiguration = a.getResources().getConfiguration();
+    int i = screenWidthDp;
+    int j = screenHeightDp;
+    if ((smallestScreenWidthDp <= 600) && (i <= 600) && ((i <= 960) || (j <= 720)) && ((i <= 720) || (j <= 960)))
+    {
+      if ((i < 500) && ((i <= 640) || (j <= 480)) && ((i <= 480) || (j <= 640)))
+      {
+        if (i >= 360) {
+          return 3;
+        }
+        return 2;
+      }
+      return 4;
+    }
+    return 5;
+  }
+  
+  public int e()
+  {
+    return a.getResources().getDimensionPixelSize(d.b);
+  }
+  
+  public int f()
+  {
+    TypedArray localTypedArray = a.obtainStyledAttributes(null, j.a, c.a.a.c, 0);
+    int j = localTypedArray.getLayoutDimension(j.j, 0);
+    Resources localResources = a.getResources();
+    int i = j;
+    if (!g()) {
+      i = Math.min(j, localResources.getDimensionPixelSize(d.a));
+    }
+    localTypedArray.recycle();
+    return i;
+  }
+  
+  public boolean g()
+  {
+    return a.getResources().getBoolean(b.a);
+  }
+  
+  public boolean h()
+  {
+    if (Build.VERSION.SDK_INT >= 19) {
+      return true;
+    }
+    return ViewConfiguration.get(a).hasPermanentMenuKey() ^ true;
+  }
+}

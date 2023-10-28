@@ -1,0 +1,67 @@
+package androidx.room;
+
+import java.util.ArrayDeque;
+import java.util.concurrent.Executor;
+
+class o
+  implements Executor
+{
+  private final Executor b;
+  private final ArrayDeque<Runnable> c = new ArrayDeque();
+  private Runnable d;
+  
+  o(Executor paramExecutor)
+  {
+    b = paramExecutor;
+  }
+  
+  void a()
+  {
+    try
+    {
+      Runnable localRunnable = (Runnable)c.poll();
+      d = localRunnable;
+      if (localRunnable != null) {
+        b.execute(localRunnable);
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  public void execute(final Runnable paramRunnable)
+  {
+    try
+    {
+      c.offer(new a(paramRunnable));
+      if (d == null) {
+        a();
+      }
+      return;
+    }
+    finally
+    {
+      paramRunnable = finally;
+      throw paramRunnable;
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(Runnable paramRunnable) {}
+    
+    public void run()
+    {
+      try
+      {
+        paramRunnable.run();
+        return;
+      }
+      finally
+      {
+        a();
+      }
+    }
+  }
+}

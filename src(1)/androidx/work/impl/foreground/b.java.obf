@@ -1,0 +1,280 @@
+package androidx.work.impl.foreground;
+
+import android.app.Notification;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build.VERSION;
+import android.text.TextUtils;
+import androidx.work.e;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.m.c;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.q;
+import androidx.work.impl.utils.p.a;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
+
+public class b
+  implements c, androidx.work.impl.b
+{
+  static final String b = androidx.work.j.f("SystemFgDispatcher");
+  private Context c;
+  private androidx.work.impl.j d;
+  private final a e;
+  final Object f;
+  String g;
+  final Map<String, e> h;
+  final Map<String, p> i;
+  final Set<p> j;
+  final androidx.work.impl.m.d k;
+  private b l;
+  
+  b(Context paramContext)
+  {
+    c = paramContext;
+    f = new Object();
+    paramContext = androidx.work.impl.j.l(c);
+    d = paramContext;
+    paramContext = paramContext.q();
+    e = paramContext;
+    g = null;
+    h = new LinkedHashMap();
+    j = new HashSet();
+    i = new HashMap();
+    k = new androidx.work.impl.m.d(c, paramContext, this);
+    d.n().c(this);
+  }
+  
+  public static Intent a(Context paramContext, String paramString, e paramE)
+  {
+    paramContext = new Intent(paramContext, SystemForegroundService.class);
+    paramContext.setAction("ACTION_NOTIFY");
+    paramContext.putExtra("KEY_NOTIFICATION_ID", paramE.c());
+    paramContext.putExtra("KEY_FOREGROUND_SERVICE_TYPE", paramE.a());
+    paramContext.putExtra("KEY_NOTIFICATION", paramE.b());
+    paramContext.putExtra("KEY_WORKSPEC_ID", paramString);
+    return paramContext;
+  }
+  
+  public static Intent c(Context paramContext, String paramString, e paramE)
+  {
+    paramContext = new Intent(paramContext, SystemForegroundService.class);
+    paramContext.setAction("ACTION_START_FOREGROUND");
+    paramContext.putExtra("KEY_WORKSPEC_ID", paramString);
+    paramContext.putExtra("KEY_NOTIFICATION_ID", paramE.c());
+    paramContext.putExtra("KEY_FOREGROUND_SERVICE_TYPE", paramE.a());
+    paramContext.putExtra("KEY_NOTIFICATION", paramE.b());
+    paramContext.putExtra("KEY_WORKSPEC_ID", paramString);
+    return paramContext;
+  }
+  
+  public static Intent e(Context paramContext)
+  {
+    paramContext = new Intent(paramContext, SystemForegroundService.class);
+    paramContext.setAction("ACTION_STOP_FOREGROUND");
+    return paramContext;
+  }
+  
+  private void g(Intent paramIntent)
+  {
+    androidx.work.j.c().d(b, String.format("Stopping foreground work for %s", new Object[] { paramIntent }), new Throwable[0]);
+    paramIntent = paramIntent.getStringExtra("KEY_WORKSPEC_ID");
+    if ((paramIntent != null) && (!TextUtils.isEmpty(paramIntent))) {
+      d.g(UUID.fromString(paramIntent));
+    }
+  }
+  
+  private void h(Intent paramIntent)
+  {
+    int m = 0;
+    int n = paramIntent.getIntExtra("KEY_NOTIFICATION_ID", 0);
+    int i1 = paramIntent.getIntExtra("KEY_FOREGROUND_SERVICE_TYPE", 0);
+    String str = paramIntent.getStringExtra("KEY_WORKSPEC_ID");
+    paramIntent = (Notification)paramIntent.getParcelableExtra("KEY_NOTIFICATION");
+    androidx.work.j.c().a(b, String.format("Notifying with (id: %s, workSpecId: %s, notificationType: %s)", new Object[] { Integer.valueOf(n), str, Integer.valueOf(i1) }), new Throwable[0]);
+    if ((paramIntent != null) && (l != null))
+    {
+      e localE = new e(n, paramIntent, i1);
+      h.put(str, localE);
+      if (TextUtils.isEmpty(g))
+      {
+        g = str;
+        l.b(n, i1, paramIntent);
+        return;
+      }
+      l.c(n, paramIntent);
+      if ((i1 != 0) && (Build.VERSION.SDK_INT >= 29))
+      {
+        paramIntent = h.entrySet().iterator();
+        while (paramIntent.hasNext()) {
+          m |= ((e)((Map.Entry)paramIntent.next()).getValue()).a();
+        }
+        paramIntent = (e)h.get(g);
+        if (paramIntent != null) {
+          l.b(paramIntent.c(), m, paramIntent.b());
+        }
+      }
+    }
+  }
+  
+  private void i(final Intent paramIntent)
+  {
+    androidx.work.j.c().d(b, String.format("Started foreground service %s", new Object[] { paramIntent }), new Throwable[0]);
+    paramIntent = paramIntent.getStringExtra("KEY_WORKSPEC_ID");
+    final WorkDatabase localWorkDatabase = d.p();
+    e.b(new a(localWorkDatabase, paramIntent));
+  }
+  
+  public void b(List<String> paramList)
+  {
+    if (!paramList.isEmpty())
+    {
+      paramList = paramList.iterator();
+      while (paramList.hasNext())
+      {
+        String str = (String)paramList.next();
+        androidx.work.j.c().a(b, String.format("Constraints unmet for WorkSpec %s", new Object[] { str }), new Throwable[0]);
+        d.x(str);
+      }
+    }
+  }
+  
+  public void d(String paramString, boolean paramBoolean)
+  {
+    for (;;)
+    {
+      synchronized (f)
+      {
+        Object localObject2 = (p)i.remove(paramString);
+        if (localObject2 != null)
+        {
+          paramBoolean = j.remove(localObject2);
+          if (paramBoolean) {
+            k.d(j);
+          }
+          localObject2 = (e)h.remove(paramString);
+          if ((paramString.equals(g)) && (h.size() > 0))
+          {
+            Iterator localIterator = h.entrySet().iterator();
+            ??? = (Map.Entry)localIterator.next();
+            if (localIterator.hasNext())
+            {
+              ??? = (Map.Entry)localIterator.next();
+              continue;
+            }
+            g = ((String)((Map.Entry)???).getKey());
+            if (l != null)
+            {
+              ??? = (e)((Map.Entry)???).getValue();
+              l.b(((e)???).c(), ((e)???).a(), ((e)???).b());
+              l.d(((e)???).c());
+            }
+          }
+          ??? = l;
+          if ((localObject2 != null) && (??? != null))
+          {
+            androidx.work.j.c().a(b, String.format("Removing Notification (id: %s, workSpecId: %s ,notificationType: %s)", new Object[] { Integer.valueOf(((e)localObject2).c()), paramString, Integer.valueOf(((e)localObject2).a()) }), new Throwable[0]);
+            ((b)???).d(((e)localObject2).c());
+          }
+          return;
+        }
+      }
+      paramBoolean = false;
+    }
+  }
+  
+  public void f(List<String> paramList) {}
+  
+  void j(Intent paramIntent)
+  {
+    androidx.work.j.c().d(b, "Stopping foreground service", new Throwable[0]);
+    paramIntent = l;
+    if (paramIntent != null) {
+      paramIntent.stop();
+    }
+  }
+  
+  void k()
+  {
+    l = null;
+    synchronized (f)
+    {
+      k.e();
+      d.n().i(this);
+      return;
+    }
+  }
+  
+  void l(Intent paramIntent)
+  {
+    String str = paramIntent.getAction();
+    if ("ACTION_START_FOREGROUND".equals(str))
+    {
+      i(paramIntent);
+      h(paramIntent);
+      return;
+    }
+    if ("ACTION_NOTIFY".equals(str))
+    {
+      h(paramIntent);
+      return;
+    }
+    if ("ACTION_CANCEL_WORK".equals(str))
+    {
+      g(paramIntent);
+      return;
+    }
+    if ("ACTION_STOP_FOREGROUND".equals(str)) {
+      j(paramIntent);
+    }
+  }
+  
+  void m(b paramB)
+  {
+    if (l != null)
+    {
+      androidx.work.j.c().b(b, "A callback already exists.", new Throwable[0]);
+      return;
+    }
+    l = paramB;
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(WorkDatabase paramWorkDatabase, String paramString) {}
+    
+    public void run()
+    {
+      Object localObject2 = localWorkDatabase.B().n(paramIntent);
+      if ((localObject2 != null) && (((p)localObject2).b())) {
+        synchronized (f)
+        {
+          i.put(paramIntent, localObject2);
+          j.add(localObject2);
+          localObject2 = b.this;
+          k.d(j);
+          return;
+        }
+      }
+    }
+  }
+  
+  static abstract interface b
+  {
+    public abstract void b(int paramInt1, int paramInt2, Notification paramNotification);
+    
+    public abstract void c(int paramInt, Notification paramNotification);
+    
+    public abstract void d(int paramInt);
+    
+    public abstract void stop();
+  }
+}

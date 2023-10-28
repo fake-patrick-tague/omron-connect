@@ -1,0 +1,205 @@
+package com.google.android.gms.internal.oss_licenses;
+
+import android.content.Context;
+import android.content.res.Resources;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+
+public final class zze
+{
+  public static String zza(Context paramContext, zzc paramZzc)
+  {
+    long l = paramZzc.zze();
+    int i = paramZzc.zzf();
+    paramZzc = paramZzc.getPath();
+    if (paramZzc.isEmpty()) {
+      return zza(paramContext, "third_party_licenses", l, i);
+    }
+    paramContext = zza("res/raw/third_party_licenses", paramZzc, l, i);
+    if (paramContext != null) {
+      return paramContext;
+    }
+    paramContext = new StringBuilder(paramZzc.length() + 46);
+    paramContext.append(paramZzc);
+    paramContext.append(" does not contain res/raw/third_party_licenses");
+    throw new RuntimeException(paramContext.toString());
+  }
+  
+  private static String zza(Context paramContext, String paramString, long paramLong, int paramInt)
+  {
+    paramContext = paramContext.getApplicationContext().getResources();
+    return zza(paramContext.openRawResource(paramContext.getIdentifier(paramString, "raw", paramContext.getResourcePackageName(zzf.dummy_placeholder))), paramLong, paramInt);
+  }
+  
+  private static String zza(InputStream paramInputStream, long paramLong, int paramInt)
+  {
+    byte[] arrayOfByte = new byte['?'];
+    ByteArrayOutputStream localByteArrayOutputStream = new ByteArrayOutputStream();
+    for (;;)
+    {
+      try
+      {
+        paramInputStream.skip(paramLong);
+        if (paramInt > 0)
+        {
+          if (paramInt > 0)
+          {
+            int i = paramInputStream.read(arrayOfByte, 0, Math.min(paramInt, 1024));
+            if (i != -1)
+            {
+              localByteArrayOutputStream.write(arrayOfByte, 0, i);
+              paramInt -= i;
+              continue;
+            }
+          }
+          paramInputStream.close();
+          try
+          {
+            paramInputStream = localByteArrayOutputStream.toString("UTF-8");
+            return paramInputStream;
+          }
+          catch (UnsupportedEncodingException paramInputStream)
+          {
+            throw new RuntimeException("Unsupported encoding UTF8. This should always be supported.", paramInputStream);
+          }
+        }
+        paramInt = Integer.MAX_VALUE;
+      }
+      catch (IOException paramInputStream)
+      {
+        throw new RuntimeException("Failed to read license or metadata text.", paramInputStream);
+      }
+    }
+  }
+  
+  /* Error */
+  private static String zza(String paramString1, String paramString2, long paramLong, int paramInt)
+  {
+    // Byte code:
+    //   0: aconst_null
+    //   1: astore 6
+    //   3: aconst_null
+    //   4: astore 5
+    //   6: new 142	java/util/jar/JarFile
+    //   9: dup
+    //   10: aload_1
+    //   11: invokespecial 143	java/util/jar/JarFile:<init>	(Ljava/lang/String;)V
+    //   14: astore_1
+    //   15: aload_1
+    //   16: aload_0
+    //   17: invokevirtual 147	java/util/jar/JarFile:getJarEntry	(Ljava/lang/String;)Ljava/util/jar/JarEntry;
+    //   20: astore_0
+    //   21: aload_0
+    //   22: ifnonnull +9 -> 31
+    //   25: aload_1
+    //   26: invokevirtual 148	java/util/jar/JarFile:close	()V
+    //   29: aconst_null
+    //   30: areturn
+    //   31: aload_1
+    //   32: aload_0
+    //   33: invokevirtual 152	java/util/jar/JarFile:getInputStream	(Ljava/util/zip/ZipEntry;)Ljava/io/InputStream;
+    //   36: lload_2
+    //   37: iload 4
+    //   39: invokestatic 95	com/google/android/gms/internal/oss_licenses/zze:zza	(Ljava/io/InputStream;JI)Ljava/lang/String;
+    //   42: astore_0
+    //   43: aload_1
+    //   44: invokevirtual 148	java/util/jar/JarFile:close	()V
+    //   47: aload_0
+    //   48: areturn
+    //   49: astore_0
+    //   50: aload_1
+    //   51: astore 5
+    //   53: goto +30 -> 83
+    //   56: astore_0
+    //   57: aload_1
+    //   58: astore 5
+    //   60: goto +12 -> 72
+    //   63: astore_0
+    //   64: goto +19 -> 83
+    //   67: astore_0
+    //   68: aload 6
+    //   70: astore 5
+    //   72: new 53	java/lang/RuntimeException
+    //   75: dup
+    //   76: ldc -102
+    //   78: aload_0
+    //   79: invokespecial 137	java/lang/RuntimeException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   82: athrow
+    //   83: aload 5
+    //   85: ifnull +8 -> 93
+    //   88: aload 5
+    //   90: invokevirtual 148	java/util/jar/JarFile:close	()V
+    //   93: aload_0
+    //   94: athrow
+    //   95: astore_0
+    //   96: aconst_null
+    //   97: areturn
+    //   98: astore_1
+    //   99: aload_0
+    //   100: areturn
+    //   101: astore_1
+    //   102: goto -9 -> 93
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	105	0	paramString1	String
+    //   0	105	1	paramString2	String
+    //   0	105	2	paramLong	long
+    //   0	105	4	paramInt	int
+    //   4	85	5	localObject1	Object
+    //   1	68	6	localObject2	Object
+    // Exception table:
+    //   from	to	target	type
+    //   15	21	49	finally
+    //   31	43	49	finally
+    //   15	21	56	java/io/IOException
+    //   31	43	56	java/io/IOException
+    //   6	15	63	finally
+    //   72	83	63	finally
+    //   6	15	67	java/io/IOException
+    //   25	29	95	java/io/IOException
+    //   43	47	98	java/io/IOException
+    //   88	93	101	java/io/IOException
+  }
+  
+  public static ArrayList<zzc> zzb(Context paramContext)
+  {
+    String[] arrayOfString1 = zza(paramContext.getApplicationContext(), "third_party_license_metadata", 0L, -1).split("\n");
+    ArrayList localArrayList = new ArrayList(arrayOfString1.length);
+    int k = arrayOfString1.length;
+    int i = 0;
+    while (i < k)
+    {
+      String str = arrayOfString1[i];
+      int m = str.indexOf(' ');
+      String[] arrayOfString2 = str.substring(0, m).split(":");
+      int j;
+      if ((arrayOfString2.length == 2) && (m > 0)) {
+        j = 1;
+      } else {
+        j = 0;
+      }
+      if (str.length() != 0) {
+        paramContext = "Invalid license meta-data line:\n".concat(str);
+      } else {
+        paramContext = new String("Invalid license meta-data line:\n");
+      }
+      if (j != 0)
+      {
+        long l = Long.parseLong(arrayOfString2[0]);
+        j = Integer.parseInt(arrayOfString2[1]);
+        localArrayList.add(zzc.zza(str.substring(m + 1), l, j, ""));
+        i += 1;
+      }
+      else
+      {
+        throw new IllegalStateException(String.valueOf(paramContext));
+      }
+    }
+    Collections.sort(localArrayList);
+    return localArrayList;
+  }
+}

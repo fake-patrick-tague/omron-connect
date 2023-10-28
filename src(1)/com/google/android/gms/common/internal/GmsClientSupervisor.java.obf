@@ -1,0 +1,111 @@
+package com.google.android.gms.common.internal;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.ServiceConnection;
+import android.os.HandlerThread;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.util.VisibleForTesting;
+import java.util.concurrent.Executor;
+
+@KeepForSdk
+public abstract class GmsClientSupervisor
+{
+  @VisibleForTesting
+  static HandlerThread zza;
+  private static int zzb = 4225;
+  private static final Object zzc = new Object();
+  private static zzr zzd;
+  private static boolean zze = false;
+  
+  public GmsClientSupervisor() {}
+  
+  @KeepForSdk
+  public static int getDefaultBindFlags()
+  {
+    return zzb;
+  }
+  
+  @KeepForSdk
+  public static GmsClientSupervisor getInstance(Context paramContext)
+  {
+    synchronized (zzc)
+    {
+      if (zzd == null)
+      {
+        Context localContext = paramContext.getApplicationContext();
+        if (zze) {
+          paramContext = getOrStartHandlerThread().getLooper();
+        } else {
+          paramContext = paramContext.getMainLooper();
+        }
+        zzd = new zzr(localContext, paramContext);
+      }
+      return zzd;
+    }
+  }
+  
+  @KeepForSdk
+  public static HandlerThread getOrStartHandlerThread()
+  {
+    synchronized (zzc)
+    {
+      HandlerThread localHandlerThread = zza;
+      if (localHandlerThread != null) {
+        return localHandlerThread;
+      }
+      localHandlerThread = new HandlerThread("GoogleApiHandler", 9);
+      zza = localHandlerThread;
+      localHandlerThread.start();
+      localHandlerThread = zza;
+      return localHandlerThread;
+    }
+  }
+  
+  @KeepForSdk
+  public static void setUseHandlerThreadForCallbacks()
+  {
+    synchronized (zzc)
+    {
+      zzr localZzr = zzd;
+      if ((localZzr != null) && (!zze)) {
+        localZzr.zzi(getOrStartHandlerThread().getLooper());
+      }
+      zze = true;
+      return;
+    }
+  }
+  
+  @KeepForSdk
+  public boolean bindService(ComponentName paramComponentName, ServiceConnection paramServiceConnection, String paramString)
+  {
+    return zzc(new zzn(paramComponentName, getDefaultBindFlags()), paramServiceConnection, paramString, null);
+  }
+  
+  @KeepForSdk
+  public boolean bindService(String paramString1, ServiceConnection paramServiceConnection, String paramString2)
+  {
+    return zzc(new zzn(paramString1, getDefaultBindFlags(), false), paramServiceConnection, paramString2, null);
+  }
+  
+  @KeepForSdk
+  public void unbindService(ComponentName paramComponentName, ServiceConnection paramServiceConnection, String paramString)
+  {
+    zza(new zzn(paramComponentName, getDefaultBindFlags()), paramServiceConnection, paramString);
+  }
+  
+  @KeepForSdk
+  public void unbindService(String paramString1, ServiceConnection paramServiceConnection, String paramString2)
+  {
+    zza(new zzn(paramString1, getDefaultBindFlags(), false), paramServiceConnection, paramString2);
+  }
+  
+  protected abstract void zza(zzn paramZzn, ServiceConnection paramServiceConnection, String paramString);
+  
+  public final void zzb(String paramString1, String paramString2, int paramInt, ServiceConnection paramServiceConnection, String paramString3, boolean paramBoolean)
+  {
+    zza(new zzn(paramString1, paramString2, paramInt, paramBoolean), paramServiceConnection, paramString3);
+  }
+  
+  protected abstract boolean zzc(zzn paramZzn, ServiceConnection paramServiceConnection, String paramString, Executor paramExecutor);
+}

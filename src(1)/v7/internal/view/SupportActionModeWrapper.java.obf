@@ -1,0 +1,178 @@
+package c.a.n;
+
+import android.content.Context;
+import android.view.ActionMode;
+import android.view.ActionMode.Callback;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import androidx.appcompat.view.menu.j;
+import androidx.appcompat.view.menu.o;
+import c.e.g;
+import c.h.j.a.a;
+import java.util.ArrayList;
+
+public class f
+  extends ActionMode
+{
+  final Context a;
+  final b b;
+  
+  public f(Context paramContext, b paramB)
+  {
+    a = paramContext;
+    b = paramB;
+  }
+  
+  public void finish()
+  {
+    b.c();
+  }
+  
+  public View getCustomView()
+  {
+    return b.d();
+  }
+  
+  public Menu getMenu()
+  {
+    return new o(a, (a)b.e());
+  }
+  
+  public MenuInflater getMenuInflater()
+  {
+    return b.f();
+  }
+  
+  public CharSequence getSubtitle()
+  {
+    return b.g();
+  }
+  
+  public Object getTag()
+  {
+    return b.h();
+  }
+  
+  public CharSequence getTitle()
+  {
+    return b.i();
+  }
+  
+  public boolean getTitleOptionalHint()
+  {
+    return b.j();
+  }
+  
+  public void invalidate()
+  {
+    b.k();
+  }
+  
+  public boolean isTitleOptional()
+  {
+    return b.l();
+  }
+  
+  public void setCustomView(View paramView)
+  {
+    b.m(paramView);
+  }
+  
+  public void setSubtitle(int paramInt)
+  {
+    b.n(paramInt);
+  }
+  
+  public void setSubtitle(CharSequence paramCharSequence)
+  {
+    b.o(paramCharSequence);
+  }
+  
+  public void setTag(Object paramObject)
+  {
+    b.p(paramObject);
+  }
+  
+  public void setTitle(int paramInt)
+  {
+    b.q(paramInt);
+  }
+  
+  public void setTitle(CharSequence paramCharSequence)
+  {
+    b.r(paramCharSequence);
+  }
+  
+  public void setTitleOptionalHint(boolean paramBoolean)
+  {
+    b.s(paramBoolean);
+  }
+  
+  public static class a
+    implements b.a
+  {
+    final ActionMode.Callback a;
+    final Context b;
+    final ArrayList<f> c;
+    final g<Menu, Menu> d;
+    
+    public a(Context paramContext, ActionMode.Callback paramCallback)
+    {
+      b = paramContext;
+      a = paramCallback;
+      c = new ArrayList();
+      d = new g();
+    }
+    
+    private Menu f(Menu paramMenu)
+    {
+      Menu localMenu = (Menu)d.get(paramMenu);
+      Object localObject = localMenu;
+      if (localMenu == null)
+      {
+        localObject = new o(b, (a)paramMenu);
+        d.put(paramMenu, localObject);
+      }
+      return localObject;
+    }
+    
+    public void a(b paramB)
+    {
+      a.onDestroyActionMode(e(paramB));
+    }
+    
+    public boolean b(b paramB, Menu paramMenu)
+    {
+      return a.onCreateActionMode(e(paramB), f(paramMenu));
+    }
+    
+    public boolean c(b paramB, Menu paramMenu)
+    {
+      return a.onPrepareActionMode(e(paramB), f(paramMenu));
+    }
+    
+    public boolean d(b paramB, MenuItem paramMenuItem)
+    {
+      return a.onActionItemClicked(e(paramB), new j(b, (c.h.j.a.b)paramMenuItem));
+    }
+    
+    public ActionMode e(b paramB)
+    {
+      int j = c.size();
+      int i = 0;
+      while (i < j)
+      {
+        f localF = (f)c.get(i);
+        if ((localF != null) && (b == paramB)) {
+          return localF;
+        }
+        i += 1;
+      }
+      paramB = new f(b, paramB);
+      c.add(paramB);
+      return paramB;
+    }
+  }
+}

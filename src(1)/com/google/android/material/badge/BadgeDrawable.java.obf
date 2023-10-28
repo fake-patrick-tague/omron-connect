@@ -1,0 +1,605 @@
+package com.google.android.material.badge;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Paint.Align;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+import android.text.TextPaint;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import c.h.q.f0;
+import com.google.android.material.internal.f.b;
+import d.c.a.a.b;
+import d.c.a.a.j;
+import d.c.a.a.k;
+import d.c.a.a.l;
+import d.c.a.a.u.c;
+import d.c.a.a.x.g;
+import java.lang.ref.WeakReference;
+import java.text.NumberFormat;
+
+public class BadgeDrawable
+  extends Drawable
+  implements f.b
+{
+  private static final int b = k.n;
+  private static final int c = b.c;
+  private final WeakReference<Context> d;
+  private final g e;
+  private final com.google.android.material.internal.f f;
+  private final Rect g;
+  private final float h;
+  private final float i;
+  private final float j;
+  private final SavedState k;
+  private float l;
+  private float m;
+  private int n;
+  private float o;
+  private float p;
+  private float q;
+  private WeakReference<View> r;
+  private WeakReference<FrameLayout> s;
+  
+  private BadgeDrawable(Context paramContext)
+  {
+    d = new WeakReference(paramContext);
+    com.google.android.material.internal.i.c(paramContext);
+    Object localObject = paramContext.getResources();
+    g = new Rect();
+    e = new g();
+    h = ((Resources)localObject).getDimensionPixelSize(d.c.a.a.d.H);
+    j = ((Resources)localObject).getDimensionPixelSize(d.c.a.a.d.G);
+    i = ((Resources)localObject).getDimensionPixelSize(d.c.a.a.d.J);
+    localObject = new com.google.android.material.internal.f(this);
+    f = ((com.google.android.material.internal.f)localObject);
+    ((com.google.android.material.internal.f)localObject).e().setTextAlign(Paint.Align.CENTER);
+    k = new SavedState(paramContext);
+    x(k.d);
+  }
+  
+  private void A(final View paramView)
+  {
+    ViewGroup localViewGroup = (ViewGroup)paramView.getParent();
+    if ((localViewGroup == null) || (localViewGroup.getId() != d.c.a.a.f.w))
+    {
+      localObject = s;
+      if ((localObject == null) || (((WeakReference)localObject).get() != localViewGroup)) {}
+    }
+    else
+    {
+      return;
+    }
+    B(paramView);
+    Object localObject = new FrameLayout(paramView.getContext());
+    ((FrameLayout)localObject).setId(d.c.a.a.f.w);
+    ((FrameLayout)localObject).setClipChildren(false);
+    ((FrameLayout)localObject).setClipToPadding(false);
+    ((FrameLayout)localObject).setLayoutParams(paramView.getLayoutParams());
+    ((FrameLayout)localObject).setMinimumWidth(paramView.getWidth());
+    ((FrameLayout)localObject).setMinimumHeight(paramView.getHeight());
+    int i1 = localViewGroup.indexOfChild(paramView);
+    localViewGroup.removeViewAt(i1);
+    paramView.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+    ((FrameLayout)localObject).addView(paramView);
+    localViewGroup.addView((View)localObject, i1);
+    s = new WeakReference(localObject);
+    ((FrameLayout)localObject).post(new a(paramView, (FrameLayout)localObject));
+  }
+  
+  private static void B(View paramView)
+  {
+    paramView = (ViewGroup)paramView.getParent();
+    paramView.setClipChildren(false);
+    paramView.setClipToPadding(false);
+  }
+  
+  private void D()
+  {
+    Context localContext = (Context)d.get();
+    Object localObject1 = r;
+    FrameLayout localFrameLayout = null;
+    if (localObject1 != null) {
+      localObject1 = (View)((WeakReference)localObject1).get();
+    } else {
+      localObject1 = null;
+    }
+    if (localContext != null)
+    {
+      if (localObject1 == null) {
+        return;
+      }
+      Rect localRect1 = new Rect();
+      localRect1.set(g);
+      Rect localRect2 = new Rect();
+      ((View)localObject1).getDrawingRect(localRect2);
+      Object localObject2 = s;
+      if (localObject2 != null) {
+        localFrameLayout = (FrameLayout)((WeakReference)localObject2).get();
+      }
+      if ((localFrameLayout != null) || (a.a))
+      {
+        localObject2 = localFrameLayout;
+        if (localFrameLayout == null) {
+          localObject2 = (ViewGroup)((View)localObject1).getParent();
+        }
+        ((ViewGroup)localObject2).offsetDescendantRectToMyCoords((View)localObject1, localRect2);
+      }
+      b(localContext, localRect2, (View)localObject1);
+      a.f(g, l, m, p, q);
+      e.U(o);
+      if (!localRect1.equals(g)) {
+        e.setBounds(g);
+      }
+    }
+  }
+  
+  private void E()
+  {
+    n = ((int)Math.pow(10.0D, j() - 1.0D) - 1);
+  }
+  
+  private void b(Context paramContext, Rect paramRect, View paramView)
+  {
+    int i1 = SavedState.n(k);
+    if ((i1 != 8388691) && (i1 != 8388693)) {
+      m = (top + SavedState.s(k));
+    } else {
+      m = (bottom - SavedState.s(k));
+    }
+    float f1;
+    if (k() <= 9)
+    {
+      if (!m()) {
+        f1 = h;
+      } else {
+        f1 = i;
+      }
+      o = f1;
+      q = f1;
+      p = f1;
+    }
+    else
+    {
+      f1 = i;
+      o = f1;
+      q = f1;
+      String str = g();
+      p = (f.f(str) / 2.0F + j);
+    }
+    paramContext = paramContext.getResources();
+    if (m()) {
+      i1 = d.c.a.a.d.I;
+    } else {
+      i1 = d.c.a.a.d.F;
+    }
+    i1 = paramContext.getDimensionPixelSize(i1);
+    int i2 = SavedState.n(k);
+    if ((i2 != 8388659) && (i2 != 8388691))
+    {
+      if (f0.D(paramView) == 0) {
+        f1 = right + p - i1 - SavedState.q(k);
+      } else {
+        f1 = left - p + i1 + SavedState.q(k);
+      }
+      l = f1;
+      return;
+    }
+    if (f0.D(paramView) == 0) {
+      f1 = left - p + i1 + SavedState.q(k);
+    } else {
+      f1 = right + p - i1 - SavedState.q(k);
+    }
+    l = f1;
+  }
+  
+  public static BadgeDrawable c(Context paramContext)
+  {
+    return d(paramContext, null, c, b);
+  }
+  
+  private static BadgeDrawable d(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    BadgeDrawable localBadgeDrawable = new BadgeDrawable(paramContext);
+    localBadgeDrawable.n(paramContext, paramAttributeSet, paramInt1, paramInt2);
+    return localBadgeDrawable;
+  }
+  
+  static BadgeDrawable e(Context paramContext, SavedState paramSavedState)
+  {
+    paramContext = new BadgeDrawable(paramContext);
+    paramContext.p(paramSavedState);
+    return paramContext;
+  }
+  
+  private void f(Canvas paramCanvas)
+  {
+    Rect localRect = new Rect();
+    String str = g();
+    f.e().getTextBounds(str, 0, str.length(), localRect);
+    paramCanvas.drawText(str, l, m + localRect.height() / 2, f.e());
+  }
+  
+  private String g()
+  {
+    if (k() <= n) {
+      return NumberFormat.getInstance().format(k());
+    }
+    Context localContext = (Context)d.get();
+    if (localContext == null) {
+      return "";
+    }
+    return localContext.getString(j.l, new Object[] { Integer.valueOf(n), "+" });
+  }
+  
+  private void n(Context paramContext, AttributeSet paramAttributeSet, int paramInt1, int paramInt2)
+  {
+    paramAttributeSet = com.google.android.material.internal.i.h(paramContext, paramAttributeSet, l.C, paramInt1, paramInt2, new int[0]);
+    u(paramAttributeSet.getInt(l.H, 4));
+    paramInt1 = l.I;
+    if (paramAttributeSet.hasValue(paramInt1)) {
+      v(paramAttributeSet.getInt(paramInt1, 0));
+    }
+    q(o(paramContext, paramAttributeSet, l.D));
+    paramInt1 = l.F;
+    if (paramAttributeSet.hasValue(paramInt1)) {
+      s(o(paramContext, paramAttributeSet, paramInt1));
+    }
+    r(paramAttributeSet.getInt(l.E, 8388661));
+    t(paramAttributeSet.getDimensionPixelOffset(l.G, 0));
+    y(paramAttributeSet.getDimensionPixelOffset(l.J, 0));
+    paramAttributeSet.recycle();
+  }
+  
+  private static int o(Context paramContext, TypedArray paramTypedArray, int paramInt)
+  {
+    return c.a(paramContext, paramTypedArray, paramInt).getDefaultColor();
+  }
+  
+  private void p(SavedState paramSavedState)
+  {
+    u(SavedState.c(paramSavedState));
+    if (SavedState.g(paramSavedState) != -1) {
+      v(SavedState.g(paramSavedState));
+    }
+    q(SavedState.j(paramSavedState));
+    s(SavedState.l(paramSavedState));
+    r(SavedState.n(paramSavedState));
+    t(SavedState.q(paramSavedState));
+    y(SavedState.s(paramSavedState));
+    z(SavedState.a(paramSavedState));
+  }
+  
+  private void w(d.c.a.a.u.d paramD)
+  {
+    if (f.d() == paramD) {
+      return;
+    }
+    Context localContext = (Context)d.get();
+    if (localContext == null) {
+      return;
+    }
+    f.h(paramD, localContext);
+    D();
+  }
+  
+  private void x(int paramInt)
+  {
+    Context localContext = (Context)d.get();
+    if (localContext == null) {
+      return;
+    }
+    w(new d.c.a.a.u.d(localContext, paramInt));
+  }
+  
+  public void C(View paramView, FrameLayout paramFrameLayout)
+  {
+    r = new WeakReference(paramView);
+    boolean bool = a.a;
+    if ((bool) && (paramFrameLayout == null)) {
+      A(paramView);
+    } else {
+      s = new WeakReference(paramFrameLayout);
+    }
+    if (!bool) {
+      B(paramView);
+    }
+    D();
+    invalidateSelf();
+  }
+  
+  public void a()
+  {
+    invalidateSelf();
+  }
+  
+  public void draw(Canvas paramCanvas)
+  {
+    if ((!getBounds().isEmpty()) && (getAlpha() != 0))
+    {
+      if (!isVisible()) {
+        return;
+      }
+      e.draw(paramCanvas);
+      if (m()) {
+        f(paramCanvas);
+      }
+    }
+  }
+  
+  public int getAlpha()
+  {
+    return SavedState.u(k);
+  }
+  
+  public int getIntrinsicHeight()
+  {
+    return g.height();
+  }
+  
+  public int getIntrinsicWidth()
+  {
+    return g.width();
+  }
+  
+  public int getOpacity()
+  {
+    return -3;
+  }
+  
+  public CharSequence h()
+  {
+    if (!isVisible()) {
+      return null;
+    }
+    if (m())
+    {
+      if (SavedState.d(k) > 0)
+      {
+        Context localContext = (Context)d.get();
+        if (localContext == null) {
+          return null;
+        }
+        if (k() <= n) {
+          return localContext.getResources().getQuantityString(SavedState.d(k), k(), new Object[] { Integer.valueOf(k()) });
+        }
+        return localContext.getString(SavedState.f(k), new Object[] { Integer.valueOf(n) });
+      }
+      return null;
+    }
+    return SavedState.x(k);
+  }
+  
+  public FrameLayout i()
+  {
+    WeakReference localWeakReference = s;
+    if (localWeakReference != null) {
+      return (FrameLayout)localWeakReference.get();
+    }
+    return null;
+  }
+  
+  public boolean isStateful()
+  {
+    return false;
+  }
+  
+  public int j()
+  {
+    return SavedState.c(k);
+  }
+  
+  public int k()
+  {
+    if (!m()) {
+      return 0;
+    }
+    return SavedState.g(k);
+  }
+  
+  public SavedState l()
+  {
+    return k;
+  }
+  
+  public boolean m()
+  {
+    return SavedState.g(k) != -1;
+  }
+  
+  public boolean onStateChange(int[] paramArrayOfInt)
+  {
+    return super.onStateChange(paramArrayOfInt);
+  }
+  
+  public void q(int paramInt)
+  {
+    SavedState.k(k, paramInt);
+    ColorStateList localColorStateList = ColorStateList.valueOf(paramInt);
+    if (e.x() != localColorStateList)
+    {
+      e.X(localColorStateList);
+      invalidateSelf();
+    }
+  }
+  
+  public void r(int paramInt)
+  {
+    if (SavedState.n(k) != paramInt)
+    {
+      SavedState.o(k, paramInt);
+      Object localObject = r;
+      if ((localObject != null) && (((WeakReference)localObject).get() != null))
+      {
+        View localView = (View)r.get();
+        localObject = s;
+        if (localObject != null) {
+          localObject = (FrameLayout)((WeakReference)localObject).get();
+        } else {
+          localObject = null;
+        }
+        C(localView, (FrameLayout)localObject);
+      }
+    }
+  }
+  
+  public void s(int paramInt)
+  {
+    SavedState.m(k, paramInt);
+    if (f.e().getColor() != paramInt)
+    {
+      f.e().setColor(paramInt);
+      invalidateSelf();
+    }
+  }
+  
+  public void setAlpha(int paramInt)
+  {
+    SavedState.v(k, paramInt);
+    f.e().setAlpha(paramInt);
+    invalidateSelf();
+  }
+  
+  public void setColorFilter(ColorFilter paramColorFilter) {}
+  
+  public void t(int paramInt)
+  {
+    SavedState.r(k, paramInt);
+    D();
+  }
+  
+  public void u(int paramInt)
+  {
+    if (SavedState.c(k) != paramInt)
+    {
+      SavedState.e(k, paramInt);
+      E();
+      f.i(true);
+      D();
+      invalidateSelf();
+    }
+  }
+  
+  public void v(int paramInt)
+  {
+    paramInt = Math.max(0, paramInt);
+    if (SavedState.g(k) != paramInt)
+    {
+      SavedState.h(k, paramInt);
+      f.i(true);
+      D();
+      invalidateSelf();
+    }
+  }
+  
+  public void y(int paramInt)
+  {
+    SavedState.t(k, paramInt);
+    D();
+  }
+  
+  public void z(boolean paramBoolean)
+  {
+    setVisible(paramBoolean, false);
+    SavedState.b(k, paramBoolean);
+    if ((a.a) && (i() != null) && (!paramBoolean)) {
+      ((ViewGroup)i().getParent()).invalidate();
+    }
+  }
+  
+  public static final class SavedState
+    implements Parcelable
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    private int b;
+    private int c;
+    private int d = 255;
+    private int e = -1;
+    private int f;
+    private CharSequence g;
+    private int h;
+    private int i;
+    private int j;
+    private boolean k;
+    private int l;
+    private int m;
+    
+    public SavedState(Context paramContext)
+    {
+      c = d.c.a.a.u.dda.getDefaultColor();
+      g = paramContext.getString(j.i);
+      h = d.c.a.a.i.a;
+      i = j.k;
+      k = true;
+    }
+    
+    protected SavedState(Parcel paramParcel)
+    {
+      b = paramParcel.readInt();
+      c = paramParcel.readInt();
+      d = paramParcel.readInt();
+      e = paramParcel.readInt();
+      f = paramParcel.readInt();
+      g = paramParcel.readString();
+      h = paramParcel.readInt();
+      j = paramParcel.readInt();
+      l = paramParcel.readInt();
+      m = paramParcel.readInt();
+      boolean bool;
+      if (paramParcel.readInt() != 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      k = bool;
+    }
+    
+    public int describeContents()
+    {
+      return 0;
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge I and Z\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.provideAs(TypeTransformer.java:780)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.e1expr(TypeTransformer.java:496)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:713)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.enexpr(TypeTransformer.java:698)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:719)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.exExpr(TypeTransformer.java:703)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.s1stmt(TypeTransformer.java:810)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.sxStmt(TypeTransformer.java:840)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:206)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+    }
+    
+    static final class a
+      implements Parcelable.Creator<BadgeDrawable.SavedState>
+    {
+      a() {}
+      
+      public BadgeDrawable.SavedState a(Parcel paramParcel)
+      {
+        return new BadgeDrawable.SavedState(paramParcel);
+      }
+      
+      public BadgeDrawable.SavedState[] b(int paramInt)
+      {
+        return new BadgeDrawable.SavedState[paramInt];
+      }
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(View paramView, FrameLayout paramFrameLayout) {}
+    
+    public void run()
+    {
+      C(paramView, c);
+    }
+  }
+}

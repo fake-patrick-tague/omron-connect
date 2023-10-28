@@ -1,0 +1,143 @@
+package androidx.fragment.app;
+
+import android.app.Application;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.os.Bundle;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.b0;
+import androidx.lifecycle.f0.a;
+import androidx.lifecycle.f0.b;
+import androidx.lifecycle.i;
+import androidx.lifecycle.i0;
+import androidx.lifecycle.j0;
+import androidx.lifecycle.n;
+import androidx.lifecycle.n0.a;
+import androidx.lifecycle.y;
+import androidx.savedstate.c;
+import androidx.savedstate.e;
+
+class e0
+  implements i, e, j0
+{
+  private final Fragment b;
+  private final i0 c;
+  private f0.b d;
+  private n e = null;
+  private androidx.savedstate.d f = null;
+  
+  e0(Fragment paramFragment, i0 paramI0)
+  {
+    b = paramFragment;
+    c = paramI0;
+  }
+  
+  void a(Lifecycle.Event paramEvent)
+  {
+    e.h(paramEvent);
+  }
+  
+  void b()
+  {
+    if (e == null)
+    {
+      e = new n(this);
+      androidx.savedstate.d localD = androidx.savedstate.d.a(this);
+      f = localD;
+      localD.c();
+      y.c(this);
+    }
+  }
+  
+  boolean c()
+  {
+    return e != null;
+  }
+  
+  void d(Bundle paramBundle)
+  {
+    f.d(paramBundle);
+  }
+  
+  void e(Bundle paramBundle)
+  {
+    f.e(paramBundle);
+  }
+  
+  void f(Lifecycle.State paramState)
+  {
+    e.o(paramState);
+  }
+  
+  public a getDefaultViewModelCreationExtras()
+  {
+    for (Object localObject = b.requireContext().getApplicationContext(); (localObject instanceof ContextWrapper); localObject = ((ContextWrapper)localObject).getBaseContext()) {
+      if ((localObject instanceof Application))
+      {
+        localObject = (Application)localObject;
+        break label46;
+      }
+    }
+    localObject = null;
+    label46:
+    androidx.lifecycle.n0.d localD = new androidx.lifecycle.n0.d();
+    if (localObject != null) {
+      localD.c(f0.a.g, localObject);
+    }
+    localD.c(y.a, this);
+    localD.c(y.b, this);
+    if (b.getArguments() != null) {
+      localD.c(y.c, b.getArguments());
+    }
+    return localD;
+  }
+  
+  public f0.b getDefaultViewModelProviderFactory()
+  {
+    Object localObject1 = b.getDefaultViewModelProviderFactory();
+    if (!localObject1.equals(b.mDefaultFactory))
+    {
+      d = ((f0.b)localObject1);
+      return localObject1;
+    }
+    if (d == null)
+    {
+      Object localObject3 = null;
+      Object localObject2;
+      for (localObject1 = b.requireContext().getApplicationContext();; localObject1 = ((ContextWrapper)localObject1).getBaseContext())
+      {
+        localObject2 = localObject3;
+        if (!(localObject1 instanceof ContextWrapper)) {
+          break;
+        }
+        if ((localObject1 instanceof Application))
+        {
+          localObject2 = (Application)localObject1;
+          break;
+        }
+      }
+      d = new b0((Application)localObject2, this, b.getArguments());
+    }
+    return d;
+  }
+  
+  public Lifecycle getLifecycle()
+  {
+    b();
+    return e;
+  }
+  
+  public c getSavedStateRegistry()
+  {
+    b();
+    return f.b();
+  }
+  
+  public i0 getViewModelStore()
+  {
+    b();
+    return c;
+  }
+}

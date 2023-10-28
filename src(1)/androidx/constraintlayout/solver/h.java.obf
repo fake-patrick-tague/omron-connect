@@ -1,0 +1,677 @@
+package androidx.constraintlayout.solver;
+
+import java.util.ArrayList;
+
+public class b
+  implements d.a
+{
+  SolverVariable a = null;
+  float b = 0.0F;
+  boolean c = false;
+  ArrayList<SolverVariable> d = new ArrayList();
+  public a e;
+  boolean f = false;
+  
+  public b() {}
+  
+  public b(c paramC)
+  {
+    e = new a(this, paramC);
+  }
+  
+  private boolean u(SolverVariable paramSolverVariable, d paramD)
+  {
+    return n <= 1;
+  }
+  
+  private SolverVariable w(boolean[] paramArrayOfBoolean, SolverVariable paramSolverVariable)
+  {
+    int j = e.a();
+    Object localObject1 = null;
+    int i = 0;
+    float f2;
+    for (float f1 = 0.0F; i < j; f1 = f2)
+    {
+      float f3 = e.d(i);
+      Object localObject2 = localObject1;
+      f2 = f1;
+      if (f3 < 0.0F)
+      {
+        SolverVariable localSolverVariable = e.b(i);
+        if (paramArrayOfBoolean != null)
+        {
+          localObject2 = localObject1;
+          f2 = f1;
+          if (paramArrayOfBoolean[d] != 0) {}
+        }
+        else
+        {
+          localObject2 = localObject1;
+          f2 = f1;
+          if (localSolverVariable != paramSolverVariable)
+          {
+            SolverVariable.Type localType = k;
+            if (localType != SolverVariable.Type.d)
+            {
+              localObject2 = localObject1;
+              f2 = f1;
+              if (localType != SolverVariable.Type.e) {}
+            }
+            else
+            {
+              localObject2 = localObject1;
+              f2 = f1;
+              if (f3 < f1)
+              {
+                f2 = f3;
+                localObject2 = localSolverVariable;
+              }
+            }
+          }
+        }
+      }
+      i += 1;
+      localObject1 = localObject2;
+    }
+    return localObject1;
+  }
+  
+  public void A(d paramD, SolverVariable paramSolverVariable, boolean paramBoolean)
+  {
+    if (!h) {
+      return;
+    }
+    float f1 = e.f(paramSolverVariable);
+    b += g * f1;
+    e.j(paramSolverVariable, paramBoolean);
+    if (paramBoolean) {
+      paramSolverVariable.c(this);
+    }
+    if ((d.c) && (e.a() == 0))
+    {
+      f = true;
+      j = true;
+    }
+  }
+  
+  public void B(d paramD, b paramB, boolean paramBoolean)
+  {
+    float f1 = e.h(paramB, paramBoolean);
+    b += b * f1;
+    if (paramBoolean) {
+      a.c(this);
+    }
+    if ((d.c) && (a != null) && (e.a() == 0))
+    {
+      f = true;
+      j = true;
+    }
+  }
+  
+  public void C(d paramD, SolverVariable paramSolverVariable, boolean paramBoolean)
+  {
+    if (!o) {
+      return;
+    }
+    float f1 = e.f(paramSolverVariable);
+    b += q * f1;
+    e.j(paramSolverVariable, paramBoolean);
+    if (paramBoolean) {
+      paramSolverVariable.c(this);
+    }
+    e.e(w.d[p], f1, paramBoolean);
+    if ((d.c) && (e.a() == 0))
+    {
+      f = true;
+      j = true;
+    }
+  }
+  
+  public void D(d paramD)
+  {
+    if (p.length == 0) {
+      return;
+    }
+    int i = 0;
+    while (i == 0)
+    {
+      int k = e.a();
+      int j = 0;
+      SolverVariable localSolverVariable;
+      while (j < k)
+      {
+        localSolverVariable = e.b(j);
+        if ((e != -1) || (h) || (o)) {
+          d.add(localSolverVariable);
+        }
+        j += 1;
+      }
+      k = d.size();
+      if (k > 0)
+      {
+        j = 0;
+        while (j < k)
+        {
+          localSolverVariable = (SolverVariable)d.get(j);
+          if (h) {
+            A(paramD, localSolverVariable, true);
+          } else if (o) {
+            C(paramD, localSolverVariable, true);
+          } else {
+            B(paramD, p[e], true);
+          }
+          j += 1;
+        }
+        d.clear();
+      }
+      else
+      {
+        i = 1;
+      }
+    }
+    if ((d.c) && (a != null) && (e.a() == 0))
+    {
+      f = true;
+      j = true;
+    }
+  }
+  
+  public void a(SolverVariable paramSolverVariable)
+  {
+    int i = f;
+    float f1 = 1.0F;
+    if (i != 1) {
+      if (i == 2) {
+        f1 = 1000.0F;
+      } else if (i == 3) {
+        f1 = 1000000.0F;
+      } else if (i == 4) {
+        f1 = 1.0E9F;
+      } else if (i == 5) {
+        f1 = 1.0E12F;
+      }
+    }
+    e.i(paramSolverVariable, f1);
+  }
+  
+  public SolverVariable b(d paramD, boolean[] paramArrayOfBoolean)
+  {
+    return w(paramArrayOfBoolean, null);
+  }
+  
+  public void c(d.a paramA)
+  {
+    if ((paramA instanceof b))
+    {
+      paramA = (b)paramA;
+      a = null;
+      e.clear();
+      int i = 0;
+      while (i < e.a())
+      {
+        SolverVariable localSolverVariable = e.b(i);
+        float f1 = e.d(i);
+        e.e(localSolverVariable, f1, true);
+        i += 1;
+      }
+    }
+  }
+  
+  public void clear()
+  {
+    e.clear();
+    a = null;
+    b = 0.0F;
+  }
+  
+  public b d(d paramD, int paramInt)
+  {
+    e.i(paramD.o(paramInt, "ep"), 1.0F);
+    e.i(paramD.o(paramInt, "em"), -1.0F);
+    return this;
+  }
+  
+  b e(SolverVariable paramSolverVariable, int paramInt)
+  {
+    e.i(paramSolverVariable, paramInt);
+    return this;
+  }
+  
+  boolean f(d paramD)
+  {
+    paramD = g(paramD);
+    boolean bool;
+    if (paramD == null)
+    {
+      bool = true;
+    }
+    else
+    {
+      x(paramD);
+      bool = false;
+    }
+    if (e.a() == 0) {
+      f = true;
+    }
+    return bool;
+  }
+  
+  SolverVariable g(d paramD)
+  {
+    throw new Runtime("d2j fail translate: java.lang.RuntimeException: can not merge Z and I\n\tat com.googlecode.dex2jar.ir.TypeClass.merge(TypeClass.java:100)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeRef.updateTypeClass(TypeTransformer.java:174)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.copyTypes(TypeTransformer.java:311)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.fixTypes(TypeTransformer.java:226)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer$TypeAnalyze.analyze(TypeTransformer.java:207)\n\tat com.googlecode.dex2jar.ir.ts.TypeTransformer.transform(TypeTransformer.java:44)\n\tat com.googlecode.d2j.dex.Dex2jar$2.optimize(Dex2jar.java:162)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertCode(Dex2Asm.java:414)\n\tat com.googlecode.d2j.dex.ExDex2Asm.convertCode(ExDex2Asm.java:42)\n\tat com.googlecode.d2j.dex.Dex2jar$2.convertCode(Dex2jar.java:128)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertMethod(Dex2Asm.java:509)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertClass(Dex2Asm.java:406)\n\tat com.googlecode.d2j.dex.Dex2Asm.convertDex(Dex2Asm.java:422)\n\tat com.googlecode.d2j.dex.Dex2jar.doTranslate(Dex2jar.java:172)\n\tat com.googlecode.d2j.dex.Dex2jar.to(Dex2jar.java:272)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.doCommandLine(Dex2jarCmd.java:108)\n\tat com.googlecode.dex2jar.tools.BaseCmd.doMain(BaseCmd.java:288)\n\tat com.googlecode.dex2jar.tools.Dex2jarCmd.main(Dex2jarCmd.java:32)\n");
+  }
+  
+  public SolverVariable getKey()
+  {
+    return a;
+  }
+  
+  b h(SolverVariable paramSolverVariable1, SolverVariable paramSolverVariable2, int paramInt1, float paramFloat, SolverVariable paramSolverVariable3, SolverVariable paramSolverVariable4, int paramInt2)
+  {
+    if (paramSolverVariable2 == paramSolverVariable3)
+    {
+      e.i(paramSolverVariable1, 1.0F);
+      e.i(paramSolverVariable4, 1.0F);
+      e.i(paramSolverVariable2, -2.0F);
+      return this;
+    }
+    if (paramFloat == 0.5F)
+    {
+      e.i(paramSolverVariable1, 1.0F);
+      e.i(paramSolverVariable2, -1.0F);
+      e.i(paramSolverVariable3, -1.0F);
+      e.i(paramSolverVariable4, 1.0F);
+      if ((paramInt1 > 0) || (paramInt2 > 0))
+      {
+        b = (-paramInt1 + paramInt2);
+        return this;
+      }
+    }
+    else
+    {
+      if (paramFloat <= 0.0F)
+      {
+        e.i(paramSolverVariable1, -1.0F);
+        e.i(paramSolverVariable2, 1.0F);
+        b = paramInt1;
+        return this;
+      }
+      if (paramFloat >= 1.0F)
+      {
+        e.i(paramSolverVariable4, -1.0F);
+        e.i(paramSolverVariable3, 1.0F);
+        b = (-paramInt2);
+        return this;
+      }
+      a localA = e;
+      float f1 = 1.0F - paramFloat;
+      localA.i(paramSolverVariable1, f1 * 1.0F);
+      e.i(paramSolverVariable2, f1 * -1.0F);
+      e.i(paramSolverVariable3, -1.0F * paramFloat);
+      e.i(paramSolverVariable4, 1.0F * paramFloat);
+      if ((paramInt1 > 0) || (paramInt2 > 0)) {
+        b = (-paramInt1 * f1 + paramInt2 * paramFloat);
+      }
+    }
+    return this;
+  }
+  
+  b i(SolverVariable paramSolverVariable, int paramInt)
+  {
+    a = paramSolverVariable;
+    float f1 = paramInt;
+    g = f1;
+    b = f1;
+    f = true;
+    return this;
+  }
+  
+  public boolean isEmpty()
+  {
+    return (a == null) && (b == 0.0F) && (e.a() == 0);
+  }
+  
+  b j(SolverVariable paramSolverVariable1, SolverVariable paramSolverVariable2, float paramFloat)
+  {
+    e.i(paramSolverVariable1, -1.0F);
+    e.i(paramSolverVariable2, paramFloat);
+    return this;
+  }
+  
+  public b k(SolverVariable paramSolverVariable1, SolverVariable paramSolverVariable2, SolverVariable paramSolverVariable3, SolverVariable paramSolverVariable4, float paramFloat)
+  {
+    e.i(paramSolverVariable1, -1.0F);
+    e.i(paramSolverVariable2, 1.0F);
+    e.i(paramSolverVariable3, paramFloat);
+    e.i(paramSolverVariable4, -paramFloat);
+    return this;
+  }
+  
+  public b l(float paramFloat1, float paramFloat2, float paramFloat3, SolverVariable paramSolverVariable1, SolverVariable paramSolverVariable2, SolverVariable paramSolverVariable3, SolverVariable paramSolverVariable4)
+  {
+    b = 0.0F;
+    if ((paramFloat2 != 0.0F) && (paramFloat1 != paramFloat3))
+    {
+      if (paramFloat1 == 0.0F)
+      {
+        e.i(paramSolverVariable1, 1.0F);
+        e.i(paramSolverVariable2, -1.0F);
+        return this;
+      }
+      if (paramFloat3 == 0.0F)
+      {
+        e.i(paramSolverVariable3, 1.0F);
+        e.i(paramSolverVariable4, -1.0F);
+        return this;
+      }
+      paramFloat1 = paramFloat1 / paramFloat2 / (paramFloat3 / paramFloat2);
+      e.i(paramSolverVariable1, 1.0F);
+      e.i(paramSolverVariable2, -1.0F);
+      e.i(paramSolverVariable4, paramFloat1);
+      e.i(paramSolverVariable3, -paramFloat1);
+      return this;
+    }
+    e.i(paramSolverVariable1, 1.0F);
+    e.i(paramSolverVariable2, -1.0F);
+    e.i(paramSolverVariable4, 1.0F);
+    e.i(paramSolverVariable3, -1.0F);
+    return this;
+  }
+  
+  public b m(SolverVariable paramSolverVariable, int paramInt)
+  {
+    if (paramInt < 0)
+    {
+      b = (paramInt * -1);
+      e.i(paramSolverVariable, 1.0F);
+      return this;
+    }
+    b = paramInt;
+    e.i(paramSolverVariable, -1.0F);
+    return this;
+  }
+  
+  public b n(SolverVariable paramSolverVariable1, SolverVariable paramSolverVariable2, int paramInt)
+  {
+    int i = 0;
+    int j = 0;
+    if (paramInt != 0)
+    {
+      i = j;
+      j = paramInt;
+      if (paramInt < 0)
+      {
+        j = paramInt * -1;
+        i = 1;
+      }
+      b = j;
+    }
+    if (i == 0)
+    {
+      e.i(paramSolverVariable1, -1.0F);
+      e.i(paramSolverVariable2, 1.0F);
+      return this;
+    }
+    e.i(paramSolverVariable1, 1.0F);
+    e.i(paramSolverVariable2, -1.0F);
+    return this;
+  }
+  
+  public b o(SolverVariable paramSolverVariable1, SolverVariable paramSolverVariable2, SolverVariable paramSolverVariable3, int paramInt)
+  {
+    int i = 0;
+    int j = 0;
+    if (paramInt != 0)
+    {
+      i = j;
+      j = paramInt;
+      if (paramInt < 0)
+      {
+        j = paramInt * -1;
+        i = 1;
+      }
+      b = j;
+    }
+    if (i == 0)
+    {
+      e.i(paramSolverVariable1, -1.0F);
+      e.i(paramSolverVariable2, 1.0F);
+      e.i(paramSolverVariable3, 1.0F);
+      return this;
+    }
+    e.i(paramSolverVariable1, 1.0F);
+    e.i(paramSolverVariable2, -1.0F);
+    e.i(paramSolverVariable3, -1.0F);
+    return this;
+  }
+  
+  public b p(SolverVariable paramSolverVariable1, SolverVariable paramSolverVariable2, SolverVariable paramSolverVariable3, int paramInt)
+  {
+    int i = 0;
+    int j = 0;
+    if (paramInt != 0)
+    {
+      i = j;
+      j = paramInt;
+      if (paramInt < 0)
+      {
+        j = paramInt * -1;
+        i = 1;
+      }
+      b = j;
+    }
+    if (i == 0)
+    {
+      e.i(paramSolverVariable1, -1.0F);
+      e.i(paramSolverVariable2, 1.0F);
+      e.i(paramSolverVariable3, -1.0F);
+      return this;
+    }
+    e.i(paramSolverVariable1, 1.0F);
+    e.i(paramSolverVariable2, -1.0F);
+    e.i(paramSolverVariable3, 1.0F);
+    return this;
+  }
+  
+  public b q(SolverVariable paramSolverVariable1, SolverVariable paramSolverVariable2, SolverVariable paramSolverVariable3, SolverVariable paramSolverVariable4, float paramFloat)
+  {
+    e.i(paramSolverVariable3, 0.5F);
+    e.i(paramSolverVariable4, 0.5F);
+    e.i(paramSolverVariable1, -0.5F);
+    e.i(paramSolverVariable2, -0.5F);
+    b = (-paramFloat);
+    return this;
+  }
+  
+  void r()
+  {
+    float f1 = b;
+    if (f1 < 0.0F)
+    {
+      b = (f1 * -1.0F);
+      e.c();
+    }
+  }
+  
+  boolean s()
+  {
+    SolverVariable localSolverVariable = a;
+    return (localSolverVariable != null) && ((k == SolverVariable.Type.b) || (b >= 0.0F));
+  }
+  
+  boolean t(SolverVariable paramSolverVariable)
+  {
+    return e.g(paramSolverVariable);
+  }
+  
+  public String toString()
+  {
+    return z();
+  }
+  
+  public SolverVariable v(SolverVariable paramSolverVariable)
+  {
+    return w(null, paramSolverVariable);
+  }
+  
+  void x(SolverVariable paramSolverVariable)
+  {
+    SolverVariable localSolverVariable = a;
+    if (localSolverVariable != null)
+    {
+      e.i(localSolverVariable, -1.0F);
+      a.e = -1;
+      a = null;
+    }
+    float f1 = e.j(paramSolverVariable, true) * -1.0F;
+    a = paramSolverVariable;
+    if (f1 == 1.0F) {
+      return;
+    }
+    b /= f1;
+    e.k(f1);
+  }
+  
+  public void y()
+  {
+    a = null;
+    e.clear();
+    b = 0.0F;
+    f = false;
+  }
+  
+  String z()
+  {
+    if (a == null)
+    {
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("");
+      ((StringBuilder)localObject1).append("0");
+      localObject1 = ((StringBuilder)localObject1).toString();
+    }
+    else
+    {
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("");
+      ((StringBuilder)localObject1).append(a);
+      localObject1 = ((StringBuilder)localObject1).toString();
+    }
+    Object localObject2 = new StringBuilder();
+    ((StringBuilder)localObject2).append((String)localObject1);
+    ((StringBuilder)localObject2).append(" = ");
+    Object localObject1 = ((StringBuilder)localObject2).toString();
+    float f1 = b;
+    int j = 0;
+    int i;
+    if (f1 != 0.0F)
+    {
+      localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append((String)localObject1);
+      ((StringBuilder)localObject2).append(b);
+      localObject1 = ((StringBuilder)localObject2).toString();
+      i = 1;
+    }
+    else
+    {
+      i = 0;
+    }
+    int k = e.a();
+    while (j < k)
+    {
+      localObject2 = e.b(j);
+      if (localObject2 != null)
+      {
+        float f2 = e.d(j);
+        boolean bool = f2 < 0.0F;
+        if (bool)
+        {
+          String str = ((SolverVariable)localObject2).toString();
+          if (i == 0)
+          {
+            localObject2 = localObject1;
+            f1 = f2;
+            if (f2 >= 0.0F) {
+              break label366;
+            }
+            localObject2 = new StringBuilder();
+            ((StringBuilder)localObject2).append((String)localObject1);
+            ((StringBuilder)localObject2).append("- ");
+            localObject2 = ((StringBuilder)localObject2).toString();
+          }
+          else
+          {
+            if (bool)
+            {
+              localObject2 = new StringBuilder();
+              ((StringBuilder)localObject2).append((String)localObject1);
+              ((StringBuilder)localObject2).append(" + ");
+              localObject2 = ((StringBuilder)localObject2).toString();
+              f1 = f2;
+              break label366;
+            }
+            localObject2 = new StringBuilder();
+            ((StringBuilder)localObject2).append((String)localObject1);
+            ((StringBuilder)localObject2).append(" - ");
+            localObject2 = ((StringBuilder)localObject2).toString();
+          }
+          f1 = f2 * -1.0F;
+          label366:
+          if (f1 == 1.0F)
+          {
+            localObject1 = new StringBuilder();
+            ((StringBuilder)localObject1).append((String)localObject2);
+            ((StringBuilder)localObject1).append(str);
+            localObject1 = ((StringBuilder)localObject1).toString();
+          }
+          else
+          {
+            localObject1 = new StringBuilder();
+            ((StringBuilder)localObject1).append((String)localObject2);
+            ((StringBuilder)localObject1).append(f1);
+            ((StringBuilder)localObject1).append(" ");
+            ((StringBuilder)localObject1).append(str);
+            localObject1 = ((StringBuilder)localObject1).toString();
+          }
+          i = 1;
+        }
+      }
+      j += 1;
+    }
+    localObject2 = localObject1;
+    if (i == 0)
+    {
+      localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append((String)localObject1);
+      ((StringBuilder)localObject2).append("0.0");
+      localObject2 = ((StringBuilder)localObject2).toString();
+    }
+    return localObject2;
+  }
+  
+  public static abstract interface a
+  {
+    public abstract int a();
+    
+    public abstract SolverVariable b(int paramInt);
+    
+    public abstract void c();
+    
+    public abstract void clear();
+    
+    public abstract float d(int paramInt);
+    
+    public abstract void e(SolverVariable paramSolverVariable, float paramFloat, boolean paramBoolean);
+    
+    public abstract float f(SolverVariable paramSolverVariable);
+    
+    public abstract boolean g(SolverVariable paramSolverVariable);
+    
+    public abstract float h(b paramB, boolean paramBoolean);
+    
+    public abstract void i(SolverVariable paramSolverVariable, float paramFloat);
+    
+    public abstract float j(SolverVariable paramSolverVariable, boolean paramBoolean);
+    
+    public abstract void k(float paramFloat);
+  }
+}

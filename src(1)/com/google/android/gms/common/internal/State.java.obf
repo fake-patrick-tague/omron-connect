@@ -1,0 +1,68 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.RemoteException;
+import android.util.Log;
+import com.google.android.gms.common.ConnectionResult;
+
+public final class zzf
+  extends zza
+{
+  public final IBinder zze;
+  
+  public zzf(BaseGmsClient paramBaseGmsClient, int paramInt, IBinder paramIBinder, Bundle paramBundle)
+  {
+    super(paramBaseGmsClient, paramInt, paramBundle);
+    zze = paramIBinder;
+  }
+  
+  protected final void zzb(ConnectionResult paramConnectionResult)
+  {
+    if (BaseGmsClient.zzc(zzf) != null) {
+      BaseGmsClient.zzc(zzf).onConnectionFailed(paramConnectionResult);
+    }
+    zzf.onConnectionFailed(paramConnectionResult);
+  }
+  
+  protected final boolean zzd()
+  {
+    try
+    {
+      Object localObject1 = zze;
+      Preconditions.checkNotNull(localObject1);
+      localObject1 = ((IBinder)localObject1).getInterfaceDescriptor();
+      Object localObject2;
+      if (!zzf.getServiceDescriptor().equals(localObject1))
+      {
+        localObject2 = zzf.getServiceDescriptor();
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("service descriptor mismatch: ");
+        localStringBuilder.append((String)localObject2);
+        localStringBuilder.append(" vs. ");
+        localStringBuilder.append((String)localObject1);
+        Log.w("GmsClient", localStringBuilder.toString());
+        return false;
+      }
+      localObject1 = zzf.createServiceInterface(zze);
+      if ((localObject1 != null) && ((BaseGmsClient.zzn(zzf, 2, 4, (IInterface)localObject1)) || (BaseGmsClient.zzn(zzf, 3, 4, (IInterface)localObject1))))
+      {
+        BaseGmsClient.zzg(zzf, null);
+        localObject1 = zzf.getConnectionHint();
+        localObject2 = zzf;
+        if (BaseGmsClient.zzb((BaseGmsClient)localObject2) != null) {
+          BaseGmsClient.zzb((BaseGmsClient)localObject2).onConnected((Bundle)localObject1);
+        }
+        return true;
+      }
+      return false;
+    }
+    catch (RemoteException localRemoteException)
+    {
+      for (;;) {}
+    }
+    Log.w("GmsClient", "service probably died");
+    return false;
+  }
+}

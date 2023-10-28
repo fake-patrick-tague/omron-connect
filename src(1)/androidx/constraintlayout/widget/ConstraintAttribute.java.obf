@@ -1,0 +1,316 @@
+package androidx.constraintlayout.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.util.TypedValue;
+import android.util.Xml;
+import android.view.View;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import org.xmlpull.v1.XmlPullParser;
+
+public class ConstraintAttribute
+{
+  String a;
+  private AttributeType b;
+  private int c;
+  private float d;
+  private String e;
+  boolean f;
+  private int g;
+  
+  public ConstraintAttribute(ConstraintAttribute paramConstraintAttribute, Object paramObject)
+  {
+    a = a;
+    b = b;
+    d(paramObject);
+  }
+  
+  public ConstraintAttribute(String paramString, AttributeType paramAttributeType, Object paramObject)
+  {
+    a = paramString;
+    b = paramAttributeType;
+    d(paramObject);
+  }
+  
+  public static HashMap<String, ConstraintAttribute> a(HashMap<String, ConstraintAttribute> paramHashMap, View paramView)
+  {
+    HashMap localHashMap = new HashMap();
+    Class localClass = paramView.getClass();
+    Iterator localIterator = paramHashMap.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      ConstraintAttribute localConstraintAttribute = (ConstraintAttribute)paramHashMap.get(str);
+      try
+      {
+        if (str.equals("BackgroundColor"))
+        {
+          localHashMap.put(str, new ConstraintAttribute(localConstraintAttribute, Integer.valueOf(((ColorDrawable)paramView.getBackground()).getColor())));
+        }
+        else
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("getMap");
+          localStringBuilder.append(str);
+          localHashMap.put(str, new ConstraintAttribute(localConstraintAttribute, localClass.getMethod(localStringBuilder.toString(), new Class[0]).invoke(paramView, new Object[0])));
+        }
+      }
+      catch (InvocationTargetException localInvocationTargetException)
+      {
+        localInvocationTargetException.printStackTrace();
+      }
+      catch (IllegalAccessException localIllegalAccessException)
+      {
+        localIllegalAccessException.printStackTrace();
+      }
+      catch (NoSuchMethodException localNoSuchMethodException)
+      {
+        localNoSuchMethodException.printStackTrace();
+      }
+    }
+    return localHashMap;
+  }
+  
+  public static void b(Context paramContext, XmlPullParser paramXmlPullParser, HashMap<String, ConstraintAttribute> paramHashMap)
+  {
+    TypedArray localTypedArray = paramContext.obtainStyledAttributes(Xml.asAttributeSet(paramXmlPullParser), e.C2);
+    int j = localTypedArray.getIndexCount();
+    Object localObject3 = null;
+    Object localObject5 = null;
+    Object localObject4 = localObject5;
+    int i = 0;
+    while (i < j)
+    {
+      int k = localTypedArray.getIndex(i);
+      Object localObject1;
+      Object localObject2;
+      if (k == e.D2)
+      {
+        localObject3 = localTypedArray.getString(k);
+        paramXmlPullParser = (XmlPullParser)localObject3;
+        localObject1 = localObject5;
+        localObject2 = localObject4;
+        if (localObject3 != null)
+        {
+          paramXmlPullParser = (XmlPullParser)localObject3;
+          localObject1 = localObject5;
+          localObject2 = localObject4;
+          if (((String)localObject3).length() > 0)
+          {
+            paramXmlPullParser = new StringBuilder();
+            paramXmlPullParser.append(Character.toUpperCase(((String)localObject3).charAt(0)));
+            paramXmlPullParser.append(((String)localObject3).substring(1));
+            paramXmlPullParser = paramXmlPullParser.toString();
+            localObject1 = localObject5;
+            localObject2 = localObject4;
+          }
+        }
+      }
+      else if (k == e.E2)
+      {
+        localObject1 = Boolean.valueOf(localTypedArray.getBoolean(k, false));
+        localObject2 = AttributeType.g;
+        paramXmlPullParser = (XmlPullParser)localObject3;
+      }
+      else
+      {
+        if (k == e.G2)
+        {
+          paramXmlPullParser = AttributeType.d;
+          localObject1 = Integer.valueOf(localTypedArray.getColor(k, 0));
+        }
+        for (;;)
+        {
+          localObject2 = paramXmlPullParser;
+          paramXmlPullParser = (XmlPullParser)localObject3;
+          break;
+          if (k == e.F2)
+          {
+            paramXmlPullParser = AttributeType.e;
+            localObject1 = Integer.valueOf(localTypedArray.getColor(k, 0));
+          }
+          else if (k == e.K2)
+          {
+            paramXmlPullParser = AttributeType.h;
+            localObject1 = Float.valueOf(TypedValue.applyDimension(1, localTypedArray.getDimension(k, 0.0F), paramContext.getResources().getDisplayMetrics()));
+          }
+          else if (k == e.H2)
+          {
+            paramXmlPullParser = AttributeType.h;
+            localObject1 = Float.valueOf(localTypedArray.getDimension(k, 0.0F));
+          }
+          else if (k == e.I2)
+          {
+            paramXmlPullParser = AttributeType.c;
+            localObject1 = Float.valueOf(localTypedArray.getFloat(k, NaN.0F));
+          }
+          else if (k == e.J2)
+          {
+            paramXmlPullParser = AttributeType.b;
+            localObject1 = Integer.valueOf(localTypedArray.getInteger(k, -1));
+          }
+          else
+          {
+            paramXmlPullParser = (XmlPullParser)localObject3;
+            localObject1 = localObject5;
+            localObject2 = localObject4;
+            if (k != e.L2) {
+              break;
+            }
+            paramXmlPullParser = AttributeType.f;
+            localObject1 = localTypedArray.getString(k);
+          }
+        }
+      }
+      i += 1;
+      localObject3 = paramXmlPullParser;
+      localObject5 = localObject1;
+      localObject4 = localObject2;
+    }
+    if ((localObject3 != null) && (localObject5 != null)) {
+      paramHashMap.put(localObject3, new ConstraintAttribute((String)localObject3, localObject4, localObject5));
+    }
+    localTypedArray.recycle();
+  }
+  
+  public static void c(View paramView, HashMap<String, ConstraintAttribute> paramHashMap)
+  {
+    Class localClass = paramView.getClass();
+    Iterator localIterator = paramHashMap.keySet().iterator();
+    for (;;)
+    {
+      if (localIterator.hasNext())
+      {
+        Object localObject1 = (String)localIterator.next();
+        Object localObject3 = (ConstraintAttribute)paramHashMap.get(localObject1);
+        Object localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append("set");
+        ((StringBuilder)localObject2).append((String)localObject1);
+        localObject2 = ((StringBuilder)localObject2).toString();
+        try
+        {
+          switch (a.a[b.ordinal()])
+          {
+          case 7: 
+            localClass.getMethod((String)localObject2, new Class[] { Float.TYPE }).invoke(paramView, new Object[] { Float.valueOf(d) });
+            break;
+          case 6: 
+            localClass.getMethod((String)localObject2, new Class[] { Boolean.TYPE }).invoke(paramView, new Object[] { Boolean.valueOf(f) });
+            break;
+          case 5: 
+            localClass.getMethod((String)localObject2, new Class[] { CharSequence.class }).invoke(paramView, new Object[] { e });
+            break;
+          case 4: 
+            localClass.getMethod((String)localObject2, new Class[] { Float.TYPE }).invoke(paramView, new Object[] { Float.valueOf(d) });
+            break;
+          case 3: 
+            localClass.getMethod((String)localObject2, new Class[] { Integer.TYPE }).invoke(paramView, new Object[] { Integer.valueOf(c) });
+            break;
+          case 2: 
+            Method localMethod = localClass.getMethod((String)localObject2, new Class[] { Drawable.class });
+            ColorDrawable localColorDrawable = new ColorDrawable();
+            localColorDrawable.setColor(g);
+            localMethod.invoke(paramView, new Object[] { localColorDrawable });
+            break;
+          case 1: 
+            localClass.getMethod((String)localObject2, new Class[] { Integer.TYPE }).invoke(paramView, new Object[] { Integer.valueOf(g) });
+          }
+        }
+        catch (InvocationTargetException localInvocationTargetException)
+        {
+          localObject3 = new StringBuilder();
+          ((StringBuilder)localObject3).append(" Custom Attribute \"");
+          ((StringBuilder)localObject3).append((String)localObject1);
+          ((StringBuilder)localObject3).append("\" not found on ");
+          ((StringBuilder)localObject3).append(localClass.getName());
+          Log.e("TransitionLayout", ((StringBuilder)localObject3).toString());
+          localInvocationTargetException.printStackTrace();
+        }
+        catch (IllegalAccessException localIllegalAccessException)
+        {
+          localObject3 = new StringBuilder();
+          ((StringBuilder)localObject3).append(" Custom Attribute \"");
+          ((StringBuilder)localObject3).append((String)localObject1);
+          ((StringBuilder)localObject3).append("\" not found on ");
+          ((StringBuilder)localObject3).append(localClass.getName());
+          Log.e("TransitionLayout", ((StringBuilder)localObject3).toString());
+          localIllegalAccessException.printStackTrace();
+        }
+        catch (NoSuchMethodException localNoSuchMethodException)
+        {
+          Log.e("TransitionLayout", localNoSuchMethodException.getMessage());
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append(" Custom Attribute \"");
+          localStringBuilder.append((String)localObject1);
+          localStringBuilder.append("\" not found on ");
+          localStringBuilder.append(localClass.getName());
+          Log.e("TransitionLayout", localStringBuilder.toString());
+          localObject1 = new StringBuilder();
+          ((StringBuilder)localObject1).append(localClass.getName());
+          ((StringBuilder)localObject1).append(" must have a method ");
+          ((StringBuilder)localObject1).append(localIllegalAccessException);
+          Log.e("TransitionLayout", ((StringBuilder)localObject1).toString());
+        }
+      }
+      else
+      {
+        return;
+      }
+    }
+  }
+  
+  public void d(Object paramObject)
+  {
+    switch (a.a[b.ordinal()])
+    {
+    default: 
+      return;
+    case 7: 
+      d = ((Float)paramObject).floatValue();
+      return;
+    case 6: 
+      f = ((Boolean)paramObject).booleanValue();
+      return;
+    case 5: 
+      e = ((String)paramObject);
+      return;
+    case 4: 
+      d = ((Float)paramObject).floatValue();
+      return;
+    case 3: 
+      c = ((Integer)paramObject).intValue();
+      return;
+    }
+    g = ((Integer)paramObject).intValue();
+  }
+  
+  public static enum AttributeType
+  {
+    static
+    {
+      AttributeType localAttributeType1 = new AttributeType("INT_TYPE", 0);
+      b = localAttributeType1;
+      AttributeType localAttributeType2 = new AttributeType("FLOAT_TYPE", 1);
+      c = localAttributeType2;
+      AttributeType localAttributeType3 = new AttributeType("COLOR_TYPE", 2);
+      d = localAttributeType3;
+      AttributeType localAttributeType4 = new AttributeType("COLOR_DRAWABLE_TYPE", 3);
+      e = localAttributeType4;
+      AttributeType localAttributeType5 = new AttributeType("STRING_TYPE", 4);
+      f = localAttributeType5;
+      AttributeType localAttributeType6 = new AttributeType("BOOLEAN_TYPE", 5);
+      g = localAttributeType6;
+      AttributeType localAttributeType7 = new AttributeType("DIMENSION_TYPE", 6);
+      h = localAttributeType7;
+      i = new AttributeType[] { localAttributeType1, localAttributeType2, localAttributeType3, localAttributeType4, localAttributeType5, localAttributeType6, localAttributeType7 };
+    }
+  }
+}

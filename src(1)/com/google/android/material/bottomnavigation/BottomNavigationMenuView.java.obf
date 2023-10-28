@@ -1,0 +1,687 @@
+package com.google.android.material.bottomnavigation;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.util.SparseArray;
+import android.util.TypedValue;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
+import androidx.appcompat.view.menu.i;
+import androidx.appcompat.view.menu.n;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionSet;
+import androidx.transition.j;
+import c.h.p.e;
+import c.h.q.f0;
+import c.h.q.p0.c;
+import c.h.q.p0.c.b;
+import c.n.a.a.b;
+import com.google.android.material.badge.BadgeDrawable;
+import d.c.a.a.d;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+public class BottomNavigationMenuView
+  extends ViewGroup
+  implements n
+{
+  private static final int[] b = { 16842912 };
+  private static final int[] c = { -16842910 };
+  private SparseArray<BadgeDrawable> A = new SparseArray(5);
+  private BottomNavigationPresenter B;
+  private androidx.appcompat.view.menu.g C;
+  private final TransitionSet d;
+  private final int e;
+  private final int f;
+  private final int g;
+  private final int h;
+  private final int i;
+  private final View.OnClickListener j;
+  private final e<BottomNavigationItemView> k = new c.h.p.g(5);
+  private final SparseArray<View.OnTouchListener> l = new SparseArray(5);
+  private boolean m;
+  private int n;
+  private BottomNavigationItemView[] o;
+  private int p = 0;
+  private int q = 0;
+  private ColorStateList r;
+  private int s;
+  private ColorStateList t;
+  private final ColorStateList u;
+  private int v;
+  private int w;
+  private Drawable x;
+  private int y;
+  private int[] z;
+  
+  public BottomNavigationMenuView(Context paramContext)
+  {
+    this(paramContext, null);
+  }
+  
+  public BottomNavigationMenuView(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    super(paramContext, paramAttributeSet);
+    paramContext = getResources();
+    e = paramContext.getDimensionPixelSize(d.f);
+    f = paramContext.getDimensionPixelSize(d.g);
+    g = paramContext.getDimensionPixelSize(d.b);
+    h = paramContext.getDimensionPixelSize(d.c);
+    i = paramContext.getDimensionPixelSize(d.d);
+    u = e(16842808);
+    paramContext = new AutoTransition();
+    d = paramContext;
+    paramContext.q0(0);
+    paramContext.o0(115L);
+    paramContext.p0(new b());
+    paramContext.i0(new com.google.android.material.internal.g());
+    j = new a();
+    z = new int[5];
+    f0.A0(this, 1);
+  }
+  
+  private boolean g(int paramInt1, int paramInt2)
+  {
+    if (paramInt1 == -1)
+    {
+      if (paramInt2 > 3) {
+        return true;
+      }
+    }
+    else if (paramInt1 == 0) {
+      return true;
+    }
+    return false;
+  }
+  
+  private BottomNavigationItemView getNewItem()
+  {
+    BottomNavigationItemView localBottomNavigationItemView2 = (BottomNavigationItemView)k.b();
+    BottomNavigationItemView localBottomNavigationItemView1 = localBottomNavigationItemView2;
+    if (localBottomNavigationItemView2 == null) {
+      localBottomNavigationItemView1 = new BottomNavigationItemView(getContext());
+    }
+    return localBottomNavigationItemView1;
+  }
+  
+  private boolean h(int paramInt)
+  {
+    return paramInt != -1;
+  }
+  
+  private void i()
+  {
+    HashSet localHashSet = new HashSet();
+    int i3 = 0;
+    int i2 = 0;
+    int i1;
+    for (;;)
+    {
+      i1 = i3;
+      if (i2 >= C.size()) {
+        break;
+      }
+      localHashSet.add(Integer.valueOf(C.getItem(i2).getItemId()));
+      i2 += 1;
+    }
+    while (i1 < A.size())
+    {
+      i2 = A.keyAt(i1);
+      if (!localHashSet.contains(Integer.valueOf(i2))) {
+        A.delete(i2);
+      }
+      i1 += 1;
+    }
+  }
+  
+  private void setBadgeIfNeeded(BottomNavigationItemView paramBottomNavigationItemView)
+  {
+    int i1 = paramBottomNavigationItemView.getId();
+    if (!h(i1)) {
+      return;
+    }
+    BadgeDrawable localBadgeDrawable = (BadgeDrawable)A.get(i1);
+    if (localBadgeDrawable != null) {
+      paramBottomNavigationItemView.setBadge(localBadgeDrawable);
+    }
+  }
+  
+  public void b(androidx.appcompat.view.menu.g paramG)
+  {
+    C = paramG;
+  }
+  
+  public void d()
+  {
+    removeAllViews();
+    Object localObject1 = o;
+    int i2;
+    Object localObject2;
+    if (localObject1 != null)
+    {
+      i2 = localObject1.length;
+      i1 = 0;
+      while (i1 < i2)
+      {
+        localObject2 = localObject1[i1];
+        if (localObject2 != null)
+        {
+          k.a(localObject2);
+          ((BottomNavigationItemView)localObject2).h();
+        }
+        i1 += 1;
+      }
+    }
+    if (C.size() == 0)
+    {
+      p = 0;
+      q = 0;
+      o = null;
+      return;
+    }
+    i();
+    o = new BottomNavigationItemView[C.size()];
+    boolean bool = g(n, C.G().size());
+    int i1 = 0;
+    while (i1 < C.size())
+    {
+      B.k(true);
+      C.getItem(i1).setCheckable(true);
+      B.k(false);
+      localObject1 = getNewItem();
+      o[i1] = localObject1;
+      ((BottomNavigationItemView)localObject1).setIconTintList(r);
+      ((BottomNavigationItemView)localObject1).setIconSize(s);
+      ((BottomNavigationItemView)localObject1).setTextColor(u);
+      ((BottomNavigationItemView)localObject1).setTextAppearanceInactive(v);
+      ((BottomNavigationItemView)localObject1).setTextAppearanceActive(w);
+      ((BottomNavigationItemView)localObject1).setTextColor(t);
+      localObject2 = x;
+      if (localObject2 != null) {
+        ((BottomNavigationItemView)localObject1).setItemBackground((Drawable)localObject2);
+      } else {
+        ((BottomNavigationItemView)localObject1).setItemBackground(y);
+      }
+      ((BottomNavigationItemView)localObject1).setShifting(bool);
+      ((BottomNavigationItemView)localObject1).setLabelVisibilityMode(n);
+      localObject2 = (i)C.getItem(i1);
+      ((BottomNavigationItemView)localObject1).e((i)localObject2, 0);
+      ((BottomNavigationItemView)localObject1).setItemPosition(i1);
+      i2 = ((i)localObject2).getItemId();
+      ((FrameLayout)localObject1).setOnTouchListener((View.OnTouchListener)l.get(i2));
+      ((FrameLayout)localObject1).setOnClickListener(j);
+      int i3 = p;
+      if ((i3 != 0) && (i2 == i3)) {
+        q = i1;
+      }
+      setBadgeIfNeeded((BottomNavigationItemView)localObject1);
+      addView((View)localObject1);
+      i1 += 1;
+    }
+    i1 = Math.min(C.size() - 1, q);
+    q = i1;
+    C.getItem(i1).setChecked(true);
+  }
+  
+  public ColorStateList e(int paramInt)
+  {
+    Object localObject = new TypedValue();
+    if (!getContext().getTheme().resolveAttribute(paramInt, (TypedValue)localObject, true)) {
+      return null;
+    }
+    ColorStateList localColorStateList = c.a.k.a.a.a(getContext(), resourceId);
+    if (!getContext().getTheme().resolveAttribute(c.a.a.y, (TypedValue)localObject, true)) {
+      return null;
+    }
+    paramInt = data;
+    int i1 = localColorStateList.getDefaultColor();
+    localObject = c;
+    int[] arrayOfInt1 = b;
+    int[] arrayOfInt2 = ViewGroup.EMPTY_STATE_SET;
+    int i2 = localColorStateList.getColorForState((int[])localObject, i1);
+    return new ColorStateList(new int[][] { localObject, arrayOfInt1, arrayOfInt2 }, new int[] { i2, paramInt, i1 });
+  }
+  
+  public boolean f()
+  {
+    return m;
+  }
+  
+  SparseArray<BadgeDrawable> getBadgeDrawables()
+  {
+    return A;
+  }
+  
+  public ColorStateList getIconTintList()
+  {
+    return r;
+  }
+  
+  public Drawable getItemBackground()
+  {
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if ((arrayOfBottomNavigationItemView != null) && (arrayOfBottomNavigationItemView.length > 0)) {
+      return arrayOfBottomNavigationItemView[0].getBackground();
+    }
+    return x;
+  }
+  
+  @Deprecated
+  public int getItemBackgroundRes()
+  {
+    return y;
+  }
+  
+  public int getItemIconSize()
+  {
+    return s;
+  }
+  
+  public int getItemTextAppearanceActive()
+  {
+    return w;
+  }
+  
+  public int getItemTextAppearanceInactive()
+  {
+    return v;
+  }
+  
+  public ColorStateList getItemTextColor()
+  {
+    return t;
+  }
+  
+  public int getLabelVisibilityMode()
+  {
+    return n;
+  }
+  
+  public int getSelectedItemId()
+  {
+    return p;
+  }
+  
+  public int getWindowAnimations()
+  {
+    return 0;
+  }
+  
+  void j(int paramInt)
+  {
+    int i2 = C.size();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      MenuItem localMenuItem = C.getItem(i1);
+      if (paramInt == localMenuItem.getItemId())
+      {
+        p = paramInt;
+        q = i1;
+        localMenuItem.setChecked(true);
+        return;
+      }
+      i1 += 1;
+    }
+  }
+  
+  public void k()
+  {
+    Object localObject = C;
+    if (localObject != null)
+    {
+      if (o == null) {
+        return;
+      }
+      int i2 = ((androidx.appcompat.view.menu.g)localObject).size();
+      if (i2 != o.length)
+      {
+        d();
+        return;
+      }
+      int i3 = p;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        localObject = C.getItem(i1);
+        if (((MenuItem)localObject).isChecked())
+        {
+          p = ((MenuItem)localObject).getItemId();
+          q = i1;
+        }
+        i1 += 1;
+      }
+      if (i3 != p) {
+        j.a(this, d);
+      }
+      boolean bool = g(n, C.G().size());
+      i1 = 0;
+      while (i1 < i2)
+      {
+        B.k(true);
+        o[i1].setLabelVisibilityMode(n);
+        o[i1].setShifting(bool);
+        o[i1].e((i)C.getItem(i1), 0);
+        B.k(false);
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+  {
+    super.onInitializeAccessibilityNodeInfo(paramAccessibilityNodeInfo);
+    c.y0(paramAccessibilityNodeInfo).a0(c.b.a(1, C.G().size(), false, 1));
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    int i1 = getChildCount();
+    int i2 = paramInt4 - paramInt2;
+    paramInt2 = 0;
+    paramInt4 = paramInt2;
+    while (paramInt2 < i1)
+    {
+      View localView = getChildAt(paramInt2);
+      if (localView.getVisibility() != 8)
+      {
+        if (f0.D(this) == 1)
+        {
+          int i3 = paramInt3 - paramInt1 - paramInt4;
+          localView.layout(i3 - localView.getMeasuredWidth(), 0, i3, i2);
+        }
+        else
+        {
+          localView.layout(paramInt4, 0, localView.getMeasuredWidth() + paramInt4, i2);
+        }
+        paramInt4 += localView.getMeasuredWidth();
+      }
+      paramInt2 += 1;
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    int i3 = View.MeasureSpec.getSize(paramInt1);
+    int i1 = C.G().size();
+    int i4 = getChildCount();
+    int i5 = View.MeasureSpec.makeMeasureSpec(i, 1073741824);
+    Object localObject;
+    int i2;
+    if ((g(n, i1)) && (m))
+    {
+      localObject = getChildAt(q);
+      paramInt2 = h;
+      paramInt1 = paramInt2;
+      if (((View)localObject).getVisibility() != 8)
+      {
+        ((View)localObject).measure(View.MeasureSpec.makeMeasureSpec(g, Integer.MIN_VALUE), i5);
+        paramInt1 = Math.max(paramInt2, ((View)localObject).getMeasuredWidth());
+      }
+      if (((View)localObject).getVisibility() != 8) {
+        paramInt2 = 1;
+      } else {
+        paramInt2 = 0;
+      }
+      paramInt2 = i1 - paramInt2;
+      i2 = Math.min(i3 - f * paramInt2, Math.min(paramInt1, g));
+      i1 = i3 - i2;
+      if (paramInt2 == 0) {
+        paramInt1 = 1;
+      } else {
+        paramInt1 = paramInt2;
+      }
+      i3 = Math.min(i1 / paramInt1, e);
+      paramInt2 = i1 - paramInt2 * i3;
+      paramInt1 = 0;
+    }
+    while (paramInt1 < i4)
+    {
+      if (getChildAt(paramInt1).getVisibility() != 8)
+      {
+        localObject = z;
+        if (paramInt1 == q) {
+          i1 = i2;
+        } else {
+          i1 = i3;
+        }
+        localObject[paramInt1] = i1;
+        i1 = paramInt2;
+        if (paramInt2 > 0)
+        {
+          localObject[paramInt1] += 1;
+          i1 = paramInt2 - 1;
+        }
+      }
+      else
+      {
+        z[paramInt1] = 0;
+        i1 = paramInt2;
+      }
+      paramInt1 += 1;
+      paramInt2 = i1;
+      continue;
+      if (i1 == 0) {
+        paramInt1 = 1;
+      } else {
+        paramInt1 = i1;
+      }
+      i2 = Math.min(i3 / paramInt1, g);
+      paramInt2 = i3 - i1 * i2;
+      paramInt1 = 0;
+      while (paramInt1 < i4)
+      {
+        if (getChildAt(paramInt1).getVisibility() != 8)
+        {
+          localObject = z;
+          localObject[paramInt1] = i2;
+          i1 = paramInt2;
+          if (paramInt2 > 0)
+          {
+            localObject[paramInt1] += 1;
+            i1 = paramInt2 - 1;
+          }
+        }
+        else
+        {
+          z[paramInt1] = 0;
+          i1 = paramInt2;
+        }
+        paramInt1 += 1;
+        paramInt2 = i1;
+      }
+    }
+    paramInt1 = 0;
+    paramInt2 = paramInt1;
+    while (paramInt1 < i4)
+    {
+      localObject = getChildAt(paramInt1);
+      if (((View)localObject).getVisibility() != 8)
+      {
+        ((View)localObject).measure(View.MeasureSpec.makeMeasureSpec(z[paramInt1], 1073741824), i5);
+        getLayoutParamswidth = ((View)localObject).getMeasuredWidth();
+        paramInt2 += ((View)localObject).getMeasuredWidth();
+      }
+      paramInt1 += 1;
+    }
+    setMeasuredDimension(View.resolveSizeAndState(paramInt2, View.MeasureSpec.makeMeasureSpec(paramInt2, 1073741824), 0), View.resolveSizeAndState(i, i5, 0));
+  }
+  
+  void setBadgeDrawables(SparseArray<BadgeDrawable> paramSparseArray)
+  {
+    A = paramSparseArray;
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if (arrayOfBottomNavigationItemView != null)
+    {
+      int i2 = arrayOfBottomNavigationItemView.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        BottomNavigationItemView localBottomNavigationItemView = arrayOfBottomNavigationItemView[i1];
+        localBottomNavigationItemView.setBadge((BadgeDrawable)paramSparseArray.get(localBottomNavigationItemView.getId()));
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void setIconTintList(ColorStateList paramColorStateList)
+  {
+    r = paramColorStateList;
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if (arrayOfBottomNavigationItemView != null)
+    {
+      int i2 = arrayOfBottomNavigationItemView.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        arrayOfBottomNavigationItemView[i1].setIconTintList(paramColorStateList);
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void setItemBackground(Drawable paramDrawable)
+  {
+    x = paramDrawable;
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if (arrayOfBottomNavigationItemView != null)
+    {
+      int i2 = arrayOfBottomNavigationItemView.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        arrayOfBottomNavigationItemView[i1].setItemBackground(paramDrawable);
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void setItemBackgroundRes(int paramInt)
+  {
+    y = paramInt;
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if (arrayOfBottomNavigationItemView != null)
+    {
+      int i2 = arrayOfBottomNavigationItemView.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        arrayOfBottomNavigationItemView[i1].setItemBackground(paramInt);
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void setItemHorizontalTranslationEnabled(boolean paramBoolean)
+  {
+    m = paramBoolean;
+  }
+  
+  public void setItemIconSize(int paramInt)
+  {
+    s = paramInt;
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if (arrayOfBottomNavigationItemView != null)
+    {
+      int i2 = arrayOfBottomNavigationItemView.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        arrayOfBottomNavigationItemView[i1].setIconSize(paramInt);
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void setItemTextAppearanceActive(int paramInt)
+  {
+    w = paramInt;
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if (arrayOfBottomNavigationItemView != null)
+    {
+      int i2 = arrayOfBottomNavigationItemView.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        BottomNavigationItemView localBottomNavigationItemView = arrayOfBottomNavigationItemView[i1];
+        localBottomNavigationItemView.setTextAppearanceActive(paramInt);
+        ColorStateList localColorStateList = t;
+        if (localColorStateList != null) {
+          localBottomNavigationItemView.setTextColor(localColorStateList);
+        }
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void setItemTextAppearanceInactive(int paramInt)
+  {
+    v = paramInt;
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if (arrayOfBottomNavigationItemView != null)
+    {
+      int i2 = arrayOfBottomNavigationItemView.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        BottomNavigationItemView localBottomNavigationItemView = arrayOfBottomNavigationItemView[i1];
+        localBottomNavigationItemView.setTextAppearanceInactive(paramInt);
+        ColorStateList localColorStateList = t;
+        if (localColorStateList != null) {
+          localBottomNavigationItemView.setTextColor(localColorStateList);
+        }
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void setItemTextColor(ColorStateList paramColorStateList)
+  {
+    t = paramColorStateList;
+    BottomNavigationItemView[] arrayOfBottomNavigationItemView = o;
+    if (arrayOfBottomNavigationItemView != null)
+    {
+      int i2 = arrayOfBottomNavigationItemView.length;
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        arrayOfBottomNavigationItemView[i1].setTextColor(paramColorStateList);
+        i1 += 1;
+      }
+    }
+  }
+  
+  public void setLabelVisibilityMode(int paramInt)
+  {
+    n = paramInt;
+  }
+  
+  public void setPresenter(BottomNavigationPresenter paramBottomNavigationPresenter)
+  {
+    B = paramBottomNavigationPresenter;
+  }
+  
+  class a
+    implements View.OnClickListener
+  {
+    a() {}
+    
+    public void onClick(View paramView)
+    {
+      paramView = ((BottomNavigationItemView)paramView).getItemData();
+      if (!BottomNavigationMenuView.c(BottomNavigationMenuView.this).O(paramView, BottomNavigationMenuView.a(BottomNavigationMenuView.this), 0)) {
+        paramView.setChecked(true);
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+package com.google.android.gms.internal.fitness;
+
+final class zzgz
+  implements zzih
+{
+  private static final zzgz zzxw = new zzgz();
+  
+  private zzgz() {}
+  
+  public static zzgz zzbv()
+  {
+    return zzxw;
+  }
+  
+  public final boolean zzb(Class<?> paramClass)
+  {
+    return zzgy.class.isAssignableFrom(paramClass);
+  }
+  
+  public final zzii zzc(Class<?> paramClass)
+  {
+    if (!zzgy.class.isAssignableFrom(paramClass))
+    {
+      paramClass = paramClass.getName();
+      if (paramClass.length() != 0) {
+        paramClass = "Unsupported message type: ".concat(paramClass);
+      } else {
+        paramClass = new String("Unsupported message type: ");
+      }
+      throw new IllegalArgumentException(paramClass);
+    }
+    try
+    {
+      zzii localZzii = (zzii)zzgy.zza(paramClass.asSubclass(zzgy.class)).zza(zzgy.zze.zzyf, null, null);
+      return localZzii;
+    }
+    catch (Exception localException)
+    {
+      paramClass = paramClass.getName();
+      if (paramClass.length() != 0) {
+        paramClass = "Unable to get message info for ".concat(paramClass);
+      } else {
+        paramClass = new String("Unable to get message info for ");
+      }
+      throw new RuntimeException(paramClass, localException);
+    }
+  }
+}

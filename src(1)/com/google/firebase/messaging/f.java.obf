@@ -1,0 +1,134 @@
+package com.google.firebase.messaging;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.text.TextUtils;
+import android.util.Log;
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.concurrent.Executor;
+
+final class a1
+{
+  private final SharedPreferences a;
+  private final String b;
+  private final String c;
+  final ArrayDeque<String> d = new ArrayDeque();
+  private final Executor e;
+  private boolean f = false;
+  
+  private a1(SharedPreferences paramSharedPreferences, String paramString1, String paramString2, Executor paramExecutor)
+  {
+    a = paramSharedPreferences;
+    b = paramString1;
+    c = paramString2;
+    e = paramExecutor;
+  }
+  
+  private boolean b(boolean paramBoolean)
+  {
+    if ((paramBoolean) && (!f)) {
+      j();
+    }
+    return paramBoolean;
+  }
+  
+  static a1 c(SharedPreferences paramSharedPreferences, String paramString1, String paramString2, Executor paramExecutor)
+  {
+    paramSharedPreferences = new a1(paramSharedPreferences, paramString1, paramString2, paramExecutor);
+    paramSharedPreferences.d();
+    return paramSharedPreferences;
+  }
+  
+  private void d()
+  {
+    for (;;)
+    {
+      int i;
+      synchronized (d)
+      {
+        d.clear();
+        Object localObject1 = a.getString(b, "");
+        if ((!TextUtils.isEmpty((CharSequence)localObject1)) && (((String)localObject1).contains(c)))
+        {
+          localObject1 = ((String)localObject1).split(c, -1);
+          if (localObject1.length == 0) {
+            Log.e("FirebaseMessaging", "Corrupted queue. Please check the queue contents and item separator provided");
+          }
+          int j = localObject1.length;
+          i = 0;
+          if (i < j)
+          {
+            CharSequence localCharSequence = localObject1[i];
+            if (TextUtils.isEmpty(localCharSequence)) {
+              break label131;
+            }
+            d.add(localCharSequence);
+          }
+        }
+        else
+        {
+          return;
+        }
+      }
+      label131:
+      i += 1;
+    }
+  }
+  
+  private void i()
+  {
+    synchronized (d)
+    {
+      a.edit().putString(b, h()).commit();
+      return;
+    }
+  }
+  
+  private void j()
+  {
+    e.execute(new z(this));
+  }
+  
+  public boolean a(String paramString)
+  {
+    if ((!TextUtils.isEmpty(paramString)) && (!paramString.contains(c))) {
+      synchronized (d)
+      {
+        boolean bool = b(d.add(paramString));
+        return bool;
+      }
+    }
+    return false;
+  }
+  
+  public String f()
+  {
+    synchronized (d)
+    {
+      String str = (String)d.peek();
+      return str;
+    }
+  }
+  
+  public boolean g(Object paramObject)
+  {
+    synchronized (d)
+    {
+      boolean bool = b(d.remove(paramObject));
+      return bool;
+    }
+  }
+  
+  public String h()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    Iterator localIterator = d.iterator();
+    while (localIterator.hasNext())
+    {
+      localStringBuilder.append((String)localIterator.next());
+      localStringBuilder.append(c);
+    }
+    return localStringBuilder.toString();
+  }
+}

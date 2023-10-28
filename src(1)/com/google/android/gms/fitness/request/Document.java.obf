@@ -1,0 +1,31 @@
+package com.google.android.gms.fitness.request;
+
+import com.google.android.gms.common.api.internal.ListenerHolder;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.fitness.data.BleDevice;
+
+public final class zza
+  extends zzag
+{
+  private final ListenerHolder<BleScanCallback> zzqi;
+  
+  private zza(ListenerHolder<BleScanCallback> paramListenerHolder)
+  {
+    zzqi = ((ListenerHolder)Preconditions.checkNotNull(paramListenerHolder));
+  }
+  
+  public final void onDeviceFound(BleDevice paramBleDevice)
+  {
+    zzqi.notifyListener(new zzc(this, paramBleDevice));
+  }
+  
+  public final void onScanStopped()
+  {
+    zzqi.notifyListener(new zzb(this));
+  }
+  
+  public final void release()
+  {
+    zzqi.clear();
+  }
+}

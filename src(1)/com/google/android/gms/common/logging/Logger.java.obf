@@ -1,0 +1,114 @@
+package com.google.android.gms.common.logging;
+
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.GmsLogger;
+import java.util.Locale;
+
+@KeepForSdk
+public class Logger
+{
+  private final String zza;
+  private final String zzb;
+  private final GmsLogger zzc;
+  private final int zzd;
+  
+  @KeepForSdk
+  public Logger(String paramString, String... paramVarArgs)
+  {
+    zzb = paramVarArgs;
+    zza = paramString;
+    zzc = new GmsLogger(paramString);
+    int i = 2;
+    while ((i <= 7) && (!Log.isLoggable(zza, i))) {
+      i += 1;
+    }
+    zzd = i;
+  }
+  
+  @KeepForSdk
+  public void d(String paramString, Object... paramVarArgs)
+  {
+    if (isLoggable(3)) {
+      Log.d(zza, format(paramString, paramVarArgs));
+    }
+  }
+  
+  @KeepForSdk
+  public void e(String paramString, Throwable paramThrowable, Object... paramVarArgs)
+  {
+    Log.e(zza, format(paramString, paramVarArgs), paramThrowable);
+  }
+  
+  @KeepForSdk
+  public void e(String paramString, Object... paramVarArgs)
+  {
+    Log.e(zza, format(paramString, paramVarArgs));
+  }
+  
+  @KeepForSdk
+  protected String format(String paramString, Object... paramVarArgs)
+  {
+    String str = paramString;
+    if (paramVarArgs != null)
+    {
+      str = paramString;
+      if (paramVarArgs.length > 0) {
+        str = String.format(Locale.US, paramString, paramVarArgs);
+      }
+    }
+    return zzb.concat(str);
+  }
+  
+  @KeepForSdk
+  public String getTag()
+  {
+    return zza;
+  }
+  
+  @KeepForSdk
+  public void i(String paramString, Object... paramVarArgs)
+  {
+    Log.i(zza, format(paramString, paramVarArgs));
+  }
+  
+  @KeepForSdk
+  public boolean isLoggable(int paramInt)
+  {
+    return zzd <= paramInt;
+  }
+  
+  @KeepForSdk
+  public void v(String paramString, Throwable paramThrowable, Object... paramVarArgs)
+  {
+    if (isLoggable(2)) {
+      Log.v(zza, format(paramString, paramVarArgs), paramThrowable);
+    }
+  }
+  
+  @KeepForSdk
+  public void v(String paramString, Object... paramVarArgs)
+  {
+    if (isLoggable(2)) {
+      Log.v(zza, format(paramString, paramVarArgs));
+    }
+  }
+  
+  @KeepForSdk
+  public void w(String paramString, Object... paramVarArgs)
+  {
+    Log.w(zza, format(paramString, paramVarArgs));
+  }
+  
+  @KeepForSdk
+  public void wtf(String paramString, Throwable paramThrowable, Object... paramVarArgs)
+  {
+    Log.wtf(zza, format(paramString, paramVarArgs), paramThrowable);
+  }
+  
+  @KeepForSdk
+  public void wtf(Throwable paramThrowable)
+  {
+    Log.wtf(zza, paramThrowable);
+  }
+}

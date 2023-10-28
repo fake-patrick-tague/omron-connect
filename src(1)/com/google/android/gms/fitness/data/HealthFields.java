@@ -1,0 +1,166 @@
+package com.google.android.gms.fitness.data;
+
+import androidx.annotation.RecentlyNonNull;
+
+public final class HealthFields
+{
+  public static final int BLOOD_GLUCOSE_SPECIMEN_SOURCE_CAPILLARY_BLOOD = 2;
+  public static final int BLOOD_GLUCOSE_SPECIMEN_SOURCE_INTERSTITIAL_FLUID = 1;
+  public static final int BLOOD_GLUCOSE_SPECIMEN_SOURCE_PLASMA = 3;
+  public static final int BLOOD_GLUCOSE_SPECIMEN_SOURCE_SERUM = 4;
+  public static final int BLOOD_GLUCOSE_SPECIMEN_SOURCE_TEARS = 5;
+  public static final int BLOOD_GLUCOSE_SPECIMEN_SOURCE_WHOLE_BLOOD = 6;
+  public static final int BLOOD_PRESSURE_MEASUREMENT_LOCATION_LEFT_UPPER_ARM = 3;
+  public static final int BLOOD_PRESSURE_MEASUREMENT_LOCATION_LEFT_WRIST = 1;
+  public static final int BLOOD_PRESSURE_MEASUREMENT_LOCATION_RIGHT_UPPER_ARM = 4;
+  public static final int BLOOD_PRESSURE_MEASUREMENT_LOCATION_RIGHT_WRIST = 2;
+  public static final int BODY_POSITION_LYING_DOWN = 3;
+  public static final int BODY_POSITION_SEMI_RECUMBENT = 4;
+  public static final int BODY_POSITION_SITTING = 2;
+  public static final int BODY_POSITION_STANDING = 1;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_AXILLARY = 1;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_FINGER = 2;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_FOREHEAD = 3;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_ORAL = 4;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_RECTAL = 5;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_TEMPORAL_ARTERY = 6;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_TOE = 7;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_TYMPANIC = 8;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_VAGINAL = 10;
+  public static final int BODY_TEMPERATURE_MEASUREMENT_LOCATION_WRIST = 9;
+  public static final int CERVICAL_DILATION_CLOSED = 1;
+  public static final int CERVICAL_DILATION_MEDIUM = 2;
+  public static final int CERVICAL_DILATION_OPEN = 3;
+  public static final int CERVICAL_FIRMNESS_FIRM = 3;
+  public static final int CERVICAL_FIRMNESS_MEDIUM = 2;
+  public static final int CERVICAL_FIRMNESS_SOFT = 1;
+  public static final int CERVICAL_MUCUS_AMOUNT_HEAVY = 3;
+  public static final int CERVICAL_MUCUS_AMOUNT_LIGHT = 1;
+  public static final int CERVICAL_MUCUS_AMOUNT_MEDIUM = 2;
+  public static final int CERVICAL_MUCUS_TEXTURE_CREAMY = 3;
+  public static final int CERVICAL_MUCUS_TEXTURE_DRY = 1;
+  public static final int CERVICAL_MUCUS_TEXTURE_EGG_WHITE = 5;
+  public static final int CERVICAL_MUCUS_TEXTURE_STICKY = 2;
+  public static final int CERVICAL_MUCUS_TEXTURE_WATERY = 4;
+  public static final int CERVICAL_POSITION_HIGH = 3;
+  public static final int CERVICAL_POSITION_LOW = 1;
+  public static final int CERVICAL_POSITION_MEDIUM = 2;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_GLUCOSE_LEVEL;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_GLUCOSE_SPECIMEN_SOURCE;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_DIASTOLIC;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_DIASTOLIC_AVERAGE;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_DIASTOLIC_MAX;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_DIASTOLIC_MIN;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_MEASUREMENT_LOCATION;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_SYSTOLIC = Field.addField("blood_pressure_systolic");
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_SYSTOLIC_AVERAGE = Field.addField("blood_pressure_systolic_average");
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_SYSTOLIC_MAX;
+  @RecentlyNonNull
+  public static final Field FIELD_BLOOD_PRESSURE_SYSTOLIC_MIN = Field.addField("blood_pressure_systolic_min");
+  @RecentlyNonNull
+  public static final Field FIELD_BODY_POSITION;
+  @RecentlyNonNull
+  public static final Field FIELD_BODY_TEMPERATURE;
+  @RecentlyNonNull
+  public static final Field FIELD_BODY_TEMPERATURE_MEASUREMENT_LOCATION;
+  @RecentlyNonNull
+  public static final Field FIELD_CERVICAL_DILATION = Field.find("cervical_dilation");
+  @RecentlyNonNull
+  public static final Field FIELD_CERVICAL_FIRMNESS = Field.find("cervical_firmness");
+  @RecentlyNonNull
+  public static final Field FIELD_CERVICAL_MUCUS_AMOUNT;
+  @RecentlyNonNull
+  public static final Field FIELD_CERVICAL_MUCUS_TEXTURE;
+  @RecentlyNonNull
+  public static final Field FIELD_CERVICAL_POSITION;
+  @RecentlyNonNull
+  public static final Field FIELD_MENSTRUAL_FLOW = Field.find("menstrual_flow");
+  @RecentlyNonNull
+  public static final Field FIELD_OVULATION_TEST_RESULT = Field.find("ovulation_test_result");
+  @RecentlyNonNull
+  public static final Field FIELD_OXYGEN_SATURATION;
+  @RecentlyNonNull
+  public static final Field FIELD_OXYGEN_SATURATION_AVERAGE;
+  @RecentlyNonNull
+  public static final Field FIELD_OXYGEN_SATURATION_MAX;
+  @RecentlyNonNull
+  public static final Field FIELD_OXYGEN_SATURATION_MEASUREMENT_METHOD;
+  @RecentlyNonNull
+  public static final Field FIELD_OXYGEN_SATURATION_MIN;
+  @RecentlyNonNull
+  public static final Field FIELD_OXYGEN_SATURATION_SYSTEM;
+  @RecentlyNonNull
+  public static final Field FIELD_OXYGEN_THERAPY_ADMINISTRATION_MODE;
+  @RecentlyNonNull
+  public static final Field FIELD_SUPPLEMENTAL_OXYGEN_FLOW_RATE;
+  @RecentlyNonNull
+  public static final Field FIELD_SUPPLEMENTAL_OXYGEN_FLOW_RATE_AVERAGE;
+  @RecentlyNonNull
+  public static final Field FIELD_SUPPLEMENTAL_OXYGEN_FLOW_RATE_MAX;
+  @RecentlyNonNull
+  public static final Field FIELD_SUPPLEMENTAL_OXYGEN_FLOW_RATE_MIN;
+  @RecentlyNonNull
+  public static final Field FIELD_TEMPORAL_RELATION_TO_MEAL;
+  public static final int FIELD_TEMPORAL_RELATION_TO_MEAL_AFTER_MEAL = 4;
+  public static final int FIELD_TEMPORAL_RELATION_TO_MEAL_BEFORE_MEAL = 3;
+  public static final int FIELD_TEMPORAL_RELATION_TO_MEAL_FASTING = 2;
+  public static final int FIELD_TEMPORAL_RELATION_TO_MEAL_GENERAL = 1;
+  @RecentlyNonNull
+  public static final Field FIELD_TEMPORAL_RELATION_TO_SLEEP;
+  public static final int MENSTRUAL_FLOW_HEAVY = 4;
+  public static final int MENSTRUAL_FLOW_LIGHT = 2;
+  public static final int MENSTRUAL_FLOW_MEDIUM = 3;
+  public static final int MENSTRUAL_FLOW_SPOTTING = 1;
+  public static final int OVULATION_TEST_RESULT_NEGATIVE = 1;
+  public static final int OVULATION_TEST_RESULT_POSITIVE = 2;
+  public static final int OXYGEN_SATURATION_MEASUREMENT_METHOD_PULSE_OXIMETRY = 1;
+  public static final int OXYGEN_SATURATION_SYSTEM_PERIPHERAL_CAPILLARY = 1;
+  public static final int OXYGEN_THERAPY_ADMINISTRATION_MODE_NASAL_CANULA = 1;
+  public static final int TEMPORAL_RELATION_TO_SLEEP_BEFORE_SLEEP = 2;
+  public static final int TEMPORAL_RELATION_TO_SLEEP_DURING_SLEEP = 4;
+  public static final int TEMPORAL_RELATION_TO_SLEEP_FULLY_AWAKE = 1;
+  public static final int TEMPORAL_RELATION_TO_SLEEP_ON_WAKING = 3;
+  
+  static
+  {
+    FIELD_BLOOD_PRESSURE_SYSTOLIC_MAX = Field.addField("blood_pressure_systolic_max");
+    FIELD_BLOOD_PRESSURE_DIASTOLIC = Field.addField("blood_pressure_diastolic");
+    FIELD_BLOOD_PRESSURE_DIASTOLIC_AVERAGE = Field.addField("blood_pressure_diastolic_average");
+    FIELD_BLOOD_PRESSURE_DIASTOLIC_MIN = Field.addField("blood_pressure_diastolic_min");
+    FIELD_BLOOD_PRESSURE_DIASTOLIC_MAX = Field.addField("blood_pressure_diastolic_max");
+    FIELD_BODY_POSITION = Field.find("body_position");
+    FIELD_BLOOD_PRESSURE_MEASUREMENT_LOCATION = Field.find("blood_pressure_measurement_location");
+    FIELD_BLOOD_GLUCOSE_LEVEL = Field.addField("blood_glucose_level");
+    FIELD_TEMPORAL_RELATION_TO_MEAL = Field.find("temporal_relation_to_meal");
+    FIELD_TEMPORAL_RELATION_TO_SLEEP = Field.find("temporal_relation_to_sleep");
+    FIELD_BLOOD_GLUCOSE_SPECIMEN_SOURCE = Field.find("blood_glucose_specimen_source");
+    FIELD_OXYGEN_SATURATION = Field.addField("oxygen_saturation");
+    FIELD_OXYGEN_SATURATION_AVERAGE = Field.addField("oxygen_saturation_average");
+    FIELD_OXYGEN_SATURATION_MIN = Field.addField("oxygen_saturation_min");
+    FIELD_OXYGEN_SATURATION_MAX = Field.addField("oxygen_saturation_max");
+    FIELD_SUPPLEMENTAL_OXYGEN_FLOW_RATE = Field.addField("supplemental_oxygen_flow_rate");
+    FIELD_SUPPLEMENTAL_OXYGEN_FLOW_RATE_AVERAGE = Field.addField("supplemental_oxygen_flow_rate_average");
+    FIELD_SUPPLEMENTAL_OXYGEN_FLOW_RATE_MIN = Field.addField("supplemental_oxygen_flow_rate_min");
+    FIELD_SUPPLEMENTAL_OXYGEN_FLOW_RATE_MAX = Field.addField("supplemental_oxygen_flow_rate_max");
+    FIELD_OXYGEN_THERAPY_ADMINISTRATION_MODE = Field.find("oxygen_therapy_administration_mode");
+    FIELD_OXYGEN_SATURATION_SYSTEM = Field.find("oxygen_saturation_system");
+    FIELD_OXYGEN_SATURATION_MEASUREMENT_METHOD = Field.find("oxygen_saturation_measurement_method");
+    FIELD_BODY_TEMPERATURE = Field.addField("body_temperature");
+    FIELD_BODY_TEMPERATURE_MEASUREMENT_LOCATION = Field.find("body_temperature_measurement_location");
+    FIELD_CERVICAL_MUCUS_TEXTURE = Field.find("cervical_mucus_texture");
+    FIELD_CERVICAL_MUCUS_AMOUNT = Field.find("cervical_mucus_amount");
+    FIELD_CERVICAL_POSITION = Field.find("cervical_position");
+  }
+  
+  private HealthFields() {}
+}

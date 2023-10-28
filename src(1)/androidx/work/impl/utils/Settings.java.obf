@@ -1,0 +1,119 @@
+package androidx.work.impl.utils;
+
+import androidx.work.j;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+
+public class o
+{
+  private static final String a = j.f("WorkTimer");
+  private final ThreadFactory b;
+  private final ScheduledExecutorService c;
+  final Map<String, c> d;
+  final Map<String, b> e;
+  final Object f;
+  
+  public o()
+  {
+    a localA = new a();
+    b = localA;
+    d = new HashMap();
+    e = new HashMap();
+    f = new Object();
+    c = Executors.newSingleThreadScheduledExecutor(localA);
+  }
+  
+  public void a()
+  {
+    if (!c.isShutdown()) {
+      c.shutdownNow();
+    }
+  }
+  
+  public void b(String paramString, long paramLong, b paramB)
+  {
+    synchronized (f)
+    {
+      j.c().a(a, String.format("Starting timer for %s", new Object[] { paramString }), new Throwable[0]);
+      c(paramString);
+      c localC = new c(this, paramString);
+      d.put(paramString, localC);
+      e.put(paramString, paramB);
+      c.schedule(localC, paramLong, TimeUnit.MILLISECONDS);
+      return;
+    }
+  }
+  
+  public void c(String paramString)
+  {
+    synchronized (f)
+    {
+      if ((c)d.remove(paramString) != null)
+      {
+        j.c().a(a, String.format("Stopping timer for %s", new Object[] { paramString }), new Throwable[0]);
+        e.remove(paramString);
+      }
+      return;
+    }
+  }
+  
+  class a
+    implements ThreadFactory
+  {
+    private int b = 0;
+    
+    a() {}
+    
+    public Thread newThread(Runnable paramRunnable)
+    {
+      paramRunnable = Executors.defaultThreadFactory().newThread(paramRunnable);
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("WorkManager-WorkTimer-thread-");
+      localStringBuilder.append(b);
+      paramRunnable.setName(localStringBuilder.toString());
+      b += 1;
+      return paramRunnable;
+    }
+  }
+  
+  public static abstract interface b
+  {
+    public abstract void a(String paramString);
+  }
+  
+  public static class c
+    implements Runnable
+  {
+    private final o b;
+    private final String c;
+    
+    c(o paramO, String paramString)
+    {
+      b = paramO;
+      c = paramString;
+    }
+    
+    public void run()
+    {
+      synchronized (b.f)
+      {
+        if ((c)b.d.remove(c) != null)
+        {
+          o.b localB = (o.b)b.e.remove(c);
+          if (localB != null) {
+            localB.a(c);
+          }
+        }
+        else
+        {
+          j.c().a("WrkTimerRunnable", String.format("Timer with %s is already marked as complete.", new Object[] { c }), new Throwable[0]);
+        }
+        return;
+      }
+    }
+  }
+}

@@ -1,0 +1,729 @@
+package com.android.volley.toolbox;
+
+import android.os.SystemClock;
+import com.android.volley.Cache;
+import com.android.volley.Cache.Entry;
+import com.android.volley.Header;
+import com.android.volley.VolleyLog;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+public class DiskBasedCache
+  implements Cache
+{
+  private static final int CACHE_MAGIC = 538247942;
+  private static final int DEFAULT_DISK_USAGE_BYTES = 5242880;
+  static final float HYSTERESIS_FACTOR = 0.9F;
+  private final Map<String, CacheHeader> mEntries = new LinkedHashMap(16, 0.75F, true);
+  private final int mMaxCacheSizeInBytes;
+  private final FileSupplier mRootDirectorySupplier;
+  private long mTotalSize = 0L;
+  
+  public DiskBasedCache(FileSupplier paramFileSupplier)
+  {
+    this(paramFileSupplier, 5242880);
+  }
+  
+  public DiskBasedCache(FileSupplier paramFileSupplier, int paramInt)
+  {
+    mRootDirectorySupplier = paramFileSupplier;
+    mMaxCacheSizeInBytes = paramInt;
+  }
+  
+  public DiskBasedCache(File paramFile)
+  {
+    this(paramFile, 5242880);
+  }
+  
+  public DiskBasedCache(final File paramFile, int paramInt)
+  {
+    mRootDirectorySupplier = new FileSupplier()
+    {
+      public File get()
+      {
+        return paramFile;
+      }
+    };
+    mMaxCacheSizeInBytes = paramInt;
+  }
+  
+  private String getFilenameForKey(String paramString)
+  {
+    int i = paramString.length() / 2;
+    int j = paramString.substring(0, i).hashCode();
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(String.valueOf(j));
+    localStringBuilder.append(String.valueOf(paramString.substring(i).hashCode()));
+    return localStringBuilder.toString();
+  }
+  
+  private void initializeIfRootDirectoryDeleted()
+  {
+    if (!mRootDirectorySupplier.get().exists())
+    {
+      VolleyLog.d("Re-initializing cache after external clearing.", new Object[0]);
+      mEntries.clear();
+      mTotalSize = 0L;
+      initialize();
+    }
+  }
+  
+  private void pruneIfNeeded()
+  {
+    if (mTotalSize < mMaxCacheSizeInBytes) {
+      return;
+    }
+    if (VolleyLog.DEBUG) {
+      VolleyLog.v("Pruning old cache entries.", new Object[0]);
+    }
+    long l1 = mTotalSize;
+    long l2 = SystemClock.elapsedRealtime();
+    Iterator localIterator = mEntries.entrySet().iterator();
+    int i = 0;
+    int j;
+    do
+    {
+      j = i;
+      if (!localIterator.hasNext()) {
+        break;
+      }
+      Object localObject = (CacheHeader)((Map.Entry)localIterator.next()).getValue();
+      if (getFileForKey(key).delete())
+      {
+        mTotalSize -= size;
+      }
+      else
+      {
+        localObject = key;
+        VolleyLog.d("Could not delete cache entry for key=%s, filename=%s", new Object[] { localObject, getFilenameForKey((String)localObject) });
+      }
+      localIterator.remove();
+      j = i + 1;
+      i = j;
+    } while ((float)mTotalSize >= mMaxCacheSizeInBytes * 0.9F);
+    if (VolleyLog.DEBUG) {
+      VolleyLog.v("pruned %d files, %d bytes, %d ms", new Object[] { Integer.valueOf(j), Long.valueOf(mTotalSize - l1), Long.valueOf(SystemClock.elapsedRealtime() - l2) });
+    }
+  }
+  
+  private void putEntry(String paramString, CacheHeader paramCacheHeader)
+  {
+    if (!mEntries.containsKey(paramString))
+    {
+      mTotalSize += size;
+    }
+    else
+    {
+      CacheHeader localCacheHeader = (CacheHeader)mEntries.get(paramString);
+      mTotalSize += size - size;
+    }
+    mEntries.put(paramString, paramCacheHeader);
+  }
+  
+  private static int read(InputStream paramInputStream)
+    throws IOException
+  {
+    int i = paramInputStream.read();
+    if (i != -1) {
+      return i;
+    }
+    throw new EOFException();
+  }
+  
+  static List<Header> readHeaderList(CountingInputStream paramCountingInputStream)
+    throws IOException
+  {
+    int j = readInt(paramCountingInputStream);
+    if (j >= 0)
+    {
+      Object localObject;
+      if (j == 0) {
+        localObject = Collections.emptyList();
+      } else {
+        localObject = new ArrayList();
+      }
+      int i = 0;
+      while (i < j)
+      {
+        ((List)localObject).add(new Header(readString(paramCountingInputStream).intern(), readString(paramCountingInputStream).intern()));
+        i += 1;
+      }
+      return localObject;
+    }
+    paramCountingInputStream = new StringBuilder();
+    paramCountingInputStream.append("readHeaderList size=");
+    paramCountingInputStream.append(j);
+    throw new IOException(paramCountingInputStream.toString());
+  }
+  
+  static int readInt(InputStream paramInputStream)
+    throws IOException
+  {
+    int i = read(paramInputStream);
+    int j = read(paramInputStream);
+    int k = read(paramInputStream);
+    return read(paramInputStream) << 24 | i << 0 | 0x0 | j << 8 | k << 16;
+  }
+  
+  static long readLong(InputStream paramInputStream)
+    throws IOException
+  {
+    return (read(paramInputStream) & 0xFF) << 0 | 0L | (read(paramInputStream) & 0xFF) << 8 | (read(paramInputStream) & 0xFF) << 16 | (read(paramInputStream) & 0xFF) << 24 | (read(paramInputStream) & 0xFF) << 32 | (read(paramInputStream) & 0xFF) << 40 | (read(paramInputStream) & 0xFF) << 48 | (0xFF & read(paramInputStream)) << 56;
+  }
+  
+  static String readString(CountingInputStream paramCountingInputStream)
+    throws IOException
+  {
+    return new String(streamToBytes(paramCountingInputStream, readLong(paramCountingInputStream)), "UTF-8");
+  }
+  
+  private void removeEntry(String paramString)
+  {
+    paramString = (CacheHeader)mEntries.remove(paramString);
+    if (paramString != null) {
+      mTotalSize -= size;
+    }
+  }
+  
+  static byte[] streamToBytes(CountingInputStream paramCountingInputStream, long paramLong)
+    throws IOException
+  {
+    long l = paramCountingInputStream.bytesRemaining();
+    if ((paramLong >= 0L) && (paramLong <= l))
+    {
+      int i = (int)paramLong;
+      if (i == paramLong)
+      {
+        byte[] arrayOfByte = new byte[i];
+        new DataInputStream(paramCountingInputStream).readFully(arrayOfByte);
+        return arrayOfByte;
+      }
+    }
+    paramCountingInputStream = new StringBuilder();
+    paramCountingInputStream.append("streamToBytes length=");
+    paramCountingInputStream.append(paramLong);
+    paramCountingInputStream.append(", maxLength=");
+    paramCountingInputStream.append(l);
+    throw new IOException(paramCountingInputStream.toString());
+  }
+  
+  static void writeHeaderList(List<Header> paramList, OutputStream paramOutputStream)
+    throws IOException
+  {
+    if (paramList != null)
+    {
+      writeInt(paramOutputStream, paramList.size());
+      paramList = paramList.iterator();
+      while (paramList.hasNext())
+      {
+        Header localHeader = (Header)paramList.next();
+        writeString(paramOutputStream, localHeader.getName());
+        writeString(paramOutputStream, localHeader.getValue());
+      }
+    }
+    writeInt(paramOutputStream, 0);
+  }
+  
+  static void writeInt(OutputStream paramOutputStream, int paramInt)
+    throws IOException
+  {
+    paramOutputStream.write(paramInt >> 0 & 0xFF);
+    paramOutputStream.write(paramInt >> 8 & 0xFF);
+    paramOutputStream.write(paramInt >> 16 & 0xFF);
+    paramOutputStream.write(paramInt >> 24 & 0xFF);
+  }
+  
+  static void writeLong(OutputStream paramOutputStream, long paramLong)
+    throws IOException
+  {
+    paramOutputStream.write((byte)(int)(paramLong >>> 0));
+    paramOutputStream.write((byte)(int)(paramLong >>> 8));
+    paramOutputStream.write((byte)(int)(paramLong >>> 16));
+    paramOutputStream.write((byte)(int)(paramLong >>> 24));
+    paramOutputStream.write((byte)(int)(paramLong >>> 32));
+    paramOutputStream.write((byte)(int)(paramLong >>> 40));
+    paramOutputStream.write((byte)(int)(paramLong >>> 48));
+    paramOutputStream.write((byte)(int)(paramLong >>> 56));
+  }
+  
+  static void writeString(OutputStream paramOutputStream, String paramString)
+    throws IOException
+  {
+    paramString = paramString.getBytes("UTF-8");
+    writeLong(paramOutputStream, paramString.length);
+    paramOutputStream.write(paramString, 0, paramString.length);
+  }
+  
+  public void clear()
+  {
+    try
+    {
+      File[] arrayOfFile = mRootDirectorySupplier.get().listFiles();
+      if (arrayOfFile != null)
+      {
+        int j = arrayOfFile.length;
+        int i = 0;
+        while (i < j)
+        {
+          arrayOfFile[i].delete();
+          i += 1;
+        }
+      }
+      mEntries.clear();
+      mTotalSize = 0L;
+      VolleyLog.d("Cache cleared.", new Object[0]);
+      return;
+    }
+    finally {}
+  }
+  
+  InputStream createInputStream(File paramFile)
+    throws FileNotFoundException
+  {
+    return new FileInputStream(paramFile);
+  }
+  
+  OutputStream createOutputStream(File paramFile)
+    throws FileNotFoundException
+  {
+    return new FileOutputStream(paramFile);
+  }
+  
+  /* Error */
+  public Cache.Entry get(String paramString)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: monitorenter
+    //   2: aload_0
+    //   3: getfield 50	com/android/volley/toolbox/DiskBasedCache:mEntries	Ljava/util/Map;
+    //   6: aload_1
+    //   7: invokeinterface 204 2 0
+    //   12: checkcast 10	com/android/volley/toolbox/DiskBasedCache$CacheHeader
+    //   15: astore 4
+    //   17: aload 4
+    //   19: ifnonnull +7 -> 26
+    //   22: aload_0
+    //   23: monitorexit
+    //   24: aconst_null
+    //   25: areturn
+    //   26: aload_0
+    //   27: aload_1
+    //   28: invokevirtual 170	com/android/volley/toolbox/DiskBasedCache:getFileForKey	(Ljava/lang/String;)Ljava/io/File;
+    //   31: astore_2
+    //   32: new 13	com/android/volley/toolbox/DiskBasedCache$CountingInputStream
+    //   35: dup
+    //   36: new 358	java/io/BufferedInputStream
+    //   39: dup
+    //   40: aload_0
+    //   41: aload_2
+    //   42: invokevirtual 360	com/android/volley/toolbox/DiskBasedCache:createInputStream	(Ljava/io/File;)Ljava/io/InputStream;
+    //   45: invokespecial 361	java/io/BufferedInputStream:<init>	(Ljava/io/InputStream;)V
+    //   48: aload_2
+    //   49: invokevirtual 363	java/io/File:length	()J
+    //   52: invokespecial 366	com/android/volley/toolbox/DiskBasedCache$CountingInputStream:<init>	(Ljava/io/InputStream;J)V
+    //   55: astore_3
+    //   56: aload_3
+    //   57: invokestatic 370	com/android/volley/toolbox/DiskBasedCache$CacheHeader:readHeader	(Lcom/android/volley/toolbox/DiskBasedCache$CountingInputStream;)Lcom/android/volley/toolbox/DiskBasedCache$CacheHeader;
+    //   60: astore 5
+    //   62: aload_1
+    //   63: aload 5
+    //   65: getfield 166	com/android/volley/toolbox/DiskBasedCache$CacheHeader:key	Ljava/lang/String;
+    //   68: invokestatic 376	android/text/TextUtils:equals	(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z
+    //   71: ifne +45 -> 116
+    //   74: ldc_w 378
+    //   77: iconst_3
+    //   78: anewarray 4	java/lang/Object
+    //   81: dup
+    //   82: iconst_0
+    //   83: aload_2
+    //   84: invokevirtual 381	java/io/File:getAbsolutePath	()Ljava/lang/String;
+    //   87: aastore
+    //   88: dup
+    //   89: iconst_1
+    //   90: aload_1
+    //   91: aastore
+    //   92: dup
+    //   93: iconst_2
+    //   94: aload 5
+    //   96: getfield 166	com/android/volley/toolbox/DiskBasedCache$CacheHeader:key	Ljava/lang/String;
+    //   99: aastore
+    //   100: invokestatic 114	com/android/volley/VolleyLog:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   103: aload_0
+    //   104: aload_1
+    //   105: invokespecial 383	com/android/volley/toolbox/DiskBasedCache:removeEntry	(Ljava/lang/String;)V
+    //   108: aload_3
+    //   109: invokevirtual 388	java/io/FilterInputStream:close	()V
+    //   112: aload_0
+    //   113: monitorexit
+    //   114: aconst_null
+    //   115: areturn
+    //   116: aload 4
+    //   118: aload_3
+    //   119: aload_3
+    //   120: invokevirtual 284	com/android/volley/toolbox/DiskBasedCache$CountingInputStream:bytesRemaining	()J
+    //   123: invokestatic 273	com/android/volley/toolbox/DiskBasedCache:streamToBytes	(Lcom/android/volley/toolbox/DiskBasedCache$CountingInputStream;J)[B
+    //   126: invokevirtual 392	com/android/volley/toolbox/DiskBasedCache$CacheHeader:toCacheEntry	([B)Lcom/android/volley/Cache$Entry;
+    //   129: astore 4
+    //   131: aload_3
+    //   132: invokevirtual 388	java/io/FilterInputStream:close	()V
+    //   135: aload_0
+    //   136: monitorexit
+    //   137: aload 4
+    //   139: areturn
+    //   140: astore 4
+    //   142: aload_3
+    //   143: invokevirtual 388	java/io/FilterInputStream:close	()V
+    //   146: aload 4
+    //   148: athrow
+    //   149: astore_3
+    //   150: ldc_w 394
+    //   153: iconst_2
+    //   154: anewarray 4	java/lang/Object
+    //   157: dup
+    //   158: iconst_0
+    //   159: aload_2
+    //   160: invokevirtual 381	java/io/File:getAbsolutePath	()Ljava/lang/String;
+    //   163: aastore
+    //   164: dup
+    //   165: iconst_1
+    //   166: aload_3
+    //   167: invokevirtual 395	java/io/IOException:toString	()Ljava/lang/String;
+    //   170: aastore
+    //   171: invokestatic 114	com/android/volley/VolleyLog:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   174: aload_0
+    //   175: aload_1
+    //   176: invokevirtual 397	com/android/volley/toolbox/DiskBasedCache:remove	(Ljava/lang/String;)V
+    //   179: aload_0
+    //   180: monitorexit
+    //   181: aconst_null
+    //   182: areturn
+    //   183: astore_1
+    //   184: aload_0
+    //   185: monitorexit
+    //   186: aload_1
+    //   187: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	188	0	this	DiskBasedCache
+    //   0	188	1	paramString	String
+    //   31	129	2	localFile	File
+    //   55	88	3	localCountingInputStream	CountingInputStream
+    //   149	18	3	localIOException	IOException
+    //   15	123	4	localObject1	Object
+    //   140	7	4	localObject2	Object
+    //   60	35	5	localCacheHeader	CacheHeader
+    // Exception table:
+    //   from	to	target	type
+    //   56	108	140	finally
+    //   116	131	140	finally
+    //   32	56	149	java/io/IOException
+    //   108	112	149	java/io/IOException
+    //   131	135	149	java/io/IOException
+    //   142	149	149	java/io/IOException
+    //   2	17	183	finally
+    //   26	32	183	finally
+    //   32	56	183	finally
+    //   108	112	183	finally
+    //   131	135	183	finally
+    //   142	149	183	finally
+    //   150	179	183	finally
+  }
+  
+  public File getFileForKey(String paramString)
+  {
+    return new File(mRootDirectorySupplier.get(), getFilenameForKey(paramString));
+  }
+  
+  public void initialize()
+  {
+    for (;;)
+    {
+      int i;
+      File localFile;
+      long l;
+      CountingInputStream localCountingInputStream;
+      CacheHeader localCacheHeader;
+      try
+      {
+        Object localObject1 = mRootDirectorySupplier.get();
+        boolean bool = ((File)localObject1).exists();
+        i = 0;
+        if (!bool)
+        {
+          if (!((File)localObject1).mkdirs()) {
+            VolleyLog.e("Unable to create cache dir %s", new Object[] { ((File)localObject1).getAbsolutePath() });
+          }
+          return;
+        }
+        localObject1 = ((File)localObject1).listFiles();
+        if (localObject1 == null) {
+          return;
+        }
+        int j = localObject1.length;
+        if (i < j) {
+          localFile = localObject1[i];
+        }
+      }
+      finally {}
+      try
+      {
+        l = localFile.length();
+        localCountingInputStream = new CountingInputStream(new BufferedInputStream(createInputStream(localFile)), l);
+      }
+      catch (IOException localIOException)
+      {
+        continue;
+      }
+      try
+      {
+        localCacheHeader = CacheHeader.readHeader(localCountingInputStream);
+        size = l;
+        putEntry(key, localCacheHeader);
+        localCountingInputStream.close();
+      }
+      finally
+      {
+        localCountingInputStream.close();
+      }
+      i += 1;
+    }
+  }
+  
+  public void invalidate(String paramString, boolean paramBoolean)
+  {
+    try
+    {
+      Cache.Entry localEntry = get(paramString);
+      if (localEntry != null)
+      {
+        softTtl = 0L;
+        if (paramBoolean) {
+          ttl = 0L;
+        }
+        put(paramString, localEntry);
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  public void put(String paramString, Cache.Entry paramEntry)
+  {
+    for (;;)
+    {
+      Object localObject;
+      BufferedOutputStream localBufferedOutputStream;
+      CacheHeader localCacheHeader;
+      try
+      {
+        long l1 = mTotalSize;
+        localObject = data;
+        long l2 = localObject.length;
+        int i = mMaxCacheSizeInBytes;
+        if (l1 + l2 > i)
+        {
+          int j = localObject.length;
+          if (j > i * 0.9F) {
+            return;
+          }
+        }
+        localObject = getFileForKey(paramString);
+      }
+      finally {}
+      try
+      {
+        localBufferedOutputStream = new BufferedOutputStream(createOutputStream((File)localObject));
+        localCacheHeader = new CacheHeader(paramString, paramEntry);
+        if (localCacheHeader.writeHeader(localBufferedOutputStream))
+        {
+          localBufferedOutputStream.write(data);
+          localBufferedOutputStream.close();
+          size = ((File)localObject).length();
+          putEntry(paramString, localCacheHeader);
+          pruneIfNeeded();
+          continue;
+        }
+        localBufferedOutputStream.close();
+        VolleyLog.d("Failed to write header for %s", new Object[] { ((File)localObject).getAbsolutePath() });
+        throw new IOException();
+      }
+      catch (IOException paramString) {}
+    }
+    if (!((File)localObject).delete()) {
+      VolleyLog.d("Could not clean up file %s", new Object[] { ((File)localObject).getAbsolutePath() });
+    }
+    initializeIfRootDirectoryDeleted();
+  }
+  
+  public void remove(String paramString)
+  {
+    try
+    {
+      boolean bool = getFileForKey(paramString).delete();
+      removeEntry(paramString);
+      if (!bool) {
+        VolleyLog.d("Could not delete cache entry for key=%s, filename=%s", new Object[] { paramString, getFilenameForKey(paramString) });
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  static class CacheHeader
+  {
+    final List<Header> allResponseHeaders;
+    final String etag;
+    final String key;
+    final long lastModified;
+    final long serverDate;
+    long size;
+    final long softTtl;
+    final long ttl;
+    
+    CacheHeader(String paramString, Cache.Entry paramEntry)
+    {
+      this(paramString, etag, serverDate, lastModified, ttl, softTtl, getAllResponseHeaders(paramEntry));
+    }
+    
+    private CacheHeader(String paramString1, String paramString2, long paramLong1, long paramLong2, long paramLong3, long paramLong4, List<Header> paramList)
+    {
+      key = paramString1;
+      paramString1 = paramString2;
+      if ("".equals(paramString2)) {
+        paramString1 = null;
+      }
+      etag = paramString1;
+      serverDate = paramLong1;
+      lastModified = paramLong2;
+      ttl = paramLong3;
+      softTtl = paramLong4;
+      allResponseHeaders = paramList;
+    }
+    
+    private static List<Header> getAllResponseHeaders(Cache.Entry paramEntry)
+    {
+      List localList = allResponseHeaders;
+      if (localList != null) {
+        return localList;
+      }
+      return HttpHeaderParser.toAllHeaderList(responseHeaders);
+    }
+    
+    static CacheHeader readHeader(DiskBasedCache.CountingInputStream paramCountingInputStream)
+      throws IOException
+    {
+      if (DiskBasedCache.readInt(paramCountingInputStream) == 538247942) {
+        return new CacheHeader(DiskBasedCache.readString(paramCountingInputStream), DiskBasedCache.readString(paramCountingInputStream), DiskBasedCache.readLong(paramCountingInputStream), DiskBasedCache.readLong(paramCountingInputStream), DiskBasedCache.readLong(paramCountingInputStream), DiskBasedCache.readLong(paramCountingInputStream), DiskBasedCache.readHeaderList(paramCountingInputStream));
+      }
+      throw new IOException();
+    }
+    
+    Cache.Entry toCacheEntry(byte[] paramArrayOfByte)
+    {
+      Cache.Entry localEntry = new Cache.Entry();
+      data = paramArrayOfByte;
+      etag = etag;
+      serverDate = serverDate;
+      lastModified = lastModified;
+      ttl = ttl;
+      softTtl = softTtl;
+      responseHeaders = HttpHeaderParser.toHeaderMap(allResponseHeaders);
+      allResponseHeaders = Collections.unmodifiableList(allResponseHeaders);
+      return localEntry;
+    }
+    
+    boolean writeHeader(OutputStream paramOutputStream)
+    {
+      try
+      {
+        DiskBasedCache.writeInt(paramOutputStream, 538247942);
+        DiskBasedCache.writeString(paramOutputStream, key);
+        String str2 = etag;
+        String str1 = str2;
+        if (str2 == null) {
+          str1 = "";
+        }
+        DiskBasedCache.writeString(paramOutputStream, str1);
+        DiskBasedCache.writeLong(paramOutputStream, serverDate);
+        DiskBasedCache.writeLong(paramOutputStream, lastModified);
+        DiskBasedCache.writeLong(paramOutputStream, ttl);
+        DiskBasedCache.writeLong(paramOutputStream, softTtl);
+        DiskBasedCache.writeHeaderList(allResponseHeaders, paramOutputStream);
+        paramOutputStream.flush();
+        return true;
+      }
+      catch (IOException paramOutputStream)
+      {
+        VolleyLog.d("%s", new Object[] { paramOutputStream.toString() });
+      }
+      return false;
+    }
+  }
+  
+  static class CountingInputStream
+    extends FilterInputStream
+  {
+    private long bytesRead;
+    private final long length;
+    
+    CountingInputStream(InputStream paramInputStream, long paramLong)
+    {
+      super();
+      length = paramLong;
+    }
+    
+    long bytesRead()
+    {
+      return bytesRead;
+    }
+    
+    long bytesRemaining()
+    {
+      return length - bytesRead;
+    }
+    
+    public int read()
+      throws IOException
+    {
+      int i = super.read();
+      if (i != -1) {
+        bytesRead += 1L;
+      }
+      return i;
+    }
+    
+    public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+      throws IOException
+    {
+      paramInt1 = super.read(paramArrayOfByte, paramInt1, paramInt2);
+      if (paramInt1 != -1) {
+        bytesRead += paramInt1;
+      }
+      return paramInt1;
+    }
+  }
+  
+  public static abstract interface FileSupplier
+  {
+    public abstract File get();
+  }
+}

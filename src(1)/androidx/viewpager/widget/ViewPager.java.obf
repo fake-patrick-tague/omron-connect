@@ -1,0 +1,2039 @@
+package androidx.viewpager.widget;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.database.DataSetObserver;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.ClassLoaderCreator;
+import android.os.Parcelable.Creator;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.FocusFinder;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
+import android.view.VelocityTracker;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewParent;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.animation.Interpolator;
+import android.widget.EdgeEffect;
+import android.widget.Scroller;
+import androidx.customview.view.AbsSavedState;
+import c.h.q.f0;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class ViewPager
+  extends ViewGroup
+{
+  static final int[] b = { 16842931 };
+  private static final Comparator<d> c = new a();
+  private static final Interpolator d = new b();
+  private static final i e = new i();
+  private boolean A;
+  private boolean B;
+  private int C;
+  private boolean D;
+  private boolean E;
+  private int F;
+  private int G;
+  private int H;
+  private float I;
+  private float J;
+  private float K;
+  private float L;
+  private int P;
+  private VelocityTracker Q;
+  private int R;
+  private boolean S;
+  private EdgeEffect T;
+  private EdgeEffect U;
+  private boolean V;
+  private boolean W;
+  private int a0;
+  private List<f> b0;
+  private f c0;
+  private f d0;
+  private List<e> e0;
+  private int f;
+  private g f0;
+  private final ArrayList<d> g;
+  private int g0;
+  private final d h;
+  private int h0;
+  private final Rect i;
+  private ArrayList<View> i0;
+  a j;
+  private final Runnable j0;
+  int k;
+  private int k0;
+  private int l;
+  private Parcelable m;
+  private ClassLoader n;
+  private Scroller o;
+  private boolean p;
+  private h q;
+  private int r;
+  private Drawable s;
+  private int t;
+  private int u;
+  private float v;
+  private float w;
+  private int x;
+  private int y;
+  private boolean z;
+  
+  private void B(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    if ((paramInt2 > 0) && (!g.isEmpty()))
+    {
+      if (!o.isFinished())
+      {
+        o.setFinalX(getCurrentItem() * getClientWidth());
+        return;
+      }
+      int i1 = getPaddingLeft();
+      int i2 = getPaddingRight();
+      int i3 = getPaddingLeft();
+      int i4 = getPaddingRight();
+      scrollTo((int)(getScrollX() / (paramInt2 - i3 - i4 + paramInt4) * (paramInt1 - i1 - i2 + paramInt3)), getScrollY());
+      return;
+    }
+    d localD = q(k);
+    float f1;
+    if (localD != null) {
+      f1 = Math.min(e, w);
+    } else {
+      f1 = 0.0F;
+    }
+    paramInt1 = (int)(f1 * (paramInt1 - getPaddingLeft() - getPaddingRight()));
+    if (paramInt1 != getScrollX())
+    {
+      e(false);
+      scrollTo(paramInt1, getScrollY());
+    }
+  }
+  
+  private void E(boolean paramBoolean)
+  {
+    ViewParent localViewParent = getParent();
+    if (localViewParent != null) {
+      localViewParent.requestDisallowInterceptTouchEvent(paramBoolean);
+    }
+  }
+  
+  private boolean F()
+  {
+    P = -1;
+    l();
+    T.onRelease();
+    U.onRelease();
+    return (T.isFinished()) || (U.isFinished());
+  }
+  
+  private void G(int paramInt1, boolean paramBoolean1, int paramInt2, boolean paramBoolean2)
+  {
+    d localD = q(paramInt1);
+    int i1;
+    if (localD != null) {
+      i1 = (int)(getClientWidth() * Math.max(v, Math.min(e, w)));
+    } else {
+      i1 = 0;
+    }
+    if (paramBoolean1)
+    {
+      K(i1, 0, paramInt2);
+      if (paramBoolean2) {
+        h(paramInt1);
+      }
+    }
+    else
+    {
+      if (paramBoolean2) {
+        h(paramInt1);
+      }
+      e(false);
+      scrollTo(i1, 0);
+      x(i1);
+    }
+  }
+  
+  private void L()
+  {
+    if (h0 != 0)
+    {
+      Object localObject = i0;
+      if (localObject == null) {
+        i0 = new ArrayList();
+      } else {
+        ((ArrayList)localObject).clear();
+      }
+      int i2 = getChildCount();
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        localObject = getChildAt(i1);
+        i0.add(localObject);
+        i1 += 1;
+      }
+      Collections.sort(i0, e);
+    }
+  }
+  
+  private void e(boolean paramBoolean)
+  {
+    int i1;
+    if (k0 == 2) {
+      i1 = 1;
+    } else {
+      i1 = 0;
+    }
+    if (i1 != 0)
+    {
+      setScrollingCacheEnabled(false);
+      if ((o.isFinished() ^ true))
+      {
+        o.abortAnimation();
+        i2 = getScrollX();
+        int i3 = getScrollY();
+        int i4 = o.getCurrX();
+        int i5 = o.getCurrY();
+        if ((i2 != i4) || (i3 != i5))
+        {
+          scrollTo(i4, i5);
+          if (i4 != i2) {
+            x(i4);
+          }
+        }
+      }
+    }
+    B = false;
+    int i2 = 0;
+    while (i2 < g.size())
+    {
+      d localD = (d)g.get(i2);
+      if (c)
+      {
+        c = false;
+        i1 = 1;
+      }
+      i2 += 1;
+    }
+    if (i1 != 0)
+    {
+      if (paramBoolean)
+      {
+        f0.h0(this, j0);
+        return;
+      }
+      j0.run();
+    }
+  }
+  
+  private void g(int paramInt1, float paramFloat, int paramInt2)
+  {
+    Object localObject = c0;
+    if (localObject != null) {
+      ((f)localObject).a(paramInt1, paramFloat, paramInt2);
+    }
+    localObject = b0;
+    if (localObject != null)
+    {
+      int i1 = 0;
+      int i2 = ((List)localObject).size();
+      while (i1 < i2)
+      {
+        localObject = (f)b0.get(i1);
+        if (localObject != null) {
+          ((f)localObject).a(paramInt1, paramFloat, paramInt2);
+        }
+        i1 += 1;
+      }
+    }
+    localObject = d0;
+    if (localObject != null) {
+      ((f)localObject).a(paramInt1, paramFloat, paramInt2);
+    }
+  }
+  
+  private int getClientWidth()
+  {
+    return getMeasuredWidth() - getPaddingLeft() - getPaddingRight();
+  }
+  
+  private void h(int paramInt)
+  {
+    Object localObject = c0;
+    if (localObject != null) {
+      ((f)localObject).c(paramInt);
+    }
+    localObject = b0;
+    if (localObject != null)
+    {
+      int i1 = 0;
+      int i2 = ((List)localObject).size();
+      while (i1 < i2)
+      {
+        localObject = (f)b0.get(i1);
+        if (localObject != null) {
+          ((f)localObject).c(paramInt);
+        }
+        i1 += 1;
+      }
+    }
+    localObject = d0;
+    if (localObject != null) {
+      ((f)localObject).c(paramInt);
+    }
+  }
+  
+  private void i(int paramInt)
+  {
+    Object localObject = c0;
+    if (localObject != null) {
+      ((f)localObject).b(paramInt);
+    }
+    localObject = b0;
+    if (localObject != null)
+    {
+      int i1 = 0;
+      int i2 = ((List)localObject).size();
+      while (i1 < i2)
+      {
+        localObject = (f)b0.get(i1);
+        if (localObject != null) {
+          ((f)localObject).b(paramInt);
+        }
+        i1 += 1;
+      }
+    }
+    localObject = d0;
+    if (localObject != null) {
+      ((f)localObject).b(paramInt);
+    }
+  }
+  
+  private void k(boolean paramBoolean)
+  {
+    int i3 = getChildCount();
+    int i1 = 0;
+    while (i1 < i3)
+    {
+      int i2;
+      if (paramBoolean) {
+        i2 = g0;
+      } else {
+        i2 = 0;
+      }
+      getChildAt(i1).setLayerType(i2, null);
+      i1 += 1;
+    }
+  }
+  
+  private void l()
+  {
+    D = false;
+    E = false;
+    VelocityTracker localVelocityTracker = Q;
+    if (localVelocityTracker != null)
+    {
+      localVelocityTracker.recycle();
+      Q = null;
+    }
+  }
+  
+  private Rect n(Rect paramRect, View paramView)
+  {
+    Rect localRect = paramRect;
+    if (paramRect == null) {
+      localRect = new Rect();
+    }
+    if (paramView == null)
+    {
+      localRect.set(0, 0, 0, 0);
+      return localRect;
+    }
+    left = paramView.getLeft();
+    right = paramView.getRight();
+    top = paramView.getTop();
+    bottom = paramView.getBottom();
+    for (paramRect = paramView.getParent(); ((paramRect instanceof ViewGroup)) && (paramRect != this); paramRect = paramRect.getParent())
+    {
+      paramRect = (ViewGroup)paramRect;
+      left += paramRect.getLeft();
+      right += paramRect.getRight();
+      top += paramRect.getTop();
+      bottom += paramRect.getBottom();
+    }
+    return localRect;
+  }
+  
+  private d p()
+  {
+    int i1 = getClientWidth();
+    float f3 = 0.0F;
+    float f1;
+    if (i1 > 0) {
+      f1 = getScrollX() / i1;
+    } else {
+      f1 = 0.0F;
+    }
+    float f2;
+    if (i1 > 0) {
+      f2 = r / i1;
+    } else {
+      f2 = 0.0F;
+    }
+    int i3 = -1;
+    float f4 = 0.0F;
+    i1 = 0;
+    Object localObject = null;
+    int i2 = 1;
+    while (i1 < g.size())
+    {
+      d localD = (d)g.get(i1);
+      if (i2 == 0)
+      {
+        int i4 = b;
+        i3 += 1;
+        if (i4 != i3)
+        {
+          localObject = h;
+          e = (f3 + f4 + f2);
+          b = i3;
+          throw null;
+        }
+      }
+      f3 = e;
+      f4 = d;
+      if ((i2 == 0) && (f1 < f3)) {
+        return localObject;
+      }
+      if (f1 >= f4 + f3 + f2)
+      {
+        if (i1 == g.size() - 1) {
+          return localD;
+        }
+        i3 = b;
+        f4 = d;
+        i1 += 1;
+        i2 = 0;
+        localObject = localD;
+      }
+      else
+      {
+        return localD;
+      }
+    }
+    return localObject;
+  }
+  
+  private static boolean r(View paramView)
+  {
+    return paramView.getClass().getAnnotation(c.class) != null;
+  }
+  
+  private boolean s(float paramFloat1, float paramFloat2)
+  {
+    return ((paramFloat1 < G) && (paramFloat2 > 0.0F)) || ((paramFloat1 > getWidth() - G) && (paramFloat2 < 0.0F));
+  }
+  
+  private void setScrollingCacheEnabled(boolean paramBoolean)
+  {
+    if (A != paramBoolean) {
+      A = paramBoolean;
+    }
+  }
+  
+  private void u(MotionEvent paramMotionEvent)
+  {
+    int i1 = paramMotionEvent.getActionIndex();
+    if (paramMotionEvent.getPointerId(i1) == P)
+    {
+      if (i1 == 0) {
+        i1 = 1;
+      } else {
+        i1 = 0;
+      }
+      I = paramMotionEvent.getX(i1);
+      P = paramMotionEvent.getPointerId(i1);
+      paramMotionEvent = Q;
+      if (paramMotionEvent != null) {
+        paramMotionEvent.clear();
+      }
+    }
+  }
+  
+  private boolean x(int paramInt)
+  {
+    if (g.size() == 0)
+    {
+      if (V) {
+        return false;
+      }
+      W = false;
+      t(0, 0.0F, 0);
+      if (W) {
+        return false;
+      }
+      throw new IllegalStateException("onPageScrolled did not call superclass implementation");
+    }
+    d localD = p();
+    int i2 = getClientWidth();
+    int i3 = r;
+    float f2 = i3;
+    float f1 = i2;
+    f2 /= f1;
+    int i1 = b;
+    f1 = (paramInt / f1 - e) / (d + f2);
+    paramInt = (int)((i2 + i3) * f1);
+    W = false;
+    t(i1, f1, paramInt);
+    if (W) {
+      return true;
+    }
+    throw new IllegalStateException("onPageScrolled did not call superclass implementation");
+  }
+  
+  private boolean y(float paramFloat)
+  {
+    I = paramFloat;
+    getScrollX();
+    getClientWidth();
+    d localD = (d)g.get(0);
+    Object localObject = g;
+    localObject = (d)((ArrayList)localObject).get(((ArrayList)localObject).size() - 1);
+    int i1 = b;
+    i1 = b;
+    throw null;
+  }
+  
+  void A(int paramInt)
+  {
+    int i1 = k;
+    if (i1 != paramInt)
+    {
+      q(i1);
+      k = paramInt;
+    }
+    if (j == null)
+    {
+      L();
+      return;
+    }
+    if (B)
+    {
+      L();
+      return;
+    }
+    if (getWindowToken() == null) {
+      return;
+    }
+    throw null;
+  }
+  
+  public void C(e paramE)
+  {
+    List localList = e0;
+    if (localList != null) {
+      localList.remove(paramE);
+    }
+  }
+  
+  public void D(f paramF)
+  {
+    List localList = b0;
+    if (localList != null) {
+      localList.remove(paramF);
+    }
+  }
+  
+  public void H(int paramInt, boolean paramBoolean)
+  {
+    B = false;
+    I(paramInt, paramBoolean, false);
+  }
+  
+  void I(int paramInt, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    J(paramInt, paramBoolean1, paramBoolean2, 0);
+  }
+  
+  void J(int paramInt1, boolean paramBoolean1, boolean paramBoolean2, int paramInt2)
+  {
+    if (j == null)
+    {
+      setScrollingCacheEnabled(false);
+      return;
+    }
+    throw null;
+  }
+  
+  void K(int paramInt1, int paramInt2, int paramInt3)
+  {
+    if (getChildCount() == 0)
+    {
+      setScrollingCacheEnabled(false);
+      return;
+    }
+    Scroller localScroller = o;
+    int i1;
+    if ((localScroller != null) && (!localScroller.isFinished())) {
+      i1 = 1;
+    } else {
+      i1 = 0;
+    }
+    if (i1 != 0)
+    {
+      if (p) {
+        i1 = o.getCurrX();
+      } else {
+        i1 = o.getStartX();
+      }
+      o.abortAnimation();
+      setScrollingCacheEnabled(false);
+    }
+    else
+    {
+      i1 = getScrollX();
+    }
+    int i2 = getScrollY();
+    paramInt1 -= i1;
+    paramInt2 -= i2;
+    if ((paramInt1 == 0) && (paramInt2 == 0))
+    {
+      e(false);
+      z();
+      setScrollState(0);
+      return;
+    }
+    setScrollingCacheEnabled(true);
+    setScrollState(2);
+    int i3 = getClientWidth();
+    int i4 = i3 / 2;
+    float f2 = Math.min(1.0F, Math.abs(paramInt1) * 1.0F / i3);
+    float f1 = i4;
+    f2 = j(f2);
+    paramInt3 = Math.abs(paramInt3);
+    if (paramInt3 > 0)
+    {
+      paramInt3 = Math.min(Math.round(Math.abs((f1 + f2 * f1) / paramInt3) * 1000.0F) * 4, 600);
+      p = false;
+      o.startScroll(i1, i2, paramInt1, paramInt2, paramInt3);
+      f0.g0(this);
+      return;
+    }
+    throw null;
+  }
+  
+  public void a(e paramE)
+  {
+    if (e0 == null) {
+      e0 = new ArrayList();
+    }
+    e0.add(paramE);
+  }
+  
+  public void addFocusables(ArrayList<View> paramArrayList, int paramInt1, int paramInt2)
+  {
+    int i2 = paramArrayList.size();
+    int i3 = getDescendantFocusability();
+    if (i3 != 393216)
+    {
+      int i1 = 0;
+      while (i1 < getChildCount())
+      {
+        View localView = getChildAt(i1);
+        if (localView.getVisibility() == 0)
+        {
+          d localD = o(localView);
+          if ((localD != null) && (b == k)) {
+            localView.addFocusables(paramArrayList, paramInt1, paramInt2);
+          }
+        }
+        i1 += 1;
+      }
+    }
+    if ((i3 != 262144) || (i2 == paramArrayList.size()))
+    {
+      if (!isFocusable()) {
+        return;
+      }
+      if (((paramInt2 & 0x1) == 1) && (isInTouchMode()) && (!isFocusableInTouchMode())) {
+        return;
+      }
+      paramArrayList.add(this);
+    }
+  }
+  
+  public void addTouchables(ArrayList<View> paramArrayList)
+  {
+    int i1 = 0;
+    while (i1 < getChildCount())
+    {
+      View localView = getChildAt(i1);
+      if (localView.getVisibility() == 0)
+      {
+        d localD = o(localView);
+        if ((localD != null) && (b == k)) {
+          localView.addTouchables(paramArrayList);
+        }
+      }
+      i1 += 1;
+    }
+  }
+  
+  public void addView(View paramView, int paramInt, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    ViewGroup.LayoutParams localLayoutParams = paramLayoutParams;
+    if (!checkLayoutParams(paramLayoutParams)) {
+      localLayoutParams = generateLayoutParams(paramLayoutParams);
+    }
+    paramLayoutParams = (LayoutParams)localLayoutParams;
+    boolean bool = a | r(paramView);
+    a = bool;
+    if (z)
+    {
+      if (!bool)
+      {
+        d = true;
+        addViewInLayout(paramView, paramInt, localLayoutParams);
+        return;
+      }
+      throw new IllegalStateException("Cannot add pager decor view during layout");
+    }
+    super.addView(paramView, paramInt, localLayoutParams);
+  }
+  
+  public void b(f paramF)
+  {
+    if (b0 == null) {
+      b0 = new ArrayList();
+    }
+    b0.add(paramF);
+  }
+  
+  public boolean c(int paramInt)
+  {
+    View localView = findFocus();
+    boolean bool = false;
+    if (localView == this) {}
+    Object localObject;
+    int i1;
+    for (;;)
+    {
+      localObject = null;
+      break;
+      localObject = localView;
+      if (localView == null) {
+        break;
+      }
+      for (localObject = localView.getParent(); (localObject instanceof ViewGroup); localObject = ((ViewParent)localObject).getParent()) {
+        if (localObject == this)
+        {
+          i1 = 1;
+          break label70;
+        }
+      }
+      i1 = 0;
+      label70:
+      localObject = localView;
+      if (i1 != 0) {
+        break;
+      }
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append(localView.getClass().getSimpleName());
+      for (localObject = localView.getParent(); (localObject instanceof ViewGroup); localObject = ((ViewParent)localObject).getParent())
+      {
+        localStringBuilder.append(" => ");
+        localStringBuilder.append(localObject.getClass().getSimpleName());
+      }
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("arrowScroll tried to find focus based on non-child current focused view ");
+      ((StringBuilder)localObject).append(localStringBuilder.toString());
+      Log.e("ViewPager", ((StringBuilder)localObject).toString());
+    }
+    localView = FocusFinder.getInstance().findNextFocus(this, (View)localObject, paramInt);
+    int i2;
+    if ((localView != null) && (localView != localObject)) {
+      if (paramInt == 17)
+      {
+        i1 = ni, localView).left;
+        i2 = ni, (View)localObject).left;
+        if ((localObject != null) && (i1 >= i2)) {
+          bool = v();
+        } else {
+          bool = localView.requestFocus();
+        }
+      }
+    }
+    for (;;)
+    {
+      break;
+      if (paramInt == 66)
+      {
+        i1 = ni, localView).left;
+        i2 = ni, (View)localObject).left;
+        if ((localObject != null) && (i1 <= i2))
+        {
+          bool = w();
+        }
+        else
+        {
+          bool = localView.requestFocus();
+          continue;
+          if ((paramInt != 17) && (paramInt != 1))
+          {
+            if ((paramInt == 66) || (paramInt == 2)) {
+              bool = w();
+            }
+          }
+          else {
+            bool = v();
+          }
+        }
+      }
+    }
+    if (bool) {
+      playSoundEffect(SoundEffectConstants.getContantForFocusDirection(paramInt));
+    }
+    return bool;
+  }
+  
+  public boolean canScrollHorizontally(int paramInt)
+  {
+    a localA = j;
+    boolean bool2 = false;
+    boolean bool1 = false;
+    if (localA == null) {
+      return false;
+    }
+    int i1 = getClientWidth();
+    int i2 = getScrollX();
+    if (paramInt < 0)
+    {
+      if (i2 > (int)(i1 * v)) {
+        bool1 = true;
+      }
+      return bool1;
+    }
+    bool1 = bool2;
+    if (paramInt > 0)
+    {
+      bool1 = bool2;
+      if (i2 < (int)(i1 * w)) {
+        bool1 = true;
+      }
+    }
+    return bool1;
+  }
+  
+  protected boolean checkLayoutParams(ViewGroup.LayoutParams paramLayoutParams)
+  {
+    return ((paramLayoutParams instanceof LayoutParams)) && (super.checkLayoutParams(paramLayoutParams));
+  }
+  
+  public void computeScroll()
+  {
+    p = true;
+    if ((!o.isFinished()) && (o.computeScrollOffset()))
+    {
+      int i1 = getScrollX();
+      int i2 = getScrollY();
+      int i3 = o.getCurrX();
+      int i4 = o.getCurrY();
+      if ((i1 != i3) || (i2 != i4))
+      {
+        scrollTo(i3, i4);
+        if (!x(i3))
+        {
+          o.abortAnimation();
+          scrollTo(0, i4);
+        }
+      }
+      f0.g0(this);
+      return;
+    }
+    e(true);
+  }
+  
+  protected boolean d(View paramView, boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3)
+  {
+    if ((paramView instanceof ViewGroup))
+    {
+      ViewGroup localViewGroup = (ViewGroup)paramView;
+      int i2 = paramView.getScrollX();
+      int i3 = paramView.getScrollY();
+      int i1 = localViewGroup.getChildCount() - 1;
+      while (i1 >= 0)
+      {
+        View localView = localViewGroup.getChildAt(i1);
+        int i4 = paramInt2 + i2;
+        if ((i4 >= localView.getLeft()) && (i4 < localView.getRight()))
+        {
+          int i5 = paramInt3 + i3;
+          if ((i5 >= localView.getTop()) && (i5 < localView.getBottom()) && (d(localView, true, paramInt1, i4 - localView.getLeft(), i5 - localView.getTop()))) {
+            return true;
+          }
+        }
+        i1 -= 1;
+      }
+    }
+    return (paramBoolean) && (paramView.canScrollHorizontally(-paramInt1));
+  }
+  
+  public boolean dispatchKeyEvent(KeyEvent paramKeyEvent)
+  {
+    return (super.dispatchKeyEvent(paramKeyEvent)) || (m(paramKeyEvent));
+  }
+  
+  public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent paramAccessibilityEvent)
+  {
+    if (paramAccessibilityEvent.getEventType() == 4096) {
+      return super.dispatchPopulateAccessibilityEvent(paramAccessibilityEvent);
+    }
+    int i2 = getChildCount();
+    int i1 = 0;
+    while (i1 < i2)
+    {
+      View localView = getChildAt(i1);
+      if (localView.getVisibility() == 0)
+      {
+        d localD = o(localView);
+        if ((localD != null) && (b == k) && (localView.dispatchPopulateAccessibilityEvent(paramAccessibilityEvent))) {
+          return true;
+        }
+      }
+      i1 += 1;
+    }
+    return false;
+  }
+  
+  public void draw(Canvas paramCanvas)
+  {
+    super.draw(paramCanvas);
+    int i4 = getOverScrollMode();
+    int i3 = 0;
+    int i1 = 0;
+    boolean bool;
+    if (i4 != 0)
+    {
+      if ((i4 == 1) && (j != null)) {
+        throw null;
+      }
+      T.finish();
+      U.finish();
+    }
+    else
+    {
+      int i2;
+      if (!T.isFinished())
+      {
+        i3 = paramCanvas.save();
+        i1 = getHeight() - getPaddingTop() - getPaddingBottom();
+        i4 = getWidth();
+        paramCanvas.rotate(270.0F);
+        paramCanvas.translate(-i1 + getPaddingTop(), v * i4);
+        T.setSize(i1, i4);
+        i2 = false | T.draw(paramCanvas);
+        paramCanvas.restoreToCount(i3);
+      }
+      i3 = i2;
+      if (!U.isFinished())
+      {
+        i4 = paramCanvas.save();
+        i3 = getWidth();
+        int i5 = getHeight();
+        int i6 = getPaddingTop();
+        int i7 = getPaddingBottom();
+        paramCanvas.rotate(90.0F);
+        paramCanvas.translate(-getPaddingTop(), -(w + 1.0F) * i3);
+        U.setSize(i5 - i6 - i7, i3);
+        bool = i2 | U.draw(paramCanvas);
+        paramCanvas.restoreToCount(i4);
+      }
+    }
+    if (bool) {
+      f0.g0(this);
+    }
+  }
+  
+  protected void drawableStateChanged()
+  {
+    super.drawableStateChanged();
+    Drawable localDrawable = s;
+    if ((localDrawable != null) && (localDrawable.isStateful())) {
+      localDrawable.setState(getDrawableState());
+    }
+  }
+  
+  void f()
+  {
+    throw null;
+  }
+  
+  protected ViewGroup.LayoutParams generateDefaultLayoutParams()
+  {
+    return new LayoutParams();
+  }
+  
+  public ViewGroup.LayoutParams generateLayoutParams(AttributeSet paramAttributeSet)
+  {
+    return new LayoutParams(getContext(), paramAttributeSet);
+  }
+  
+  protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams paramLayoutParams)
+  {
+    return generateDefaultLayoutParams();
+  }
+  
+  public a getAdapter()
+  {
+    return j;
+  }
+  
+  protected int getChildDrawingOrder(int paramInt1, int paramInt2)
+  {
+    int i1 = paramInt2;
+    if (h0 == 2) {
+      i1 = paramInt1 - 1 - paramInt2;
+    }
+    return i0.get(i1)).getLayoutParams()).f;
+  }
+  
+  public int getCurrentItem()
+  {
+    return k;
+  }
+  
+  public int getOffscreenPageLimit()
+  {
+    return C;
+  }
+  
+  public int getPageMargin()
+  {
+    return r;
+  }
+  
+  float j(float paramFloat)
+  {
+    return (float)Math.sin((paramFloat - 0.5F) * 0.47123894F);
+  }
+  
+  public boolean m(KeyEvent paramKeyEvent)
+  {
+    if (paramKeyEvent.getAction() == 0)
+    {
+      int i1 = paramKeyEvent.getKeyCode();
+      if (i1 != 21)
+      {
+        if (i1 != 22)
+        {
+          if (i1 == 61)
+          {
+            if (paramKeyEvent.hasNoModifiers()) {
+              return c(2);
+            }
+            if (paramKeyEvent.hasModifiers(1)) {
+              return c(1);
+            }
+          }
+        }
+        else
+        {
+          if (paramKeyEvent.hasModifiers(2)) {
+            return w();
+          }
+          return c(66);
+        }
+      }
+      else
+      {
+        if (paramKeyEvent.hasModifiers(2)) {
+          return v();
+        }
+        return c(17);
+      }
+    }
+    return false;
+  }
+  
+  d o(View paramView)
+  {
+    if (g.size() <= 0) {
+      return null;
+    }
+    paramView = g.get(0)).a;
+    throw null;
+  }
+  
+  protected void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    V = true;
+  }
+  
+  protected void onDetachedFromWindow()
+  {
+    removeCallbacks(j0);
+    Scroller localScroller = o;
+    if ((localScroller != null) && (!localScroller.isFinished())) {
+      o.abortAnimation();
+    }
+    super.onDetachedFromWindow();
+  }
+  
+  protected void onDraw(Canvas paramCanvas)
+  {
+    super.onDraw(paramCanvas);
+    if ((r > 0) && (s != null) && (g.size() > 0) && (j != null))
+    {
+      int i3 = getScrollX();
+      int i4 = getWidth();
+      float f1 = i4;
+      Object localObject = g;
+      int i2 = 0;
+      localObject = (d)((ArrayList)localObject).get(0);
+      float f2 = e;
+      int i5 = g.size();
+      int i1 = b;
+      int i6 = g.get(i5 - 1)).b;
+      while (i1 < i6)
+      {
+        int i7;
+        for (;;)
+        {
+          i7 = b;
+          if ((i1 <= i7) || (i2 >= i5)) {
+            break;
+          }
+          localObject = g;
+          i2 += 1;
+          localObject = (d)((ArrayList)localObject).get(i2);
+        }
+        if (i1 == i7)
+        {
+          f2 = (e + d) * f1;
+          if (r + f2 > i3)
+          {
+            s.setBounds(Math.round(f2), t, Math.round(r + f2), u);
+            s.draw(paramCanvas);
+          }
+          if (f2 > i3 + i4) {
+            return;
+          }
+          i1 += 1;
+        }
+        else
+        {
+          throw null;
+        }
+      }
+    }
+  }
+  
+  public boolean onInterceptTouchEvent(MotionEvent paramMotionEvent)
+  {
+    int i1 = paramMotionEvent.getAction() & 0xFF;
+    if ((i1 != 3) && (i1 != 1))
+    {
+      if (i1 != 0)
+      {
+        if (D) {
+          return true;
+        }
+        if (E) {
+          return false;
+        }
+      }
+      float f1;
+      if (i1 != 0)
+      {
+        if (i1 != 2)
+        {
+          if (i1 == 6) {
+            u(paramMotionEvent);
+          }
+        }
+        else
+        {
+          i1 = P;
+          if (i1 != -1)
+          {
+            i1 = paramMotionEvent.findPointerIndex(i1);
+            float f2 = paramMotionEvent.getX(i1);
+            f1 = f2 - I;
+            float f4 = Math.abs(f1);
+            float f3 = paramMotionEvent.getY(i1);
+            float f5 = Math.abs(f3 - L);
+            boolean bool = f1 < 0.0F;
+            if ((bool) && (!s(I, f1)) && (d(this, false, (int)f1, (int)f2, (int)f3)))
+            {
+              I = f2;
+              J = f3;
+              E = true;
+              return false;
+            }
+            int i2 = H;
+            if ((f4 > i2) && (f4 * 0.5F > f5))
+            {
+              D = true;
+              E(true);
+              setScrollState(1);
+              f1 = K;
+              f4 = H;
+              if (bool) {
+                f1 += f4;
+              } else {
+                f1 -= f4;
+              }
+              I = f1;
+              J = f3;
+              setScrollingCacheEnabled(true);
+            }
+            else if (f5 > i2)
+            {
+              E = true;
+            }
+            if ((D) && (y(f2))) {
+              f0.g0(this);
+            }
+          }
+        }
+      }
+      else
+      {
+        f1 = paramMotionEvent.getX();
+        K = f1;
+        I = f1;
+        f1 = paramMotionEvent.getY();
+        L = f1;
+        J = f1;
+        P = paramMotionEvent.getPointerId(0);
+        E = false;
+        p = true;
+        o.computeScrollOffset();
+        if ((k0 == 2) && (Math.abs(o.getFinalX() - o.getCurrX()) > R))
+        {
+          o.abortAnimation();
+          B = false;
+          z();
+          D = true;
+          E(true);
+          setScrollState(1);
+        }
+        else
+        {
+          e(false);
+          D = false;
+        }
+      }
+      if (Q == null) {
+        Q = VelocityTracker.obtain();
+      }
+      Q.addMovement(paramMotionEvent);
+      return D;
+    }
+    F();
+    return false;
+  }
+  
+  protected void onLayout(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    int i8 = getChildCount();
+    int i9 = paramInt3 - paramInt1;
+    int i10 = paramInt4 - paramInt2;
+    paramInt2 = getPaddingLeft();
+    paramInt1 = getPaddingTop();
+    paramInt4 = getPaddingRight();
+    paramInt3 = getPaddingBottom();
+    int i11 = getScrollX();
+    int i3 = 0;
+    View localView;
+    LayoutParams localLayoutParams;
+    for (int i2 = 0; i3 < i8; i2 = i1)
+    {
+      localView = getChildAt(i3);
+      int i7 = paramInt2;
+      int i6 = paramInt1;
+      int i5 = paramInt4;
+      int i4 = paramInt3;
+      i1 = i2;
+      if (localView.getVisibility() != 8)
+      {
+        localLayoutParams = (LayoutParams)localView.getLayoutParams();
+        i7 = paramInt2;
+        i6 = paramInt1;
+        i5 = paramInt4;
+        i4 = paramInt3;
+        i1 = i2;
+        if (a)
+        {
+          i4 = b;
+          i1 = i4 & 0x7;
+          i5 = i4 & 0x70;
+          if (i1 != 1)
+          {
+            if (i1 != 3)
+            {
+              if (i1 != 5)
+              {
+                i1 = paramInt2;
+                i4 = paramInt2;
+                paramInt2 = i1;
+                break label246;
+              }
+              i1 = i9 - paramInt4 - localView.getMeasuredWidth();
+              paramInt4 += localView.getMeasuredWidth();
+            }
+            else
+            {
+              i1 = localView.getMeasuredWidth() + paramInt2;
+              i4 = paramInt2;
+              paramInt2 = i1;
+              break label246;
+            }
+          }
+          else {
+            i1 = Math.max((i9 - localView.getMeasuredWidth()) / 2, paramInt2);
+          }
+          i4 = i1;
+          label246:
+          if (i5 != 16)
+          {
+            if (i5 != 48)
+            {
+              if (i5 != 80)
+              {
+                i5 = paramInt1;
+                i1 = paramInt1;
+                paramInt1 = i5;
+              }
+              else
+              {
+                i1 = i10 - paramInt3 - localView.getMeasuredHeight();
+                paramInt3 += localView.getMeasuredHeight();
+              }
+            }
+            else
+            {
+              i5 = localView.getMeasuredHeight() + paramInt1;
+              i1 = paramInt1;
+              paramInt1 = i5;
+            }
+          }
+          else {
+            i1 = Math.max((i10 - localView.getMeasuredHeight()) / 2, paramInt1);
+          }
+          i4 += i11;
+          localView.layout(i4, i1, localView.getMeasuredWidth() + i4, i1 + localView.getMeasuredHeight());
+          i1 = i2 + 1;
+          i4 = paramInt3;
+          i5 = paramInt4;
+          i6 = paramInt1;
+          i7 = paramInt2;
+        }
+      }
+      i3 += 1;
+      paramInt2 = i7;
+      paramInt1 = i6;
+      paramInt4 = i5;
+      paramInt3 = i4;
+    }
+    int i1 = 0;
+    while (i1 < i8)
+    {
+      localView = getChildAt(i1);
+      if (localView.getVisibility() != 8)
+      {
+        localLayoutParams = (LayoutParams)localView.getLayoutParams();
+        if (!a)
+        {
+          d localD = o(localView);
+          if (localD != null)
+          {
+            float f1 = i9 - paramInt2 - paramInt4;
+            i3 = (int)(e * f1) + paramInt2;
+            if (d)
+            {
+              d = false;
+              localView.measure(View.MeasureSpec.makeMeasureSpec((int)(f1 * c), 1073741824), View.MeasureSpec.makeMeasureSpec(i10 - paramInt1 - paramInt3, 1073741824));
+            }
+            localView.layout(i3, paramInt1, localView.getMeasuredWidth() + i3, localView.getMeasuredHeight() + paramInt1);
+          }
+        }
+      }
+      i1 += 1;
+    }
+    t = paramInt1;
+    u = (i10 - paramInt3);
+    a0 = i2;
+    if (V) {
+      G(k, false, 0, false);
+    }
+    V = false;
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    int i9 = 0;
+    setMeasuredDimension(ViewGroup.getDefaultSize(0, paramInt1), ViewGroup.getDefaultSize(0, paramInt2));
+    paramInt1 = getMeasuredWidth();
+    G = Math.min(paramInt1 / 10, F);
+    paramInt1 = paramInt1 - getPaddingLeft() - getPaddingRight();
+    paramInt2 = getMeasuredHeight() - getPaddingTop() - getPaddingBottom();
+    int i10 = getChildCount();
+    int i3 = 0;
+    View localView;
+    LayoutParams localLayoutParams;
+    for (;;)
+    {
+      int i6 = 1;
+      int i8 = 1073741824;
+      if (i3 >= i10) {
+        break;
+      }
+      localView = getChildAt(i3);
+      i1 = paramInt1;
+      int i2 = paramInt2;
+      if (localView.getVisibility() != 8)
+      {
+        localLayoutParams = (LayoutParams)localView.getLayoutParams();
+        i1 = paramInt1;
+        i2 = paramInt2;
+        if (localLayoutParams != null)
+        {
+          i1 = paramInt1;
+          i2 = paramInt2;
+          if (a)
+          {
+            i2 = b;
+            i1 = i2 & 0x7;
+            i2 &= 0x70;
+            int i5;
+            if ((i2 != 48) && (i2 != 80)) {
+              i5 = 0;
+            } else {
+              i5 = 1;
+            }
+            int i4 = i6;
+            if (i1 != 3) {
+              if (i1 == 5) {
+                i4 = i6;
+              } else {
+                i4 = 0;
+              }
+            }
+            i2 = Integer.MIN_VALUE;
+            if (i5 != 0)
+            {
+              i1 = Integer.MIN_VALUE;
+              i2 = 1073741824;
+            }
+            else if (i4 != 0)
+            {
+              i1 = 1073741824;
+            }
+            else
+            {
+              i1 = Integer.MIN_VALUE;
+            }
+            i6 = width;
+            int i7;
+            if (i6 != -2)
+            {
+              if (i6 != -1) {
+                i2 = i6;
+              } else {
+                i2 = paramInt1;
+              }
+              i6 = 1073741824;
+              i7 = i2;
+            }
+            else
+            {
+              i7 = paramInt1;
+              i6 = i2;
+            }
+            i2 = height;
+            if (i2 != -2)
+            {
+              if (i2 != -1) {
+                i1 = i2;
+              } else {
+                i1 = paramInt2;
+              }
+            }
+            else
+            {
+              i2 = paramInt2;
+              i8 = i1;
+              i1 = i2;
+            }
+            localView.measure(View.MeasureSpec.makeMeasureSpec(i7, i6), View.MeasureSpec.makeMeasureSpec(i1, i8));
+            if (i5 != 0)
+            {
+              i2 = paramInt2 - localView.getMeasuredHeight();
+              i1 = paramInt1;
+            }
+            else
+            {
+              i1 = paramInt1;
+              i2 = paramInt2;
+              if (i4 != 0)
+              {
+                i1 = paramInt1 - localView.getMeasuredWidth();
+                i2 = paramInt2;
+              }
+            }
+          }
+        }
+      }
+      i3 += 1;
+      paramInt1 = i1;
+      paramInt2 = i2;
+    }
+    x = View.MeasureSpec.makeMeasureSpec(paramInt1, 1073741824);
+    y = View.MeasureSpec.makeMeasureSpec(paramInt2, 1073741824);
+    z = true;
+    z();
+    z = false;
+    int i1 = getChildCount();
+    paramInt2 = i9;
+    while (paramInt2 < i1)
+    {
+      localView = getChildAt(paramInt2);
+      if (localView.getVisibility() != 8)
+      {
+        localLayoutParams = (LayoutParams)localView.getLayoutParams();
+        if ((localLayoutParams == null) || (!a)) {
+          localView.measure(View.MeasureSpec.makeMeasureSpec((int)(paramInt1 * c), 1073741824), y);
+        }
+      }
+      paramInt2 += 1;
+    }
+  }
+  
+  protected boolean onRequestFocusInDescendants(int paramInt, Rect paramRect)
+  {
+    int i1 = getChildCount();
+    int i3 = -1;
+    int i2;
+    if ((paramInt & 0x2) != 0)
+    {
+      i3 = i1;
+      i1 = 0;
+      i2 = 1;
+    }
+    else
+    {
+      i1 -= 1;
+      i2 = -1;
+    }
+    while (i1 != i3)
+    {
+      View localView = getChildAt(i1);
+      if (localView.getVisibility() == 0)
+      {
+        d localD = o(localView);
+        if ((localD != null) && (b == k) && (localView.requestFocus(paramInt, paramRect))) {
+          return true;
+        }
+      }
+      i1 += i2;
+    }
+    return false;
+  }
+  
+  public void onRestoreInstanceState(Parcelable paramParcelable)
+  {
+    if (!(paramParcelable instanceof SavedState))
+    {
+      super.onRestoreInstanceState(paramParcelable);
+      return;
+    }
+    paramParcelable = (SavedState)paramParcelable;
+    super.onRestoreInstanceState(paramParcelable.a());
+    if (j == null)
+    {
+      l = d;
+      m = e;
+      n = f;
+      return;
+    }
+    throw null;
+  }
+  
+  public Parcelable onSaveInstanceState()
+  {
+    SavedState localSavedState = new SavedState(super.onSaveInstanceState());
+    d = k;
+    if (j == null) {
+      return localSavedState;
+    }
+    throw null;
+  }
+  
+  protected void onSizeChanged(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    super.onSizeChanged(paramInt1, paramInt2, paramInt3, paramInt4);
+    if (paramInt1 != paramInt3)
+    {
+      paramInt2 = r;
+      B(paramInt1, paramInt3, paramInt2, paramInt2);
+    }
+  }
+  
+  public boolean onTouchEvent(MotionEvent paramMotionEvent)
+  {
+    if (S) {
+      return true;
+    }
+    if ((paramMotionEvent.getAction() == 0) && (paramMotionEvent.getEdgeFlags() != 0)) {
+      return false;
+    }
+    if (j == null) {
+      return false;
+    }
+    throw null;
+  }
+  
+  d q(int paramInt)
+  {
+    int i1 = 0;
+    while (i1 < g.size())
+    {
+      d localD = (d)g.get(i1);
+      if (b == paramInt) {
+        return localD;
+      }
+      i1 += 1;
+    }
+    return null;
+  }
+  
+  public void removeView(View paramView)
+  {
+    if (z)
+    {
+      removeViewInLayout(paramView);
+      return;
+    }
+    super.removeView(paramView);
+  }
+  
+  public void setAdapter(a paramA)
+  {
+    a localA = j;
+    if (localA == null)
+    {
+      int i1 = 0;
+      f = 0;
+      if (paramA != null)
+      {
+        if (q == null) {
+          q = new h();
+        }
+        throw null;
+      }
+      List localList = e0;
+      if ((localList != null) && (!localList.isEmpty()))
+      {
+        int i2 = e0.size();
+        while (i1 < i2)
+        {
+          ((e)e0.get(i1)).a(this, localA, paramA);
+          i1 += 1;
+        }
+      }
+      return;
+    }
+    throw null;
+  }
+  
+  public void setCurrentItem(int paramInt)
+  {
+    B = false;
+    I(paramInt, V ^ true, false);
+  }
+  
+  public void setOffscreenPageLimit(int paramInt)
+  {
+    int i1 = paramInt;
+    if (paramInt < 1)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Requested offscreen page limit ");
+      localStringBuilder.append(paramInt);
+      localStringBuilder.append(" too small; defaulting to ");
+      localStringBuilder.append(1);
+      Log.w("ViewPager", localStringBuilder.toString());
+      i1 = 1;
+    }
+    if (i1 != C)
+    {
+      C = i1;
+      z();
+    }
+  }
+  
+  @Deprecated
+  public void setOnPageChangeListener(f paramF)
+  {
+    c0 = paramF;
+  }
+  
+  public void setPageMargin(int paramInt)
+  {
+    int i1 = r;
+    r = paramInt;
+    int i2 = getWidth();
+    B(i2, i2, paramInt, i1);
+    requestLayout();
+  }
+  
+  public void setPageMarginDrawable(int paramInt)
+  {
+    setPageMarginDrawable(androidx.core.content.a.f(getContext(), paramInt));
+  }
+  
+  public void setPageMarginDrawable(Drawable paramDrawable)
+  {
+    s = paramDrawable;
+    if (paramDrawable != null) {
+      refreshDrawableState();
+    }
+    boolean bool;
+    if (paramDrawable == null) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    setWillNotDraw(bool);
+    invalidate();
+  }
+  
+  void setScrollState(int paramInt)
+  {
+    if (k0 == paramInt) {
+      return;
+    }
+    k0 = paramInt;
+    if (f0 != null)
+    {
+      boolean bool;
+      if (paramInt != 0) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      k(bool);
+    }
+    i(paramInt);
+  }
+  
+  protected void t(int paramInt1, float paramFloat, int paramInt2)
+  {
+    int i1 = a0;
+    int i6 = 0;
+    View localView;
+    if (i1 > 0)
+    {
+      int i7 = getScrollX();
+      i1 = getPaddingLeft();
+      int i2 = getPaddingRight();
+      int i8 = getWidth();
+      int i9 = getChildCount();
+      int i4 = 0;
+      while (i4 < i9)
+      {
+        localView = getChildAt(i4);
+        LayoutParams localLayoutParams = (LayoutParams)localView.getLayoutParams();
+        if (a)
+        {
+          int i3 = b & 0x7;
+          if (i3 != 1)
+          {
+            int i5;
+            if (i3 != 3)
+            {
+              if (i3 != 5)
+              {
+                i5 = i1;
+                i3 = i1;
+                i1 = i5;
+              }
+              else
+              {
+                i3 = i8 - i2 - localView.getMeasuredWidth();
+                i2 += localView.getMeasuredWidth();
+              }
+            }
+            else
+            {
+              i5 = localView.getWidth() + i1;
+              i3 = i1;
+              i1 = i5;
+            }
+          }
+          else
+          {
+            i3 = Math.max((i8 - localView.getMeasuredWidth()) / 2, i1);
+          }
+          i3 = i3 + i7 - localView.getLeft();
+          if (i3 != 0) {
+            localView.offsetLeftAndRight(i3);
+          }
+        }
+        i4 += 1;
+      }
+    }
+    g(paramInt1, paramFloat, paramInt2);
+    if (f0 != null)
+    {
+      paramInt2 = getScrollX();
+      i1 = getChildCount();
+      paramInt1 = i6;
+      while (paramInt1 < i1)
+      {
+        localView = getChildAt(paramInt1);
+        if (!getLayoutParamsa)
+        {
+          paramFloat = (localView.getLeft() - paramInt2) / getClientWidth();
+          f0.a(localView, paramFloat);
+        }
+        paramInt1 += 1;
+      }
+    }
+    W = true;
+  }
+  
+  boolean v()
+  {
+    int i1 = k;
+    if (i1 > 0)
+    {
+      H(i1 - 1, true);
+      return true;
+    }
+    return false;
+  }
+  
+  protected boolean verifyDrawable(Drawable paramDrawable)
+  {
+    return (super.verifyDrawable(paramDrawable)) || (paramDrawable == s);
+  }
+  
+  boolean w()
+  {
+    if (j == null) {
+      return false;
+    }
+    throw null;
+  }
+  
+  void z()
+  {
+    A(k);
+  }
+  
+  public static class LayoutParams
+    extends ViewGroup.LayoutParams
+  {
+    public boolean a;
+    public int b;
+    float c = 0.0F;
+    boolean d;
+    int e;
+    int f;
+    
+    public LayoutParams()
+    {
+      super(-1);
+    }
+    
+    public LayoutParams(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      super(paramAttributeSet);
+      paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, ViewPager.b);
+      b = paramContext.getInteger(0, 48);
+      paramContext.recycle();
+    }
+  }
+  
+  public static class SavedState
+    extends AbsSavedState
+  {
+    public static final Parcelable.Creator<SavedState> CREATOR = new a();
+    int d;
+    Parcelable e;
+    ClassLoader f;
+    
+    SavedState(Parcel paramParcel, ClassLoader paramClassLoader)
+    {
+      super(paramClassLoader);
+      ClassLoader localClassLoader = paramClassLoader;
+      if (paramClassLoader == null) {
+        localClassLoader = SavedState.class.getClassLoader();
+      }
+      d = paramParcel.readInt();
+      e = paramParcel.readParcelable(localClassLoader);
+      f = localClassLoader;
+    }
+    
+    public SavedState(Parcelable paramParcelable)
+    {
+      super();
+    }
+    
+    public String toString()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("FragmentPager.SavedState{");
+      localStringBuilder.append(Integer.toHexString(System.identityHashCode(this)));
+      localStringBuilder.append(" position=");
+      localStringBuilder.append(d);
+      localStringBuilder.append("}");
+      return localStringBuilder.toString();
+    }
+    
+    public void writeToParcel(Parcel paramParcel, int paramInt)
+    {
+      super.writeToParcel(paramParcel, paramInt);
+      paramParcel.writeInt(d);
+      paramParcel.writeParcelable(e, paramInt);
+    }
+    
+    static final class a
+      implements Parcelable.ClassLoaderCreator<ViewPager.SavedState>
+    {
+      a() {}
+      
+      public ViewPager.SavedState a(Parcel paramParcel)
+      {
+        return new ViewPager.SavedState(paramParcel, null);
+      }
+      
+      public ViewPager.SavedState b(Parcel paramParcel, ClassLoader paramClassLoader)
+      {
+        return new ViewPager.SavedState(paramParcel, paramClassLoader);
+      }
+      
+      public ViewPager.SavedState[] c(int paramInt)
+      {
+        return new ViewPager.SavedState[paramInt];
+      }
+    }
+  }
+  
+  static final class a
+    implements Comparator<ViewPager.d>
+  {
+    a() {}
+    
+    public int a(ViewPager.d paramD1, ViewPager.d paramD2)
+    {
+      return b - b;
+    }
+  }
+  
+  static final class b
+    implements Interpolator
+  {
+    b() {}
+    
+    public float getInterpolation(float paramFloat)
+    {
+      paramFloat -= 1.0F;
+      return paramFloat * paramFloat * paramFloat * paramFloat * paramFloat + 1.0F;
+    }
+  }
+  
+  @Inherited
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target({java.lang.annotation.ElementType.TYPE})
+  public static @interface c {}
+  
+  static class d
+  {
+    Object a;
+    int b;
+    boolean c;
+    float d;
+    float e;
+    
+    d() {}
+  }
+  
+  public static abstract interface e
+  {
+    public abstract void a(ViewPager paramViewPager, a paramA1, a paramA2);
+  }
+  
+  public static abstract interface f
+  {
+    public abstract void a(int paramInt1, float paramFloat, int paramInt2);
+    
+    public abstract void b(int paramInt);
+    
+    public abstract void c(int paramInt);
+  }
+  
+  public static abstract interface g
+  {
+    public abstract void a(View paramView, float paramFloat);
+  }
+  
+  private class h
+    extends DataSetObserver
+  {
+    h() {}
+    
+    public void onChanged()
+    {
+      f();
+    }
+    
+    public void onInvalidated()
+    {
+      f();
+    }
+  }
+  
+  static class i
+    implements Comparator<View>
+  {
+    i() {}
+    
+    public int a(View paramView1, View paramView2)
+    {
+      paramView1 = (ViewPager.LayoutParams)paramView1.getLayoutParams();
+      paramView2 = (ViewPager.LayoutParams)paramView2.getLayoutParams();
+      boolean bool = a;
+      if (bool != a)
+      {
+        if (bool) {
+          return 1;
+        }
+        return -1;
+      }
+      return e - e;
+    }
+  }
+}

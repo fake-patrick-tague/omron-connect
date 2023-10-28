@@ -1,0 +1,136 @@
+package com.google.firebase.messaging;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.KeyguardManager;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Process;
+import android.os.SystemClock;
+import android.util.Log;
+import androidx.core.app.m.b;
+import androidx.core.app.m.e;
+import com.google.android.gms.common.util.PlatformVersion;
+import com.google.android.gms.tasks.Tasks;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+class j0
+{
+  private final ExecutorService a;
+  private final Context b;
+  private final s0 c;
+  
+  public j0(Context paramContext, s0 paramS0, ExecutorService paramExecutorService)
+  {
+    a = paramExecutorService;
+    b = paramContext;
+    c = paramS0;
+  }
+  
+  private boolean b()
+  {
+    boolean bool1 = ((KeyguardManager)b.getSystemService("keyguard")).inKeyguardRestrictedInputMode();
+    boolean bool2 = false;
+    if (bool1) {
+      return false;
+    }
+    if (!PlatformVersion.isAtLeastLollipop()) {
+      SystemClock.sleep(10L);
+    }
+    int i = Process.myPid();
+    Object localObject = ((ActivityManager)b.getSystemService("activity")).getRunningAppProcesses();
+    bool1 = bool2;
+    if (localObject != null)
+    {
+      localObject = ((List)localObject).iterator();
+      ActivityManager.RunningAppProcessInfo localRunningAppProcessInfo;
+      do
+      {
+        bool1 = bool2;
+        if (!((Iterator)localObject).hasNext()) {
+          break;
+        }
+        localRunningAppProcessInfo = (ActivityManager.RunningAppProcessInfo)((Iterator)localObject).next();
+      } while (pid != i);
+      bool1 = bool2;
+      if (importance == 100) {
+        bool1 = true;
+      }
+    }
+    return bool1;
+  }
+  
+  private void c(h0.a paramA)
+  {
+    if (Log.isLoggable("FirebaseMessaging", 3)) {
+      Log.d("FirebaseMessaging", "Showing notification");
+    }
+    ((NotificationManager)b.getSystemService("notification")).notify(b, c, a.c());
+  }
+  
+  private p0 d()
+  {
+    p0 localP0 = p0.i(c.p("gcm.n.image"));
+    if (localP0 != null) {
+      localP0.u(a);
+    }
+    return localP0;
+  }
+  
+  private void e(m.e paramE, p0 paramP0)
+  {
+    if (paramP0 == null) {
+      return;
+    }
+    try
+    {
+      Bitmap localBitmap = (Bitmap)Tasks.await(paramP0.n(), 5L, TimeUnit.SECONDS);
+      paramE.y(localBitmap);
+      paramE.J(new m.b().b(localBitmap).a(null));
+      return;
+    }
+    catch (ExecutionException paramE)
+    {
+      paramP0 = new StringBuilder();
+      paramP0.append("Failed to download image: ");
+      paramP0.append(paramE.getCause());
+      Log.w("FirebaseMessaging", paramP0.toString());
+      return;
+    }
+    catch (InterruptedException paramE)
+    {
+      for (;;) {}
+    }
+    catch (TimeoutException paramE)
+    {
+      for (;;) {}
+    }
+    Log.w("FirebaseMessaging", "Failed to download image in time, showing notification without it");
+    paramP0.close();
+    return;
+    Log.w("FirebaseMessaging", "Interrupted while downloading image, showing notification without it");
+    paramP0.close();
+    Thread.currentThread().interrupt();
+  }
+  
+  boolean a()
+  {
+    if (c.a("gcm.n.noui")) {
+      return true;
+    }
+    if (b()) {
+      return false;
+    }
+    p0 localP0 = d();
+    h0.a localA = h0.e(b, c);
+    e(a, localP0);
+    c(localA);
+    return true;
+  }
+}

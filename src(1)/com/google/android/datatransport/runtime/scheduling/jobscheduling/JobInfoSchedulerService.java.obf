@@ -1,0 +1,35 @@
+package com.google.android.datatransport.runtime.scheduling.jobscheduling;
+
+import android.app.job.JobParameters;
+import android.app.job.JobService;
+import android.os.PersistableBundle;
+import android.util.Base64;
+import com.google.android.datatransport.h.b0.a;
+import com.google.android.datatransport.h.p;
+import com.google.android.datatransport.h.p.a;
+
+public class JobInfoSchedulerService
+  extends JobService
+{
+  public JobInfoSchedulerService() {}
+  
+  public boolean onStartJob(JobParameters paramJobParameters)
+  {
+    Object localObject = paramJobParameters.getExtras().getString("backendName");
+    String str = paramJobParameters.getExtras().getString("extras");
+    int i = paramJobParameters.getExtras().getInt("priority");
+    int j = paramJobParameters.getExtras().getInt("attemptNumber");
+    com.google.android.datatransport.h.t.f(getApplicationContext());
+    localObject = p.a().b((String)localObject).d(a.b(i));
+    if (str != null) {
+      ((p.a)localObject).c(Base64.decode(str, 0));
+    }
+    com.google.android.datatransport.h.t.c().e().v(((p.a)localObject).a(), j, new c(this, paramJobParameters));
+    return true;
+  }
+  
+  public boolean onStopJob(JobParameters paramJobParameters)
+  {
+    return true;
+  }
+}

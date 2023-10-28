@@ -1,0 +1,141 @@
+package com.google.android.gms.common.data;
+
+import android.database.CharArrayBuffer;
+import android.net.Uri;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Preconditions;
+
+@KeepForSdk
+public abstract class DataBufferRef
+{
+  @KeepForSdk
+  protected final DataHolder mDataHolder;
+  @KeepForSdk
+  protected int mDataRow;
+  private int zaa;
+  
+  @KeepForSdk
+  public DataBufferRef(DataHolder paramDataHolder, int paramInt)
+  {
+    mDataHolder = ((DataHolder)Preconditions.checkNotNull(paramDataHolder));
+    zaa(paramInt);
+  }
+  
+  @KeepForSdk
+  protected void copyToBuffer(String paramString, CharArrayBuffer paramCharArrayBuffer)
+  {
+    mDataHolder.zac(paramString, mDataRow, zaa, paramCharArrayBuffer);
+  }
+  
+  @KeepForSdk
+  public boolean equals(Object paramObject)
+  {
+    if ((paramObject instanceof DataBufferRef))
+    {
+      paramObject = (DataBufferRef)paramObject;
+      if ((Objects.equal(Integer.valueOf(mDataRow), Integer.valueOf(mDataRow))) && (Objects.equal(Integer.valueOf(zaa), Integer.valueOf(zaa))) && (mDataHolder == mDataHolder)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  @KeepForSdk
+  protected boolean getBoolean(String paramString)
+  {
+    return mDataHolder.getBoolean(paramString, mDataRow, zaa);
+  }
+  
+  @KeepForSdk
+  protected byte[] getByteArray(String paramString)
+  {
+    return mDataHolder.getByteArray(paramString, mDataRow, zaa);
+  }
+  
+  @KeepForSdk
+  protected int getDataRow()
+  {
+    return mDataRow;
+  }
+  
+  @KeepForSdk
+  protected double getDouble(String paramString)
+  {
+    return mDataHolder.zaa(paramString, mDataRow, zaa);
+  }
+  
+  @KeepForSdk
+  protected float getFloat(String paramString)
+  {
+    return mDataHolder.zab(paramString, mDataRow, zaa);
+  }
+  
+  @KeepForSdk
+  protected int getInteger(String paramString)
+  {
+    return mDataHolder.getInteger(paramString, mDataRow, zaa);
+  }
+  
+  @KeepForSdk
+  protected long getLong(String paramString)
+  {
+    return mDataHolder.getLong(paramString, mDataRow, zaa);
+  }
+  
+  @KeepForSdk
+  protected String getString(String paramString)
+  {
+    return mDataHolder.getString(paramString, mDataRow, zaa);
+  }
+  
+  @KeepForSdk
+  public boolean hasColumn(String paramString)
+  {
+    return mDataHolder.hasColumn(paramString);
+  }
+  
+  @KeepForSdk
+  protected boolean hasNull(String paramString)
+  {
+    return mDataHolder.hasNull(paramString, mDataRow, zaa);
+  }
+  
+  @KeepForSdk
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { Integer.valueOf(mDataRow), Integer.valueOf(zaa), mDataHolder });
+  }
+  
+  @KeepForSdk
+  public boolean isDataValid()
+  {
+    return !mDataHolder.isClosed();
+  }
+  
+  @KeepForSdk
+  protected Uri parseUri(String paramString)
+  {
+    paramString = mDataHolder.getString(paramString, mDataRow, zaa);
+    if (paramString == null) {
+      return null;
+    }
+    return Uri.parse(paramString);
+  }
+  
+  protected final void zaa(int paramInt)
+  {
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (paramInt >= 0)
+    {
+      bool1 = bool2;
+      if (paramInt < mDataHolder.getCount()) {
+        bool1 = true;
+      }
+    }
+    Preconditions.checkState(bool1);
+    mDataRow = paramInt;
+    zaa = mDataHolder.getWindowIndex(paramInt);
+  }
+}

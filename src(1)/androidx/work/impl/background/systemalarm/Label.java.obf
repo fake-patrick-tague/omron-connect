@@ -1,0 +1,169 @@
+package androidx.work.impl.background.systemalarm;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.PowerManager.WakeLock;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.m.c;
+import androidx.work.impl.n.p;
+import androidx.work.impl.n.q;
+import androidx.work.impl.utils.k;
+import androidx.work.impl.utils.o;
+import androidx.work.impl.utils.o.b;
+import java.util.Collections;
+import java.util.List;
+
+public class d
+  implements c, androidx.work.impl.b, o.b
+{
+  private static final String b = androidx.work.j.f("DelayMetCommandHandler");
+  private final Context c;
+  private final int d;
+  private final String e;
+  private final e f;
+  private final androidx.work.impl.m.d g;
+  private final Object h;
+  private int i;
+  private PowerManager.WakeLock j;
+  private boolean k;
+  
+  d(Context paramContext, int paramInt, String paramString, e paramE)
+  {
+    c = paramContext;
+    d = paramInt;
+    f = paramE;
+    e = paramString;
+    g = new androidx.work.impl.m.d(paramContext, paramE.f(), this);
+    k = false;
+    i = 0;
+    h = new Object();
+  }
+  
+  private void c()
+  {
+    synchronized (h)
+    {
+      g.e();
+      f.h().c(e);
+      PowerManager.WakeLock localWakeLock = j;
+      if ((localWakeLock != null) && (localWakeLock.isHeld()))
+      {
+        androidx.work.j.c().a(b, String.format("Releasing wakelock %s for WorkSpec %s", new Object[] { j, e }), new Throwable[0]);
+        j.release();
+      }
+      return;
+    }
+  }
+  
+  private void g()
+  {
+    synchronized (h)
+    {
+      if (i < 2)
+      {
+        i = 2;
+        Object localObject4 = androidx.work.j.c();
+        Object localObject2 = b;
+        ((androidx.work.j)localObject4).a((String)localObject2, String.format("Stopping work for WorkSpec %s", new Object[] { e }), new Throwable[0]);
+        localObject4 = b.g(c, e);
+        e localE = f;
+        localE.k(new e.b(localE, (Intent)localObject4, d));
+        if (f.e().g(e))
+        {
+          androidx.work.j.c().a((String)localObject2, String.format("WorkSpec %s needs to be rescheduled", new Object[] { e }), new Throwable[0]);
+          localObject2 = b.f(c, e);
+          localObject4 = f;
+          ((e)localObject4).k(new e.b((e)localObject4, (Intent)localObject2, d));
+        }
+        else
+        {
+          androidx.work.j.c().a((String)localObject2, String.format("Processor does not have WorkSpec %s. No need to reschedule ", new Object[] { e }), new Throwable[0]);
+        }
+      }
+      else
+      {
+        androidx.work.j.c().a(b, String.format("Already stopped work for %s", new Object[] { e }), new Throwable[0]);
+      }
+      return;
+    }
+  }
+  
+  public void a(String paramString)
+  {
+    androidx.work.j.c().a(b, String.format("Exceeded time limits on execution for %s", new Object[] { paramString }), new Throwable[0]);
+    g();
+  }
+  
+  public void b(List<String> paramList)
+  {
+    g();
+  }
+  
+  public void d(String paramString, boolean paramBoolean)
+  {
+    androidx.work.j.c().a(b, String.format("onExecuted %s, %s", new Object[] { paramString, Boolean.valueOf(paramBoolean) }), new Throwable[0]);
+    c();
+    e localE;
+    if (paramBoolean)
+    {
+      paramString = b.f(c, e);
+      localE = f;
+      localE.k(new e.b(localE, paramString, d));
+    }
+    if (k)
+    {
+      paramString = b.a(c);
+      localE = f;
+      localE.k(new e.b(localE, paramString, d));
+    }
+  }
+  
+  void e()
+  {
+    j = k.b(c, String.format("%s (%s)", new Object[] { e, Integer.valueOf(d) }));
+    Object localObject = androidx.work.j.c();
+    String str = b;
+    ((androidx.work.j)localObject).a(str, String.format("Acquiring wakelock %s for WorkSpec %s", new Object[] { j, e }), new Throwable[0]);
+    j.acquire();
+    localObject = f.g().p().B().n(e);
+    if (localObject == null)
+    {
+      g();
+      return;
+    }
+    boolean bool = ((p)localObject).b();
+    k = bool;
+    if (!bool)
+    {
+      androidx.work.j.c().a(str, String.format("No constraints for %s", new Object[] { e }), new Throwable[0]);
+      f(Collections.singletonList(e));
+      return;
+    }
+    g.d(Collections.singletonList(localObject));
+  }
+  
+  public void f(List<String> arg1)
+  {
+    if (!???.contains(e)) {
+      return;
+    }
+    synchronized (h)
+    {
+      if (i == 0)
+      {
+        i = 1;
+        androidx.work.j.c().a(b, String.format("onAllConstraintsMet for %s", new Object[] { e }), new Throwable[0]);
+        if (f.e().j(e)) {
+          f.h().b(e, 600000L, this);
+        } else {
+          c();
+        }
+      }
+      else
+      {
+        androidx.work.j.c().a(b, String.format("Already started work for %s", new Object[] { e }), new Throwable[0]);
+      }
+      return;
+    }
+  }
+}

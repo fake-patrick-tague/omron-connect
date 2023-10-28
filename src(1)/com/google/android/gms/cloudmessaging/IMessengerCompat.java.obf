@@ -1,0 +1,74 @@
+package com.google.android.gms.cloudmessaging;
+
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Message;
+import android.os.Parcel;
+import android.os.RemoteException;
+
+abstract interface IMessengerCompat
+  extends IInterface
+{
+  public static final String DESCRIPTOR = "com.google.android.gms.iid.IMessengerCompat";
+  public static final int TRANSACTION_SEND = 1;
+  
+  public abstract void send(Message paramMessage)
+    throws RemoteException;
+  
+  public static class Impl
+    extends Binder
+    implements IMessengerCompat
+  {
+    public IBinder asBinder()
+    {
+      throw null;
+    }
+    
+    public boolean onTransact(int paramInt1, Parcel paramParcel1, Parcel paramParcel2, int paramInt2)
+      throws RemoteException
+    {
+      throw null;
+    }
+    
+    public void send(Message paramMessage)
+      throws RemoteException
+    {
+      throw null;
+    }
+  }
+  
+  public static class Proxy
+    implements IMessengerCompat
+  {
+    private final IBinder zza;
+    
+    Proxy(IBinder paramIBinder)
+    {
+      zza = paramIBinder;
+    }
+    
+    public IBinder asBinder()
+    {
+      return zza;
+    }
+    
+    public void send(Message paramMessage)
+      throws RemoteException
+    {
+      Parcel localParcel = Parcel.obtain();
+      localParcel.writeInterfaceToken("com.google.android.gms.iid.IMessengerCompat");
+      localParcel.writeInt(1);
+      paramMessage.writeToParcel(localParcel, 0);
+      try
+      {
+        zza.transact(1, localParcel, null, 1);
+        return;
+      }
+      finally
+      {
+        localParcel.recycle();
+      }
+    }
+  }
+}

@@ -1,0 +1,203 @@
+package com.google.firebase.messaging;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.text.TextUtils;
+import android.util.Log;
+import androidx.core.content.a;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+class b1
+{
+  final SharedPreferences a;
+  
+  public b1(Context paramContext)
+  {
+    a = paramContext.getSharedPreferences("com.google.android.gms.appid", 0);
+    a(paramContext, "com.google.android.gms.appid-no-backup");
+  }
+  
+  private void a(Context paramContext, String paramString)
+  {
+    paramContext = new File(a.i(paramContext), paramString);
+    if (paramContext.exists()) {
+      return;
+    }
+    try
+    {
+      if ((paramContext.createNewFile()) && (!f()))
+      {
+        Log.i("FirebaseMessaging", "App restored, clearing state");
+        c();
+        return;
+      }
+    }
+    catch (IOException paramContext)
+    {
+      if (Log.isLoggable("FirebaseMessaging", 3))
+      {
+        paramString = new StringBuilder();
+        paramString.append("Error creating file in no backup dir: ");
+        paramString.append(paramContext.getMessage());
+        Log.d("FirebaseMessaging", paramString.toString());
+      }
+    }
+  }
+  
+  private String b(String paramString1, String paramString2)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(paramString1);
+    localStringBuilder.append("|T|");
+    localStringBuilder.append(paramString2);
+    localStringBuilder.append("|");
+    localStringBuilder.append("*");
+    return localStringBuilder.toString();
+  }
+  
+  public void c()
+  {
+    try
+    {
+      a.edit().clear().commit();
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  public void d(String paramString1, String paramString2)
+  {
+    try
+    {
+      paramString1 = b(paramString1, paramString2);
+      paramString2 = a.edit();
+      paramString2.remove(paramString1);
+      paramString2.commit();
+      return;
+    }
+    finally
+    {
+      paramString1 = finally;
+      throw paramString1;
+    }
+  }
+  
+  public a e(String paramString1, String paramString2)
+  {
+    try
+    {
+      paramString1 = a.c(a.getString(b(paramString1, paramString2), null));
+      return paramString1;
+    }
+    finally
+    {
+      paramString1 = finally;
+      throw paramString1;
+    }
+  }
+  
+  public boolean f()
+  {
+    try
+    {
+      boolean bool = a.getAll().isEmpty();
+      return bool;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  public void g(String paramString1, String paramString2, String paramString3, String paramString4)
+  {
+    try
+    {
+      paramString3 = a.a(paramString3, paramString4, System.currentTimeMillis());
+      if (paramString3 == null) {
+        return;
+      }
+      paramString4 = a.edit();
+      paramString4.putString(b(paramString1, paramString2), paramString3);
+      paramString4.commit();
+      return;
+    }
+    finally {}
+  }
+  
+  static class a
+  {
+    private static final long a = TimeUnit.DAYS.toMillis(7L);
+    final String b;
+    final String c;
+    final long d;
+    
+    private a(String paramString1, String paramString2, long paramLong)
+    {
+      b = paramString1;
+      c = paramString2;
+      d = paramLong;
+    }
+    
+    static String a(String paramString1, String paramString2, long paramLong)
+    {
+      try
+      {
+        JSONObject localJSONObject = new JSONObject();
+        localJSONObject.put("token", paramString1);
+        localJSONObject.put("appVersion", paramString2);
+        localJSONObject.put("timestamp", paramLong);
+        paramString1 = localJSONObject.toString();
+        return paramString1;
+      }
+      catch (JSONException paramString1)
+      {
+        paramString2 = new StringBuilder();
+        paramString2.append("Failed to encode token: ");
+        paramString2.append(paramString1);
+        Log.w("FirebaseMessaging", paramString2.toString());
+      }
+      return null;
+    }
+    
+    static a c(String paramString)
+    {
+      if (TextUtils.isEmpty(paramString)) {
+        return null;
+      }
+      if (paramString.startsWith("{")) {
+        try
+        {
+          paramString = new JSONObject(paramString);
+          paramString = new a(paramString.getString("token"), paramString.getString("appVersion"), paramString.getLong("timestamp"));
+          return paramString;
+        }
+        catch (JSONException paramString)
+        {
+          StringBuilder localStringBuilder = new StringBuilder();
+          localStringBuilder.append("Failed to parse token: ");
+          localStringBuilder.append(paramString);
+          Log.w("FirebaseMessaging", localStringBuilder.toString());
+          return null;
+        }
+      }
+      return new a(paramString, null, 0L);
+    }
+    
+    boolean b(String paramString)
+    {
+      return (System.currentTimeMillis() > d + a) || (!paramString.equals(c));
+    }
+  }
+}

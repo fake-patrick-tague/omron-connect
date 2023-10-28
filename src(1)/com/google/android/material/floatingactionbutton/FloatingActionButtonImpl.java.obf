@@ -1,0 +1,882 @@
+package com.google.android.material.floatingactionbutton;
+
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.FloatEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
+import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.content.res.ColorStateList;
+import android.graphics.Matrix;
+import android.graphics.Matrix.ScaleToFit;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.os.Build.VERSION;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnPreDrawListener;
+import android.widget.ImageButton;
+import c.h.q.f0;
+import com.google.android.material.internal.VisibilityAwareImageButton;
+import com.google.android.material.internal.d;
+import d.c.a.a.m.f;
+import d.c.a.a.m.i;
+import d.c.a.a.x.k;
+import d.c.a.a.x.n;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+class b
+{
+  static final TimeInterpolator a = d.c.a.a.m.a.c;
+  static final int[] b = { 16842919, 16842910 };
+  static final int[] c = { 16843623, 16842908, 16842910 };
+  static final int[] d = { 16842908, 16842910 };
+  static final int[] e = { 16843623, 16842910 };
+  static final int[] f = { 16842910 };
+  static final int[] g = new int[0];
+  private int A;
+  private int B = 0;
+  private ArrayList<Animator.AnimatorListener> C;
+  private ArrayList<Animator.AnimatorListener> D;
+  private ArrayList<i> E;
+  final FloatingActionButton F;
+  final d.c.a.a.w.b G;
+  private final Rect H = new Rect();
+  private final RectF I = new RectF();
+  private final RectF J = new RectF();
+  private final Matrix K = new Matrix();
+  private ViewTreeObserver.OnPreDrawListener L;
+  k h;
+  d.c.a.a.x.g i;
+  Drawable j;
+  a k;
+  Drawable l;
+  boolean m;
+  boolean n = true;
+  float o;
+  float p;
+  float q;
+  int r;
+  private final d s;
+  private d.c.a.a.m.h t;
+  private d.c.a.a.m.h u;
+  private Animator v;
+  private d.c.a.a.m.h w;
+  private d.c.a.a.m.h x;
+  private float y;
+  private float z = 1.0F;
+  
+  b(FloatingActionButton paramFloatingActionButton, d.c.a.a.w.b paramB)
+  {
+    F = paramFloatingActionButton;
+    G = paramB;
+    paramB = new d();
+    s = paramB;
+    paramB.a(b, i(new h()));
+    paramB.a(c, i(new g()));
+    paramB.a(d, i(new g()));
+    paramB.a(e, i(new g()));
+    paramB.a(f, i(new k()));
+    paramB.a(g, i(new f()));
+    y = paramFloatingActionButton.getRotation();
+  }
+  
+  private boolean a0()
+  {
+    return (f0.T(F)) && (!F.isInEditMode());
+  }
+  
+  private void g(float paramFloat, Matrix paramMatrix)
+  {
+    paramMatrix.reset();
+    Drawable localDrawable = F.getDrawable();
+    if ((localDrawable != null) && (A != 0))
+    {
+      RectF localRectF1 = I;
+      RectF localRectF2 = J;
+      localRectF1.set(0.0F, 0.0F, localDrawable.getIntrinsicWidth(), localDrawable.getIntrinsicHeight());
+      int i1 = A;
+      localRectF2.set(0.0F, 0.0F, i1, i1);
+      paramMatrix.setRectToRect(localRectF1, localRectF2, Matrix.ScaleToFit.CENTER);
+      i1 = A;
+      paramMatrix.postScale(paramFloat, paramFloat, i1 / 2.0F, i1 / 2.0F);
+    }
+  }
+  
+  private AnimatorSet h(d.c.a.a.m.h paramH, float paramFloat1, float paramFloat2, float paramFloat3)
+  {
+    ArrayList localArrayList = new ArrayList();
+    ObjectAnimator localObjectAnimator = ObjectAnimator.ofFloat(F, View.ALPHA, new float[] { paramFloat1 });
+    paramH.e("opacity").a(localObjectAnimator);
+    localArrayList.add(localObjectAnimator);
+    localObjectAnimator = ObjectAnimator.ofFloat(F, View.SCALE_X, new float[] { paramFloat2 });
+    paramH.e("scale").a(localObjectAnimator);
+    h0(localObjectAnimator);
+    localArrayList.add(localObjectAnimator);
+    localObjectAnimator = ObjectAnimator.ofFloat(F, View.SCALE_Y, new float[] { paramFloat2 });
+    paramH.e("scale").a(localObjectAnimator);
+    h0(localObjectAnimator);
+    localArrayList.add(localObjectAnimator);
+    g(paramFloat3, K);
+    localObjectAnimator = ObjectAnimator.ofObject(F, new f(), new c(), new Matrix[] { new Matrix(K) });
+    paramH.e("iconScale").a(localObjectAnimator);
+    localArrayList.add(localObjectAnimator);
+    paramH = new AnimatorSet();
+    d.c.a.a.m.b.a(paramH, localArrayList);
+    return paramH;
+  }
+  
+  private void h0(ObjectAnimator paramObjectAnimator)
+  {
+    if (Build.VERSION.SDK_INT != 26) {
+      return;
+    }
+    paramObjectAnimator.setEvaluator(new d());
+  }
+  
+  private ValueAnimator i(l paramL)
+  {
+    ValueAnimator localValueAnimator = new ValueAnimator();
+    localValueAnimator.setInterpolator(a);
+    localValueAnimator.setDuration(100L);
+    localValueAnimator.addListener(paramL);
+    localValueAnimator.addUpdateListener(paramL);
+    localValueAnimator.setFloatValues(new float[] { 0.0F, 1.0F });
+    return localValueAnimator;
+  }
+  
+  private d.c.a.a.m.h l()
+  {
+    if (u == null) {
+      u = d.c.a.a.m.h.c(F.getContext(), d.c.a.a.a.a);
+    }
+    return (d.c.a.a.m.h)c.h.p.h.g(u);
+  }
+  
+  private d.c.a.a.m.h m()
+  {
+    if (t == null) {
+      t = d.c.a.a.m.h.c(F.getContext(), d.c.a.a.a.b);
+    }
+    return (d.c.a.a.m.h)c.h.p.h.g(t);
+  }
+  
+  private ViewTreeObserver.OnPreDrawListener r()
+  {
+    if (L == null) {
+      L = new e();
+    }
+    return L;
+  }
+  
+  void A()
+  {
+    s.c();
+  }
+  
+  void B()
+  {
+    d.c.a.a.x.g localG = i;
+    if (localG != null) {
+      d.c.a.a.x.h.f(F, localG);
+    }
+    if (K()) {
+      F.getViewTreeObserver().addOnPreDrawListener(r());
+    }
+  }
+  
+  void C() {}
+  
+  void D()
+  {
+    ViewTreeObserver localViewTreeObserver = F.getViewTreeObserver();
+    ViewTreeObserver.OnPreDrawListener localOnPreDrawListener = L;
+    if (localOnPreDrawListener != null)
+    {
+      localViewTreeObserver.removeOnPreDrawListener(localOnPreDrawListener);
+      L = null;
+    }
+  }
+  
+  void E(int[] paramArrayOfInt)
+  {
+    s.d(paramArrayOfInt);
+  }
+  
+  void F(float paramFloat1, float paramFloat2, float paramFloat3)
+  {
+    f0();
+    g0(paramFloat1);
+  }
+  
+  void G(Rect paramRect)
+  {
+    c.h.p.h.h(l, "Didn't initialize content background");
+    if (Z())
+    {
+      paramRect = new InsetDrawable(l, left, top, right, bottom);
+      G.a(paramRect);
+      return;
+    }
+    G.a(l);
+  }
+  
+  void H()
+  {
+    float f1 = F.getRotation();
+    if (y != f1)
+    {
+      y = f1;
+      d0();
+    }
+  }
+  
+  void I()
+  {
+    Object localObject = E;
+    if (localObject != null)
+    {
+      localObject = ((ArrayList)localObject).iterator();
+      while (((Iterator)localObject).hasNext()) {
+        ((i)((Iterator)localObject).next()).b();
+      }
+    }
+  }
+  
+  void J()
+  {
+    Object localObject = E;
+    if (localObject != null)
+    {
+      localObject = ((ArrayList)localObject).iterator();
+      while (((Iterator)localObject).hasNext()) {
+        ((i)((Iterator)localObject).next()).a();
+      }
+    }
+  }
+  
+  boolean K()
+  {
+    return true;
+  }
+  
+  void L(ColorStateList paramColorStateList)
+  {
+    Object localObject = i;
+    if (localObject != null) {
+      ((d.c.a.a.x.g)localObject).setTintList(paramColorStateList);
+    }
+    localObject = k;
+    if (localObject != null) {
+      ((a)localObject).c(paramColorStateList);
+    }
+  }
+  
+  void M(PorterDuff.Mode paramMode)
+  {
+    d.c.a.a.x.g localG = i;
+    if (localG != null) {
+      localG.setTintMode(paramMode);
+    }
+  }
+  
+  final void N(float paramFloat)
+  {
+    if (o != paramFloat)
+    {
+      o = paramFloat;
+      F(paramFloat, p, q);
+    }
+  }
+  
+  void O(boolean paramBoolean)
+  {
+    m = paramBoolean;
+  }
+  
+  final void P(d.c.a.a.m.h paramH)
+  {
+    x = paramH;
+  }
+  
+  final void Q(float paramFloat)
+  {
+    if (p != paramFloat)
+    {
+      p = paramFloat;
+      F(o, paramFloat, q);
+    }
+  }
+  
+  final void R(float paramFloat)
+  {
+    z = paramFloat;
+    Matrix localMatrix = K;
+    g(paramFloat, localMatrix);
+    F.setImageMatrix(localMatrix);
+  }
+  
+  final void S(int paramInt)
+  {
+    if (A != paramInt)
+    {
+      A = paramInt;
+      e0();
+    }
+  }
+  
+  void T(int paramInt)
+  {
+    r = paramInt;
+  }
+  
+  final void U(float paramFloat)
+  {
+    if (q != paramFloat)
+    {
+      q = paramFloat;
+      F(o, p, paramFloat);
+    }
+  }
+  
+  void V(ColorStateList paramColorStateList)
+  {
+    Drawable localDrawable = j;
+    if (localDrawable != null) {
+      androidx.core.graphics.drawable.a.o(localDrawable, d.c.a.a.v.b.d(paramColorStateList));
+    }
+  }
+  
+  void W(boolean paramBoolean)
+  {
+    n = paramBoolean;
+    f0();
+  }
+  
+  final void X(k paramK)
+  {
+    h = paramK;
+    Object localObject = i;
+    if (localObject != null) {
+      ((d.c.a.a.x.g)localObject).setShapeAppearanceModel(paramK);
+    }
+    localObject = j;
+    if ((localObject instanceof n)) {
+      ((n)localObject).setShapeAppearanceModel(paramK);
+    }
+    localObject = k;
+    if (localObject != null) {
+      ((a)localObject).f(paramK);
+    }
+  }
+  
+  final void Y(d.c.a.a.m.h paramH)
+  {
+    w = paramH;
+  }
+  
+  boolean Z()
+  {
+    return true;
+  }
+  
+  final boolean b0()
+  {
+    return (!m) || (F.getSizeDimension() >= r);
+  }
+  
+  void c0(final j paramJ, final boolean paramBoolean)
+  {
+    if (z()) {
+      return;
+    }
+    Object localObject = v;
+    if (localObject != null) {
+      ((Animator)localObject).cancel();
+    }
+    if (a0())
+    {
+      if (F.getVisibility() != 0)
+      {
+        F.setAlpha(0.0F);
+        F.setScaleY(0.0F);
+        F.setScaleX(0.0F);
+        R(0.0F);
+      }
+      localObject = w;
+      if (localObject == null) {
+        localObject = m();
+      }
+      localObject = h((d.c.a.a.m.h)localObject, 1.0F, 1.0F, 1.0F);
+      ((AnimatorSet)localObject).addListener(new b(paramBoolean, paramJ));
+      paramJ = C;
+      if (paramJ != null)
+      {
+        paramJ = paramJ.iterator();
+        while (paramJ.hasNext()) {
+          ((AnimatorSet)localObject).addListener((Animator.AnimatorListener)paramJ.next());
+        }
+      }
+      ((AnimatorSet)localObject).start();
+      return;
+    }
+    F.b(0, paramBoolean);
+    F.setAlpha(1.0F);
+    F.setScaleY(1.0F);
+    F.setScaleX(1.0F);
+    R(1.0F);
+    if (paramJ != null) {
+      paramJ.a();
+    }
+  }
+  
+  public void d(Animator.AnimatorListener paramAnimatorListener)
+  {
+    if (D == null) {
+      D = new ArrayList();
+    }
+    D.add(paramAnimatorListener);
+  }
+  
+  void d0()
+  {
+    if (Build.VERSION.SDK_INT == 19) {
+      if (y % 90.0F != 0.0F)
+      {
+        if (F.getLayerType() != 1) {
+          F.setLayerType(1, null);
+        }
+      }
+      else if (F.getLayerType() != 0) {
+        F.setLayerType(0, null);
+      }
+    }
+    d.c.a.a.x.g localG = i;
+    if (localG != null) {
+      localG.c0((int)y);
+    }
+  }
+  
+  void e(Animator.AnimatorListener paramAnimatorListener)
+  {
+    if (C == null) {
+      C = new ArrayList();
+    }
+    C.add(paramAnimatorListener);
+  }
+  
+  final void e0()
+  {
+    R(z);
+  }
+  
+  void f(i paramI)
+  {
+    if (E == null) {
+      E = new ArrayList();
+    }
+    E.add(paramI);
+  }
+  
+  final void f0()
+  {
+    Rect localRect = H;
+    s(localRect);
+    G(localRect);
+    G.b(left, top, right, bottom);
+  }
+  
+  void g0(float paramFloat)
+  {
+    d.c.a.a.x.g localG = i;
+    if (localG != null) {
+      localG.W(paramFloat);
+    }
+  }
+  
+  d.c.a.a.x.g j()
+  {
+    return new d.c.a.a.x.g((k)c.h.p.h.g(h));
+  }
+  
+  final Drawable k()
+  {
+    return l;
+  }
+  
+  float n()
+  {
+    return o;
+  }
+  
+  boolean o()
+  {
+    return m;
+  }
+  
+  final d.c.a.a.m.h p()
+  {
+    return x;
+  }
+  
+  float q()
+  {
+    return p;
+  }
+  
+  void s(Rect paramRect)
+  {
+    if (m) {
+      i1 = (r - F.getSizeDimension()) / 2;
+    } else {
+      i1 = 0;
+    }
+    float f1;
+    if (n) {
+      f1 = n() + q;
+    } else {
+      f1 = 0.0F;
+    }
+    int i2 = Math.max(i1, (int)Math.ceil(f1));
+    int i1 = Math.max(i1, (int)Math.ceil(f1 * 1.5F));
+    paramRect.set(i2, i1, i2, i1);
+  }
+  
+  float t()
+  {
+    return q;
+  }
+  
+  final k u()
+  {
+    return h;
+  }
+  
+  final d.c.a.a.m.h v()
+  {
+    return w;
+  }
+  
+  void w(final j paramJ, final boolean paramBoolean)
+  {
+    if (y()) {
+      return;
+    }
+    Object localObject = v;
+    if (localObject != null) {
+      ((Animator)localObject).cancel();
+    }
+    if (a0())
+    {
+      localObject = x;
+      if (localObject == null) {
+        localObject = l();
+      }
+      localObject = h((d.c.a.a.m.h)localObject, 0.0F, 0.0F, 0.0F);
+      ((AnimatorSet)localObject).addListener(new a(paramBoolean, paramJ));
+      paramJ = D;
+      if (paramJ != null)
+      {
+        paramJ = paramJ.iterator();
+        while (paramJ.hasNext()) {
+          ((AnimatorSet)localObject).addListener((Animator.AnimatorListener)paramJ.next());
+        }
+      }
+      ((AnimatorSet)localObject).start();
+      return;
+    }
+    localObject = F;
+    int i1;
+    if (paramBoolean) {
+      i1 = 8;
+    } else {
+      i1 = 4;
+    }
+    ((VisibilityAwareImageButton)localObject).b(i1, paramBoolean);
+    if (paramJ != null) {
+      paramJ.b();
+    }
+  }
+  
+  void x(ColorStateList paramColorStateList1, PorterDuff.Mode paramMode, ColorStateList paramColorStateList2, int paramInt)
+  {
+    d.c.a.a.x.g localG = j();
+    i = localG;
+    localG.setTintList(paramColorStateList1);
+    if (paramMode != null) {
+      i.setTintMode(paramMode);
+    }
+    i.b0(-12303292);
+    i.M(F.getContext());
+    paramColorStateList1 = new d.c.a.a.v.a(i.C());
+    paramColorStateList1.setTintList(d.c.a.a.v.b.d(paramColorStateList2));
+    j = paramColorStateList1;
+    l = new LayerDrawable(new Drawable[] { (Drawable)c.h.p.h.g(i), paramColorStateList1 });
+  }
+  
+  boolean y()
+  {
+    int i1 = F.getVisibility();
+    boolean bool2 = false;
+    boolean bool1 = false;
+    if (i1 == 0)
+    {
+      if (B == 1) {
+        bool1 = true;
+      }
+      return bool1;
+    }
+    bool1 = bool2;
+    if (B != 2) {
+      bool1 = true;
+    }
+    return bool1;
+  }
+  
+  boolean z()
+  {
+    int i1 = F.getVisibility();
+    boolean bool2 = false;
+    boolean bool1 = false;
+    if (i1 != 0)
+    {
+      if (B == 2) {
+        bool1 = true;
+      }
+      return bool1;
+    }
+    bool1 = bool2;
+    if (B != 1) {
+      bool1 = true;
+    }
+    return bool1;
+  }
+  
+  class a
+    extends AnimatorListenerAdapter
+  {
+    private boolean a;
+    
+    a(boolean paramBoolean, b.j paramJ) {}
+    
+    public void onAnimationCancel(Animator paramAnimator)
+    {
+      a = true;
+    }
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      b.a(b.this, 0);
+      b.b(b.this, null);
+      if (!a)
+      {
+        paramAnimator = F;
+        boolean bool = paramBoolean;
+        int i;
+        if (bool) {
+          i = 8;
+        } else {
+          i = 4;
+        }
+        paramAnimator.b(i, bool);
+        paramAnimator = paramJ;
+        if (paramAnimator != null) {
+          paramAnimator.b();
+        }
+      }
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      F.b(0, paramBoolean);
+      b.a(b.this, 1);
+      b.b(b.this, paramAnimator);
+      a = false;
+    }
+  }
+  
+  class b
+    extends AnimatorListenerAdapter
+  {
+    b(boolean paramBoolean, b.j paramJ) {}
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      b.a(b.this, 0);
+      b.b(b.this, null);
+      paramAnimator = paramJ;
+      if (paramAnimator != null) {
+        paramAnimator.a();
+      }
+    }
+    
+    public void onAnimationStart(Animator paramAnimator)
+    {
+      F.b(0, paramBoolean);
+      b.a(b.this, 2);
+      b.b(b.this, paramAnimator);
+    }
+  }
+  
+  class c
+    extends d.c.a.a.m.g
+  {
+    c() {}
+    
+    public Matrix a(float paramFloat, Matrix paramMatrix1, Matrix paramMatrix2)
+    {
+      b.c(b.this, paramFloat);
+      return super.a(paramFloat, paramMatrix1, paramMatrix2);
+    }
+  }
+  
+  class d
+    implements TypeEvaluator<Float>
+  {
+    FloatEvaluator a = new FloatEvaluator();
+    
+    d() {}
+    
+    public Float a(float paramFloat, Float paramFloat1, Float paramFloat2)
+    {
+      float f = a.evaluate(paramFloat, paramFloat1, paramFloat2).floatValue();
+      paramFloat = f;
+      if (f < 0.1F) {
+        paramFloat = 0.0F;
+      }
+      return Float.valueOf(paramFloat);
+    }
+  }
+  
+  class e
+    implements ViewTreeObserver.OnPreDrawListener
+  {
+    e() {}
+    
+    public boolean onPreDraw()
+    {
+      H();
+      return true;
+    }
+  }
+  
+  private class f
+    extends b.l
+  {
+    f()
+    {
+      super(null);
+    }
+    
+    protected float a()
+    {
+      return 0.0F;
+    }
+  }
+  
+  private class g
+    extends b.l
+  {
+    g()
+    {
+      super(null);
+    }
+    
+    protected float a()
+    {
+      b localB = b.this;
+      return o + p;
+    }
+  }
+  
+  private class h
+    extends b.l
+  {
+    h()
+    {
+      super(null);
+    }
+    
+    protected float a()
+    {
+      b localB = b.this;
+      return o + q;
+    }
+  }
+  
+  static abstract interface i
+  {
+    public abstract void a();
+    
+    public abstract void b();
+  }
+  
+  static abstract interface j
+  {
+    public abstract void a();
+    
+    public abstract void b();
+  }
+  
+  private class k
+    extends b.l
+  {
+    k()
+    {
+      super(null);
+    }
+    
+    protected float a()
+    {
+      return o;
+    }
+  }
+  
+  private abstract class l
+    extends AnimatorListenerAdapter
+    implements ValueAnimator.AnimatorUpdateListener
+  {
+    private boolean a;
+    private float b;
+    private float c;
+    
+    private l() {}
+    
+    protected abstract float a();
+    
+    public void onAnimationEnd(Animator paramAnimator)
+    {
+      g0((int)c);
+      a = false;
+    }
+    
+    public void onAnimationUpdate(ValueAnimator paramValueAnimator)
+    {
+      if (!a)
+      {
+        localObject = i;
+        if (localObject == null) {
+          f = 0.0F;
+        } else {
+          f = ((d.c.a.a.x.g)localObject).w();
+        }
+        b = f;
+        c = a();
+        a = true;
+      }
+      Object localObject = b.this;
+      float f = b;
+      ((b)localObject).g0((int)(f + (c - f) * paramValueAnimator.getAnimatedFraction()));
+    }
+  }
+}

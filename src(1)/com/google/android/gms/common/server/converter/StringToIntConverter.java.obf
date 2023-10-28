@@ -1,0 +1,88 @@
+package com.google.android.gms.common.server.converter;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import android.util.SparseArray;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.VersionField;
+import com.google.android.gms.common.server.response.FastJsonResponse.FieldConverter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+@KeepForSdk
+@SafeParcelable.Class(creator="StringToIntConverterCreator")
+public final class StringToIntConverter
+  extends AbstractSafeParcelable
+  implements FastJsonResponse.FieldConverter<String, Integer>
+{
+  public static final Parcelable.Creator<StringToIntConverter> CREATOR = new zad();
+  @SafeParcelable.VersionField(id=1)
+  final int zaa;
+  private final HashMap<String, Integer> zab;
+  private final SparseArray<String> zac;
+  
+  @KeepForSdk
+  public StringToIntConverter()
+  {
+    zaa = 1;
+    zab = new HashMap();
+    zac = new SparseArray();
+  }
+  
+  @SafeParcelable.Constructor
+  StringToIntConverter(@SafeParcelable.Param(id=1) int paramInt, @SafeParcelable.Param(id=2) ArrayList<zac> paramArrayList)
+  {
+    zaa = paramInt;
+    zab = new HashMap();
+    zac = new SparseArray();
+    int i = paramArrayList.size();
+    paramInt = 0;
+    while (paramInt < i)
+    {
+      zac localZac = (zac)paramArrayList.get(paramInt);
+      add(zab, zac);
+      paramInt += 1;
+    }
+  }
+  
+  @KeepForSdk
+  public StringToIntConverter add(String paramString, int paramInt)
+  {
+    zab.put(paramString, Integer.valueOf(paramInt));
+    zac.put(paramInt, paramString);
+    return this;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zaa);
+    ArrayList localArrayList = new ArrayList();
+    Iterator localIterator = zab.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      localArrayList.add(new zac(str, ((Integer)zab.get(str)).intValue()));
+    }
+    SafeParcelWriter.writeTypedList(paramParcel, 2, localArrayList, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+  
+  public final int zaa()
+  {
+    return 7;
+  }
+  
+  public final int zab()
+  {
+    return 0;
+  }
+}

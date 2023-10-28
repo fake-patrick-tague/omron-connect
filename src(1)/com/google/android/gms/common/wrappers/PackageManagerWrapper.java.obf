@@ -1,0 +1,112 @@
+package com.google.android.gms.common.wrappers;
+
+import android.app.AppOpsManager;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.drawable.Drawable;
+import android.os.Binder;
+import android.os.Process;
+import c.h.p.d;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.util.PlatformVersion;
+
+@KeepForSdk
+public class PackageManagerWrapper
+{
+  protected final Context zza;
+  
+  public PackageManagerWrapper(Context paramContext)
+  {
+    zza = paramContext;
+  }
+  
+  @KeepForSdk
+  public int checkCallingOrSelfPermission(String paramString)
+  {
+    return zza.checkCallingOrSelfPermission(paramString);
+  }
+  
+  @KeepForSdk
+  public int checkPermission(String paramString1, String paramString2)
+  {
+    return zza.getPackageManager().checkPermission(paramString1, paramString2);
+  }
+  
+  @KeepForSdk
+  public ApplicationInfo getApplicationInfo(String paramString, int paramInt)
+    throws PackageManager.NameNotFoundException
+  {
+    return zza.getPackageManager().getApplicationInfo(paramString, paramInt);
+  }
+  
+  @KeepForSdk
+  public CharSequence getApplicationLabel(String paramString)
+    throws PackageManager.NameNotFoundException
+  {
+    return zza.getPackageManager().getApplicationLabel(zza.getPackageManager().getApplicationInfo(paramString, 0));
+  }
+  
+  @KeepForSdk
+  public d<CharSequence, Drawable> getApplicationLabelAndIcon(String paramString)
+    throws PackageManager.NameNotFoundException
+  {
+    paramString = zza.getPackageManager().getApplicationInfo(paramString, 0);
+    return d.a(zza.getPackageManager().getApplicationLabel(paramString), zza.getPackageManager().getApplicationIcon(paramString));
+  }
+  
+  @KeepForSdk
+  public PackageInfo getPackageInfo(String paramString, int paramInt)
+    throws PackageManager.NameNotFoundException
+  {
+    return zza.getPackageManager().getPackageInfo(paramString, paramInt);
+  }
+  
+  @KeepForSdk
+  public boolean isCallerInstantApp()
+  {
+    if (Binder.getCallingUid() == Process.myUid()) {
+      return InstantApps.isInstantApp(zza);
+    }
+    if (PlatformVersion.isAtLeastO())
+    {
+      String str = zza.getPackageManager().getNameForUid(Binder.getCallingUid());
+      if (str != null) {
+        return zza.getPackageManager().isInstantApp(str);
+      }
+    }
+    return false;
+  }
+  
+  public final boolean zza(int paramInt, String paramString)
+  {
+    if (PlatformVersion.isAtLeastKitKat()) {}
+    try
+    {
+      localObject = (AppOpsManager)zza.getSystemService("appops");
+      if (localObject != null)
+      {
+        ((AppOpsManager)localObject).checkPackage(paramInt, paramString);
+        return true;
+      }
+      throw new NullPointerException("context.getSystemService(Context.APP_OPS_SERVICE) is null");
+    }
+    catch (SecurityException paramString) {}
+    Object localObject = zza.getPackageManager().getPackagesForUid(paramInt);
+    if ((paramString != null) && (localObject != null))
+    {
+      paramInt = 0;
+      while (paramInt < localObject.length)
+      {
+        if (paramString.equals(localObject[paramInt])) {
+          return true;
+        }
+        paramInt += 1;
+      }
+    }
+    return false;
+    return false;
+  }
+}

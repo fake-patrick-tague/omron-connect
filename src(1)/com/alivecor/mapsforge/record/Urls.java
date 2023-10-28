@@ -1,0 +1,67 @@
+package com.alivecor.mapsforge.record;
+
+public class Urls
+{
+  static final String BASE_URL = "https://www.alivecor.com/";
+  public static final String URL_1L_PRE_RECORD_HUD = "app-redirect/i-need-help-recording-6l-single-lead";
+  public static final String URL_6L_PRE_RECORD_HUD = "app-redirect/i-need-help-recording-6l-six-lead";
+  static final String URL_KARDIA_LEARN_MORE = "service/";
+  public static final String URL_KM_PRE_RECORD_HUD = "app-redirect/i-need-help-recording-km";
+  public static final String URL_KM_UNLOCK_RECORDING_HUD = "app-redirect/i-need-help-unlock-recording";
+  static final String URL_OMRON_LEARN_MORE = "omron-service/";
+  public static final String URL_ONBOARDING_SETUP_BLUETOOTH_FAILURE_LEARN_MORE = "app-redirect/i-need-help-pairing-error-bt-off";
+  public static final String URL_ONBOARDING_SETUP_DEVICE_NOT_FOUND = "app-redirect/i-need-help-pairing-error-not-found";
+  static final String URL_ONBOARDING_SETUP_KARDIA_STORE = "app-redirect/app_buy_device-ios-kardia";
+  public static final String URL_ONBOARDING_SETUP_LOCATION_DENIED = "app-redirect/pairing-error-location-denied";
+  public static final String URL_ONBOARDING_SETUP_LOCATION_PERMISSION = "app-redirect/pairing-learn-more-location";
+  static final String URL_ONBOARDING_SETUP_OMRON_STORE = "app-redirect/app_buy_device-ios-omron";
+  public static final String URL_ONBOARDING_SETUP_UNABLE_PAIR = "app-redirect/i-need-help-pairing-error-cant-pair";
+  public static final String URL_PRE_RECORDING_BATTERY_ERROR = "app-redirect/i-need-help-battery-critical";
+  public static final String URL_PRE_RECORDING_BLUETOOTH_ERROR = "app-redirect/i-need-help-bluetooth-error";
+  public static final String URL_PRE_RECORDING_DEVICE_NOT_FOUND = "app-redirect/i-need-help-pre-recording-error-device-not-found";
+  public static final String URL_PRE_RECORDING_LOCATION = "app-redirect/i-need-help-in-recording-location-error";
+  public static final String URL_PRE_RECORDING_MIC_ERROR = "app-redirect/i-need-help-mic-error-android";
+  public static final String URL_PRE_RECORDING_NFC = "app-redirect/i-need-help-nfc-error";
+  public static final String URL_RECORDING_ELECTRICAL_INTERFERENCE = "app-redirect/i-need-help-electrical-interference";
+  public static final String URL_RECORDING_TOO_SHORT = "app-redirect/i-need-help-too-short";
+  public static final String URL_RECORDING_UNREADABLE = "app-redirect/i-need-help-unreadable";
+  Util util;
+  
+  public Urls() {}
+  
+  public static String getFullUrl(String paramString)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("https://www.alivecor.com/");
+    localStringBuilder.append(paramString);
+    return localStringBuilder.toString();
+  }
+  
+  public String getLearnMoreURL()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("https://www.alivecor.com/");
+    String str;
+    if (util.isCurrentDeviceOmron()) {
+      str = "omron-service/";
+    } else {
+      str = "service/";
+    }
+    localStringBuilder.append(str);
+    return localStringBuilder.toString();
+  }
+  
+  public String getStoreURL()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("https://www.alivecor.com/");
+    String str;
+    if (util.isCurrentDeviceOmron()) {
+      str = "app-redirect/app_buy_device-ios-omron";
+    } else {
+      str = "app-redirect/app_buy_device-ios-kardia";
+    }
+    localStringBuilder.append(str);
+    return localStringBuilder.toString();
+  }
+}

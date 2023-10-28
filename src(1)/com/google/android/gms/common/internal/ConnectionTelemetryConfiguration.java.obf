@@ -1,0 +1,90 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+
+@KeepForSdk
+@SafeParcelable.Class(creator="ConnectionTelemetryConfigurationCreator")
+public class ConnectionTelemetryConfiguration
+  extends AbstractSafeParcelable
+{
+  @KeepForSdk
+  public static final Parcelable.Creator<ConnectionTelemetryConfiguration> CREATOR = new zzl();
+  @SafeParcelable.Field(getter="getRootTelemetryConfiguration", id=1)
+  private final RootTelemetryConfiguration zza;
+  @SafeParcelable.Field(getter="getMethodInvocationTelemetryEnabled", id=2)
+  private final boolean zzb;
+  @SafeParcelable.Field(getter="getMethodTimingTelemetryEnabled", id=3)
+  private final boolean zzc;
+  @SafeParcelable.Field(getter="getMethodInvocationMethodKeyAllowlist", id=4)
+  private final int[] zzd;
+  @SafeParcelable.Field(getter="getMaxMethodInvocationsLogged", id=5)
+  private final int zze;
+  @SafeParcelable.Field(getter="getMethodInvocationMethodKeyDisallowlist", id=6)
+  private final int[] zzf;
+  
+  @SafeParcelable.Constructor
+  public ConnectionTelemetryConfiguration(@SafeParcelable.Param(id=1) RootTelemetryConfiguration paramRootTelemetryConfiguration, @SafeParcelable.Param(id=2) boolean paramBoolean1, @SafeParcelable.Param(id=3) boolean paramBoolean2, @SafeParcelable.Param(id=4) int[] paramArrayOfInt1, @SafeParcelable.Param(id=5) int paramInt, @SafeParcelable.Param(id=6) int[] paramArrayOfInt2)
+  {
+    zza = paramRootTelemetryConfiguration;
+    zzb = paramBoolean1;
+    zzc = paramBoolean2;
+    zzd = paramArrayOfInt1;
+    zze = paramInt;
+    zzf = paramArrayOfInt2;
+  }
+  
+  @KeepForSdk
+  public int getMaxMethodInvocationsLogged()
+  {
+    return zze;
+  }
+  
+  @KeepForSdk
+  public int[] getMethodInvocationMethodKeyAllowlist()
+  {
+    return zzd;
+  }
+  
+  @KeepForSdk
+  public int[] getMethodInvocationMethodKeyDisallowlist()
+  {
+    return zzf;
+  }
+  
+  @KeepForSdk
+  public boolean getMethodInvocationTelemetryEnabled()
+  {
+    return zzb;
+  }
+  
+  @KeepForSdk
+  public boolean getMethodTimingTelemetryEnabled()
+  {
+    return zzc;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeParcelable(paramParcel, 1, zza, paramInt, false);
+    SafeParcelWriter.writeBoolean(paramParcel, 2, getMethodInvocationTelemetryEnabled());
+    SafeParcelWriter.writeBoolean(paramParcel, 3, getMethodTimingTelemetryEnabled());
+    SafeParcelWriter.writeIntArray(paramParcel, 4, getMethodInvocationMethodKeyAllowlist(), false);
+    SafeParcelWriter.writeInt(paramParcel, 5, getMaxMethodInvocationsLogged());
+    SafeParcelWriter.writeIntArray(paramParcel, 6, getMethodInvocationMethodKeyDisallowlist(), false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  public final RootTelemetryConfiguration zza()
+  {
+    return zza;
+  }
+}

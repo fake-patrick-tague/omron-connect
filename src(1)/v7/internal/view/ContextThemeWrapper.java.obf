@@ -1,0 +1,181 @@
+package c.a.n;
+
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.Resources.Theme;
+import android.os.Build.VERSION;
+import android.view.LayoutInflater;
+import c.a.i;
+
+public class d
+  extends ContextWrapper
+{
+  private static Configuration a;
+  private int b;
+  private Resources.Theme c;
+  private LayoutInflater d;
+  private Configuration e;
+  private Resources f;
+  
+  public d()
+  {
+    super(null);
+  }
+  
+  public d(Context paramContext, int paramInt)
+  {
+    super(paramContext);
+    b = paramInt;
+  }
+  
+  public d(Context paramContext, Resources.Theme paramTheme)
+  {
+    super(paramContext);
+    c = paramTheme;
+  }
+  
+  private Resources b()
+  {
+    if (f == null)
+    {
+      Object localObject = e;
+      if (localObject != null)
+      {
+        int i = Build.VERSION.SDK_INT;
+        if ((i < 26) || (!e((Configuration)localObject)))
+        {
+          if (i >= 17)
+          {
+            f = a.a(this, e).getResources();
+            break label117;
+          }
+          localObject = super.getResources();
+          Configuration localConfiguration = new Configuration(((Resources)localObject).getConfiguration());
+          localConfiguration.updateFrom(e);
+          f = new Resources(((Resources)localObject).getAssets(), ((Resources)localObject).getDisplayMetrics(), localConfiguration);
+          break label117;
+        }
+      }
+      f = super.getResources();
+    }
+    label117:
+    return f;
+  }
+  
+  private void d()
+  {
+    boolean bool;
+    if (c == null) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    if (bool)
+    {
+      c = getResources().newTheme();
+      Resources.Theme localTheme = getBaseContext().getTheme();
+      if (localTheme != null) {
+        c.setTo(localTheme);
+      }
+    }
+    f(c, b, bool);
+  }
+  
+  private static boolean e(Configuration paramConfiguration)
+  {
+    if (paramConfiguration == null) {
+      return true;
+    }
+    if (a == null)
+    {
+      Configuration localConfiguration = new Configuration();
+      fontScale = 0.0F;
+      a = localConfiguration;
+    }
+    return paramConfiguration.equals(a);
+  }
+  
+  public void a(Configuration paramConfiguration)
+  {
+    if (f == null)
+    {
+      if (e == null)
+      {
+        e = new Configuration(paramConfiguration);
+        return;
+      }
+      throw new IllegalStateException("Override configuration has already been set");
+    }
+    throw new IllegalStateException("getResources() or getAssets() has already been called");
+  }
+  
+  protected void attachBaseContext(Context paramContext)
+  {
+    super.attachBaseContext(paramContext);
+  }
+  
+  public int c()
+  {
+    return b;
+  }
+  
+  protected void f(Resources.Theme paramTheme, int paramInt, boolean paramBoolean)
+  {
+    paramTheme.applyStyle(paramInt, true);
+  }
+  
+  public AssetManager getAssets()
+  {
+    return getResources().getAssets();
+  }
+  
+  public Resources getResources()
+  {
+    return b();
+  }
+  
+  public Object getSystemService(String paramString)
+  {
+    if ("layout_inflater".equals(paramString))
+    {
+      if (d == null) {
+        d = LayoutInflater.from(getBaseContext()).cloneInContext(this);
+      }
+      return d;
+    }
+    return getBaseContext().getSystemService(paramString);
+  }
+  
+  public Resources.Theme getTheme()
+  {
+    Resources.Theme localTheme = c;
+    if (localTheme != null) {
+      return localTheme;
+    }
+    if (b == 0) {
+      b = i.e;
+    }
+    d();
+    return c;
+  }
+  
+  public void setTheme(int paramInt)
+  {
+    if (b != paramInt)
+    {
+      b = paramInt;
+      d();
+    }
+  }
+  
+  static class a
+  {
+    static Context a(d paramD, Configuration paramConfiguration)
+    {
+      return paramD.createConfigurationContext(paramConfiguration);
+    }
+  }
+}

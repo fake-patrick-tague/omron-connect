@@ -1,0 +1,1701 @@
+package com.alivecor.ecg.core;
+
+import android.location.Location;
+import com.alivecor.ecg.core.a.b;
+import com.alivecor.ecg.core.a.c;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import l.a.a;
+
+public class EcgFile
+  implements AutoCloseable
+{
+  public static final int RESOLUTION_ATC_nV = 500;
+  private static final String a = EcgFile.class.getSimpleName();
+  private static final boolean b = true;
+  private static final byte[] c = { 65, 76, 73, 86, 69, 0, 0, 0 };
+  private static final long d = 2L;
+  private static final long e = 3L;
+  private static final long f = 4L;
+  private static final byte[] g;
+  private static final byte[] h;
+  private static final byte[] i;
+  private static final byte[] j;
+  private static final byte[] k;
+  private static final byte[] l;
+  private static final byte[] m;
+  private static final byte[] n;
+  private static final byte[] o;
+  private static final long p;
+  private static final long q;
+  private static final long r;
+  private static final long s;
+  private static final long t;
+  private static final long u;
+  private static final long v;
+  private static final long w;
+  private static final long x;
+  private static final int y = 153600;
+  private static final int z = 1;
+  private RandomAccessFile A;
+  private long B;
+  private int C;
+  private long D;
+  private long E;
+  private long F;
+  private long G;
+  private long H;
+  private long I;
+  private long J;
+  private long K;
+  private long L;
+  private long M;
+  private long N;
+  private long O;
+  private Location P;
+  private float Q = 0.0F;
+  private int R = 50;
+  private c[] S = new c[2];
+  private int T = 0;
+  private boolean U;
+  public long fileVersion;
+  public AliveFileFormat mAliveFormat = new AliveFileFormat();
+  public AliveFileInfo mAliveInfo = new AliveFileInfo();
+  public int[] mAnnotationArray;
+  public int mAnnotationCount = 0;
+  public File mFile;
+  public int mStartOffsetSample = 0;
+  
+  static
+  {
+    byte[] arrayOfByte1 = new byte[4];
+    arrayOfByte1[0] = 105;
+    arrayOfByte1[1] = 110;
+    arrayOfByte1[2] = 102;
+    arrayOfByte1[3] = 111;
+    arrayOfByte1;
+    g = arrayOfByte1;
+    byte[] arrayOfByte2 = new byte[4];
+    byte[] tmp92_91 = arrayOfByte2;
+    tmp92_91[0] = 102;
+    byte[] tmp97_92 = tmp92_91;
+    tmp97_92[1] = 109;
+    byte[] tmp102_97 = tmp97_92;
+    tmp102_97[2] = 116;
+    byte[] tmp107_102 = tmp102_97;
+    tmp107_102[3] = 32;
+    tmp107_102;
+    h = arrayOfByte2;
+    byte[] arrayOfByte3 = new byte[4];
+    byte[] tmp122_121 = arrayOfByte3;
+    tmp122_121[0] = 101;
+    byte[] tmp127_122 = tmp122_121;
+    tmp127_122[1] = 99;
+    byte[] tmp132_127 = tmp127_122;
+    tmp132_127[2] = 103;
+    byte[] tmp137_132 = tmp132_127;
+    tmp137_132[3] = 32;
+    tmp137_132;
+    i = arrayOfByte3;
+    byte[] arrayOfByte4 = new byte[4];
+    byte[] tmp152_151 = arrayOfByte4;
+    tmp152_151[0] = 101;
+    byte[] tmp157_152 = tmp152_151;
+    tmp157_152[1] = 99;
+    byte[] tmp162_157 = tmp157_152;
+    tmp162_157[2] = 103;
+    byte[] tmp167_162 = tmp162_157;
+    tmp167_162[3] = 50;
+    tmp167_162;
+    j = arrayOfByte4;
+    byte[] arrayOfByte5 = new byte[4];
+    byte[] tmp184_182 = arrayOfByte5;
+    tmp184_182[0] = 101;
+    byte[] tmp189_184 = tmp184_182;
+    tmp189_184[1] = 99;
+    byte[] tmp194_189 = tmp189_184;
+    tmp194_189[2] = 103;
+    byte[] tmp199_194 = tmp194_189;
+    tmp199_194[3] = 51;
+    tmp199_194;
+    k = arrayOfByte5;
+    byte[] arrayOfByte6 = new byte[4];
+    byte[] tmp217_215 = arrayOfByte6;
+    tmp217_215[0] = 101;
+    byte[] tmp222_217 = tmp217_215;
+    tmp222_217[1] = 99;
+    byte[] tmp227_222 = tmp222_217;
+    tmp227_222[2] = 103;
+    byte[] tmp232_227 = tmp227_222;
+    tmp232_227[3] = 52;
+    tmp232_227;
+    l = arrayOfByte6;
+    byte[] arrayOfByte7 = new byte[4];
+    byte[] tmp250_248 = arrayOfByte7;
+    tmp250_248[0] = 101;
+    byte[] tmp255_250 = tmp250_248;
+    tmp255_250[1] = 99;
+    byte[] tmp260_255 = tmp255_250;
+    tmp260_255[2] = 103;
+    byte[] tmp265_260 = tmp260_255;
+    tmp265_260[3] = 53;
+    tmp265_260;
+    m = arrayOfByte7;
+    byte[] arrayOfByte8 = new byte[4];
+    byte[] tmp283_281 = arrayOfByte8;
+    tmp283_281[0] = 101;
+    byte[] tmp288_283 = tmp283_281;
+    tmp288_283[1] = 99;
+    byte[] tmp293_288 = tmp288_283;
+    tmp293_288[2] = 103;
+    byte[] tmp298_293 = tmp293_288;
+    tmp298_293[3] = 54;
+    tmp298_293;
+    n = arrayOfByte8;
+    byte[] arrayOfByte9 = new byte[4];
+    byte[] tmp316_314 = arrayOfByte9;
+    tmp316_314[0] = 97;
+    byte[] tmp321_316 = tmp316_314;
+    tmp321_316[1] = 110;
+    byte[] tmp326_321 = tmp321_316;
+    tmp326_321[2] = 110;
+    byte[] tmp331_326 = tmp326_321;
+    tmp331_326[3] = 32;
+    tmp331_326;
+    o = arrayOfByte9;
+    p = c.a(arrayOfByte1);
+    q = c.a(arrayOfByte2);
+    r = c.a(arrayOfByte9);
+    s = c.a(arrayOfByte3);
+    t = c.a(arrayOfByte4);
+    u = c.a(arrayOfByte5);
+    v = c.a(arrayOfByte6);
+    w = c.a(arrayOfByte7);
+    x = c.a(arrayOfByte8);
+  }
+  
+  public EcgFile() {}
+  
+  private float a()
+  {
+    int i1 = mAnnotationCount;
+    if (i1 < 2) {
+      return 0.0F;
+    }
+    int[] arrayOfInt1 = new int[i1 - 1];
+    i1 = 1;
+    int i3;
+    for (int i2 = 0; i1 < mAnnotationCount; i2 = i3)
+    {
+      int[] arrayOfInt2 = mAnnotationArray;
+      int i4 = arrayOfInt2[i1] - arrayOfInt2[(i1 - 1)];
+      i3 = i2;
+      if (i4 >= 60)
+      {
+        i3 = i2;
+        if (i4 <= 600)
+        {
+          arrayOfInt1[i2] = i4;
+          i3 = i2 + 1;
+        }
+      }
+      i1 += 1;
+    }
+    float f1;
+    if (i2 == 1) {
+      f1 = arrayOfInt1[0];
+    }
+    for (;;)
+    {
+      return 18000.0F / f1;
+      if (i2 == 2)
+      {
+        f1 = (arrayOfInt1[0] + arrayOfInt1[1]) / 2;
+      }
+      else
+      {
+        if (i2 <= 0) {
+          break;
+        }
+        f1 = a(arrayOfInt1, i2, 40);
+      }
+    }
+    return 0.0F;
+  }
+  
+  private float a(int[] paramArrayOfInt, int paramInt1, int paramInt2)
+  {
+    int i4 = 0;
+    int i1 = 0;
+    while (i1 < paramInt1)
+    {
+      int i5 = paramArrayOfInt[i1];
+      int i2 = 0;
+      while ((i5 < paramArrayOfInt[i2]) && (i2 < i1)) {
+        i2 += 1;
+      }
+      int i3 = i1 - 1;
+      while (i3 >= i2)
+      {
+        paramArrayOfInt[(i3 + 1)] = paramArrayOfInt[i3];
+        i3 -= 1;
+      }
+      paramArrayOfInt[i2] = i5;
+      i1 += 1;
+    }
+    i1 = paramInt2 * paramInt1 / 100;
+    paramInt2 = i1;
+    if (i1 > paramInt1) {
+      paramInt2 = paramInt1;
+    }
+    float f1 = 0.0F;
+    i1 = i4;
+    while (i1 < paramInt2)
+    {
+      f1 += paramArrayOfInt[((paramInt1 - paramInt2 >> 1) + i1)];
+      i1 += 1;
+    }
+    return f1 / paramInt2;
+  }
+  
+  private long a(Lead paramLead)
+  {
+    switch (1.$SwitchMap$com$alivecor$ecg$core$EcgFile$Lead[paramLead.ordinal()])
+    {
+    default: 
+      throw new IllegalArgumentException("Invalid Lead choice.  Do you need to add support for more leads?");
+    case 6: 
+      return I;
+    case 5: 
+      return H;
+    case 4: 
+      return G;
+    case 3: 
+      return F;
+    case 2: 
+      return E;
+    }
+    return D;
+  }
+  
+  private static long a(c paramC, int paramInt1, int paramInt2)
+  {
+    paramC = paramC.a();
+    long l1 = 0L;
+    int i1 = 0;
+    while (i1 < paramInt2)
+    {
+      l1 += (paramC[(paramInt1 + i1)] & 0xFF);
+      i1 += 1;
+    }
+    return l1;
+  }
+  
+  private static void a(RandomAccessFile paramRandomAccessFile, int[] paramArrayOfInt, int paramInt1, int paramInt2)
+    throws IOException
+  {
+    int i1 = paramInt2 - paramInt1;
+    if (i1 < 1) {
+      return;
+    }
+    i1 *= 6;
+    c localC = c.a(i1 + 16 + 4);
+    localC.b(o);
+    localC.a(i1 + 4);
+    localC.a(300L);
+    i1 = 0;
+    while (i1 < paramInt2)
+    {
+      localC.a(paramArrayOfInt[(paramInt1 + i1)]);
+      localC.e(1);
+      i1 += 1;
+    }
+    localC.a(a(localC, 0, localC.e()) & 0xFFFFFFFFFFFFFFFF);
+    paramRandomAccessFile.write(localC.a(), 0, localC.e());
+  }
+  
+  private boolean a(int paramInt1, int paramInt2)
+  {
+    return (paramInt1 & paramInt2) != 0;
+  }
+  
+  private static boolean a(long paramLong)
+  {
+    return (paramLong == s) || (paramLong == t) || (paramLong == u) || (paramLong == v) || (paramLong == w) || (paramLong == x);
+  }
+  
+  private boolean a(byte[] paramArrayOfByte1, byte[] paramArrayOfByte2, int paramInt)
+  {
+    if ((paramArrayOfByte1 != null) && (paramArrayOfByte2 != null) && (paramArrayOfByte1.length >= paramInt))
+    {
+      if (paramArrayOfByte2.length < paramInt) {
+        return false;
+      }
+      int i1 = 0;
+      while (i1 < paramInt)
+      {
+        if (paramArrayOfByte1[i1] != paramArrayOfByte2[i1]) {
+          return false;
+        }
+        i1 += 1;
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  private String b()
+  {
+    Object localObject1 = Locale.US;
+    Object localObject2 = GregorianCalendar.getInstance((Locale)localObject1).getTime();
+    localObject1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", (Locale)localObject1).format((Date)localObject2);
+    localObject2 = new StringBuilder();
+    ((StringBuilder)localObject2).append(((String)localObject1).substring(0, 26));
+    ((StringBuilder)localObject2).append(":");
+    ((StringBuilder)localObject2).append(((String)localObject1).substring(26));
+    return ((StringBuilder)localObject2).toString();
+  }
+  
+  public static short getSample(int paramInt, byte[] paramArrayOfByte)
+  {
+    paramInt *= 2;
+    return toSample(paramArrayOfByte[paramInt], paramArrayOfByte[(paramInt + 1)]);
+  }
+  
+  public static short toSample(byte paramByte1, byte paramByte2)
+  {
+    return (short)(paramByte1 & 0xFF | paramByte2 << 8);
+  }
+  
+  public void close()
+  {
+    RandomAccessFile localRandomAccessFile = A;
+    if (localRandomAccessFile != null)
+    {
+      try
+      {
+        localRandomAccessFile.close();
+      }
+      catch (Exception localException)
+      {
+        a.b("Exception closing file", new Object[] { localException });
+      }
+      A = null;
+    }
+    if (mFile != null) {
+      mFile = null;
+    }
+  }
+  
+  public void closeAndDelete()
+  {
+    RandomAccessFile localRandomAccessFile = A;
+    if (localRandomAccessFile != null)
+    {
+      try
+      {
+        localRandomAccessFile.close();
+      }
+      catch (Exception localException)
+      {
+        a.b("Exception closing file", new Object[] { localException });
+      }
+      A = null;
+    }
+    File localFile = mFile;
+    if (localFile != null)
+    {
+      localFile.delete();
+      mFile = null;
+    }
+  }
+  
+  public void endEcgWrite(int paramInt)
+  {
+    if (A != null) {}
+    for (;;)
+    {
+      int i1;
+      int i3;
+      try
+      {
+        i1 = T;
+        int i2 = (i1 + 1) % 2;
+        i3 = S[i1].e();
+        i1 = S[i2].e();
+        int i4 = C - i3 / 2;
+        C = i4;
+        C = (i4 - i1 / 2);
+        Object localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Before Adjustment: prevBufferBytes=");
+        ((StringBuilder)localObject).append(i1);
+        ((StringBuilder)localObject).append(" currBufferBytes=");
+        ((StringBuilder)localObject).append(i3);
+        ((StringBuilder)localObject).append("  totalsample=");
+        ((StringBuilder)localObject).append(C);
+        a.d(((StringBuilder)localObject).toString(), new Object[0]);
+        paramInt *= 2;
+        if (i3 < paramInt) {
+          break label391;
+        }
+        paramInt = i3 - paramInt;
+        if (i1 > 0)
+        {
+          localObject = S[i2].a();
+          i2 = 0;
+          if (i2 < i1)
+          {
+            B += (localObject[i2] & 0xFF);
+            i2 += 1;
+            continue;
+          }
+          A.write((byte[])localObject, 0, i1);
+          C += i1 / 2;
+        }
+        if (paramInt > 0)
+        {
+          localObject = S[T].a();
+          i2 = 0;
+          if (i2 < paramInt)
+          {
+            B += (localObject[i2] & 0xFF);
+            i2 += 1;
+            continue;
+          }
+          A.write((byte[])localObject, 0, paramInt);
+          C += paramInt / 2;
+        }
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("After Adjustment: prevBufferBytes=");
+        ((StringBuilder)localObject).append(i1);
+        ((StringBuilder)localObject).append(" currBufferBytes=");
+        ((StringBuilder)localObject).append(paramInt);
+        ((StringBuilder)localObject).append("  totalsample=");
+        ((StringBuilder)localObject).append(C);
+        a.d(((StringBuilder)localObject).toString(), new Object[0]);
+        return;
+      }
+      catch (Exception localException)
+      {
+        a.b("Exception updating file", new Object[] { localException });
+      }
+      return;
+      label391:
+      paramInt -= i3;
+      if (i1 >= paramInt)
+      {
+        i1 -= paramInt;
+        paramInt = 0;
+      }
+      else
+      {
+        paramInt = 0;
+        i1 = paramInt;
+      }
+    }
+  }
+  
+  public int getAnnotationCount()
+  {
+    return mAnnotationCount;
+  }
+  
+  public int[] getAnnotations()
+  {
+    return mAnnotationArray;
+  }
+  
+  public float getAverageHeartRate()
+  {
+    return Q;
+  }
+  
+  public boolean getIsBaselineFilter()
+  {
+    long l1 = fileVersion;
+    boolean bool = true;
+    if (l1 == 3L)
+    {
+      if (((byte)mAliveFormat.flags & 0x20) != 0) {
+        return true;
+      }
+      bool = false;
+    }
+    return bool;
+  }
+  
+  public boolean getIsNotchFilter()
+  {
+    long l1 = fileVersion;
+    boolean bool2 = false;
+    boolean bool1 = bool2;
+    if (l1 == 3L)
+    {
+      bool1 = bool2;
+      if (((byte)mAliveFormat.flags & 0x10) != 0) {
+        bool1 = true;
+      }
+    }
+    return bool1;
+  }
+  
+  public int getMainsFreq()
+  {
+    if (((byte)mAliveFormat.flags & 0x2) != 0) {
+      return 60;
+    }
+    return 50;
+  }
+  
+  public String getName()
+  {
+    File localFile = mFile;
+    if (localFile == null) {
+      return null;
+    }
+    return localFile.getName();
+  }
+  
+  public int getTotalLead1Samples()
+  {
+    return C;
+  }
+  
+  public boolean open(File paramFile)
+  {
+    return open(paramFile, null);
+  }
+  
+  /* Error */
+  public boolean open(File paramFile, String paramString)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: getfield 335	com/alivecor/ecg/core/EcgFile:mFile	Ljava/io/File;
+    //   4: ifnull +22 -> 26
+    //   7: aload_0
+    //   8: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   11: ifnull +15 -> 26
+    //   14: getstatic 101	com/alivecor/ecg/core/EcgFile:a	Ljava/lang/String;
+    //   17: ldc_w 389
+    //   20: invokestatic 394	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;)I
+    //   23: pop
+    //   24: iconst_0
+    //   25: ireturn
+    //   26: aload_0
+    //   27: aload_1
+    //   28: putfield 335	com/alivecor/ecg/core/EcgFile:mFile	Ljava/io/File;
+    //   31: aload_0
+    //   32: iconst_0
+    //   33: putfield 345	com/alivecor/ecg/core/EcgFile:C	I
+    //   36: aload_0
+    //   37: fconst_0
+    //   38: putfield 172	com/alivecor/ecg/core/EcgFile:Q	F
+    //   41: aload_0
+    //   42: iconst_0
+    //   43: putfield 190	com/alivecor/ecg/core/EcgFile:mAnnotationCount	I
+    //   46: aload_0
+    //   47: aconst_null
+    //   48: putfield 396	com/alivecor/ecg/core/EcgFile:P	Landroid/location/Location;
+    //   51: aload_0
+    //   52: aconst_null
+    //   53: putfield 193	com/alivecor/ecg/core/EcgFile:mAnnotationArray	[I
+    //   56: sipush 512
+    //   59: invokestatic 236	com/alivecor/ecg/core/a/c:a	(I)Lcom/alivecor/ecg/core/a/c;
+    //   62: astore_1
+    //   63: aload_0
+    //   64: getfield 335	com/alivecor/ecg/core/EcgFile:mFile	Ljava/io/File;
+    //   67: astore 17
+    //   69: aload_2
+    //   70: ifnonnull +10 -> 80
+    //   73: ldc_w 397
+    //   76: astore_2
+    //   77: goto +3 -> 80
+    //   80: new 255	java/io/RandomAccessFile
+    //   83: dup
+    //   84: aload 17
+    //   86: aload_2
+    //   87: invokespecial 400	java/io/RandomAccessFile:<init>	(Ljava/io/File;Ljava/lang/String;)V
+    //   90: astore_2
+    //   91: aload_0
+    //   92: aload_2
+    //   93: putfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   96: aload_1
+    //   97: invokevirtual 230	com/alivecor/ecg/core/a/c:a	()[B
+    //   100: astore 17
+    //   102: getstatic 109	com/alivecor/ecg/core/EcgFile:c	[B
+    //   105: astore 18
+    //   107: aload_2
+    //   108: aload 17
+    //   110: iconst_0
+    //   111: aload 18
+    //   113: arraylength
+    //   114: invokevirtual 404	java/io/RandomAccessFile:read	([BII)I
+    //   117: pop
+    //   118: aload_0
+    //   119: aload_1
+    //   120: invokevirtual 230	com/alivecor/ecg/core/a/c:a	()[B
+    //   123: aload 18
+    //   125: aload 18
+    //   127: arraylength
+    //   128: invokespecial 406	com/alivecor/ecg/core/EcgFile:a	([B[BI)Z
+    //   131: ifeq +1120 -> 1251
+    //   134: aload_1
+    //   135: invokevirtual 408	com/alivecor/ecg/core/a/c:c	()V
+    //   138: aload_0
+    //   139: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   142: aload_1
+    //   143: invokevirtual 230	com/alivecor/ecg/core/a/c:a	()[B
+    //   146: iconst_0
+    //   147: iconst_4
+    //   148: invokevirtual 404	java/io/RandomAccessFile:read	([BII)I
+    //   151: pop
+    //   152: aload_1
+    //   153: invokevirtual 411	com/alivecor/ecg/core/a/c:g	()J
+    //   156: lstore 9
+    //   158: aload_0
+    //   159: lload 9
+    //   161: putfield 369	com/alivecor/ecg/core/EcgFile:fileVersion	J
+    //   164: lload 9
+    //   166: ldc2_w 30
+    //   169: lcmp
+    //   170: iflt +1044 -> 1214
+    //   173: iconst_0
+    //   174: istore 4
+    //   176: iload 4
+    //   178: istore_3
+    //   179: aload_1
+    //   180: astore_2
+    //   181: aload_0
+    //   182: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   185: invokevirtual 414	java/io/RandomAccessFile:getFilePointer	()J
+    //   188: aload_0
+    //   189: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   192: invokevirtual 417	java/io/RandomAccessFile:length	()J
+    //   195: lcmp
+    //   196: iflt +14 -> 210
+    //   199: iload 4
+    //   201: ifeq +1155 -> 1356
+    //   204: iload_3
+    //   205: ifeq +1151 -> 1356
+    //   208: iconst_1
+    //   209: ireturn
+    //   210: aload_2
+    //   211: invokevirtual 408	com/alivecor/ecg/core/a/c:c	()V
+    //   214: aload_0
+    //   215: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   218: aload_2
+    //   219: invokevirtual 230	com/alivecor/ecg/core/a/c:a	()[B
+    //   222: iconst_0
+    //   223: bipush 8
+    //   225: invokevirtual 404	java/io/RandomAccessFile:read	([BII)I
+    //   228: pop
+    //   229: aload_2
+    //   230: iconst_0
+    //   231: bipush 8
+    //   233: invokestatic 251	com/alivecor/ecg/core/EcgFile:a	(Lcom/alivecor/ecg/core/a/c;II)J
+    //   236: lstore 9
+    //   238: aload_2
+    //   239: invokevirtual 411	com/alivecor/ecg/core/a/c:g	()J
+    //   242: lstore 15
+    //   244: aload_2
+    //   245: invokevirtual 411	com/alivecor/ecg/core/a/c:g	()J
+    //   248: lstore 13
+    //   250: getstatic 150	com/alivecor/ecg/core/EcgFile:p	J
+    //   253: lstore 11
+    //   255: lload 15
+    //   257: lload 11
+    //   259: lcmp
+    //   260: istore 5
+    //   262: iload 5
+    //   264: ifeq +422 -> 686
+    //   267: lload 15
+    //   269: getstatic 152	com/alivecor/ecg/core/EcgFile:q	J
+    //   272: lcmp
+    //   273: ifeq +413 -> 686
+    //   276: lload 15
+    //   278: getstatic 154	com/alivecor/ecg/core/EcgFile:r	J
+    //   281: lcmp
+    //   282: ifne +6 -> 288
+    //   285: goto +401 -> 686
+    //   288: lload 15
+    //   290: invokestatic 419	com/alivecor/ecg/core/EcgFile:a	(J)Z
+    //   293: ifeq +313 -> 606
+    //   296: aload_0
+    //   297: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   300: invokevirtual 414	java/io/RandomAccessFile:getFilePointer	()J
+    //   303: lstore 11
+    //   305: lload 15
+    //   307: getstatic 156	com/alivecor/ecg/core/EcgFile:s	J
+    //   310: lcmp
+    //   311: ifne +61 -> 372
+    //   314: aload_0
+    //   315: lload 13
+    //   317: ldc2_w 30
+    //   320: ldiv
+    //   321: l2i
+    //   322: putfield 345	com/alivecor/ecg/core/EcgFile:C	I
+    //   325: aload_0
+    //   326: lload 11
+    //   328: putfield 226	com/alivecor/ecg/core/EcgFile:D	J
+    //   331: aload_0
+    //   332: lload 13
+    //   334: putfield 421	com/alivecor/ecg/core/EcgFile:J	J
+    //   337: ldc_w 423
+    //   340: iconst_2
+    //   341: anewarray 4	java/lang/Object
+    //   344: dup
+    //   345: iconst_0
+    //   346: lload 11
+    //   348: invokestatic 429	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   351: aastore
+    //   352: dup
+    //   353: iconst_1
+    //   354: aload_0
+    //   355: getfield 345	com/alivecor/ecg/core/EcgFile:C	I
+    //   358: invokestatic 434	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   361: aastore
+    //   362: invokestatic 356	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   365: lload 11
+    //   367: lstore 9
+    //   369: goto +298 -> 667
+    //   372: lload 15
+    //   374: getstatic 158	com/alivecor/ecg/core/EcgFile:t	J
+    //   377: lcmp
+    //   378: ifne +40 -> 418
+    //   381: aload_0
+    //   382: lload 11
+    //   384: putfield 224	com/alivecor/ecg/core/EcgFile:E	J
+    //   387: aload_0
+    //   388: lload 13
+    //   390: putfield 436	com/alivecor/ecg/core/EcgFile:K	J
+    //   393: ldc_w 438
+    //   396: iconst_1
+    //   397: anewarray 4	java/lang/Object
+    //   400: dup
+    //   401: iconst_0
+    //   402: lload 11
+    //   404: invokestatic 429	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   407: aastore
+    //   408: invokestatic 356	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   411: lload 11
+    //   413: lstore 9
+    //   415: goto +252 -> 667
+    //   418: lload 15
+    //   420: getstatic 160	com/alivecor/ecg/core/EcgFile:u	J
+    //   423: lcmp
+    //   424: ifne +40 -> 464
+    //   427: aload_0
+    //   428: lload 11
+    //   430: putfield 222	com/alivecor/ecg/core/EcgFile:F	J
+    //   433: aload_0
+    //   434: lload 13
+    //   436: putfield 440	com/alivecor/ecg/core/EcgFile:L	J
+    //   439: ldc_w 442
+    //   442: iconst_1
+    //   443: anewarray 4	java/lang/Object
+    //   446: dup
+    //   447: iconst_0
+    //   448: lload 11
+    //   450: invokestatic 429	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   453: aastore
+    //   454: invokestatic 356	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   457: lload 11
+    //   459: lstore 9
+    //   461: goto +206 -> 667
+    //   464: lload 15
+    //   466: getstatic 162	com/alivecor/ecg/core/EcgFile:v	J
+    //   469: lcmp
+    //   470: ifne +40 -> 510
+    //   473: aload_0
+    //   474: lload 11
+    //   476: putfield 220	com/alivecor/ecg/core/EcgFile:G	J
+    //   479: aload_0
+    //   480: lload 13
+    //   482: putfield 444	com/alivecor/ecg/core/EcgFile:M	J
+    //   485: ldc_w 446
+    //   488: iconst_1
+    //   489: anewarray 4	java/lang/Object
+    //   492: dup
+    //   493: iconst_0
+    //   494: lload 11
+    //   496: invokestatic 429	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   499: aastore
+    //   500: invokestatic 356	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   503: lload 11
+    //   505: lstore 9
+    //   507: goto +160 -> 667
+    //   510: lload 15
+    //   512: getstatic 164	com/alivecor/ecg/core/EcgFile:w	J
+    //   515: lcmp
+    //   516: ifne +40 -> 556
+    //   519: aload_0
+    //   520: lload 11
+    //   522: putfield 218	com/alivecor/ecg/core/EcgFile:H	J
+    //   525: aload_0
+    //   526: lload 13
+    //   528: putfield 448	com/alivecor/ecg/core/EcgFile:N	J
+    //   531: ldc_w 450
+    //   534: iconst_1
+    //   535: anewarray 4	java/lang/Object
+    //   538: dup
+    //   539: iconst_0
+    //   540: lload 11
+    //   542: invokestatic 429	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   545: aastore
+    //   546: invokestatic 356	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   549: lload 11
+    //   551: lstore 9
+    //   553: goto +114 -> 667
+    //   556: lload 11
+    //   558: lstore 9
+    //   560: lload 15
+    //   562: getstatic 166	com/alivecor/ecg/core/EcgFile:x	J
+    //   565: lcmp
+    //   566: ifne +101 -> 667
+    //   569: aload_0
+    //   570: lload 11
+    //   572: putfield 216	com/alivecor/ecg/core/EcgFile:I	J
+    //   575: aload_0
+    //   576: lload 13
+    //   578: putfield 452	com/alivecor/ecg/core/EcgFile:O	J
+    //   581: ldc_w 454
+    //   584: iconst_1
+    //   585: anewarray 4	java/lang/Object
+    //   588: dup
+    //   589: iconst_0
+    //   590: lload 11
+    //   592: invokestatic 429	java/lang/Long:valueOf	(J)Ljava/lang/Long;
+    //   595: aastore
+    //   596: invokestatic 356	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   599: lload 11
+    //   601: lstore 9
+    //   603: goto +64 -> 667
+    //   606: new 294	java/lang/StringBuilder
+    //   609: dup
+    //   610: invokespecial 295	java/lang/StringBuilder:<init>	()V
+    //   613: astore_1
+    //   614: aload_1
+    //   615: ldc_w 456
+    //   618: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   621: pop
+    //   622: aload_1
+    //   623: lload 15
+    //   625: invokevirtual 459	java/lang/StringBuilder:append	(J)Ljava/lang/StringBuilder;
+    //   628: pop
+    //   629: aload_1
+    //   630: ldc_w 461
+    //   633: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   636: pop
+    //   637: aload_1
+    //   638: lload 13
+    //   640: invokestatic 464	java/lang/String:valueOf	(J)Ljava/lang/String;
+    //   643: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   646: pop
+    //   647: aload_1
+    //   648: invokevirtual 313	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   651: iconst_0
+    //   652: anewarray 4	java/lang/Object
+    //   655: invokestatic 356	l/a/a:d	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   658: aload_0
+    //   659: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   662: invokevirtual 414	java/io/RandomAccessFile:getFilePointer	()J
+    //   665: lstore 9
+    //   667: aload_0
+    //   668: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   671: lload 9
+    //   673: lload 13
+    //   675: ladd
+    //   676: ldc2_w 36
+    //   679: ladd
+    //   680: invokevirtual 467	java/io/RandomAccessFile:seek	(J)V
+    //   683: goto -502 -> 181
+    //   686: lload 13
+    //   688: ldc2_w 468
+    //   691: lcmp
+    //   692: ifgt +466 -> 1158
+    //   695: lload 13
+    //   697: lconst_0
+    //   698: lcmp
+    //   699: iflt +459 -> 1158
+    //   702: lload 13
+    //   704: ldc2_w 36
+    //   707: ladd
+    //   708: l2i
+    //   709: istore 6
+    //   711: aload_2
+    //   712: astore_1
+    //   713: aload_2
+    //   714: invokevirtual 471	com/alivecor/ecg/core/a/c:b	()I
+    //   717: iload 6
+    //   719: if_icmpge +9 -> 728
+    //   722: iload 6
+    //   724: invokestatic 236	com/alivecor/ecg/core/a/c:a	(I)Lcom/alivecor/ecg/core/a/c;
+    //   727: astore_1
+    //   728: aload_1
+    //   729: invokevirtual 408	com/alivecor/ecg/core/a/c:c	()V
+    //   732: aload_0
+    //   733: getfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   736: aload_1
+    //   737: invokevirtual 230	com/alivecor/ecg/core/a/c:a	()[B
+    //   740: iconst_0
+    //   741: iload 6
+    //   743: invokevirtual 404	java/io/RandomAccessFile:read	([BII)I
+    //   746: pop
+    //   747: lload 13
+    //   749: l2i
+    //   750: istore 6
+    //   752: lload 9
+    //   754: aload_1
+    //   755: iconst_0
+    //   756: iload 6
+    //   758: invokestatic 251	com/alivecor/ecg/core/EcgFile:a	(Lcom/alivecor/ecg/core/a/c;II)J
+    //   761: ladd
+    //   762: aload_1
+    //   763: iload 6
+    //   765: invokevirtual 474	com/alivecor/ecg/core/a/c:c	(I)J
+    //   768: lcmp
+    //   769: ifne +378 -> 1147
+    //   772: lload 15
+    //   774: getstatic 154	com/alivecor/ecg/core/EcgFile:r	J
+    //   777: lcmp
+    //   778: ifne +107 -> 885
+    //   781: lload 13
+    //   783: ldc2_w 36
+    //   786: lsub
+    //   787: l2i
+    //   788: istore 8
+    //   790: iload 8
+    //   792: bipush 6
+    //   794: idiv
+    //   795: istore 7
+    //   797: iload 4
+    //   799: istore 5
+    //   801: iload_3
+    //   802: istore 6
+    //   804: iload 7
+    //   806: ifle +556 -> 1362
+    //   809: aload_1
+    //   810: invokevirtual 411	com/alivecor/ecg/core/a/c:g	()J
+    //   813: pop2
+    //   814: aload_0
+    //   815: iload 8
+    //   817: bipush 6
+    //   819: idiv
+    //   820: newarray int
+    //   822: putfield 193	com/alivecor/ecg/core/EcgFile:mAnnotationArray	[I
+    //   825: iconst_0
+    //   826: istore 5
+    //   828: iload 5
+    //   830: iload 7
+    //   832: if_icmpge +29 -> 861
+    //   835: aload_0
+    //   836: getfield 193	com/alivecor/ecg/core/EcgFile:mAnnotationArray	[I
+    //   839: iload 5
+    //   841: aload_1
+    //   842: invokevirtual 411	com/alivecor/ecg/core/a/c:g	()J
+    //   845: l2i
+    //   846: iastore
+    //   847: aload_1
+    //   848: invokevirtual 476	com/alivecor/ecg/core/a/c:f	()I
+    //   851: pop
+    //   852: iload 5
+    //   854: iconst_1
+    //   855: iadd
+    //   856: istore 5
+    //   858: goto -30 -> 828
+    //   861: aload_0
+    //   862: iload 7
+    //   864: putfield 190	com/alivecor/ecg/core/EcgFile:mAnnotationCount	I
+    //   867: aload_0
+    //   868: aload_0
+    //   869: invokespecial 478	com/alivecor/ecg/core/EcgFile:a	()F
+    //   872: putfield 172	com/alivecor/ecg/core/EcgFile:Q	F
+    //   875: iload 4
+    //   877: istore 5
+    //   879: iload_3
+    //   880: istore 6
+    //   882: goto +480 -> 1362
+    //   885: iload 5
+    //   887: ifne +170 -> 1057
+    //   890: aload_0
+    //   891: getfield 185	com/alivecor/ecg/core/EcgFile:mAliveInfo	Lcom/alivecor/ecg/core/EcgFile$AliveFileInfo;
+    //   894: aload_1
+    //   895: bipush 32
+    //   897: invokevirtual 480	com/alivecor/ecg/core/a/c:b	(I)Ljava/lang/String;
+    //   900: putfield 483	com/alivecor/ecg/core/EcgFile$AliveFileInfo:dateRecorded	Ljava/lang/String;
+    //   903: aload_0
+    //   904: getfield 185	com/alivecor/ecg/core/EcgFile:mAliveInfo	Lcom/alivecor/ecg/core/EcgFile$AliveFileInfo;
+    //   907: aload_1
+    //   908: bipush 40
+    //   910: invokevirtual 480	com/alivecor/ecg/core/a/c:b	(I)Ljava/lang/String;
+    //   913: putfield 486	com/alivecor/ecg/core/EcgFile$AliveFileInfo:recordingUUID	Ljava/lang/String;
+    //   916: aload_0
+    //   917: getfield 185	com/alivecor/ecg/core/EcgFile:mAliveInfo	Lcom/alivecor/ecg/core/EcgFile$AliveFileInfo;
+    //   920: aload_1
+    //   921: bipush 44
+    //   923: invokevirtual 480	com/alivecor/ecg/core/a/c:b	(I)Ljava/lang/String;
+    //   926: putfield 489	com/alivecor/ecg/core/EcgFile$AliveFileInfo:phoneUDID	Ljava/lang/String;
+    //   929: aload_0
+    //   930: getfield 185	com/alivecor/ecg/core/EcgFile:mAliveInfo	Lcom/alivecor/ecg/core/EcgFile$AliveFileInfo;
+    //   933: aload_1
+    //   934: bipush 32
+    //   936: invokevirtual 480	com/alivecor/ecg/core/a/c:b	(I)Ljava/lang/String;
+    //   939: putfield 492	com/alivecor/ecg/core/EcgFile$AliveFileInfo:phoneModel	Ljava/lang/String;
+    //   942: aload_0
+    //   943: getfield 185	com/alivecor/ecg/core/EcgFile:mAliveInfo	Lcom/alivecor/ecg/core/EcgFile$AliveFileInfo;
+    //   946: aload_1
+    //   947: bipush 32
+    //   949: invokevirtual 480	com/alivecor/ecg/core/a/c:b	(I)Ljava/lang/String;
+    //   952: putfield 495	com/alivecor/ecg/core/EcgFile$AliveFileInfo:recorderSW	Ljava/lang/String;
+    //   955: aload_0
+    //   956: getfield 185	com/alivecor/ecg/core/EcgFile:mAliveInfo	Lcom/alivecor/ecg/core/EcgFile$AliveFileInfo;
+    //   959: aload_1
+    //   960: bipush 32
+    //   962: invokevirtual 480	com/alivecor/ecg/core/a/c:b	(I)Ljava/lang/String;
+    //   965: putfield 498	com/alivecor/ecg/core/EcgFile$AliveFileInfo:recorderHW	Ljava/lang/String;
+    //   968: aload_0
+    //   969: getfield 185	com/alivecor/ecg/core/EcgFile:mAliveInfo	Lcom/alivecor/ecg/core/EcgFile$AliveFileInfo;
+    //   972: aload_1
+    //   973: bipush 52
+    //   975: invokevirtual 480	com/alivecor/ecg/core/a/c:b	(I)Ljava/lang/String;
+    //   978: putfield 501	com/alivecor/ecg/core/EcgFile$AliveFileInfo:location	Ljava/lang/String;
+    //   981: getstatic 101	com/alivecor/ecg/core/EcgFile:a	Ljava/lang/String;
+    //   984: astore_2
+    //   985: new 294	java/lang/StringBuilder
+    //   988: dup
+    //   989: invokespecial 295	java/lang/StringBuilder:<init>	()V
+    //   992: astore 17
+    //   994: aload 17
+    //   996: ldc_w 503
+    //   999: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1002: pop
+    //   1003: aload 17
+    //   1005: aload_0
+    //   1006: getfield 335	com/alivecor/ecg/core/EcgFile:mFile	Ljava/io/File;
+    //   1009: invokevirtual 377	java/io/File:getName	()Ljava/lang/String;
+    //   1012: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1015: pop
+    //   1016: aload 17
+    //   1018: ldc_w 505
+    //   1021: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1024: pop
+    //   1025: aload 17
+    //   1027: aload_0
+    //   1028: getfield 185	com/alivecor/ecg/core/EcgFile:mAliveInfo	Lcom/alivecor/ecg/core/EcgFile$AliveFileInfo;
+    //   1031: getfield 483	com/alivecor/ecg/core/EcgFile$AliveFileInfo:dateRecorded	Ljava/lang/String;
+    //   1034: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1037: pop
+    //   1038: aload_2
+    //   1039: aload 17
+    //   1041: invokevirtual 313	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   1044: invokestatic 507	android/util/Log:i	(Ljava/lang/String;Ljava/lang/String;)I
+    //   1047: pop
+    //   1048: iconst_1
+    //   1049: istore 5
+    //   1051: iload_3
+    //   1052: istore 6
+    //   1054: goto +308 -> 1362
+    //   1057: lload 15
+    //   1059: getstatic 152	com/alivecor/ecg/core/EcgFile:q	J
+    //   1062: lcmp
+    //   1063: ifne +73 -> 1136
+    //   1066: aload_0
+    //   1067: getfield 188	com/alivecor/ecg/core/EcgFile:mAliveFormat	Lcom/alivecor/ecg/core/EcgFile$AliveFileFormat;
+    //   1070: aload_1
+    //   1071: invokevirtual 509	com/alivecor/ecg/core/a/c:h	()I
+    //   1074: putfield 511	com/alivecor/ecg/core/EcgFile$AliveFileFormat:format	I
+    //   1077: aload_0
+    //   1078: getfield 188	com/alivecor/ecg/core/EcgFile:mAliveFormat	Lcom/alivecor/ecg/core/EcgFile$AliveFileFormat;
+    //   1081: aload_1
+    //   1082: invokevirtual 476	com/alivecor/ecg/core/a/c:f	()I
+    //   1085: putfield 514	com/alivecor/ecg/core/EcgFile$AliveFileFormat:samplingRate	I
+    //   1088: aload_0
+    //   1089: getfield 188	com/alivecor/ecg/core/EcgFile:mAliveFormat	Lcom/alivecor/ecg/core/EcgFile$AliveFileFormat;
+    //   1092: aload_1
+    //   1093: invokevirtual 476	com/alivecor/ecg/core/a/c:f	()I
+    //   1096: putfield 517	com/alivecor/ecg/core/EcgFile$AliveFileFormat:resolution_nV	I
+    //   1099: aload_0
+    //   1100: getfield 188	com/alivecor/ecg/core/EcgFile:mAliveFormat	Lcom/alivecor/ecg/core/EcgFile$AliveFileFormat;
+    //   1103: aload_1
+    //   1104: invokevirtual 509	com/alivecor/ecg/core/a/c:h	()I
+    //   1107: putfield 372	com/alivecor/ecg/core/EcgFile$AliveFileFormat:flags	I
+    //   1110: aload_0
+    //   1111: aload_0
+    //   1112: aload_0
+    //   1113: getfield 188	com/alivecor/ecg/core/EcgFile:mAliveFormat	Lcom/alivecor/ecg/core/EcgFile$AliveFileFormat;
+    //   1116: getfield 372	com/alivecor/ecg/core/EcgFile$AliveFileFormat:flags	I
+    //   1119: iconst_1
+    //   1120: invokespecial 519	com/alivecor/ecg/core/EcgFile:a	(II)Z
+    //   1123: putfield 521	com/alivecor/ecg/core/EcgFile:U	Z
+    //   1126: iconst_1
+    //   1127: istore 6
+    //   1129: iload 4
+    //   1131: istore 5
+    //   1133: goto +229 -> 1362
+    //   1136: new 322	java/lang/Exception
+    //   1139: dup
+    //   1140: ldc_w 523
+    //   1143: invokespecial 524	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   1146: athrow
+    //   1147: new 322	java/lang/Exception
+    //   1150: dup
+    //   1151: ldc_w 526
+    //   1154: invokespecial 524	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   1157: athrow
+    //   1158: new 294	java/lang/StringBuilder
+    //   1161: dup
+    //   1162: invokespecial 295	java/lang/StringBuilder:<init>	()V
+    //   1165: astore_1
+    //   1166: aload_1
+    //   1167: ldc_w 528
+    //   1170: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1173: pop
+    //   1174: aload_1
+    //   1175: lload 15
+    //   1177: invokestatic 464	java/lang/String:valueOf	(J)Ljava/lang/String;
+    //   1180: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1183: pop
+    //   1184: aload_1
+    //   1185: ldc_w 461
+    //   1188: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1191: pop
+    //   1192: aload_1
+    //   1193: lload 13
+    //   1195: invokestatic 464	java/lang/String:valueOf	(J)Ljava/lang/String;
+    //   1198: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1201: pop
+    //   1202: new 322	java/lang/Exception
+    //   1205: dup
+    //   1206: aload_1
+    //   1207: invokevirtual 313	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   1210: invokespecial 524	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   1213: athrow
+    //   1214: new 294	java/lang/StringBuilder
+    //   1217: dup
+    //   1218: invokespecial 295	java/lang/StringBuilder:<init>	()V
+    //   1221: astore_1
+    //   1222: aload_1
+    //   1223: ldc_w 530
+    //   1226: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1229: pop
+    //   1230: aload_1
+    //   1231: aload_0
+    //   1232: getfield 369	com/alivecor/ecg/core/EcgFile:fileVersion	J
+    //   1235: invokevirtual 459	java/lang/StringBuilder:append	(J)Ljava/lang/StringBuilder;
+    //   1238: pop
+    //   1239: new 322	java/lang/Exception
+    //   1242: dup
+    //   1243: aload_1
+    //   1244: invokevirtual 313	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   1247: invokespecial 524	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   1250: athrow
+    //   1251: new 322	java/lang/Exception
+    //   1254: dup
+    //   1255: ldc_w 532
+    //   1258: invokespecial 524	java/lang/Exception:<init>	(Ljava/lang/String;)V
+    //   1261: athrow
+    //   1262: astore_1
+    //   1263: goto +19 -> 1282
+    //   1266: astore_1
+    //   1267: getstatic 101	com/alivecor/ecg/core/EcgFile:a	Ljava/lang/String;
+    //   1270: ldc_w 534
+    //   1273: aload_1
+    //   1274: invokestatic 537	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    //   1277: pop
+    //   1278: goto +15 -> 1293
+    //   1281: astore_1
+    //   1282: getstatic 101	com/alivecor/ecg/core/EcgFile:a	Ljava/lang/String;
+    //   1285: ldc_w 532
+    //   1288: aload_1
+    //   1289: invokestatic 537	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    //   1292: pop
+    //   1293: aload_0
+    //   1294: aconst_null
+    //   1295: putfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   1298: aload_0
+    //   1299: aconst_null
+    //   1300: putfield 335	com/alivecor/ecg/core/EcgFile:mFile	Ljava/io/File;
+    //   1303: iconst_0
+    //   1304: ireturn
+    //   1305: getstatic 101	com/alivecor/ecg/core/EcgFile:a	Ljava/lang/String;
+    //   1308: astore_1
+    //   1309: new 294	java/lang/StringBuilder
+    //   1312: dup
+    //   1313: invokespecial 295	java/lang/StringBuilder:<init>	()V
+    //   1316: astore_2
+    //   1317: aload_2
+    //   1318: ldc_w 539
+    //   1321: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1324: pop
+    //   1325: aload_2
+    //   1326: aload_0
+    //   1327: getfield 335	com/alivecor/ecg/core/EcgFile:mFile	Ljava/io/File;
+    //   1330: invokevirtual 542	java/io/File:getPath	()Ljava/lang/String;
+    //   1333: invokevirtual 305	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   1336: pop
+    //   1337: aload_1
+    //   1338: aload_2
+    //   1339: invokevirtual 313	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   1342: invokestatic 394	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;)I
+    //   1345: pop
+    //   1346: aload_0
+    //   1347: aconst_null
+    //   1348: putfield 324	com/alivecor/ecg/core/EcgFile:A	Ljava/io/RandomAccessFile;
+    //   1351: aload_0
+    //   1352: aconst_null
+    //   1353: putfield 335	com/alivecor/ecg/core/EcgFile:mFile	Ljava/io/File;
+    //   1356: iconst_0
+    //   1357: ireturn
+    //   1358: astore_1
+    //   1359: goto -54 -> 1305
+    //   1362: aload_1
+    //   1363: astore_2
+    //   1364: iload 5
+    //   1366: istore 4
+    //   1368: iload 6
+    //   1370: istore_3
+    //   1371: goto -1190 -> 181
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	1374	0	this	EcgFile
+    //   0	1374	1	paramFile	File
+    //   0	1374	2	paramString	String
+    //   178	1193	3	i1	int
+    //   174	1193	4	i2	int
+    //   260	596	5	i3	int
+    //   856	509	5	i4	int
+    //   709	660	6	i5	int
+    //   795	68	7	i6	int
+    //   788	32	8	i7	int
+    //   156	597	9	l1	long
+    //   253	347	11	l2	long
+    //   248	946	13	l3	long
+    //   242	934	15	l4	long
+    //   67	973	17	localObject	Object
+    //   105	21	18	arrayOfByte	byte[]
+    // Exception table:
+    //   from	to	target	type
+    //   267	285	1262	java/lang/IndexOutOfBoundsException
+    //   288	337	1262	java/lang/IndexOutOfBoundsException
+    //   337	365	1262	java/lang/IndexOutOfBoundsException
+    //   372	393	1262	java/lang/IndexOutOfBoundsException
+    //   393	411	1262	java/lang/IndexOutOfBoundsException
+    //   418	439	1262	java/lang/IndexOutOfBoundsException
+    //   439	457	1262	java/lang/IndexOutOfBoundsException
+    //   464	485	1262	java/lang/IndexOutOfBoundsException
+    //   485	503	1262	java/lang/IndexOutOfBoundsException
+    //   510	531	1262	java/lang/IndexOutOfBoundsException
+    //   531	549	1262	java/lang/IndexOutOfBoundsException
+    //   560	581	1262	java/lang/IndexOutOfBoundsException
+    //   581	599	1262	java/lang/IndexOutOfBoundsException
+    //   606	667	1262	java/lang/IndexOutOfBoundsException
+    //   667	683	1262	java/lang/IndexOutOfBoundsException
+    //   713	728	1262	java/lang/IndexOutOfBoundsException
+    //   728	747	1262	java/lang/IndexOutOfBoundsException
+    //   752	781	1262	java/lang/IndexOutOfBoundsException
+    //   790	797	1262	java/lang/IndexOutOfBoundsException
+    //   809	825	1262	java/lang/IndexOutOfBoundsException
+    //   835	852	1262	java/lang/IndexOutOfBoundsException
+    //   861	875	1262	java/lang/IndexOutOfBoundsException
+    //   890	1048	1262	java/lang/IndexOutOfBoundsException
+    //   1057	1126	1262	java/lang/IndexOutOfBoundsException
+    //   1136	1147	1262	java/lang/IndexOutOfBoundsException
+    //   1147	1158	1262	java/lang/IndexOutOfBoundsException
+    //   1158	1214	1262	java/lang/IndexOutOfBoundsException
+    //   1214	1251	1262	java/lang/IndexOutOfBoundsException
+    //   1251	1262	1262	java/lang/IndexOutOfBoundsException
+    //   56	69	1266	java/lang/Exception
+    //   80	164	1266	java/lang/Exception
+    //   181	199	1266	java/lang/Exception
+    //   210	255	1266	java/lang/Exception
+    //   267	285	1266	java/lang/Exception
+    //   288	337	1266	java/lang/Exception
+    //   337	365	1266	java/lang/Exception
+    //   372	393	1266	java/lang/Exception
+    //   393	411	1266	java/lang/Exception
+    //   418	439	1266	java/lang/Exception
+    //   439	457	1266	java/lang/Exception
+    //   464	485	1266	java/lang/Exception
+    //   485	503	1266	java/lang/Exception
+    //   510	531	1266	java/lang/Exception
+    //   531	549	1266	java/lang/Exception
+    //   560	581	1266	java/lang/Exception
+    //   581	599	1266	java/lang/Exception
+    //   606	667	1266	java/lang/Exception
+    //   667	683	1266	java/lang/Exception
+    //   713	728	1266	java/lang/Exception
+    //   728	747	1266	java/lang/Exception
+    //   752	781	1266	java/lang/Exception
+    //   790	797	1266	java/lang/Exception
+    //   809	825	1266	java/lang/Exception
+    //   835	852	1266	java/lang/Exception
+    //   861	875	1266	java/lang/Exception
+    //   890	1048	1266	java/lang/Exception
+    //   1057	1126	1266	java/lang/Exception
+    //   1136	1147	1266	java/lang/Exception
+    //   1147	1158	1266	java/lang/Exception
+    //   1158	1214	1266	java/lang/Exception
+    //   1214	1251	1266	java/lang/Exception
+    //   1251	1262	1266	java/lang/Exception
+    //   56	69	1281	java/lang/IndexOutOfBoundsException
+    //   80	164	1281	java/lang/IndexOutOfBoundsException
+    //   181	199	1281	java/lang/IndexOutOfBoundsException
+    //   210	255	1281	java/lang/IndexOutOfBoundsException
+    //   56	69	1358	java/io/FileNotFoundException
+    //   80	164	1358	java/io/FileNotFoundException
+    //   181	199	1358	java/io/FileNotFoundException
+    //   210	255	1358	java/io/FileNotFoundException
+    //   267	285	1358	java/io/FileNotFoundException
+    //   288	337	1358	java/io/FileNotFoundException
+    //   337	365	1358	java/io/FileNotFoundException
+    //   372	393	1358	java/io/FileNotFoundException
+    //   393	411	1358	java/io/FileNotFoundException
+    //   418	439	1358	java/io/FileNotFoundException
+    //   439	457	1358	java/io/FileNotFoundException
+    //   464	485	1358	java/io/FileNotFoundException
+    //   485	503	1358	java/io/FileNotFoundException
+    //   510	531	1358	java/io/FileNotFoundException
+    //   531	549	1358	java/io/FileNotFoundException
+    //   560	581	1358	java/io/FileNotFoundException
+    //   581	599	1358	java/io/FileNotFoundException
+    //   606	667	1358	java/io/FileNotFoundException
+    //   667	683	1358	java/io/FileNotFoundException
+    //   713	728	1358	java/io/FileNotFoundException
+    //   728	747	1358	java/io/FileNotFoundException
+    //   752	781	1358	java/io/FileNotFoundException
+    //   790	797	1358	java/io/FileNotFoundException
+    //   809	825	1358	java/io/FileNotFoundException
+    //   835	852	1358	java/io/FileNotFoundException
+    //   861	875	1358	java/io/FileNotFoundException
+    //   890	1048	1358	java/io/FileNotFoundException
+    //   1057	1126	1358	java/io/FileNotFoundException
+    //   1136	1147	1358	java/io/FileNotFoundException
+    //   1147	1158	1358	java/io/FileNotFoundException
+    //   1158	1214	1358	java/io/FileNotFoundException
+    //   1214	1251	1358	java/io/FileNotFoundException
+    //   1251	1262	1358	java/io/FileNotFoundException
+  }
+  
+  public boolean open(String paramString)
+  {
+    return open(paramString, null);
+  }
+  
+  public boolean open(String paramString1, String paramString2)
+  {
+    return open(new File(b.b(), paramString1), paramString2);
+  }
+  
+  public short[] readEcgSamples(Lead paramLead)
+    throws IOException
+  {
+    int i2 = getTotalLead1Samples();
+    byte[] arrayOfByte = new byte[i2 * 2];
+    int i1 = 0;
+    int i3 = readRawEcgBytes(paramLead, arrayOfByte, 0, i2);
+    if (i3 >= i2)
+    {
+      paramLead = new short[i2];
+      while (i1 < i2)
+      {
+        paramLead[i1] = getSample(i1, arrayOfByte);
+        i1 += 1;
+      }
+      return paramLead;
+    }
+    paramLead = new StringBuilder();
+    paramLead.append("Failed to read all samples. Read: ");
+    paramLead.append(i3);
+    paramLead.append(". Total: ");
+    paramLead.append(i2);
+    throw new IOException(paramLead.toString());
+  }
+  
+  public int readLead1Bytes(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+  {
+    return readRawEcgBytes(Lead.LEAD_1, paramArrayOfByte, paramInt1, paramInt2);
+  }
+  
+  public short[] readLead1Samples()
+    throws IOException
+  {
+    return readEcgSamples(Lead.LEAD_1);
+  }
+  
+  public int readRawEcgBytes(Lead paramLead, byte[] paramArrayOfByte, int paramInt1, int paramInt2)
+  {
+    RandomAccessFile localRandomAccessFile = A;
+    if (localRandomAccessFile == null) {
+      return 0;
+    }
+    int i2 = C;
+    if (paramInt1 >= i2) {
+      return 0;
+    }
+    int i1 = paramInt2;
+    if (paramInt1 + paramInt2 > i2) {
+      i1 = i2 - paramInt1;
+    }
+    for (;;)
+    {
+      try
+      {
+        localRandomAccessFile.seek(a(paramLead) + paramInt1 * 2);
+        paramInt1 = A.read(paramArrayOfByte, 0, i1 * 2);
+      }
+      catch (IOException paramLead)
+      {
+        continue;
+      }
+      try
+      {
+        paramInt2 = paramInt1 / 2;
+        paramInt1 = paramInt2;
+      }
+      catch (IOException paramLead) {}
+    }
+    paramInt1 = 0;
+    if (paramInt1 < 0) {
+      return 0;
+    }
+    return paramInt1;
+  }
+  
+  public void reset()
+  {
+    C = 0;
+    mAnnotationCount = 0;
+    Object localObject = S;
+    if (localObject[0] != null) {
+      localObject[0].c();
+    }
+    localObject = S;
+    if (localObject[1] != null) {
+      localObject[1].c();
+    }
+    localObject = A;
+    if (localObject != null) {
+      try
+      {
+        ((RandomAccessFile)localObject).setLength(0L);
+        return;
+      }
+      catch (IOException localIOException)
+      {
+        a.b("Exception truncating file", new Object[] { localIOException });
+      }
+    }
+  }
+  
+  public long samplesForLead(Lead paramLead)
+  {
+    switch (1.$SwitchMap$com$alivecor$ecg$core$EcgFile$Lead[paramLead.ordinal()])
+    {
+    default: 
+      throw new IllegalArgumentException("unsupported lead");
+    case 6: 
+      return O;
+    case 5: 
+      return N;
+    case 4: 
+      return M;
+    case 3: 
+      return L;
+    case 2: 
+      return K;
+    }
+    return J;
+  }
+  
+  public boolean save()
+  {
+    if (A != null)
+    {
+      try
+      {
+        if (P != null)
+        {
+          localObject1 = new StringBuilder();
+          localObject2 = Locale.US;
+          ((StringBuilder)localObject1).append(String.format((Locale)localObject2, "geo:%.7f,%.7f", new Object[] { Double.valueOf(P.getLatitude()), Double.valueOf(P.getLongitude()) }));
+          boolean bool = P.hasAltitude();
+          if (bool) {
+            ((StringBuilder)localObject1).append(String.format((Locale)localObject2, ",%.0f", new Object[] { Double.valueOf(P.getAltitude()) }));
+          }
+          bool = P.hasAccuracy();
+          if (bool) {
+            ((StringBuilder)localObject1).append(String.format((Locale)localObject2, ";u=%.0f", new Object[] { Float.valueOf(P.getAccuracy()) }));
+          }
+          mAliveInfo.location = ((StringBuilder)localObject1).toString();
+        }
+        else
+        {
+          mAliveInfo.location = "";
+        }
+        Q = a();
+        writeHeader();
+        Object localObject1 = A;
+        ((RandomAccessFile)localObject1).seek(((RandomAccessFile)localObject1).getFilePointer() + C * 2);
+        localObject1 = c.a(4);
+        ((c)localObject1).a(B & 0xFFFFFFFFFFFFFFFF);
+        A.write(((c)localObject1).a());
+        a(A, mAnnotationArray, 0, mAnnotationCount);
+        if (A.getFilePointer() != A.length())
+        {
+          localObject1 = new StringBuilder();
+          ((StringBuilder)localObject1).append("Incorrect file size. Len:");
+          ((StringBuilder)localObject1).append(A.length());
+          ((StringBuilder)localObject1).append(" Expected: ");
+          ((StringBuilder)localObject1).append(A.getFilePointer());
+          a.b(((StringBuilder)localObject1).toString(), new Object[0]);
+          localObject1 = A;
+          ((RandomAccessFile)localObject1).setLength(((RandomAccessFile)localObject1).getFilePointer());
+        }
+        A.close();
+      }
+      catch (Exception localException)
+      {
+        a.b("Exception updating and saving file", new Object[] { localException });
+      }
+      A = null;
+      File localFile = new File(b.b(), b.e(mAliveInfo.recordingUUID));
+      if (mFile.renameTo(localFile))
+      {
+        mFile = localFile;
+        return true;
+      }
+      Object localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append("Failed to create file ");
+      ((StringBuilder)localObject2).append(localFile.toString());
+      a.b(((StringBuilder)localObject2).toString(), new Object[0]);
+    }
+    return false;
+  }
+  
+  public void setLocation(Location paramLocation)
+  {
+    P = paramLocation;
+  }
+  
+  public void setMainsFrequency(int paramInt)
+  {
+    R = paramInt;
+  }
+  
+  public void setStartOffsetSample(int paramInt)
+  {
+    mStartOffsetSample = paramInt;
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("EcgFile  [samples: ");
+    localStringBuilder.append(C);
+    localStringBuilder.append(", name: ");
+    Object localObject = mFile;
+    if (localObject != null) {
+      localObject = ((File)localObject).getAbsolutePath();
+    } else {
+      localObject = "null";
+    }
+    localStringBuilder.append((String)localObject);
+    localStringBuilder.append("]");
+    return localStringBuilder.toString();
+  }
+  
+  public void writeHeader()
+    throws IOException
+  {
+    writeHeader(true);
+  }
+  
+  public void writeHeader(boolean paramBoolean)
+    throws IOException
+  {
+    c localC = c.a(512);
+    localC.b(c);
+    localC.a(3L);
+    int i1 = localC.e();
+    localC.b(g);
+    localC.a(264L);
+    localC.a(mAliveInfo.dateRecorded, 32);
+    localC.a(mAliveInfo.recordingUUID, 40);
+    localC.a(mAliveInfo.phoneUDID, 44);
+    localC.a(mAliveInfo.phoneModel, 32);
+    localC.a(mAliveInfo.recorderSW, 32);
+    localC.a(mAliveInfo.recorderHW, 32);
+    localC.a(mAliveInfo.location, 52);
+    localC.a(a(localC, i1, localC.e() - i1) & 0xFFFFFFFFFFFFFFFF);
+    i1 = localC.e();
+    localC.b(h);
+    localC.a(8L);
+    localC.f(mAliveFormat.format);
+    localC.e(mAliveFormat.samplingRate);
+    localC.e(mAliveFormat.resolution_nV);
+    localC.f(mAliveFormat.flags);
+    localC.e(mAliveFormat.reserved);
+    localC.a(a(localC, i1, localC.e() - i1) & 0xFFFFFFFFFFFFFFFF);
+    if (paramBoolean)
+    {
+      i1 = localC.e();
+      localC.b(i);
+      localC.a(C * 2);
+      B += a(localC, i1, localC.e() - i1);
+      A.seek(0L);
+      A.write(localC.a(), 0, localC.e());
+      D = A.getFilePointer();
+    }
+  }
+  
+  public class AliveFileFormat
+  {
+    public int flags;
+    public int format;
+    public int reserved;
+    public int resolution_nV;
+    public int samplingRate;
+    
+    public AliveFileFormat() {}
+  }
+  
+  public class AliveFileInfo
+  {
+    public String dateRecorded;
+    public String location;
+    public String phoneModel;
+    public String phoneUDID;
+    public String recorderHW;
+    public String recorderSW;
+    public String recordingUUID;
+    
+    public AliveFileInfo() {}
+  }
+  
+  public static enum Lead
+  {
+    static
+    {
+      Lead localLead1 = new Lead("LEAD_1", 0);
+      LEAD_1 = localLead1;
+      Lead localLead2 = new Lead("LEAD_2", 1);
+      LEAD_2 = localLead2;
+      Lead localLead3 = new Lead("LEAD_3", 2);
+      LEAD_3 = localLead3;
+      Lead localLead4 = new Lead("LEAD_4", 3);
+      LEAD_4 = localLead4;
+      Lead localLead5 = new Lead("LEAD_5", 4);
+      LEAD_5 = localLead5;
+      Lead localLead6 = new Lead("LEAD_6", 5);
+      LEAD_6 = localLead6;
+      a = new Lead[] { localLead1, localLead2, localLead3, localLead4, localLead5, localLead6 };
+    }
+  }
+}

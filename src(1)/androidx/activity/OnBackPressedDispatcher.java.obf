@@ -1,0 +1,202 @@
+package androidx.activity;
+
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.k;
+import androidx.lifecycle.m;
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Objects;
+
+public final class OnBackPressedDispatcher
+{
+  private final Runnable a;
+  final ArrayDeque<j> b = new ArrayDeque();
+  private c.h.p.a<Boolean> c;
+  private OnBackInvokedCallback d;
+  private OnBackInvokedDispatcher e;
+  private boolean f = false;
+  
+  public OnBackPressedDispatcher(Runnable paramRunnable)
+  {
+    a = paramRunnable;
+    if (c.h.m.a.d())
+    {
+      c = new g(this);
+      d = a.a(new c(this));
+    }
+  }
+  
+  public void a(m paramM, j paramJ)
+  {
+    paramM = paramM.getLifecycle();
+    if (paramM.b() == Lifecycle.State.b) {
+      return;
+    }
+    paramJ.addCancellable(new LifecycleOnBackPressedCancellable(paramM, paramJ));
+    if (c.h.m.a.d())
+    {
+      h();
+      paramJ.setIsEnabledConsumer(c);
+    }
+  }
+  
+  h b(j paramJ)
+  {
+    b.add(paramJ);
+    b localB = new b(paramJ);
+    paramJ.addCancellable(localB);
+    if (c.h.m.a.d())
+    {
+      h();
+      paramJ.setIsEnabledConsumer(c);
+    }
+    return localB;
+  }
+  
+  public boolean c()
+  {
+    Iterator localIterator = b.descendingIterator();
+    while (localIterator.hasNext()) {
+      if (((j)localIterator.next()).isEnabled()) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public void f()
+  {
+    Object localObject = b.descendingIterator();
+    while (((Iterator)localObject).hasNext())
+    {
+      j localJ = (j)((Iterator)localObject).next();
+      if (localJ.isEnabled())
+      {
+        localJ.handleOnBackPressed();
+        return;
+      }
+    }
+    localObject = a;
+    if (localObject != null) {
+      ((Runnable)localObject).run();
+    }
+  }
+  
+  public void g(OnBackInvokedDispatcher paramOnBackInvokedDispatcher)
+  {
+    e = paramOnBackInvokedDispatcher;
+    h();
+  }
+  
+  void h()
+  {
+    boolean bool = c();
+    OnBackInvokedDispatcher localOnBackInvokedDispatcher = e;
+    if (localOnBackInvokedDispatcher != null)
+    {
+      if ((bool) && (!f))
+      {
+        a.b(localOnBackInvokedDispatcher, 0, d);
+        f = true;
+        return;
+      }
+      if ((!bool) && (f))
+      {
+        a.c(localOnBackInvokedDispatcher, d);
+        f = false;
+      }
+    }
+  }
+  
+  private class LifecycleOnBackPressedCancellable
+    implements k, h
+  {
+    private final Lifecycle a;
+    private final j b;
+    private h c;
+    
+    LifecycleOnBackPressedCancellable(Lifecycle paramLifecycle, j paramJ)
+    {
+      a = paramLifecycle;
+      b = paramJ;
+      paramLifecycle.a(this);
+    }
+    
+    public void c(m paramM, Lifecycle.Event paramEvent)
+    {
+      if (paramEvent == Lifecycle.Event.ON_START)
+      {
+        c = b(b);
+        return;
+      }
+      if (paramEvent == Lifecycle.Event.ON_STOP)
+      {
+        paramM = c;
+        if (paramM != null) {
+          paramM.cancel();
+        }
+      }
+      else if (paramEvent == Lifecycle.Event.ON_DESTROY)
+      {
+        cancel();
+      }
+    }
+    
+    public void cancel()
+    {
+      a.c(this);
+      b.removeCancellable(this);
+      h localH = c;
+      if (localH != null)
+      {
+        localH.cancel();
+        c = null;
+      }
+    }
+  }
+  
+  static class a
+  {
+    static OnBackInvokedCallback a(Runnable paramRunnable)
+    {
+      Objects.requireNonNull(paramRunnable);
+      return new a(paramRunnable);
+    }
+    
+    static void b(Object paramObject1, int paramInt, Object paramObject2)
+    {
+      ((OnBackInvokedDispatcher)paramObject1).registerOnBackInvokedCallback(paramInt, (OnBackInvokedCallback)paramObject2);
+    }
+    
+    static void c(Object paramObject1, Object paramObject2)
+    {
+      ((OnBackInvokedDispatcher)paramObject1).unregisterOnBackInvokedCallback((OnBackInvokedCallback)paramObject2);
+    }
+  }
+  
+  private class b
+    implements h
+  {
+    private final j a;
+    
+    b(j paramJ)
+    {
+      a = paramJ;
+    }
+    
+    public void cancel()
+    {
+      b.remove(a);
+      a.removeCancellable(this);
+      if (c.h.m.a.d())
+      {
+        a.setIsEnabledConsumer(null);
+        h();
+      }
+    }
+  }
+}

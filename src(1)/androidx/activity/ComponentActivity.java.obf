@@ -1,0 +1,740 @@
+package androidx.activity;
+
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.IntentSender.SendIntentException;
+import android.content.res.Configuration;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
+import android.window.OnBackInvokedDispatcher;
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.activity.result.IntentSenderRequest;
+import androidx.activity.result.d.a.a;
+import androidx.core.app.g;
+import androidx.core.app.h;
+import androidx.core.app.q;
+import androidx.core.app.s;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.lifecycle.b0;
+import androidx.lifecycle.f0.a;
+import androidx.lifecycle.f0.b;
+import androidx.lifecycle.i;
+import androidx.lifecycle.i0;
+import androidx.lifecycle.j0;
+import androidx.lifecycle.k0;
+import androidx.lifecycle.l0;
+import androidx.lifecycle.n;
+import androidx.lifecycle.w;
+import androidx.lifecycle.y;
+import androidx.savedstate.f;
+import c.h.q.o;
+import c.h.q.r;
+import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class ComponentActivity
+  extends g
+  implements androidx.lifecycle.m, j0, i, androidx.savedstate.e, k, androidx.activity.result.c, androidx.core.content.c, androidx.core.content.d, androidx.core.app.p, q, o
+{
+  private static final String ACTIVITY_RESULT_TAG = "android:support:activity-result";
+  private final ActivityResultRegistry mActivityResultRegistry;
+  private int mContentLayoutId;
+  final androidx.activity.n.a mContextAwareHelper = new androidx.activity.n.a();
+  private f0.b mDefaultFactory;
+  private boolean mDispatchingOnMultiWindowModeChanged;
+  private boolean mDispatchingOnPictureInPictureModeChanged;
+  private final n mLifecycleRegistry = new n(this);
+  private final c.h.q.p mMenuHostHelper = new c.h.q.p(new b(this));
+  private final AtomicInteger mNextLocalRequestCode;
+  private final OnBackPressedDispatcher mOnBackPressedDispatcher;
+  private final CopyOnWriteArrayList<c.h.p.a<Configuration>> mOnConfigurationChangedListeners;
+  private final CopyOnWriteArrayList<c.h.p.a<h>> mOnMultiWindowModeChangedListeners;
+  private final CopyOnWriteArrayList<c.h.p.a<Intent>> mOnNewIntentListeners;
+  private final CopyOnWriteArrayList<c.h.p.a<s>> mOnPictureInPictureModeChangedListeners;
+  private final CopyOnWriteArrayList<c.h.p.a<Integer>> mOnTrimMemoryListeners;
+  final androidx.savedstate.d mSavedStateRegistryController;
+  private i0 mViewModelStore;
+  
+  public ComponentActivity()
+  {
+    androidx.savedstate.d localD = androidx.savedstate.d.a(this);
+    mSavedStateRegistryController = localD;
+    mOnBackPressedDispatcher = new OnBackPressedDispatcher(new a());
+    mNextLocalRequestCode = new AtomicInteger();
+    mActivityResultRegistry = new b();
+    mOnConfigurationChangedListeners = new CopyOnWriteArrayList();
+    mOnTrimMemoryListeners = new CopyOnWriteArrayList();
+    mOnNewIntentListeners = new CopyOnWriteArrayList();
+    mOnMultiWindowModeChangedListeners = new CopyOnWriteArrayList();
+    mOnPictureInPictureModeChangedListeners = new CopyOnWriteArrayList();
+    mDispatchingOnMultiWindowModeChanged = false;
+    mDispatchingOnPictureInPictureModeChanged = false;
+    if (getLifecycle() != null)
+    {
+      int i = Build.VERSION.SDK_INT;
+      if (i >= 19) {
+        getLifecycle().a(new androidx.lifecycle.k()
+        {
+          public void c(androidx.lifecycle.m paramAnonymousM, Lifecycle.Event paramAnonymousEvent)
+          {
+            if (paramAnonymousEvent == Lifecycle.Event.ON_STOP)
+            {
+              paramAnonymousM = getWindow();
+              if (paramAnonymousM != null) {
+                paramAnonymousM = paramAnonymousM.peekDecorView();
+              } else {
+                paramAnonymousM = null;
+              }
+              if (paramAnonymousM != null) {
+                ComponentActivity.c.a(paramAnonymousM);
+              }
+            }
+          }
+        });
+      }
+      getLifecycle().a(new androidx.lifecycle.k()
+      {
+        public void c(androidx.lifecycle.m paramAnonymousM, Lifecycle.Event paramAnonymousEvent)
+        {
+          if (paramAnonymousEvent == Lifecycle.Event.ON_DESTROY)
+          {
+            mContextAwareHelper.b();
+            if (!isChangingConfigurations()) {
+              getViewModelStore().a();
+            }
+          }
+        }
+      });
+      getLifecycle().a(new androidx.lifecycle.k()
+      {
+        public void c(androidx.lifecycle.m paramAnonymousM, Lifecycle.Event paramAnonymousEvent)
+        {
+          ensureViewModelStore();
+          getLifecycle().c(this);
+        }
+      });
+      localD.c();
+      y.c(this);
+      if ((19 <= i) && (i <= 23)) {
+        getLifecycle().a(new ImmLeaksCleaner(this));
+      }
+      getSavedStateRegistry().h("android:support:activity-result", new e(this));
+      addOnContextAvailableListener(new d(this));
+      return;
+    }
+    throw new IllegalStateException("getLifecycle() returned null in ComponentActivity's constructor. Please make sure you are lazily constructing your Lifecycle in the first call to getLifecycle() rather than relying on field initialization.");
+  }
+  
+  public ComponentActivity(int paramInt)
+  {
+    this();
+    mContentLayoutId = paramInt;
+  }
+  
+  private void initViewTreeOwners()
+  {
+    k0.a(getWindow().getDecorView(), this);
+    l0.a(getWindow().getDecorView(), this);
+    f.a(getWindow().getDecorView(), this);
+    m.a(getWindow().getDecorView(), this);
+  }
+  
+  public void addContentView(View paramView, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    initViewTreeOwners();
+    super.addContentView(paramView, paramLayoutParams);
+  }
+  
+  public void addMenuProvider(r paramR)
+  {
+    mMenuHostHelper.a(paramR);
+  }
+  
+  public void addMenuProvider(r paramR, androidx.lifecycle.m paramM)
+  {
+    mMenuHostHelper.b(paramR, paramM);
+  }
+  
+  public void addMenuProvider(r paramR, androidx.lifecycle.m paramM, Lifecycle.State paramState)
+  {
+    mMenuHostHelper.c(paramR, paramM, paramState);
+  }
+  
+  public final void addOnConfigurationChangedListener(c.h.p.a<Configuration> paramA)
+  {
+    mOnConfigurationChangedListeners.add(paramA);
+  }
+  
+  public final void addOnContextAvailableListener(androidx.activity.n.b paramB)
+  {
+    mContextAwareHelper.a(paramB);
+  }
+  
+  public final void addOnMultiWindowModeChangedListener(c.h.p.a<h> paramA)
+  {
+    mOnMultiWindowModeChangedListeners.add(paramA);
+  }
+  
+  public final void addOnNewIntentListener(c.h.p.a<Intent> paramA)
+  {
+    mOnNewIntentListeners.add(paramA);
+  }
+  
+  public final void addOnPictureInPictureModeChangedListener(c.h.p.a<s> paramA)
+  {
+    mOnPictureInPictureModeChangedListeners.add(paramA);
+  }
+  
+  public final void addOnTrimMemoryListener(c.h.p.a<Integer> paramA)
+  {
+    mOnTrimMemoryListeners.add(paramA);
+  }
+  
+  void ensureViewModelStore()
+  {
+    if (mViewModelStore == null)
+    {
+      e localE = (e)getLastNonConfigurationInstance();
+      if (localE != null) {
+        mViewModelStore = b;
+      }
+      if (mViewModelStore == null) {
+        mViewModelStore = new i0();
+      }
+    }
+  }
+  
+  public final ActivityResultRegistry getActivityResultRegistry()
+  {
+    return mActivityResultRegistry;
+  }
+  
+  public androidx.lifecycle.n0.a getDefaultViewModelCreationExtras()
+  {
+    androidx.lifecycle.n0.d localD = new androidx.lifecycle.n0.d();
+    if (getApplication() != null) {
+      localD.c(f0.a.g, getApplication());
+    }
+    localD.c(y.a, this);
+    localD.c(y.b, this);
+    if ((getIntent() != null) && (getIntent().getExtras() != null)) {
+      localD.c(y.c, getIntent().getExtras());
+    }
+    return localD;
+  }
+  
+  public f0.b getDefaultViewModelProviderFactory()
+  {
+    if (mDefaultFactory == null)
+    {
+      Application localApplication = getApplication();
+      Bundle localBundle;
+      if (getIntent() != null) {
+        localBundle = getIntent().getExtras();
+      } else {
+        localBundle = null;
+      }
+      mDefaultFactory = new b0(localApplication, this, localBundle);
+    }
+    return mDefaultFactory;
+  }
+  
+  @Deprecated
+  public Object getLastCustomNonConfigurationInstance()
+  {
+    e localE = (e)getLastNonConfigurationInstance();
+    if (localE != null) {
+      return a;
+    }
+    return null;
+  }
+  
+  public Lifecycle getLifecycle()
+  {
+    return mLifecycleRegistry;
+  }
+  
+  public final OnBackPressedDispatcher getOnBackPressedDispatcher()
+  {
+    return mOnBackPressedDispatcher;
+  }
+  
+  public final androidx.savedstate.c getSavedStateRegistry()
+  {
+    return mSavedStateRegistryController.b();
+  }
+  
+  public i0 getViewModelStore()
+  {
+    if (getApplication() != null)
+    {
+      ensureViewModelStore();
+      return mViewModelStore;
+    }
+    throw new IllegalStateException("Your activity is not yet attached to the Application instance. You can't request ViewModel before onCreate call.");
+  }
+  
+  public void invalidateMenu()
+  {
+    invalidateOptionsMenu();
+  }
+  
+  @Deprecated
+  protected void onActivityResult(int paramInt1, int paramInt2, Intent paramIntent)
+  {
+    if (!mActivityResultRegistry.b(paramInt1, paramInt2, paramIntent)) {
+      super.onActivityResult(paramInt1, paramInt2, paramIntent);
+    }
+  }
+  
+  public void onBackPressed()
+  {
+    mOnBackPressedDispatcher.f();
+  }
+  
+  public void onConfigurationChanged(Configuration paramConfiguration)
+  {
+    super.onConfigurationChanged(paramConfiguration);
+    Iterator localIterator = mOnConfigurationChangedListeners.iterator();
+    while (localIterator.hasNext()) {
+      ((c.h.p.a)localIterator.next()).a(paramConfiguration);
+    }
+  }
+  
+  protected void onCreate(Bundle paramBundle)
+  {
+    mSavedStateRegistryController.d(paramBundle);
+    mContextAwareHelper.c(this);
+    super.onCreate(paramBundle);
+    w.g(this);
+    if (c.h.m.a.d()) {
+      mOnBackPressedDispatcher.g(d.a(this));
+    }
+    int i = mContentLayoutId;
+    if (i != 0) {
+      setContentView(i);
+    }
+  }
+  
+  public boolean onCreatePanelMenu(int paramInt, Menu paramMenu)
+  {
+    if (paramInt == 0)
+    {
+      super.onCreatePanelMenu(paramInt, paramMenu);
+      mMenuHostHelper.h(paramMenu, getMenuInflater());
+    }
+    return true;
+  }
+  
+  public boolean onMenuItemSelected(int paramInt, MenuItem paramMenuItem)
+  {
+    if (super.onMenuItemSelected(paramInt, paramMenuItem)) {
+      return true;
+    }
+    if (paramInt == 0) {
+      return mMenuHostHelper.j(paramMenuItem);
+    }
+    return false;
+  }
+  
+  public void onMultiWindowModeChanged(boolean paramBoolean)
+  {
+    if (mDispatchingOnMultiWindowModeChanged) {
+      return;
+    }
+    Iterator localIterator = mOnMultiWindowModeChangedListeners.iterator();
+    while (localIterator.hasNext()) {
+      ((c.h.p.a)localIterator.next()).a(new h(paramBoolean));
+    }
+  }
+  
+  public void onMultiWindowModeChanged(boolean paramBoolean, Configuration paramConfiguration)
+  {
+    mDispatchingOnMultiWindowModeChanged = true;
+    try
+    {
+      super.onMultiWindowModeChanged(paramBoolean, paramConfiguration);
+      mDispatchingOnMultiWindowModeChanged = false;
+      Iterator localIterator = mOnMultiWindowModeChangedListeners.iterator();
+      while (localIterator.hasNext()) {
+        ((c.h.p.a)localIterator.next()).a(new h(paramBoolean, paramConfiguration));
+      }
+      return;
+    }
+    finally
+    {
+      mDispatchingOnMultiWindowModeChanged = false;
+    }
+  }
+  
+  protected void onNewIntent(Intent paramIntent)
+  {
+    super.onNewIntent(paramIntent);
+    Iterator localIterator = mOnNewIntentListeners.iterator();
+    while (localIterator.hasNext()) {
+      ((c.h.p.a)localIterator.next()).a(paramIntent);
+    }
+  }
+  
+  public void onPanelClosed(int paramInt, Menu paramMenu)
+  {
+    mMenuHostHelper.i(paramMenu);
+    super.onPanelClosed(paramInt, paramMenu);
+  }
+  
+  public void onPictureInPictureModeChanged(boolean paramBoolean)
+  {
+    if (mDispatchingOnPictureInPictureModeChanged) {
+      return;
+    }
+    Iterator localIterator = mOnPictureInPictureModeChangedListeners.iterator();
+    while (localIterator.hasNext()) {
+      ((c.h.p.a)localIterator.next()).a(new s(paramBoolean));
+    }
+  }
+  
+  public void onPictureInPictureModeChanged(boolean paramBoolean, Configuration paramConfiguration)
+  {
+    mDispatchingOnPictureInPictureModeChanged = true;
+    try
+    {
+      super.onPictureInPictureModeChanged(paramBoolean, paramConfiguration);
+      mDispatchingOnPictureInPictureModeChanged = false;
+      Iterator localIterator = mOnPictureInPictureModeChangedListeners.iterator();
+      while (localIterator.hasNext()) {
+        ((c.h.p.a)localIterator.next()).a(new s(paramBoolean, paramConfiguration));
+      }
+      return;
+    }
+    finally
+    {
+      mDispatchingOnPictureInPictureModeChanged = false;
+    }
+  }
+  
+  public boolean onPreparePanel(int paramInt, View paramView, Menu paramMenu)
+  {
+    if (paramInt == 0)
+    {
+      super.onPreparePanel(paramInt, paramView, paramMenu);
+      mMenuHostHelper.k(paramMenu);
+    }
+    return true;
+  }
+  
+  @Deprecated
+  public void onRequestPermissionsResult(int paramInt, String[] paramArrayOfString, int[] paramArrayOfInt)
+  {
+    if ((!mActivityResultRegistry.b(paramInt, -1, new Intent().putExtra("androidx.activity.result.contract.extra.PERMISSIONS", paramArrayOfString).putExtra("androidx.activity.result.contract.extra.PERMISSION_GRANT_RESULTS", paramArrayOfInt))) && (Build.VERSION.SDK_INT >= 23)) {
+      super.onRequestPermissionsResult(paramInt, paramArrayOfString, paramArrayOfInt);
+    }
+  }
+  
+  @Deprecated
+  public Object onRetainCustomNonConfigurationInstance()
+  {
+    return null;
+  }
+  
+  public final Object onRetainNonConfigurationInstance()
+  {
+    Object localObject3 = onRetainCustomNonConfigurationInstance();
+    Object localObject2 = mViewModelStore;
+    Object localObject1 = localObject2;
+    if (localObject2 == null)
+    {
+      e localE = (e)getLastNonConfigurationInstance();
+      localObject1 = localObject2;
+      if (localE != null) {
+        localObject1 = b;
+      }
+    }
+    if ((localObject1 == null) && (localObject3 == null)) {
+      return null;
+    }
+    localObject2 = new e();
+    a = localObject3;
+    b = ((i0)localObject1);
+    return localObject2;
+  }
+  
+  protected void onSaveInstanceState(Bundle paramBundle)
+  {
+    Lifecycle localLifecycle = getLifecycle();
+    if ((localLifecycle instanceof n)) {
+      ((n)localLifecycle).o(Lifecycle.State.d);
+    }
+    super.onSaveInstanceState(paramBundle);
+    mSavedStateRegistryController.e(paramBundle);
+  }
+  
+  public void onTrimMemory(int paramInt)
+  {
+    super.onTrimMemory(paramInt);
+    Iterator localIterator = mOnTrimMemoryListeners.iterator();
+    while (localIterator.hasNext()) {
+      ((c.h.p.a)localIterator.next()).a(Integer.valueOf(paramInt));
+    }
+  }
+  
+  public Context peekAvailableContext()
+  {
+    return mContextAwareHelper.d();
+  }
+  
+  public final <I, O> androidx.activity.result.b<I> registerForActivityResult(androidx.activity.result.d.a<I, O> paramA, ActivityResultRegistry paramActivityResultRegistry, androidx.activity.result.a<O> paramA1)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("activity_rq#");
+    localStringBuilder.append(mNextLocalRequestCode.getAndIncrement());
+    return paramActivityResultRegistry.j(localStringBuilder.toString(), this, paramA, paramA1);
+  }
+  
+  public final <I, O> androidx.activity.result.b<I> registerForActivityResult(androidx.activity.result.d.a<I, O> paramA, androidx.activity.result.a<O> paramA1)
+  {
+    return registerForActivityResult(paramA, mActivityResultRegistry, paramA1);
+  }
+  
+  public void removeMenuProvider(r paramR)
+  {
+    mMenuHostHelper.l(paramR);
+  }
+  
+  public final void removeOnConfigurationChangedListener(c.h.p.a<Configuration> paramA)
+  {
+    mOnConfigurationChangedListeners.remove(paramA);
+  }
+  
+  public final void removeOnContextAvailableListener(androidx.activity.n.b paramB)
+  {
+    mContextAwareHelper.e(paramB);
+  }
+  
+  public final void removeOnMultiWindowModeChangedListener(c.h.p.a<h> paramA)
+  {
+    mOnMultiWindowModeChangedListeners.remove(paramA);
+  }
+  
+  public final void removeOnNewIntentListener(c.h.p.a<Intent> paramA)
+  {
+    mOnNewIntentListeners.remove(paramA);
+  }
+  
+  public final void removeOnPictureInPictureModeChangedListener(c.h.p.a<s> paramA)
+  {
+    mOnPictureInPictureModeChangedListeners.remove(paramA);
+  }
+  
+  public final void removeOnTrimMemoryListener(c.h.p.a<Integer> paramA)
+  {
+    mOnTrimMemoryListeners.remove(paramA);
+  }
+  
+  public void reportFullyDrawn()
+  {
+    try
+    {
+      if (c.v.a.d()) {
+        c.v.a.a("reportFullyDrawn() for ComponentActivity");
+      }
+      int i = Build.VERSION.SDK_INT;
+      if (i > 19) {
+        super.reportFullyDrawn();
+      } else if ((i == 19) && (androidx.core.content.a.a(this, "android.permission.UPDATE_DEVICE_STATS") == 0)) {
+        super.reportFullyDrawn();
+      }
+      return;
+    }
+    finally
+    {
+      c.v.a.b();
+    }
+  }
+  
+  public void setContentView(int paramInt)
+  {
+    initViewTreeOwners();
+    super.setContentView(paramInt);
+  }
+  
+  public void setContentView(View paramView)
+  {
+    initViewTreeOwners();
+    super.setContentView(paramView);
+  }
+  
+  public void setContentView(View paramView, ViewGroup.LayoutParams paramLayoutParams)
+  {
+    initViewTreeOwners();
+    super.setContentView(paramView, paramLayoutParams);
+  }
+  
+  @Deprecated
+  public void startActivityForResult(Intent paramIntent, int paramInt)
+  {
+    super.startActivityForResult(paramIntent, paramInt);
+  }
+  
+  @Deprecated
+  public void startActivityForResult(Intent paramIntent, int paramInt, Bundle paramBundle)
+  {
+    super.startActivityForResult(paramIntent, paramInt, paramBundle);
+  }
+  
+  @Deprecated
+  public void startIntentSenderForResult(IntentSender paramIntentSender, int paramInt1, Intent paramIntent, int paramInt2, int paramInt3, int paramInt4)
+    throws IntentSender.SendIntentException
+  {
+    super.startIntentSenderForResult(paramIntentSender, paramInt1, paramIntent, paramInt2, paramInt3, paramInt4);
+  }
+  
+  @Deprecated
+  public void startIntentSenderForResult(IntentSender paramIntentSender, int paramInt1, Intent paramIntent, int paramInt2, int paramInt3, int paramInt4, Bundle paramBundle)
+    throws IntentSender.SendIntentException
+  {
+    super.startIntentSenderForResult(paramIntentSender, paramInt1, paramIntent, paramInt2, paramInt3, paramInt4, paramBundle);
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    public void run()
+    {
+      try
+      {
+        ComponentActivity.this.onBackPressed();
+        return;
+      }
+      catch (IllegalStateException localIllegalStateException)
+      {
+        if (TextUtils.equals(localIllegalStateException.getMessage(), "Can not perform this action after onSaveInstanceState")) {
+          return;
+        }
+        throw localIllegalStateException;
+      }
+    }
+  }
+  
+  class b
+    extends ActivityResultRegistry
+  {
+    b() {}
+    
+    public <I, O> void f(final int paramInt, final androidx.activity.result.d.a<I, O> paramA, I paramI, androidx.core.app.c paramC)
+    {
+      ComponentActivity localComponentActivity = ComponentActivity.this;
+      final a.a localA = paramA.b(localComponentActivity, paramI);
+      if (localA != null)
+      {
+        new Handler(Looper.getMainLooper()).post(new a(paramInt, localA));
+        return;
+      }
+      paramI = paramA.a(localComponentActivity, paramI);
+      if ((paramI.getExtras() != null) && (paramI.getExtras().getClassLoader() == null)) {
+        paramI.setExtrasClassLoader(localComponentActivity.getClassLoader());
+      }
+      if (paramI.hasExtra("androidx.activity.result.contract.extra.ACTIVITY_OPTIONS_BUNDLE"))
+      {
+        paramA = paramI.getBundleExtra("androidx.activity.result.contract.extra.ACTIVITY_OPTIONS_BUNDLE");
+        paramI.removeExtra("androidx.activity.result.contract.extra.ACTIVITY_OPTIONS_BUNDLE");
+      }
+      else
+      {
+        if (paramC != null) {
+          break label232;
+        }
+        paramA = null;
+      }
+      if ("androidx.activity.result.contract.action.REQUEST_PERMISSIONS".equals(paramI.getAction()))
+      {
+        paramI = paramI.getStringArrayExtra("androidx.activity.result.contract.extra.PERMISSIONS");
+        paramA = paramI;
+        if (paramI == null) {
+          paramA = new String[0];
+        }
+        androidx.core.app.b.s(localComponentActivity, paramA, paramInt);
+        return;
+      }
+      if ("androidx.activity.result.contract.action.INTENT_SENDER_REQUEST".equals(paramI.getAction()))
+      {
+        paramI = (IntentSenderRequest)paramI.getParcelableExtra("androidx.activity.result.contract.extra.INTENT_SENDER_REQUEST");
+        try
+        {
+          androidx.core.app.b.x(localComponentActivity, paramI.d(), paramInt, paramI.a(), paramI.b(), paramI.c(), 0, paramA);
+          return;
+        }
+        catch (IntentSender.SendIntentException paramA)
+        {
+          new Handler(Looper.getMainLooper()).post(new b(paramInt, paramA));
+          return;
+        }
+      }
+      androidx.core.app.b.w(localComponentActivity, paramI, paramInt, paramA);
+      return;
+      label232:
+      throw null;
+    }
+    
+    class a
+      implements Runnable
+    {
+      a(int paramInt, a.a paramA) {}
+      
+      public void run()
+      {
+        c(paramInt, localA.a());
+      }
+    }
+    
+    class b
+      implements Runnable
+    {
+      b(int paramInt, IntentSender.SendIntentException paramSendIntentException) {}
+      
+      public void run()
+      {
+        b(paramInt, 0, new Intent().setAction("androidx.activity.result.contract.action.INTENT_SENDER_REQUEST").putExtra("androidx.activity.result.contract.extra.SEND_INTENT_EXCEPTION", paramA));
+      }
+    }
+  }
+  
+  static class c
+  {
+    static void a(View paramView)
+    {
+      paramView.cancelPendingInputEvents();
+    }
+  }
+  
+  static class d
+  {
+    static OnBackInvokedDispatcher a(Activity paramActivity)
+    {
+      return paramActivity.getOnBackInvokedDispatcher();
+    }
+  }
+  
+  static final class e
+  {
+    Object a;
+    i0 b;
+    
+    e() {}
+  }
+}

@@ -1,0 +1,60 @@
+package com.google.android.gms.fitness.result;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.Goal;
+import java.util.List;
+
+@Deprecated
+@SafeParcelable.Class(creator="GoalsResultCreator")
+@SafeParcelable.Reserved({1000})
+public class GoalsResult
+  extends AbstractSafeParcelable
+  implements Result
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<GoalsResult> CREATOR = new zzf();
+  @SafeParcelable.Field(getter="getStatus", id=1)
+  private final Status zzsv;
+  @SafeParcelable.Field(getter="getGoals", id=2)
+  private final List<Goal> zzsy;
+  
+  @ShowFirstParty
+  @SafeParcelable.Constructor
+  public GoalsResult(@RecentlyNonNull @SafeParcelable.Param(id=1) Status paramStatus, @RecentlyNonNull @SafeParcelable.Param(id=2) List<Goal> paramList)
+  {
+    zzsv = paramStatus;
+    zzsy = paramList;
+  }
+  
+  @RecentlyNonNull
+  public List<Goal> getGoals()
+  {
+    return zzsy;
+  }
+  
+  @RecentlyNonNull
+  public Status getStatus()
+  {
+    return zzsv;
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeParcelable(paramParcel, 1, getStatus(), paramInt, false);
+    SafeParcelWriter.writeTypedList(paramParcel, 2, getGoals(), false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+}

@@ -1,0 +1,53 @@
+package androidx.work.impl.l.a;
+
+import androidx.work.j;
+import java.util.HashMap;
+import java.util.Map;
+
+public class a
+{
+  static final String a = j.f("DelayedWorkTracker");
+  final b b;
+  private final androidx.work.p c;
+  private final Map<String, Runnable> d;
+  
+  public a(b paramB, androidx.work.p paramP)
+  {
+    b = paramB;
+    c = paramP;
+    d = new HashMap();
+  }
+  
+  public void a(final androidx.work.impl.n.p paramP)
+  {
+    Object localObject = (Runnable)d.remove(c);
+    if (localObject != null) {
+      c.b((Runnable)localObject);
+    }
+    localObject = new a(paramP);
+    d.put(c, localObject);
+    long l1 = System.currentTimeMillis();
+    long l2 = paramP.a();
+    c.a(l2 - l1, (Runnable)localObject);
+  }
+  
+  public void b(String paramString)
+  {
+    paramString = (Runnable)d.remove(paramString);
+    if (paramString != null) {
+      c.b(paramString);
+    }
+  }
+  
+  class a
+    implements Runnable
+  {
+    a(androidx.work.impl.n.p paramP) {}
+    
+    public void run()
+    {
+      j.c().a(a.a, String.format("Scheduling work %s", new Object[] { paramPc }), new Throwable[0]);
+      b.a(new androidx.work.impl.n.p[] { paramP });
+    }
+  }
+}

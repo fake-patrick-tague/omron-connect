@@ -1,0 +1,1357 @@
+package com.braze.support;
+
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import com.braze.enums.BrazeViewBounds;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Objects;
+import kotlin.l;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+import kotlin.x.d.r;
+
+public final class BrazeImageUtils
+{
+  private static final String TAG = BrazeLogger.INSTANCE.getBrazeLogTag("BrazeImageUtils");
+  
+  public static final int calculateInSampleSize(BitmapFactory.Options paramOptions, final int paramInt1, final int paramInt2)
+  {
+    i.e(paramOptions, "options");
+    if ((paramInt2 != 0) && (paramInt1 != 0))
+    {
+      long l4 = outHeight;
+      long l1 = outWidth;
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, null, null, new b(paramOptions, paramInt1, paramInt2), 6, null);
+      paramOptions = new r();
+      b = 1;
+      long l2 = paramInt2;
+      final long l3;
+      long l5;
+      long l6;
+      if ((l4 <= l2) && (l1 <= paramInt1))
+      {
+        l3 = l1;
+      }
+      else
+      {
+        l3 = 2;
+        l5 = l4 / l3;
+        l6 = l1 / l3;
+      }
+      for (;;)
+      {
+        paramInt2 = b;
+        l3 = paramInt2;
+        if ((l5 / l3 < l2) && (l6 / l3 < paramInt1))
+        {
+          l3 = l1;
+          if (l1 * l4 / (paramInt2 * paramInt2) <= 4194304L)
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, null, null, new c(paramOptions, l3, l4), 6, null);
+            return b;
+          }
+        }
+        b = (paramInt2 * 2);
+      }
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, null, null, a.b, 6, null);
+    return 1;
+  }
+  
+  private static final Bitmap decodeSampledBitmapFromStream(InputStream paramInputStream, BitmapFactory.Options paramOptions, int paramInt1, int paramInt2)
+  {
+    inSampleSize = calculateInSampleSize(paramOptions, paramInt1, paramInt2);
+    inJustDecodeBounds = false;
+    return BitmapFactory.decodeStream(paramInputStream, null, paramOptions);
+  }
+  
+  public static final Bitmap getBitmap(Context paramContext, Uri paramUri, BrazeViewBounds paramBrazeViewBounds)
+  {
+    i.e(paramContext, "context");
+    i.e(paramUri, "uri");
+    i.e(paramBrazeViewBounds, "viewBounds");
+    paramContext = getDestinationHeightAndWidthPixels(paramContext, paramBrazeViewBounds);
+    int i = ((Number)paramContext.a()).intValue();
+    int j = ((Number)paramContext.b()).intValue();
+    if (BrazeFileUtils.isLocalUri(paramUri)) {
+      return getLocalBitmap(paramUri, j, i);
+    }
+    if (BrazeFileUtils.isRemoteUri(paramUri)) {
+      return getRemoteBitmap(paramUri, j, i);
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.W, null, new d(paramUri), 4, null);
+    return null;
+  }
+  
+  public static final BitmapFactory.Options getBitmapMetadataFromStream(InputStream paramInputStream)
+  {
+    i.e(paramInputStream, "inputStream");
+    BitmapFactory.Options localOptions = new BitmapFactory.Options();
+    inJustDecodeBounds = true;
+    BitmapFactory.decodeStream(paramInputStream, null, localOptions);
+    return localOptions;
+  }
+  
+  public static final int getDensityDpi(Context paramContext)
+  {
+    i.e(paramContext, "context");
+    if (Build.VERSION.SDK_INT >= 17) {
+      return getResourcesgetConfigurationdensityDpi;
+    }
+    return populateDisplayMetricsFromDisplaydensityDpi;
+  }
+  
+  private static final l<Integer, Integer> getDestinationHeightAndWidthPixels(Context paramContext, BrazeViewBounds paramBrazeViewBounds)
+  {
+    l localL = getDisplayHeightAndWidthPixels(paramContext);
+    final int i = ((Number)localL.a()).intValue();
+    int j = ((Number)localL.b()).intValue();
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.V, null, new e(j, i), 4, null);
+    if (BrazeViewBounds.NO_BOUNDS == paramBrazeViewBounds) {
+      return new l(Integer.valueOf(i), Integer.valueOf(j));
+    }
+    int m = getDensityDpi(paramContext);
+    int k = getPixelsFromDensityAndDp(m, paramBrazeViewBounds.getHeightDp());
+    m = getPixelsFromDensityAndDp(m, paramBrazeViewBounds.getWidthDp());
+    return new l(Integer.valueOf(Math.min(i, k)), Integer.valueOf(Math.min(j, m)));
+  }
+  
+  public static final l<Integer, Integer> getDisplayHeightAndWidthPixels(Context paramContext)
+  {
+    i.e(paramContext, "context");
+    paramContext = paramContext.getResources().getDisplayMetrics();
+    return new l(Integer.valueOf(heightPixels), Integer.valueOf(widthPixels));
+  }
+  
+  public static final int getDisplayWidthPixels(Context paramContext)
+  {
+    i.e(paramContext, "context");
+    return ((Number)getDisplayHeightAndWidthPixels(paramContext).d()).intValue();
+  }
+  
+  public static final int getImageLoaderCacheSize()
+  {
+    return Math.max(1024, Math.min((int)Math.min(Runtime.getRuntime().maxMemory() / 8, 2147483647L), 33554432));
+  }
+  
+  /* Error */
+  public static final Bitmap getLocalBitmap(Uri paramUri, int paramInt1, final int paramInt2)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: ldc -120
+    //   3: invokestatic 81	kotlin/x/d/i:e	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   6: aconst_null
+    //   7: astore 4
+    //   9: aload_0
+    //   10: invokevirtual 306	android/net/Uri:getPath	()Ljava/lang/String;
+    //   13: astore 5
+    //   15: aload 5
+    //   17: ifnull +472 -> 489
+    //   20: aload 5
+    //   22: invokeinterface 311 1 0
+    //   27: ifne +457 -> 484
+    //   30: goto +459 -> 489
+    //   33: iload_3
+    //   34: ifeq +27 -> 61
+    //   37: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   40: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   43: aconst_null
+    //   44: aconst_null
+    //   45: new 16	com/braze/support/BrazeImageUtils$f
+    //   48: dup
+    //   49: aload_0
+    //   50: invokespecial 312	com/braze/support/BrazeImageUtils$f:<init>	(Landroid/net/Uri;)V
+    //   53: bipush 6
+    //   55: aconst_null
+    //   56: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   59: aconst_null
+    //   60: areturn
+    //   61: new 314	java/io/File
+    //   64: dup
+    //   65: aload 5
+    //   67: invokespecial 317	java/io/File:<init>	(Ljava/lang/String;)V
+    //   70: astore 6
+    //   72: aload 6
+    //   74: invokevirtual 321	java/io/File:exists	()Z
+    //   77: ifne +27 -> 104
+    //   80: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   83: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   86: aconst_null
+    //   87: aconst_null
+    //   88: new 18	com/braze/support/BrazeImageUtils$g
+    //   91: dup
+    //   92: aload_0
+    //   93: invokespecial 322	com/braze/support/BrazeImageUtils$g:<init>	(Landroid/net/Uri;)V
+    //   96: bipush 6
+    //   98: aconst_null
+    //   99: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   102: aconst_null
+    //   103: areturn
+    //   104: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   107: astore 7
+    //   109: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   112: astore 8
+    //   114: aload 7
+    //   116: aload 8
+    //   118: getstatic 324	com/braze/support/BrazeLogger$Priority:I	Lcom/braze/support/BrazeLogger$Priority;
+    //   121: aconst_null
+    //   122: new 20	com/braze/support/BrazeImageUtils$h
+    //   125: dup
+    //   126: aload 6
+    //   128: invokespecial 327	com/braze/support/BrazeImageUtils$h:<init>	(Ljava/io/File;)V
+    //   131: iconst_4
+    //   132: aconst_null
+    //   133: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   136: iload_1
+    //   137: ifle +212 -> 349
+    //   140: iload_2
+    //   141: ifgt +6 -> 147
+    //   144: goto +205 -> 349
+    //   147: new 329	java/io/FileInputStream
+    //   150: dup
+    //   151: aload 6
+    //   153: invokespecial 330	java/io/FileInputStream:<init>	(Ljava/io/File;)V
+    //   156: astore 5
+    //   158: aload 7
+    //   160: aload 8
+    //   162: aconst_null
+    //   163: aconst_null
+    //   164: new 24	com/braze/support/BrazeImageUtils$j
+    //   167: dup
+    //   168: iload_1
+    //   169: iload_2
+    //   170: invokespecial 331	com/braze/support/BrazeImageUtils$j:<init>	(II)V
+    //   173: bipush 6
+    //   175: aconst_null
+    //   176: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   179: aload 5
+    //   181: invokestatic 333	com/braze/support/BrazeImageUtils:getBitmapMetadataFromStream	(Ljava/io/InputStream;)Landroid/graphics/BitmapFactory$Options;
+    //   184: astore 9
+    //   186: aload 5
+    //   188: invokevirtual 336	java/io/FileInputStream:close	()V
+    //   191: new 329	java/io/FileInputStream
+    //   194: dup
+    //   195: aload 6
+    //   197: invokespecial 330	java/io/FileInputStream:<init>	(Ljava/io/File;)V
+    //   200: astore 4
+    //   202: aload 9
+    //   204: getfield 87	android/graphics/BitmapFactory$Options:outHeight	I
+    //   207: ifeq +42 -> 249
+    //   210: aload 9
+    //   212: getfield 90	android/graphics/BitmapFactory$Options:outWidth	I
+    //   215: ifne +6 -> 221
+    //   218: goto +31 -> 249
+    //   221: aload 7
+    //   223: aload 8
+    //   225: aconst_null
+    //   226: aconst_null
+    //   227: getstatic 339	com/braze/support/BrazeImageUtils$l:b	Lcom/braze/support/BrazeImageUtils$l;
+    //   230: bipush 6
+    //   232: aconst_null
+    //   233: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   236: aload 4
+    //   238: aload 9
+    //   240: iload_1
+    //   241: iload_2
+    //   242: invokestatic 341	com/braze/support/BrazeImageUtils:decodeSampledBitmapFromStream	(Ljava/io/InputStream;Landroid/graphics/BitmapFactory$Options;II)Landroid/graphics/Bitmap;
+    //   245: astore_0
+    //   246: goto +35 -> 281
+    //   249: aload 7
+    //   251: aload 8
+    //   253: getstatic 178	com/braze/support/BrazeLogger$Priority:W	Lcom/braze/support/BrazeLogger$Priority;
+    //   256: aconst_null
+    //   257: new 26	com/braze/support/BrazeImageUtils$k
+    //   260: dup
+    //   261: aload_0
+    //   262: aload 9
+    //   264: invokespecial 344	com/braze/support/BrazeImageUtils$k:<init>	(Landroid/net/Uri;Landroid/graphics/BitmapFactory$Options;)V
+    //   267: iconst_4
+    //   268: aconst_null
+    //   269: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   272: aload 6
+    //   274: invokevirtual 347	java/io/File:getAbsolutePath	()Ljava/lang/String;
+    //   277: invokestatic 351	android/graphics/BitmapFactory:decodeFile	(Ljava/lang/String;)Landroid/graphics/Bitmap;
+    //   280: astore_0
+    //   281: aload 4
+    //   283: invokevirtual 354	java/io/InputStream:close	()V
+    //   286: aload_0
+    //   287: areturn
+    //   288: astore 4
+    //   290: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   293: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   296: getstatic 357	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   299: aload 4
+    //   301: getstatic 360	com/braze/support/BrazeImageUtils$n:b	Lcom/braze/support/BrazeImageUtils$n;
+    //   304: invokevirtual 364	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   307: aload_0
+    //   308: areturn
+    //   309: astore 5
+    //   311: aload 4
+    //   313: astore_0
+    //   314: aload 5
+    //   316: astore 4
+    //   318: goto +135 -> 453
+    //   321: astore 5
+    //   323: aload 4
+    //   325: astore_0
+    //   326: aload 5
+    //   328: astore 4
+    //   330: goto +53 -> 383
+    //   333: astore 4
+    //   335: aload 5
+    //   337: astore_0
+    //   338: goto +115 -> 453
+    //   341: astore 4
+    //   343: aload 5
+    //   345: astore_0
+    //   346: goto +37 -> 383
+    //   349: aload 7
+    //   351: aload 8
+    //   353: aconst_null
+    //   354: aconst_null
+    //   355: getstatic 367	com/braze/support/BrazeImageUtils$i:b	Lcom/braze/support/BrazeImageUtils$i;
+    //   358: bipush 6
+    //   360: aconst_null
+    //   361: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   364: aload 6
+    //   366: invokevirtual 347	java/io/File:getAbsolutePath	()Ljava/lang/String;
+    //   369: invokestatic 351	android/graphics/BitmapFactory:decodeFile	(Ljava/lang/String;)Landroid/graphics/Bitmap;
+    //   372: astore_0
+    //   373: aload_0
+    //   374: areturn
+    //   375: astore_0
+    //   376: goto +67 -> 443
+    //   379: astore 4
+    //   381: aconst_null
+    //   382: astore_0
+    //   383: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   386: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   389: getstatic 357	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   392: aload 4
+    //   394: new 30	com/braze/support/BrazeImageUtils$m
+    //   397: dup
+    //   398: aload 4
+    //   400: invokespecial 370	com/braze/support/BrazeImageUtils$m:<init>	(Ljava/lang/Exception;)V
+    //   403: invokevirtual 364	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   406: aload_0
+    //   407: ifnull +26 -> 433
+    //   410: aload_0
+    //   411: invokevirtual 354	java/io/InputStream:close	()V
+    //   414: aconst_null
+    //   415: areturn
+    //   416: astore_0
+    //   417: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   420: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   423: getstatic 357	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   426: aload_0
+    //   427: getstatic 360	com/braze/support/BrazeImageUtils$n:b	Lcom/braze/support/BrazeImageUtils$n;
+    //   430: invokevirtual 364	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   433: aconst_null
+    //   434: areturn
+    //   435: astore 5
+    //   437: aload_0
+    //   438: astore 4
+    //   440: aload 5
+    //   442: astore_0
+    //   443: aload 4
+    //   445: astore 5
+    //   447: aload_0
+    //   448: astore 4
+    //   450: aload 5
+    //   452: astore_0
+    //   453: aload_0
+    //   454: ifnull +27 -> 481
+    //   457: aload_0
+    //   458: invokevirtual 354	java/io/InputStream:close	()V
+    //   461: goto +20 -> 481
+    //   464: astore_0
+    //   465: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   468: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   471: getstatic 357	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   474: aload_0
+    //   475: getstatic 360	com/braze/support/BrazeImageUtils$n:b	Lcom/braze/support/BrazeImageUtils$n;
+    //   478: invokevirtual 364	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   481: aload 4
+    //   483: athrow
+    //   484: iconst_0
+    //   485: istore_3
+    //   486: goto -453 -> 33
+    //   489: iconst_1
+    //   490: istore_3
+    //   491: goto -458 -> 33
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	494	0	paramUri	Uri
+    //   0	494	1	paramInt1	int
+    //   0	494	2	paramInt2	int
+    //   33	458	3	i	int
+    //   7	275	4	localFileInputStream	java.io.FileInputStream
+    //   288	24	4	localIOException	java.io.IOException
+    //   316	13	4	localObject1	Object
+    //   333	1	4	localObject2	Object
+    //   341	1	4	localException1	Exception
+    //   379	20	4	localException2	Exception
+    //   438	44	4	localUri1	Uri
+    //   13	174	5	localObject3	Object
+    //   309	6	5	localObject4	Object
+    //   321	23	5	localException3	Exception
+    //   435	6	5	localObject5	Object
+    //   445	6	5	localUri2	Uri
+    //   70	295	6	localFile	File
+    //   107	243	7	localBrazeLogger	BrazeLogger
+    //   112	240	8	str	String
+    //   184	79	9	localOptions	BitmapFactory.Options
+    // Exception table:
+    //   from	to	target	type
+    //   281	286	288	java/io/IOException
+    //   202	218	309	finally
+    //   221	246	309	finally
+    //   249	281	309	finally
+    //   202	218	321	java/lang/Exception
+    //   221	246	321	java/lang/Exception
+    //   249	281	321	java/lang/Exception
+    //   158	202	333	finally
+    //   158	202	341	java/lang/Exception
+    //   9	15	375	finally
+    //   20	30	375	finally
+    //   37	59	375	finally
+    //   61	102	375	finally
+    //   104	136	375	finally
+    //   147	158	375	finally
+    //   349	373	375	finally
+    //   9	15	379	java/lang/Exception
+    //   20	30	379	java/lang/Exception
+    //   37	59	379	java/lang/Exception
+    //   61	102	379	java/lang/Exception
+    //   104	136	379	java/lang/Exception
+    //   147	158	379	java/lang/Exception
+    //   349	373	379	java/lang/Exception
+    //   410	414	416	java/io/IOException
+    //   383	406	435	finally
+    //   457	461	464	java/io/IOException
+  }
+  
+  public static final int getPixelsFromDensityAndDp(int paramInt1, int paramInt2)
+  {
+    return Math.abs(paramInt1 * paramInt2 / 160);
+  }
+  
+  /* Error */
+  private static final Bitmap getRemoteBitmap(Uri paramUri, final int paramInt1, int paramInt2)
+  {
+    // Byte code:
+    //   0: sipush 1337
+    //   3: invokestatic 380	android/net/TrafficStats:setThreadStatsTag	(I)V
+    //   6: aload_0
+    //   7: invokevirtual 383	android/net/Uri:toString	()Ljava/lang/String;
+    //   10: astore 11
+    //   12: aload 11
+    //   14: ldc_w 385
+    //   17: invokestatic 387	kotlin/x/d/i:d	(Ljava/lang/Object;Ljava/lang/String;)V
+    //   20: getstatic 393	com/braze/Braze:Companion	Lcom/braze/Braze$Companion;
+    //   23: invokevirtual 398	com/braze/Braze$Companion:getOutboundNetworkRequestsOffline	()Z
+    //   26: istore 4
+    //   28: aconst_null
+    //   29: astore 6
+    //   31: iload 4
+    //   33: ifeq +29 -> 62
+    //   36: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   39: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   42: getstatic 324	com/braze/support/BrazeLogger$Priority:I	Lcom/braze/support/BrazeLogger$Priority;
+    //   45: aconst_null
+    //   46: new 34	com/braze/support/BrazeImageUtils$o
+    //   49: dup
+    //   50: aload 11
+    //   52: invokespecial 399	com/braze/support/BrazeImageUtils$o:<init>	(Ljava/lang/String;)V
+    //   55: iconst_4
+    //   56: aconst_null
+    //   57: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   60: aconst_null
+    //   61: areturn
+    //   62: new 401	java/net/URL
+    //   65: dup
+    //   66: aload 11
+    //   68: invokespecial 402	java/net/URL:<init>	(Ljava/lang/String;)V
+    //   71: astore 10
+    //   73: getstatic 407	bo/app/p6:a	Lbo/app/p6;
+    //   76: astore 15
+    //   78: aload 15
+    //   80: aload 10
+    //   82: invokevirtual 410	bo/app/p6:a	(Ljava/net/URL;)Ljava/net/HttpURLConnection;
+    //   85: astore_0
+    //   86: aload_0
+    //   87: invokevirtual 415	java/net/HttpURLConnection:getResponseCode	()I
+    //   90: istore_3
+    //   91: iload_3
+    //   92: sipush 200
+    //   95: if_icmpeq +34 -> 129
+    //   98: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   101: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   104: getstatic 178	com/braze/support/BrazeLogger$Priority:W	Lcom/braze/support/BrazeLogger$Priority;
+    //   107: aconst_null
+    //   108: new 36	com/braze/support/BrazeImageUtils$p
+    //   111: dup
+    //   112: iload_3
+    //   113: aload 10
+    //   115: invokespecial 418	com/braze/support/BrazeImageUtils$p:<init>	(ILjava/net/URL;)V
+    //   118: iconst_4
+    //   119: aconst_null
+    //   120: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   123: aload_0
+    //   124: invokevirtual 421	java/net/HttpURLConnection:disconnect	()V
+    //   127: aconst_null
+    //   128: areturn
+    //   129: aload_0
+    //   130: invokevirtual 425	java/net/HttpURLConnection:getInputStream	()Ljava/io/InputStream;
+    //   133: astore 9
+    //   135: iload_1
+    //   136: ifeq +306 -> 442
+    //   139: iload_2
+    //   140: ifeq +302 -> 442
+    //   143: aload_0
+    //   144: astore 8
+    //   146: aload 9
+    //   148: astore 7
+    //   150: aload_0
+    //   151: astore 5
+    //   153: aload 9
+    //   155: astore 6
+    //   157: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   160: astore 12
+    //   162: aload_0
+    //   163: astore 8
+    //   165: aload 9
+    //   167: astore 7
+    //   169: aload_0
+    //   170: astore 5
+    //   172: aload 9
+    //   174: astore 6
+    //   176: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   179: astore 13
+    //   181: aload_0
+    //   182: astore 8
+    //   184: aload 9
+    //   186: astore 7
+    //   188: aload_0
+    //   189: astore 5
+    //   191: aload 9
+    //   193: astore 6
+    //   195: aload 12
+    //   197: aload 13
+    //   199: aconst_null
+    //   200: aconst_null
+    //   201: new 38	com/braze/support/BrazeImageUtils$q
+    //   204: dup
+    //   205: iload_2
+    //   206: iload_1
+    //   207: invokespecial 426	com/braze/support/BrazeImageUtils$q:<init>	(II)V
+    //   210: bipush 6
+    //   212: aconst_null
+    //   213: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   216: aload_0
+    //   217: astore 8
+    //   219: aload 9
+    //   221: astore 7
+    //   223: aload_0
+    //   224: astore 5
+    //   226: aload 9
+    //   228: astore 6
+    //   230: aload 9
+    //   232: invokestatic 333	com/braze/support/BrazeImageUtils:getBitmapMetadataFromStream	(Ljava/io/InputStream;)Landroid/graphics/BitmapFactory$Options;
+    //   235: astore 14
+    //   237: aload_0
+    //   238: astore 8
+    //   240: aload 9
+    //   242: astore 7
+    //   244: aload_0
+    //   245: astore 5
+    //   247: aload 9
+    //   249: astore 6
+    //   251: aload_0
+    //   252: invokevirtual 421	java/net/HttpURLConnection:disconnect	()V
+    //   255: aload_0
+    //   256: astore 8
+    //   258: aload 9
+    //   260: astore 7
+    //   262: aload_0
+    //   263: astore 5
+    //   265: aload 9
+    //   267: astore 6
+    //   269: aload 15
+    //   271: aload 10
+    //   273: invokevirtual 410	bo/app/p6:a	(Ljava/net/URL;)Ljava/net/HttpURLConnection;
+    //   276: astore_0
+    //   277: aload_0
+    //   278: astore 8
+    //   280: aload 9
+    //   282: astore 7
+    //   284: aload_0
+    //   285: astore 5
+    //   287: aload 9
+    //   289: astore 6
+    //   291: aload_0
+    //   292: invokevirtual 425	java/net/HttpURLConnection:getInputStream	()Ljava/io/InputStream;
+    //   295: astore 9
+    //   297: aload_0
+    //   298: astore 8
+    //   300: aload 9
+    //   302: astore 7
+    //   304: aload_0
+    //   305: astore 5
+    //   307: aload 9
+    //   309: astore 6
+    //   311: aload 14
+    //   313: getfield 87	android/graphics/BitmapFactory$Options:outHeight	I
+    //   316: ifeq +60 -> 376
+    //   319: aload_0
+    //   320: astore 8
+    //   322: aload 9
+    //   324: astore 7
+    //   326: aload_0
+    //   327: astore 5
+    //   329: aload 9
+    //   331: astore 6
+    //   333: aload 14
+    //   335: getfield 90	android/graphics/BitmapFactory$Options:outWidth	I
+    //   338: ifne +6 -> 344
+    //   341: goto +35 -> 376
+    //   344: aload_0
+    //   345: astore 8
+    //   347: aload 9
+    //   349: astore 7
+    //   351: aload_0
+    //   352: astore 5
+    //   354: aload 9
+    //   356: astore 6
+    //   358: aload 9
+    //   360: aload 14
+    //   362: iload_1
+    //   363: iload_2
+    //   364: invokestatic 341	com/braze/support/BrazeImageUtils:decodeSampledBitmapFromStream	(Ljava/io/InputStream;Landroid/graphics/BitmapFactory$Options;II)Landroid/graphics/Bitmap;
+    //   367: astore 10
+    //   369: aload 10
+    //   371: astore 5
+    //   373: goto +94 -> 467
+    //   376: aload_0
+    //   377: astore 8
+    //   379: aload 9
+    //   381: astore 7
+    //   383: aload_0
+    //   384: astore 5
+    //   386: aload 9
+    //   388: astore 6
+    //   390: aload 12
+    //   392: aload 13
+    //   394: getstatic 178	com/braze/support/BrazeLogger$Priority:W	Lcom/braze/support/BrazeLogger$Priority;
+    //   397: aconst_null
+    //   398: new 40	com/braze/support/BrazeImageUtils$r
+    //   401: dup
+    //   402: aload 10
+    //   404: aload 14
+    //   406: invokespecial 429	com/braze/support/BrazeImageUtils$r:<init>	(Ljava/net/URL;Landroid/graphics/BitmapFactory$Options;)V
+    //   409: iconst_4
+    //   410: aconst_null
+    //   411: invokestatic 98	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+    //   414: aload_0
+    //   415: astore 8
+    //   417: aload 9
+    //   419: astore 7
+    //   421: aload_0
+    //   422: astore 5
+    //   424: aload 9
+    //   426: astore 6
+    //   428: aload 9
+    //   430: invokestatic 432	android/graphics/BitmapFactory:decodeStream	(Ljava/io/InputStream;)Landroid/graphics/Bitmap;
+    //   433: astore 10
+    //   435: aload 10
+    //   437: astore 5
+    //   439: goto +28 -> 467
+    //   442: aload_0
+    //   443: astore 8
+    //   445: aload 9
+    //   447: astore 7
+    //   449: aload_0
+    //   450: astore 5
+    //   452: aload 9
+    //   454: astore 6
+    //   456: aload 9
+    //   458: invokestatic 432	android/graphics/BitmapFactory:decodeStream	(Ljava/io/InputStream;)Landroid/graphics/Bitmap;
+    //   461: astore 10
+    //   463: aload 10
+    //   465: astore 5
+    //   467: aload_0
+    //   468: invokevirtual 421	java/net/HttpURLConnection:disconnect	()V
+    //   471: aload 9
+    //   473: ifnull +28 -> 501
+    //   476: aload 9
+    //   478: invokevirtual 354	java/io/InputStream:close	()V
+    //   481: aload 5
+    //   483: areturn
+    //   484: astore_0
+    //   485: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   488: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   491: getstatic 357	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   494: aload_0
+    //   495: getstatic 435	com/braze/support/BrazeImageUtils$t:b	Lcom/braze/support/BrazeImageUtils$t;
+    //   498: invokevirtual 364	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   501: aload 5
+    //   503: areturn
+    //   504: astore 9
+    //   506: aload 8
+    //   508: astore_0
+    //   509: goto +41 -> 550
+    //   512: astore 5
+    //   514: aconst_null
+    //   515: astore 6
+    //   517: goto +113 -> 630
+    //   520: astore 9
+    //   522: aconst_null
+    //   523: astore 7
+    //   525: goto +25 -> 550
+    //   528: astore 5
+    //   530: aconst_null
+    //   531: astore 7
+    //   533: aload 6
+    //   535: astore_0
+    //   536: aload 7
+    //   538: astore 6
+    //   540: goto +90 -> 630
+    //   543: astore 9
+    //   545: aconst_null
+    //   546: astore_0
+    //   547: aload_0
+    //   548: astore 7
+    //   550: aload_0
+    //   551: astore 5
+    //   553: aload 7
+    //   555: astore 6
+    //   557: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   560: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   563: getstatic 357	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   566: aload 9
+    //   568: new 42	com/braze/support/BrazeImageUtils$s
+    //   571: dup
+    //   572: aload 11
+    //   574: aload 9
+    //   576: invokespecial 438	com/braze/support/BrazeImageUtils$s:<init>	(Ljava/lang/String;Ljava/lang/Exception;)V
+    //   579: invokevirtual 364	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   582: aload_0
+    //   583: ifnull +7 -> 590
+    //   586: aload_0
+    //   587: invokevirtual 421	java/net/HttpURLConnection:disconnect	()V
+    //   590: aload 7
+    //   592: ifnull +27 -> 619
+    //   595: aload 7
+    //   597: invokevirtual 354	java/io/InputStream:close	()V
+    //   600: aconst_null
+    //   601: areturn
+    //   602: astore_0
+    //   603: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   606: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   609: getstatic 357	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   612: aload_0
+    //   613: getstatic 435	com/braze/support/BrazeImageUtils$t:b	Lcom/braze/support/BrazeImageUtils$t;
+    //   616: invokevirtual 364	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   619: aconst_null
+    //   620: areturn
+    //   621: astore 7
+    //   623: aload 5
+    //   625: astore_0
+    //   626: aload 7
+    //   628: astore 5
+    //   630: aload_0
+    //   631: ifnull +7 -> 638
+    //   634: aload_0
+    //   635: invokevirtual 421	java/net/HttpURLConnection:disconnect	()V
+    //   638: aload 6
+    //   640: ifnull +28 -> 668
+    //   643: aload 6
+    //   645: invokevirtual 354	java/io/InputStream:close	()V
+    //   648: goto +20 -> 668
+    //   651: astore_0
+    //   652: getstatic 62	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+    //   655: getstatic 70	com/braze/support/BrazeImageUtils:TAG	Ljava/lang/String;
+    //   658: getstatic 357	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+    //   661: aload_0
+    //   662: getstatic 435	com/braze/support/BrazeImageUtils$t:b	Lcom/braze/support/BrazeImageUtils$t;
+    //   665: invokevirtual 364	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+    //   668: aload 5
+    //   670: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	671	0	paramUri	Uri
+    //   0	671	1	paramInt1	int
+    //   0	671	2	paramInt2	int
+    //   90	23	3	i	int
+    //   26	6	4	bool	boolean
+    //   151	351	5	localObject1	Object
+    //   512	1	5	localObject2	Object
+    //   528	1	5	localObject3	Object
+    //   551	118	5	localObject4	Object
+    //   29	615	6	localObject5	Object
+    //   148	448	7	localObject6	Object
+    //   621	6	7	localObject7	Object
+    //   144	363	8	localUri	Uri
+    //   133	344	9	localInputStream	InputStream
+    //   504	1	9	localException1	Exception
+    //   520	1	9	localException2	Exception
+    //   543	32	9	localException3	Exception
+    //   71	393	10	localObject8	Object
+    //   10	563	11	str1	String
+    //   160	231	12	localBrazeLogger	BrazeLogger
+    //   179	214	13	str2	String
+    //   235	170	14	localOptions	BitmapFactory.Options
+    //   76	194	15	localP6	bo.app.p6
+    // Exception table:
+    //   from	to	target	type
+    //   476	481	484	java/io/IOException
+    //   157	162	504	java/lang/Exception
+    //   176	181	504	java/lang/Exception
+    //   195	216	504	java/lang/Exception
+    //   230	237	504	java/lang/Exception
+    //   251	255	504	java/lang/Exception
+    //   269	277	504	java/lang/Exception
+    //   291	297	504	java/lang/Exception
+    //   311	319	504	java/lang/Exception
+    //   333	341	504	java/lang/Exception
+    //   358	369	504	java/lang/Exception
+    //   390	414	504	java/lang/Exception
+    //   428	435	504	java/lang/Exception
+    //   456	463	504	java/lang/Exception
+    //   86	91	512	finally
+    //   98	123	512	finally
+    //   129	135	512	finally
+    //   86	91	520	java/lang/Exception
+    //   98	123	520	java/lang/Exception
+    //   129	135	520	java/lang/Exception
+    //   62	86	528	finally
+    //   62	86	543	java/lang/Exception
+    //   595	600	602	java/io/IOException
+    //   157	162	621	finally
+    //   176	181	621	finally
+    //   195	216	621	finally
+    //   230	237	621	finally
+    //   251	255	621	finally
+    //   269	277	621	finally
+    //   291	297	621	finally
+    //   311	319	621	finally
+    //   333	341	621	finally
+    //   358	369	621	finally
+    //   390	414	621	finally
+    //   428	435	621	finally
+    //   456	463	621	finally
+    //   557	582	621	finally
+    //   643	648	651	java/io/IOException
+  }
+  
+  private static final DisplayMetrics populateDisplayMetricsFromDisplay(Context paramContext)
+  {
+    paramContext = paramContext.getSystemService("window");
+    Objects.requireNonNull(paramContext, "null cannot be cast to non-null type android.view.WindowManager");
+    paramContext = (WindowManager)paramContext;
+    DisplayMetrics localDisplayMetrics = new DisplayMetrics();
+    paramContext.getDefaultDisplay().getMetrics(localDisplayMetrics);
+    return localDisplayMetrics;
+  }
+  
+  public static final void resizeImageViewToBitmapDimensions(Bitmap paramBitmap, ImageView paramImageView)
+  {
+    i.e(paramImageView, "imageView");
+    resizeToBitmapDimensions(paramImageView, paramBitmap);
+  }
+  
+  public static final void resizeToBitmapDimensions(ImageView paramImageView, Bitmap paramBitmap)
+  {
+    i.e(paramImageView, "<this>");
+    if (paramBitmap == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.W, null, u.b, 4, null);
+      return;
+    }
+    if ((paramBitmap.getWidth() != 0) && (paramBitmap.getHeight() != 0))
+    {
+      if ((paramImageView.getWidth() != 0) && (paramImageView.getHeight() != 0))
+      {
+        float f = paramBitmap.getWidth() / paramBitmap.getHeight();
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, null, null, new x(f), 6, null);
+        getLayoutParamsheight = ((int)(paramImageView.getWidth() / f));
+        return;
+      }
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.W, null, w.b, 4, null);
+      return;
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, TAG, BrazeLogger.Priority.W, null, v.b, 4, null);
+  }
+  
+  static final class a
+    extends j
+    implements a<String>
+  {
+    public static final a b = new a();
+    
+    a()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Not sampling on 0 destination width or height";
+    }
+  }
+  
+  static final class b
+    extends j
+    implements a<String>
+  {
+    b(BitmapFactory.Options paramOptions, int paramInt1, int paramInt2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Calculating sample size for source image bounds: (width ");
+      localStringBuilder.append(b.outWidth);
+      localStringBuilder.append(" height ");
+      localStringBuilder.append(b.outHeight);
+      localStringBuilder.append(") and destination image bounds: (width ");
+      localStringBuilder.append(paramInt1);
+      localStringBuilder.append(" height ");
+      localStringBuilder.append(paramInt2);
+      localStringBuilder.append(')');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class c
+    extends j
+    implements a<String>
+  {
+    c(r paramR, long paramLong1, long paramLong2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Using image sample size of ");
+      localStringBuilder.append(b.b);
+      localStringBuilder.append(". Image will be scaled to width: ");
+      localStringBuilder.append(l3 / b.b);
+      localStringBuilder.append(" and height: ");
+      localStringBuilder.append(d / b.b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class d
+    extends j
+    implements a<String>
+  {
+    d(Uri paramUri)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Uri with unknown scheme received. Not getting image. Uri: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class e
+    extends j
+    implements a<String>
+  {
+    e(int paramInt1, int paramInt2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Display width: ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" and height ");
+      localStringBuilder.append(i);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class f
+    extends j
+    implements a<String>
+  {
+    f(Uri paramUri)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Local bitmap path is null. URI: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class g
+    extends j
+    implements a<String>
+  {
+    g(Uri paramUri)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Local bitmap file does not exist. URI: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class h
+    extends j
+    implements a<String>
+  {
+    h(File paramFile)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Retrieving image from local path: ");
+      localStringBuilder.append(b.getAbsolutePath());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class i
+    extends j
+    implements a<String>
+  {
+    public static final i b = new i();
+    
+    i()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Destination bounds unset. Loading entire bitmap into memory.";
+    }
+  }
+  
+  static final class j
+    extends j
+    implements a<String>
+  {
+    j(int paramInt1, int paramInt2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Sampling bitmap with destination image bounds: (width ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" height ");
+      localStringBuilder.append(paramInt2);
+      localStringBuilder.append(')');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class k
+    extends j
+    implements a<String>
+  {
+    k(Uri paramUri, BitmapFactory.Options paramOptions)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("The bitmap metadata with image uri ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" had bounds: (height ");
+      localStringBuilder.append(localOptionsoutHeight);
+      localStringBuilder.append(" width ");
+      localStringBuilder.append(localOptionsoutWidth);
+      localStringBuilder.append("). Returning a bitmap with no sampling.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class l
+    extends j
+    implements a<String>
+  {
+    public static final l b = new l();
+    
+    l()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Decoding sampled bitmap";
+    }
+  }
+  
+  static final class m
+    extends j
+    implements a<String>
+  {
+    m(Exception paramException)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Exception occurred when attempting to retrieve local bitmap. ");
+      localStringBuilder.append(b.getMessage());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class n
+    extends j
+    implements a<String>
+  {
+    public static final n b = new n();
+    
+    n()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "IOException during closing of bitmap metadata image stream.";
+    }
+  }
+  
+  static final class o
+    extends j
+    implements a<String>
+  {
+    o(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("SDK is in offline mode, not downloading remote bitmap with uri: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class p
+    extends j
+    implements a<String>
+  {
+    p(int paramInt, URL paramURL)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("HTTP response code was ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(". Bitmap with url ");
+      localStringBuilder.append(c);
+      localStringBuilder.append(" could not be downloaded.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class q
+    extends j
+    implements a<String>
+  {
+    q(int paramInt1, int paramInt2)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Sampling bitmap with destination image bounds: (height ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" width ");
+      localStringBuilder.append(paramInt1);
+      localStringBuilder.append(')');
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class r
+    extends j
+    implements a<String>
+  {
+    r(URL paramURL, BitmapFactory.Options paramOptions)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("The bitmap metadata with image url ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" had bounds: (height ");
+      localStringBuilder.append(localOptionsoutHeight);
+      localStringBuilder.append(" width ");
+      localStringBuilder.append(localOptionsoutWidth);
+      localStringBuilder.append("). Returning a bitmap with no sampling.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class s
+    extends j
+    implements a<String>
+  {
+    s(String paramString, Exception paramException)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Exception in image bitmap download for Uri: ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(' ');
+      localStringBuilder.append(localException3.getMessage());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class t
+    extends j
+    implements a<String>
+  {
+    public static final t b = new t();
+    
+    t()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "IOException during closing of bitmap metadata download stream.";
+    }
+  }
+  
+  static final class u
+    extends j
+    implements a<String>
+  {
+    public static final u b = new u();
+    
+    u()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Neither source bitmap nor ImageView may be null. Not resizing ImageView";
+    }
+  }
+  
+  static final class v
+    extends j
+    implements a<String>
+  {
+    public static final v b = new v();
+    
+    v()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Bitmap dimensions cannot be 0. Not resizing ImageView";
+    }
+  }
+  
+  static final class w
+    extends j
+    implements a<String>
+  {
+    public static final w b = new w();
+    
+    w()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "ImageView dimensions cannot be 0. Not resizing ImageView";
+    }
+  }
+  
+  static final class x
+    extends j
+    implements a<String>
+  {
+    x(float paramFloat)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Resizing ImageView to aspect ratio: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+}

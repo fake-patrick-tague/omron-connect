@@ -1,0 +1,168 @@
+package com.braze.ui.inappmessage.utils;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.os.Build.VERSION;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
+import com.braze.enums.inappmessage.TextAlign;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.ui.inappmessage.BrazeInAppMessageManager;
+import com.braze.ui.inappmessage.BrazeInAppMessageManager.Companion;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public final class InAppMessageViewUtils
+{
+  public static final InAppMessageViewUtils INSTANCE = new InAppMessageViewUtils();
+  
+  private InAppMessageViewUtils() {}
+  
+  public static final void closeInAppMessageOnKeycodeBack()
+  {
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, INSTANCE, null, null, closeInAppMessageOnKeycodeBack.1.INSTANCE, 3, null);
+    BrazeInAppMessageManager.Companion.getInstance().hideCurrentlyDisplayingInAppMessage(true);
+  }
+  
+  public static final void resetMessageMarginsIfNecessary(TextView paramTextView1, TextView paramTextView2)
+  {
+    if ((paramTextView2 == null) && (paramTextView1 != null))
+    {
+      paramTextView2 = new LinearLayout.LayoutParams(getLayoutParamswidth, getLayoutParamsheight);
+      paramTextView2.setMargins(0, 0, 0, 0);
+      paramTextView1.setLayoutParams(paramTextView2);
+    }
+  }
+  
+  public static final void setDrawableColor(Drawable paramDrawable, int paramInt)
+  {
+    i.e(paramDrawable, "drawable");
+    if ((Build.VERSION.SDK_INT >= 21) && ((paramDrawable instanceof LayerDrawable)))
+    {
+      Object localObject = (LayerDrawable)paramDrawable;
+      if ((((LayerDrawable)localObject).getNumberOfLayers() > 0) && ((((LayerDrawable)localObject).getDrawable(0) instanceof GradientDrawable)))
+      {
+        localObject = ((LayerDrawable)localObject).getDrawable(0);
+        i.d(localObject, "drawable.getDrawable(0)");
+        setDrawableColor((Drawable)localObject, paramInt);
+      }
+      else
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, INSTANCE, null, null, setDrawableColor.1.INSTANCE, 3, null);
+      }
+    }
+    if ((paramDrawable instanceof GradientDrawable))
+    {
+      ((GradientDrawable)paramDrawable).setColor(paramInt);
+      return;
+    }
+    INSTANCE.setDrawableColorFilter(paramDrawable, paramInt);
+  }
+  
+  private final void setDrawableColorFilter(Drawable paramDrawable, int paramInt)
+  {
+    if (Build.VERSION.SDK_INT >= 29)
+    {
+      paramDrawable.setColorFilter(new BlendModeColorFilter(paramInt, BlendMode.SRC_ATOP));
+      return;
+    }
+    paramDrawable.setColorFilter(paramInt, PorterDuff.Mode.SRC_ATOP);
+  }
+  
+  public static final void setFrameColor(View paramView, Integer paramInteger)
+  {
+    i.e(paramView, "view");
+    if (paramInteger != null) {
+      paramView.setBackgroundColor(paramInteger.intValue());
+    }
+  }
+  
+  public static final void setIcon(Context paramContext, String paramString, int paramInt1, int paramInt2, TextView paramTextView)
+  {
+    i.e(paramContext, "context");
+    i.e(paramTextView, "textView");
+    if (paramString != null) {
+      try
+      {
+        paramTextView.setTypeface(Typeface.createFromAsset(paramContext.getAssets(), "fontawesome-webfont.ttf"));
+        paramTextView.setText(paramString);
+        setTextViewColor(paramTextView, paramInt1);
+        if (paramTextView.getBackground() != null)
+        {
+          paramContext = paramTextView.getBackground();
+          i.d(paramContext, "textView.background");
+          setDrawableColor(paramContext, paramInt2);
+          return;
+        }
+        setViewBackgroundColor(paramTextView, paramInt2);
+        return;
+      }
+      catch (Exception paramContext)
+      {
+        BrazeLogger.INSTANCE.brazelog(INSTANCE, BrazeLogger.Priority.E, paramContext, setIcon.1.INSTANCE);
+      }
+    }
+  }
+  
+  public static final void setImage(Bitmap paramBitmap, ImageView paramImageView)
+  {
+    i.e(paramImageView, "imageView");
+    if (paramBitmap != null) {
+      paramImageView.setImageBitmap(paramBitmap);
+    }
+  }
+  
+  public static final void setTextAlignment(TextView paramTextView, TextAlign paramTextAlign)
+  {
+    i.e(paramTextView, "textView");
+    i.e(paramTextAlign, "textAlign");
+    if (paramTextAlign == TextAlign.START)
+    {
+      paramTextView.setGravity(8388611);
+      return;
+    }
+    if (paramTextAlign == TextAlign.END)
+    {
+      paramTextView.setGravity(8388613);
+      return;
+    }
+    if (paramTextAlign == TextAlign.CENTER) {
+      paramTextView.setGravity(17);
+    }
+  }
+  
+  public static final void setTextViewColor(TextView paramTextView, int paramInt)
+  {
+    i.e(paramTextView, "textView");
+    paramTextView.setTextColor(paramInt);
+  }
+  
+  public static final void setViewBackgroundColor(View paramView, int paramInt)
+  {
+    i.e(paramView, "view");
+    paramView.setBackgroundColor(paramInt);
+  }
+  
+  public static final void setViewBackgroundColorFilter(View paramView, int paramInt)
+  {
+    i.e(paramView, "view");
+    InAppMessageViewUtils localInAppMessageViewUtils = INSTANCE;
+    Drawable localDrawable = paramView.getBackground();
+    i.d(localDrawable, "view.background");
+    localInAppMessageViewUtils.setDrawableColorFilter(localDrawable, paramInt);
+    paramView.getBackground().setAlpha(Color.alpha(paramInt));
+  }
+}

@@ -1,0 +1,200 @@
+package com.alivecor.ecg.record;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.f0;
+import c.h.p.d;
+import com.alivecor.alivecorkitlite.R.drawable;
+import com.alivecor.alivecorkitlite.R.id;
+import com.alivecor.alivecorkitlite.R.layout;
+import com.alivecor.alivecorkitlite.R.string;
+import com.alivecor.ecg.core.model.b;
+import com.alivecor.universal_monitor.LeadState;
+import l.a.a;
+
+public class TriangleIntroFragment
+  extends Fragment
+{
+  AppPreferences appPreferences;
+  View bottomLabel;
+  ImageView deviceBottomImg;
+  ImageView deviceTopImg;
+  private RecordingHelpUrls helpUrls;
+  private b leadsConfig;
+  TextView recordingHUDDesc;
+  private RecordUiConfig uiConfig;
+  
+  public TriangleIntroFragment() {}
+  
+  private void leadStateUpdated(d<LeadState, LeadState> paramD)
+  {
+    a.d("leadStateUpdated: %s", new Object[] { paramD });
+    Object localObject = paramD;
+    if (paramD == null)
+    {
+      paramD = LeadState.OFF;
+      localObject = new d(paramD, paramD);
+    }
+    leadStateUpdated((LeadState)a, (LeadState)b);
+  }
+  
+  private void leadStateUpdated(LeadState paramLeadState1, LeadState paramLeadState2)
+  {
+    if (deviceTopImg != null)
+    {
+      if (!isAdded()) {
+        return;
+      }
+      LeadState localLeadState = LeadState.OFF;
+      if (paramLeadState1 != localLeadState)
+      {
+        localRecordUiConfig = uiConfig;
+        if (localRecordUiConfig != null)
+        {
+          paramLeadState1 = deviceTopImg;
+          i = localRecordUiConfig.getTriangleTopLeadsOn();
+        }
+        else
+        {
+          paramLeadState1 = deviceTopImg;
+          i = R.drawable.triangle_hud_top_view_active;
+          break label102;
+        }
+      }
+      else
+      {
+        localRecordUiConfig = uiConfig;
+        if (localRecordUiConfig == null) {
+          break label93;
+        }
+        paramLeadState1 = deviceTopImg;
+        i = localRecordUiConfig.getTriangleTopLeadsOff();
+      }
+      paramLeadState1.setImageResource(i);
+      break label107;
+      label93:
+      paramLeadState1 = deviceTopImg;
+      int i = R.drawable.triangle_hud_top_view;
+      label102:
+      paramLeadState1.setImageResource(i);
+      label107:
+      RecordUiConfig localRecordUiConfig = uiConfig;
+      if (paramLeadState2 != localLeadState)
+      {
+        if (localRecordUiConfig != null)
+        {
+          paramLeadState1 = deviceBottomImg;
+          i = localRecordUiConfig.getGetTriangleBottomLeadsOn();
+          break label181;
+        }
+        paramLeadState1 = deviceBottomImg;
+        i = R.drawable.triangle_hud_bottom_view_active;
+      }
+      else
+      {
+        if (localRecordUiConfig != null) {
+          break label170;
+        }
+        paramLeadState1 = deviceBottomImg;
+        i = R.drawable.triangle_hud_bottom_view;
+      }
+      paramLeadState1.setImageResource(i);
+      return;
+      label170:
+      paramLeadState1 = deviceBottomImg;
+      i = localRecordUiConfig.getTriangleBottomLeadsOff();
+      label181:
+      paramLeadState1.setImageResource(i);
+    }
+  }
+  
+  void goToHelp()
+  {
+    Object localObject = appPreferences;
+    if (((AppPreferences)localObject).getDeviceLead(((AppPreferences)localObject).getSelectedEkgDeviceDebug()) == b.a)
+    {
+      localObject = helpUrls;
+      if ((localObject != null) && (!TextUtils.isEmpty(recordingHudHelp1L)))
+      {
+        localObject = helpUrls.recordingHudHelp1L;
+        break label93;
+      }
+      localObject = "app-redirect/i-need-help-recording-6l-single-lead";
+    }
+    else
+    {
+      localObject = helpUrls;
+      if ((localObject != null) && (!TextUtils.isEmpty(recordingHudHelp6L)))
+      {
+        localObject = helpUrls.recordingHudHelp6L;
+        break label93;
+      }
+      localObject = "app-redirect/i-need-help-recording-6l-six-lead";
+    }
+    localObject = Urls.getFullUrl((String)localObject);
+    label93:
+    Util.openInBrowser(requireContext(), (String)localObject);
+  }
+  
+  public void leadConfigUpdated(b paramB)
+  {
+    leadsConfig = paramB;
+    if (deviceBottomImg != null)
+    {
+      float f;
+      if (paramB == b.a)
+      {
+        recordingHUDDesc.setText(R.string.recording_intro_tr1lead_body);
+        deviceBottomImg.setAlpha(0.3F);
+        paramB = bottomLabel;
+        f = 0.0F;
+      }
+      else
+      {
+        recordingHUDDesc.setText(R.string.recording_intro_tr6lead_body);
+        paramB = deviceBottomImg;
+        f = 1.0F;
+        paramB.setAlpha(1.0F);
+        paramB = bottomLabel;
+      }
+      paramB.setAlpha(f);
+    }
+  }
+  
+  public void onActivityCreated(Bundle paramBundle)
+  {
+    super.onActivityCreated(paramBundle);
+    RecordEkgConfig.get().getRecordDependencyComponent().inject(this);
+    paramBundle = appPreferences;
+    leadsConfig = paramBundle.getDeviceLead(paramBundle.getSelectedEkgDeviceDebug());
+    ((EcgMonitorViewModel)new f0(requireActivity()).a(EcgMonitorViewModel.class)).leadState().observe(requireActivity(), new w1(this));
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramLayoutInflater = paramLayoutInflater.inflate(R.layout.fragment_triangle_intro_hud, paramViewGroup, false);
+    deviceTopImg = ((ImageView)paramLayoutInflater.findViewById(R.id.triangle_intro_hud_device_top));
+    deviceBottomImg = ((ImageView)paramLayoutInflater.findViewById(R.id.triangle_intro_hud_device_bottom));
+    bottomLabel = paramLayoutInflater.findViewById(R.id.triangle_intro_hud_bottom_label);
+    recordingHUDDesc = ((TextView)paramLayoutInflater.findViewById(R.id.recording_hud_desc));
+    paramViewGroup = leadsConfig;
+    if (paramViewGroup != null) {
+      leadConfigUpdated(paramViewGroup);
+    }
+    helpUrls = ((RecordingHelpUrls)requireArguments().getSerializable("com.alivecor.ecg.record.HELP_URLS"));
+    ((TextView)paramLayoutInflater.findViewById(R.id.triangle_intro_hud_help)).setOnClickListener(new v1(this));
+    return paramLayoutInflater;
+  }
+  
+  public void onDestroyView()
+  {
+    super.onDestroyView();
+  }
+}

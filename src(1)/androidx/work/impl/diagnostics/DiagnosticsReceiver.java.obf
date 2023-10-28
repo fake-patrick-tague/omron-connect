@@ -1,0 +1,34 @@
+package androidx.work.impl.diagnostics;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import androidx.work.impl.workers.DiagnosticsWorker;
+import androidx.work.j;
+import androidx.work.k;
+import androidx.work.r;
+
+public class DiagnosticsReceiver
+  extends BroadcastReceiver
+{
+  private static final String a = j.f("DiagnosticsRcvr");
+  
+  public DiagnosticsReceiver() {}
+  
+  public void onReceive(Context paramContext, Intent paramIntent)
+  {
+    if (paramIntent == null) {
+      return;
+    }
+    j.c().a(a, "Requesting diagnostics", new Throwable[0]);
+    try
+    {
+      r.d(paramContext).b(k.d(DiagnosticsWorker.class));
+      return;
+    }
+    catch (IllegalStateException paramContext)
+    {
+      j.c().b(a, "WorkManager is not initialized", new Throwable[] { paramContext });
+    }
+  }
+}

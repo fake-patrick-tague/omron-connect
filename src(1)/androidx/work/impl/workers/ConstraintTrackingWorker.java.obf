@@ -1,0 +1,178 @@
+package androidx.work.impl.workers;
+
+import android.content.Context;
+import android.text.TextUtils;
+import androidx.work.ListenableWorker;
+import androidx.work.ListenableWorker.a;
+import androidx.work.WorkerParameters;
+import androidx.work.impl.WorkDatabase;
+import androidx.work.impl.n.q;
+import androidx.work.impl.utils.futures.b;
+import androidx.work.impl.utils.p.a;
+import androidx.work.t;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Executor;
+
+public class ConstraintTrackingWorker
+  extends ListenableWorker
+  implements androidx.work.impl.m.c
+{
+  private static final String g = androidx.work.j.f("ConstraintTrkngWrkr");
+  private WorkerParameters h;
+  final Object i;
+  volatile boolean j;
+  b<ListenableWorker.a> k;
+  private ListenableWorker l;
+  
+  public ConstraintTrackingWorker(Context paramContext, WorkerParameters paramWorkerParameters)
+  {
+    super(paramContext, paramWorkerParameters);
+    h = paramWorkerParameters;
+    i = new Object();
+    j = false;
+    k = b.t();
+  }
+  
+  public void b(List<String> arg1)
+  {
+    androidx.work.j.c().a(g, String.format("Constraints changed for %s", new Object[] { ??? }), new Throwable[0]);
+    synchronized (i)
+    {
+      j = true;
+      return;
+    }
+  }
+  
+  public void f(List<String> paramList) {}
+  
+  public boolean i()
+  {
+    ListenableWorker localListenableWorker = l;
+    return (localListenableWorker != null) && (localListenableWorker.i());
+  }
+  
+  public void l()
+  {
+    super.l();
+    ListenableWorker localListenableWorker = l;
+    if ((localListenableWorker != null) && (!localListenableWorker.j())) {
+      l.p();
+    }
+  }
+  
+  public com.google.common.util.concurrent.c<ListenableWorker.a> o()
+  {
+    c().execute(new a());
+    return k;
+  }
+  
+  public a q()
+  {
+    return androidx.work.impl.j.l(a()).q();
+  }
+  
+  public WorkDatabase r()
+  {
+    return androidx.work.impl.j.l(a()).p();
+  }
+  
+  void s()
+  {
+    k.p(ListenableWorker.a.a());
+  }
+  
+  void t()
+  {
+    k.p(ListenableWorker.a.b());
+  }
+  
+  void u()
+  {
+    ??? = g().i("androidx.work.impl.workers.ConstraintTrackingWorker.ARGUMENT_CLASS_NAME");
+    if (TextUtils.isEmpty((CharSequence)???))
+    {
+      androidx.work.j.c().b(g, "No worker to delegate to.", new Throwable[0]);
+      s();
+      return;
+    }
+    Object localObject2 = h().b(a(), (String)???, h);
+    l = ((ListenableWorker)localObject2);
+    if (localObject2 == null)
+    {
+      androidx.work.j.c().a(g, "No worker to delegate to.", new Throwable[0]);
+      s();
+      return;
+    }
+    localObject2 = r().B().n(e().toString());
+    if (localObject2 == null)
+    {
+      s();
+      return;
+    }
+    androidx.work.impl.m.d localD = new androidx.work.impl.m.d(a(), q(), this);
+    localD.d(Collections.singletonList(localObject2));
+    if (localD.c(e().toString()))
+    {
+      androidx.work.j.c().a(g, String.format("Constraints met for delegate %s", new Object[] { ??? }), new Throwable[0]);
+      try
+      {
+        localObject2 = l.o();
+        ((com.google.common.util.concurrent.c)localObject2).a(new b((com.google.common.util.concurrent.c)localObject2), c());
+        return;
+      }
+      finally
+      {
+        androidx.work.j localJ = androidx.work.j.c();
+        localObject2 = g;
+        localJ.a((String)localObject2, String.format("Delegated worker %s threw exception in startWork.", new Object[] { ??? }), new Throwable[] { localObject4 });
+        synchronized (i)
+        {
+          if (j)
+          {
+            androidx.work.j.c().a((String)localObject2, "Constraints were unmet, Retrying.", new Throwable[0]);
+            t();
+          }
+          else
+          {
+            s();
+          }
+          return;
+        }
+      }
+    }
+    androidx.work.j.c().a(g, String.format("Constraints not met for delegate %s. Requesting retry.", new Object[] { ??? }), new Throwable[0]);
+    t();
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    public void run()
+    {
+      u();
+    }
+  }
+  
+  class b
+    implements Runnable
+  {
+    b(com.google.common.util.concurrent.c paramC) {}
+    
+    public void run()
+    {
+      synchronized (i)
+      {
+        if (j) {
+          t();
+        } else {
+          k.r(b);
+        }
+        return;
+      }
+    }
+  }
+}

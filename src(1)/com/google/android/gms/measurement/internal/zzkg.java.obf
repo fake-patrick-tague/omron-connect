@@ -1,0 +1,82 @@
+package com.google.android.gms.measurement.internal;
+
+import android.os.Bundle;
+import com.google.android.gms.common.util.Clock;
+import com.google.android.gms.common.util.VisibleForTesting;
+import com.google.android.gms.internal.measurement.zzoe;
+
+final class zzkg
+{
+  @VisibleForTesting
+  protected long zza;
+  @VisibleForTesting
+  protected long zzb;
+  private final zzap zzd;
+  
+  public zzkg(zzki paramZzki)
+  {
+    zzd = new zzkf(this, zzs);
+    long l = zzs.zzav().elapsedRealtime();
+    zza = l;
+    zzb = l;
+  }
+  
+  final void zza()
+  {
+    zzd.zzb();
+    zza = 0L;
+    zzb = 0L;
+  }
+  
+  final void zzb(long paramLong)
+  {
+    zzd.zzb();
+  }
+  
+  final void zzc(long paramLong)
+  {
+    zzc.zzg();
+    zzd.zzb();
+    zza = paramLong;
+    zzb = paramLong;
+  }
+  
+  public final boolean zzd(boolean paramBoolean1, boolean paramBoolean2, long paramLong)
+  {
+    zzc.zzg();
+    zzc.zza();
+    zzoe.zzc();
+    if (zzc.zzs.zzf().zzs(null, zzeb.zzad))
+    {
+      if (zzc.zzs.zzJ()) {
+        zzc.zzs.zzm().zzj.zzb(zzc.zzs.zzav().currentTimeMillis());
+      }
+    }
+    else {
+      zzc.zzs.zzm().zzj.zzb(zzc.zzs.zzav().currentTimeMillis());
+    }
+    long l = paramLong - zza;
+    if ((!paramBoolean1) && (l < 1000L))
+    {
+      zzc.zzs.zzay().zzj().zzb("Screen exposed for less than 1000 ms. Event not sent. time", Long.valueOf(l));
+      return false;
+    }
+    if (!paramBoolean2)
+    {
+      l = paramLong - zzb;
+      zzb = paramLong;
+    }
+    zzc.zzs.zzay().zzj().zzb("Recording user engagement, ms", Long.valueOf(l));
+    Bundle localBundle = new Bundle();
+    localBundle.putLong("_et", l);
+    paramBoolean1 = zzc.zzs.zzf().zzu();
+    zzlh.zzK(zzc.zzs.zzs().zzj(paramBoolean1 ^ true), localBundle, true);
+    if (!paramBoolean2) {
+      zzc.zzs.zzq().zzG("auto", "_e", localBundle);
+    }
+    zza = paramLong;
+    zzd.zzb();
+    zzd.zzd(3600000L);
+    return true;
+  }
+}

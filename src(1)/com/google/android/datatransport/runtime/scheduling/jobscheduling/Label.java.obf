@@ -1,0 +1,133 @@
+package com.google.android.datatransport.runtime.scheduling.jobscheduling;
+
+import java.util.Objects;
+import java.util.Set;
+
+final class r
+  extends SchedulerConfig.b
+{
+  private final long a;
+  private final long b;
+  private final Set<SchedulerConfig.Flag> c;
+  
+  private r(long paramLong1, long paramLong2, Set<SchedulerConfig.Flag> paramSet)
+  {
+    a = paramLong1;
+    b = paramLong2;
+    c = paramSet;
+  }
+  
+  long b()
+  {
+    return a;
+  }
+  
+  Set<SchedulerConfig.Flag> c()
+  {
+    return c;
+  }
+  
+  long d()
+  {
+    return b;
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if ((paramObject instanceof SchedulerConfig.b))
+    {
+      paramObject = (SchedulerConfig.b)paramObject;
+      return (a == paramObject.b()) && (b == paramObject.d()) && (c.equals(paramObject.c()));
+    }
+    return false;
+  }
+  
+  public int hashCode()
+  {
+    long l = a;
+    int i = (int)(l ^ l >>> 32);
+    l = b;
+    return ((i ^ 0xF4243) * 1000003 ^ (int)(l >>> 32 ^ l)) * 1000003 ^ c.hashCode();
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("ConfigValue{delta=");
+    localStringBuilder.append(a);
+    localStringBuilder.append(", maxAllowedDelay=");
+    localStringBuilder.append(b);
+    localStringBuilder.append(", flags=");
+    localStringBuilder.append(c);
+    localStringBuilder.append("}");
+    return localStringBuilder.toString();
+  }
+  
+  static final class b
+    extends SchedulerConfig.b.a
+  {
+    private Long a;
+    private Long b;
+    private Set<SchedulerConfig.Flag> c;
+    
+    b() {}
+    
+    public SchedulerConfig.b a()
+    {
+      Object localObject2 = a;
+      Object localObject1 = "";
+      if (localObject2 == null)
+      {
+        localObject1 = new StringBuilder();
+        ((StringBuilder)localObject1).append("");
+        ((StringBuilder)localObject1).append(" delta");
+        localObject1 = ((StringBuilder)localObject1).toString();
+      }
+      localObject2 = localObject1;
+      if (b == null)
+      {
+        localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append((String)localObject1);
+        ((StringBuilder)localObject2).append(" maxAllowedDelay");
+        localObject2 = ((StringBuilder)localObject2).toString();
+      }
+      localObject1 = localObject2;
+      if (c == null)
+      {
+        localObject1 = new StringBuilder();
+        ((StringBuilder)localObject1).append((String)localObject2);
+        ((StringBuilder)localObject1).append(" flags");
+        localObject1 = ((StringBuilder)localObject1).toString();
+      }
+      if (((String)localObject1).isEmpty()) {
+        return new r(a.longValue(), b.longValue(), c, null);
+      }
+      localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append("Missing required properties:");
+      ((StringBuilder)localObject2).append((String)localObject1);
+      throw new IllegalStateException(((StringBuilder)localObject2).toString());
+    }
+    
+    public SchedulerConfig.b.a b(long paramLong)
+    {
+      a = Long.valueOf(paramLong);
+      return this;
+    }
+    
+    public SchedulerConfig.b.a c(Set<SchedulerConfig.Flag> paramSet)
+    {
+      Objects.requireNonNull(paramSet, "Null flags");
+      c = paramSet;
+      return this;
+    }
+    
+    public SchedulerConfig.b.a d(long paramLong)
+    {
+      b = Long.valueOf(paramLong);
+      return this;
+    }
+  }
+}

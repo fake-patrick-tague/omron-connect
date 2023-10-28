@@ -1,0 +1,13 @@
+package com.google.android.gms.internal.fitness;
+
+import java.util.List;
+
+public abstract interface zzhr
+  extends List
+{
+  public abstract Object zzaf(int paramInt);
+  
+  public abstract List zzch();
+  
+  public abstract zzhr zzci();
+}

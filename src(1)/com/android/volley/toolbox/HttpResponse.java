@@ -1,0 +1,71 @@
+package com.android.volley.toolbox;
+
+import com.android.volley.Header;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+
+public final class HttpResponse
+{
+  private final InputStream mContent;
+  private final byte[] mContentBytes;
+  private final int mContentLength;
+  private final List<Header> mHeaders;
+  private final int mStatusCode;
+  
+  public HttpResponse(int paramInt, List paramList)
+  {
+    this(paramInt, paramList, -1, null);
+  }
+  
+  public HttpResponse(int paramInt1, List paramList, int paramInt2, InputStream paramInputStream)
+  {
+    mStatusCode = paramInt1;
+    mHeaders = paramList;
+    mContentLength = paramInt2;
+    mContent = paramInputStream;
+    mContentBytes = null;
+  }
+  
+  public HttpResponse(int paramInt, List paramList, byte[] paramArrayOfByte)
+  {
+    mStatusCode = paramInt;
+    mHeaders = paramList;
+    mContentLength = paramArrayOfByte.length;
+    mContentBytes = paramArrayOfByte;
+    mContent = null;
+  }
+  
+  public final InputStream getContent()
+  {
+    InputStream localInputStream = mContent;
+    if (localInputStream != null) {
+      return localInputStream;
+    }
+    if (mContentBytes != null) {
+      return new ByteArrayInputStream(mContentBytes);
+    }
+    return null;
+  }
+  
+  public final byte[] getContentBytes()
+  {
+    return mContentBytes;
+  }
+  
+  public final int getContentLength()
+  {
+    return mContentLength;
+  }
+  
+  public final List getHeaders()
+  {
+    return Collections.unmodifiableList(mHeaders);
+  }
+  
+  public final int getStatusCode()
+  {
+    return mStatusCode;
+  }
+}

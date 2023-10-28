@@ -1,0 +1,155 @@
+package com.alivecor.ai;
+
+import android.content.Context;
+import com.alivecor.ecg.core.model.MainsFilterFrequency;
+import com.alivecor.ecgcore.ECGSignalMV;
+import com.alivecor.ecgcore.MainsFrequency;
+import com.alivecor.ecgcore.SampleRate;
+import com.alivecor.kardia_ai.Classifier;
+import com.alivecor.kardia_ai.ClassifierResult;
+import l.a.a;
+
+class i
+  implements l
+{
+  private final Context a;
+  
+  public i(Context paramContext)
+  {
+    a = paramContext.getApplicationContext();
+  }
+  
+  private l.a a(ClassifierResult paramClassifierResult, int paramInt)
+  {
+    int i = heartRate;
+    int j = 0;
+    paramInt = i;
+    if (i < 0) {
+      paramInt = 0;
+    }
+    ClassifierData localClassifierData = new ClassifierData(o.a(algorithmDetermination));
+    paramClassifierResult = version;
+    if (paramClassifierResult != null) {
+      try
+      {
+        String[] arrayOfString = paramClassifierResult.split("\\.");
+        localClassifierData.a(arrayOfString[0]);
+        localClassifierData.b(arrayOfString[1]);
+        localClassifierData.c(arrayOfString[2].split(" ")[0]);
+      }
+      catch (Exception localException)
+      {
+        a.i(localException, "Couldn't parse Kardia AI version! %s", new Object[] { paramClassifierResult });
+      }
+    }
+    i = j;
+    if (((ClassifierData.b)localClassifierData.d()).getDetermination() != o.f)
+    {
+      i = j;
+      if (((ClassifierData.b)localClassifierData.d()).getDetermination() != o.g)
+      {
+        i = j;
+        if (((ClassifierData.b)localClassifierData.d()).getDetermination() != o.h) {
+          if (((ClassifierData.b)localClassifierData.d()).getDetermination() == o.i) {
+            i = j;
+          } else {
+            i = paramInt;
+          }
+        }
+      }
+    }
+    return new l.a(localClassifierData, null, i);
+  }
+  
+  /* Error */
+  public l.a a(java.io.File paramFile)
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: invokevirtual 109	com/alivecor/ai/i:a	()Lcom/alivecor/kardia_ai/Classifier;
+    //   4: astore_3
+    //   5: new 111	com/alivecor/ecg/core/EcgFile
+    //   8: dup
+    //   9: invokespecial 112	com/alivecor/ecg/core/EcgFile:<init>	()V
+    //   12: astore_2
+    //   13: aload_3
+    //   14: aload_1
+    //   15: invokevirtual 118	java/io/File:getAbsolutePath	()Ljava/lang/String;
+    //   18: invokevirtual 124	com/alivecor/kardia_ai/Classifier:determinationFromFile	(Ljava/lang/String;)Lcom/alivecor/kardia_ai/ClassifierResult;
+    //   21: astore_1
+    //   22: ldc 126
+    //   24: iconst_1
+    //   25: anewarray 4	java/lang/Object
+    //   28: dup
+    //   29: iconst_0
+    //   30: aload_1
+    //   31: aastore
+    //   32: invokestatic 129	l/a/a:a	(Ljava/lang/String;[Ljava/lang/Object;)V
+    //   35: aload_0
+    //   36: aload_1
+    //   37: aload_2
+    //   38: getstatic 135	com/alivecor/ecg/core/EcgFile$Lead:LEAD_1	Lcom/alivecor/ecg/core/EcgFile$Lead;
+    //   41: invokevirtual 139	com/alivecor/ecg/core/EcgFile:samplesForLead	(Lcom/alivecor/ecg/core/EcgFile$Lead;)J
+    //   44: l2i
+    //   45: invokespecial 141	com/alivecor/ai/i:a	(Lcom/alivecor/kardia_ai/ClassifierResult;I)Lcom/alivecor/ai/l$a;
+    //   48: astore_1
+    //   49: aload_2
+    //   50: invokevirtual 144	com/alivecor/ecg/core/EcgFile:close	()V
+    //   53: aload_1
+    //   54: areturn
+    //   55: astore_1
+    //   56: aload_2
+    //   57: invokevirtual 144	com/alivecor/ecg/core/EcgFile:close	()V
+    //   60: goto +9 -> 69
+    //   63: astore_2
+    //   64: aload_1
+    //   65: aload_2
+    //   66: invokevirtual 150	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   69: aload_1
+    //   70: athrow
+    //   71: astore_1
+    //   72: aload_1
+    //   73: ldc -104
+    //   75: iconst_0
+    //   76: anewarray 4	java/lang/Object
+    //   79: invokestatic 154	l/a/a:c	(Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/Object;)V
+    //   82: new 102	com/alivecor/ai/l$a
+    //   85: dup
+    //   86: aload_1
+    //   87: invokevirtual 157	java/lang/Exception:getMessage	()Ljava/lang/String;
+    //   90: invokespecial 159	com/alivecor/ai/l$a:<init>	(Ljava/lang/String;)V
+    //   93: areturn
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	94	0	this	i
+    //   0	94	1	paramFile	java.io.File
+    //   12	45	2	localEcgFile	com.alivecor.ecg.core.EcgFile
+    //   63	3	2	localThrowable	Throwable
+    //   4	10	3	localClassifier	Classifier
+    // Exception table:
+    //   from	to	target	type
+    //   13	22	55	finally
+    //   22	49	55	finally
+    //   56	60	63	finally
+    //   5	13	71	java/lang/Exception
+    //   49	53	71	java/lang/Exception
+    //   64	69	71	java/lang/Exception
+    //   69	71	71	java/lang/Exception
+  }
+  
+  public l.a a(double[] paramArrayOfDouble, int paramInt, SampleRate paramSampleRate, MainsFilterFrequency paramMainsFilterFrequency)
+  {
+    Classifier localClassifier = a();
+    if (paramMainsFilterFrequency == MainsFilterFrequency.MAINS_60_HZ) {
+      paramMainsFilterFrequency = MainsFrequency.MAINS_60_HZ;
+    } else {
+      paramMainsFilterFrequency = MainsFrequency.MAINS_50_HZ;
+    }
+    return a(localClassifier.determinationFromSignal(new ECGSignalMV(paramArrayOfDouble, paramSampleRate), paramMainsFilterFrequency), paramInt);
+  }
+  
+  protected Classifier a()
+  {
+    return new Classifier(false, true);
+  }
+}

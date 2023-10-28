@@ -1,0 +1,103 @@
+package androidx.core.widget;
+
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.util.Log;
+import android.widget.CheckedTextView;
+import java.lang.reflect.Field;
+
+public final class b
+{
+  public static Drawable a(CheckedTextView paramCheckedTextView)
+  {
+    if (Build.VERSION.SDK_INT >= 16) {
+      return b.a(paramCheckedTextView);
+    }
+    return a.a(paramCheckedTextView);
+  }
+  
+  public static void b(CheckedTextView paramCheckedTextView, ColorStateList paramColorStateList)
+  {
+    if (Build.VERSION.SDK_INT >= 21)
+    {
+      c.a(paramCheckedTextView, paramColorStateList);
+      return;
+    }
+    if ((paramCheckedTextView instanceof k)) {
+      ((k)paramCheckedTextView).setSupportCheckMarkTintList(paramColorStateList);
+    }
+  }
+  
+  public static void c(CheckedTextView paramCheckedTextView, PorterDuff.Mode paramMode)
+  {
+    if (Build.VERSION.SDK_INT >= 21)
+    {
+      c.b(paramCheckedTextView, paramMode);
+      return;
+    }
+    if ((paramCheckedTextView instanceof k)) {
+      ((k)paramCheckedTextView).setSupportCheckMarkTintMode(paramMode);
+    }
+  }
+  
+  private static class a
+  {
+    private static Field a;
+    private static boolean b;
+    
+    static Drawable a(CheckedTextView paramCheckedTextView)
+    {
+      if (!b)
+      {
+        try
+        {
+          Field localField1 = CheckedTextView.class.getDeclaredField("mCheckMarkDrawable");
+          a = localField1;
+          localField1.setAccessible(true);
+        }
+        catch (NoSuchFieldException localNoSuchFieldException)
+        {
+          Log.i("CheckedTextViewCompat", "Failed to retrieve mCheckMarkDrawable field", localNoSuchFieldException);
+        }
+        b = true;
+      }
+      Field localField2 = a;
+      if (localField2 != null) {
+        try
+        {
+          paramCheckedTextView = (Drawable)localField2.get(paramCheckedTextView);
+          return paramCheckedTextView;
+        }
+        catch (IllegalAccessException paramCheckedTextView)
+        {
+          Log.i("CheckedTextViewCompat", "Failed to get check mark drawable via reflection", paramCheckedTextView);
+          a = null;
+        }
+      }
+      return null;
+    }
+  }
+  
+  private static class b
+  {
+    static Drawable a(CheckedTextView paramCheckedTextView)
+    {
+      return paramCheckedTextView.getCheckMarkDrawable();
+    }
+  }
+  
+  private static class c
+  {
+    static void a(CheckedTextView paramCheckedTextView, ColorStateList paramColorStateList)
+    {
+      paramCheckedTextView.setCheckMarkTintList(paramColorStateList);
+    }
+    
+    static void b(CheckedTextView paramCheckedTextView, PorterDuff.Mode paramMode)
+    {
+      paramCheckedTextView.setCheckMarkTintMode(paramMode);
+    }
+  }
+}

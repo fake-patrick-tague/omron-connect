@@ -1,0 +1,285 @@
+package com.google.android.gms.internal.fitness;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+public final class zzjr
+{
+  private static final zzjr zzabs = new zzjr(0, new int[0], new Object[0], false);
+  private int count;
+  private Object[] zzaaf;
+  private int[] zzabt;
+  private boolean zztv;
+  private int zzxu = -1;
+  
+  private zzjr()
+  {
+    this(0, new int[8], new Object[8], true);
+  }
+  
+  private zzjr(int paramInt, int[] paramArrayOfInt, Object[] paramArrayOfObject, boolean paramBoolean)
+  {
+    count = paramInt;
+    zzabt = paramArrayOfInt;
+    zzaaf = paramArrayOfObject;
+    zztv = paramBoolean;
+  }
+  
+  private static void a(int paramInt, Object paramObject, zzkm paramZzkm)
+    throws IOException
+  {
+    int i = paramInt >>> 3;
+    paramInt &= 0x7;
+    if (paramInt != 0)
+    {
+      if (paramInt != 1)
+      {
+        if (paramInt != 2)
+        {
+          if (paramInt != 3)
+          {
+            if (paramInt == 5)
+            {
+              paramZzkm.get(i, ((Integer)paramObject).intValue());
+              return;
+            }
+            throw new RuntimeException(zzhk.zzcd());
+          }
+          if (paramZzkm.zzbe() == zzkl.zzaea)
+          {
+            paramZzkm.zzaa(i);
+            ((zzjr)paramObject).visitFrame(paramZzkm);
+            paramZzkm.zzab(i);
+            return;
+          }
+          paramZzkm.zzab(i);
+          ((zzjr)paramObject).visitFrame(paramZzkm);
+          paramZzkm.zzaa(i);
+          return;
+        }
+        paramZzkm.visitLocalVariable(i, (zzfx)paramObject);
+        return;
+      }
+      paramZzkm.updateBook(i, ((Long)paramObject).longValue());
+      return;
+    }
+    paramZzkm.write(i, ((Long)paramObject).longValue());
+  }
+  
+  static zzjr add(zzjr paramZzjr1, zzjr paramZzjr2)
+  {
+    int i = count + count;
+    int[] arrayOfInt = Arrays.copyOf(zzabt, i);
+    System.arraycopy(zzabt, 0, arrayOfInt, count, count);
+    Object[] arrayOfObject = Arrays.copyOf(zzaaf, i);
+    System.arraycopy(zzaaf, 0, arrayOfObject, count, count);
+    return new zzjr(i, arrayOfInt, arrayOfObject, true);
+  }
+  
+  public static zzjr zzdp()
+  {
+    return zzabs;
+  }
+  
+  public final boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (paramObject == null) {
+      return false;
+    }
+    if (!(paramObject instanceof zzjr)) {
+      return false;
+    }
+    paramObject = (zzjr)paramObject;
+    int j = count;
+    if (j == count)
+    {
+      Object localObject = zzabt;
+      int[] arrayOfInt = zzabt;
+      int i = 0;
+      while (i < j)
+      {
+        if (localObject[i] != arrayOfInt[i])
+        {
+          i = 0;
+          break label84;
+        }
+        i += 1;
+      }
+      i = 1;
+      label84:
+      if (i != 0)
+      {
+        localObject = zzaaf;
+        paramObject = zzaaf;
+        j = count;
+        i = 0;
+        while (i < j)
+        {
+          if (!localObject[i].equals(paramObject[i]))
+          {
+            i = 0;
+            break label138;
+          }
+          i += 1;
+        }
+        i = 1;
+        label138:
+        return i != 0;
+      }
+    }
+    return false;
+  }
+  
+  public final int hashCode()
+  {
+    int n = count;
+    Object localObject = zzabt;
+    int m = 0;
+    int k = 17;
+    int j = 0;
+    int i = 17;
+    while (j < n)
+    {
+      i = i * 31 + localObject[j];
+      j += 1;
+    }
+    localObject = zzaaf;
+    int i1 = count;
+    j = m;
+    while (j < i1)
+    {
+      k = k * 31 + localObject[j].hashCode();
+      j += 1;
+    }
+    return ((n + 527) * 31 + i) * 31 + k;
+  }
+  
+  final void index(StringBuilder paramStringBuilder, int paramInt)
+  {
+    int i = 0;
+    while (i < count)
+    {
+      zzil.write(paramStringBuilder, paramInt, String.valueOf(zzabt[i] >>> 3), zzaaf[i]);
+      i += 1;
+    }
+  }
+  
+  final void normalize(zzkm paramZzkm)
+    throws IOException
+  {
+    if (paramZzkm.zzbe() == zzkl.zzaeb)
+    {
+      i = count - 1;
+      while (i >= 0)
+      {
+        paramZzkm.setProperty(zzabt[i] >>> 3, zzaaf[i]);
+        i -= 1;
+      }
+      return;
+    }
+    int i = 0;
+    while (i < count)
+    {
+      paramZzkm.setProperty(zzabt[i] >>> 3, zzaaf[i]);
+      i += 1;
+    }
+  }
+  
+  public final void visitFrame(zzkm paramZzkm)
+    throws IOException
+  {
+    if (count == 0) {
+      return;
+    }
+    if (paramZzkm.zzbe() == zzkl.zzaea)
+    {
+      i = 0;
+      while (i < count)
+      {
+        a(zzabt[i], zzaaf[i], paramZzkm);
+        i += 1;
+      }
+      return;
+    }
+    int i = count - 1;
+    while (i >= 0)
+    {
+      a(zzabt[i], zzaaf[i], paramZzkm);
+      i -= 1;
+    }
+  }
+  
+  public final void zzar()
+  {
+    zztv = false;
+  }
+  
+  public final int zzbp()
+  {
+    int i = zzxu;
+    if (i != -1) {
+      return i;
+    }
+    int j = 0;
+    int k = 0;
+    while (j < count)
+    {
+      int m = zzabt[j];
+      i = m >>> 3;
+      m &= 0x7;
+      if (m != 0)
+      {
+        if (m != 1)
+        {
+          if (m != 2)
+          {
+            if (m != 3)
+            {
+              if (m == 5) {
+                i = zzgk.read(i, ((Integer)zzaaf[j]).intValue());
+              } else {
+                throw new IllegalStateException(zzhk.zzcd());
+              }
+            }
+            else {
+              i = (zzgk.format(i) << 1) + ((zzjr)zzaaf[j]).zzbp();
+            }
+          }
+          else {
+            i = zzgk.decode(i, (zzfx)zzaaf[j]);
+          }
+        }
+        else {
+          i = zzgk.get(i, ((Long)zzaaf[j]).longValue());
+        }
+      }
+      else {
+        i = zzgk.getCard(i, ((Long)zzaaf[j]).longValue());
+      }
+      k += i;
+      j += 1;
+    }
+    zzxu = k;
+    return k;
+  }
+  
+  public final int zzdq()
+  {
+    int i = zzxu;
+    if (i != -1) {
+      return i;
+    }
+    i = 0;
+    int j = 0;
+    while (i < count)
+    {
+      j += zzgk.decrypt(zzabt[i] >>> 3, (zzfx)zzaaf[i]);
+      i += 1;
+    }
+    zzxu = j;
+    return j;
+  }
+}

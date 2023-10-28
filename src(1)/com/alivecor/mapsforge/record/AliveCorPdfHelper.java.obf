@@ -1,0 +1,226 @@
+package com.alivecor.ecg.record;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.res.Resources;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+import androidx.appcompat.app.f.a;
+import com.alivecor.ai.o;
+import com.alivecor.alivecorkitlite.R.dimen;
+import com.alivecor.alivecorkitlite.R.string;
+import com.alivecor.api.AliveCorEcg;
+import com.alivecor.api.EcgEvaluation;
+import com.alivecor.api.FilterType;
+import com.alivecor.api.RecordingConfiguration;
+import com.alivecor.ecg.core.model.YAxisScaleTypes;
+import java.io.File;
+import java.util.Locale;
+import l.a.a;
+
+public class AliveCorPdfHelper
+{
+  private static final int MAXIMUM_POSSIBLE_TIMEZONE_OFFSET_SEC = 50400;
+  private Context appContext;
+  private final RecordSdkHelper mapper;
+  private ReportRawPDFType reportRawPDFType = ReportRawPDFType.ORIGINAL;
+  private boolean withConfig = false;
+  private YAxisScaleTypes yAxisScaleTypes = YAxisScaleTypes.Y_AXIS_SCALE_10;
+  
+  protected AliveCorPdfHelper(Context paramContext)
+  {
+    appContext = paramContext.getApplicationContext();
+    mapper = new RecordSdkHelper(RecordEkgConfig.get());
+  }
+  
+  private PdfData createPdfData(AliveCorEcg paramAliveCorEcg, Size paramSize, File paramFile, String paramString1, PatientInfo paramPatientInfo, String paramString2, String paramString3)
+  {
+    Object localObject1 = paramAliveCorEcg.getRecordingConfiguration();
+    EcgEvaluation localEcgEvaluation = paramAliveCorEcg.getEcgEvaluation();
+    Object localObject2 = null;
+    if (paramPatientInfo != null)
+    {
+      paramFile = patientDobMillis;
+      if (paramFile != null) {
+        l = paramFile.longValue();
+      } else {
+        l = Long.MIN_VALUE;
+      }
+      paramFile = new PdfData.PatientData(firstName, lastName, l);
+    }
+    else
+    {
+      paramFile = null;
+    }
+    ReportRawPDFType localReportRawPDFType;
+    if (withConfig) {
+      localReportRawPDFType = reportRawPDFType;
+    } else {
+      localReportRawPDFType = ((RecordingConfiguration)localObject1).isReportRawPDF();
+    }
+    boolean bool;
+    if (((!withConfig) || (localReportRawPDFType != ReportRawPDFType.RAW)) && (((RecordingConfiguration)localObject1).getFilterType() == FilterType.ENHANCED)) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    if (withConfig) {
+      localObject1 = yAxisScaleTypes;
+    } else {
+      localObject1 = ((RecordingConfiguration)localObject1).getyAxisScaleTypes();
+    }
+    String str1 = RecordEkgConfig.get().getAppName();
+    String str2 = paramAliveCorEcg.getUuid();
+    k.a.a.b localB = fromRawData(paramAliveCorEcg.getRecordedAtMs(), k.a.a.f.s().A(paramAliveCorEcg.getRecordedAtMs()));
+    if (paramSize == Size.LETTER) {
+      paramSize = PdfData.PaperSize.LETTER;
+    } else {
+      paramSize = PdfData.PaperSize.A4;
+    }
+    float f;
+    if (localEcgEvaluation.getAverageHeartRate() != null) {
+      f = localEcgEvaluation.getAverageHeartRate().floatValue();
+    } else {
+      f = 0.0F;
+    }
+    o localO = mapper.internalDetermination(localEcgEvaluation.getDetermination());
+    long l = paramAliveCorEcg.getDurationMs();
+    paramAliveCorEcg = localObject2;
+    if (paramPatientInfo != null) {
+      paramAliveCorEcg = patientId;
+    }
+    return new PdfData(str1, str2, bool, localB, paramFile, paramSize, paramString1, f, localO, l, paramString2, paramString3, paramAliveCorEcg, localEcgEvaluation.isInverted(), localReportRawPDFType, (YAxisScaleTypes)localObject1);
+  }
+  
+  private static k.a.a.b fromRawData(long paramLong, int paramInt)
+  {
+    int i = paramInt;
+    if (Math.abs(paramInt) <= 50400) {
+      i = paramInt * 1000;
+    }
+    return new k.a.a.b(paramLong).Q(k.a.a.f.i(i));
+  }
+  
+  private void showEncryptionPromptDialog(final Activity paramActivity, AliveCorEcg paramAliveCorEcg, Size paramSize, File paramFile, String paramString1, PatientInfo paramPatientInfo, String paramString2, String paramString3, PdfListener paramPdfListener, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    if (paramBoolean1)
+    {
+      EditText localEditText = new EditText(paramActivity);
+      localEditText.setHint(R.string.lbl_password);
+      localEditText.setInputType(129);
+      FrameLayout localFrameLayout = new FrameLayout(paramActivity);
+      int i = paramActivity.getResources().getDimensionPixelSize(R.dimen.password_dialog_side_padding);
+      localFrameLayout.setPadding(i, 0, i, 0);
+      localFrameLayout.addView(localEditText, new FrameLayout.LayoutParams(-1, -2, 17));
+      paramActivity = new f.a(paramActivity).l(R.string.encrypt_pdf_title).f(R.string.encrypt_pdf_msg).n(localFrameLayout).h(z1.b).j(R.string.next, new c(this, localEditText, paramAliveCorEcg, paramSize, paramFile, paramString1, paramPatientInfo, paramString2, paramString3, paramPdfListener));
+      if (paramBoolean2) {
+        paramActivity.g(17039360, b.b);
+      } else {
+        paramActivity.g(R.string.skip, new d(this, paramAliveCorEcg, paramSize, paramFile, paramString1, paramPatientInfo, paramString2, paramString3, paramPdfListener));
+      }
+      paramActivity = paramActivity.a();
+      localEditText.addTextChangedListener(new TextWatcher()
+      {
+        public void afterTextChanged(Editable paramAnonymousEditable)
+        {
+          paramActivity.i(-1).setEnabled(TextUtils.isEmpty(paramAnonymousEditable) ^ true);
+        }
+        
+        public void beforeTextChanged(CharSequence paramAnonymousCharSequence, int paramAnonymousInt1, int paramAnonymousInt2, int paramAnonymousInt3) {}
+        
+        public void onTextChanged(CharSequence paramAnonymousCharSequence, int paramAnonymousInt1, int paramAnonymousInt2, int paramAnonymousInt3) {}
+      });
+      paramActivity.setOnShowListener(new e(paramActivity));
+      paramActivity.getWindow().setFlags(8192, 8192);
+      paramActivity.show();
+      return;
+    }
+    if (createPdfReport(paramAliveCorEcg, paramSize, paramFile, paramString1, paramPatientInfo, paramString2, paramString3))
+    {
+      paramPdfListener.onShowPdf(paramFile);
+      return;
+    }
+    paramPdfListener.onError();
+  }
+  
+  public void createPdfEncryptionPromptWithConfig(Activity paramActivity, AliveCorEcg paramAliveCorEcg, Size paramSize, File paramFile, String paramString1, PatientInfo paramPatientInfo, String paramString2, String paramString3, PdfListener paramPdfListener, boolean paramBoolean1, boolean paramBoolean2, ReportRawPDFType paramReportRawPDFType, YAxisScaleTypes paramYAxisScaleTypes)
+  {
+    reportRawPDFType = paramReportRawPDFType;
+    yAxisScaleTypes = paramYAxisScaleTypes;
+    withConfig = true;
+    showEncryptionPromptDialog(paramActivity, paramAliveCorEcg, paramSize, paramFile, paramString1, paramPatientInfo, paramString2, paramString3, paramPdfListener, paramBoolean1, paramBoolean2);
+  }
+  
+  public boolean createPdfReport(AliveCorEcg paramAliveCorEcg, Size paramSize, File paramFile, String paramString1, PatientInfo paramPatientInfo, String paramString2, String paramString3)
+  {
+    paramAliveCorEcg = createPdfData(paramAliveCorEcg, paramSize, paramFile, paramString1, paramPatientInfo, paramString2, paramString3);
+    paramSize = Locale.getDefault().getLanguage();
+    if ((!paramSize.equalsIgnoreCase(new Locale("ko").getLanguage())) && (!paramSize.equalsIgnoreCase(new Locale("zh").getLanguage())) && (!paramSize.equalsIgnoreCase(new Locale("ru").getLanguage())) && (!paramSize.equalsIgnoreCase(new Locale("ja").getLanguage()))) {
+      paramAliveCorEcg = new PdfRender(appContext, paramFile, paramAliveCorEcg, true, false);
+    } else {
+      paramAliveCorEcg = new PdfRender(appContext, paramFile, paramAliveCorEcg, true, true);
+    }
+    try
+    {
+      paramAliveCorEcg.createReport();
+      return true;
+    }
+    catch (Exception paramAliveCorEcg)
+    {
+      a.c(paramAliveCorEcg, "Error creating PDF Report", new Object[0]);
+    }
+    return false;
+  }
+  
+  public void createPdfWithEncryptionPrompt(Activity paramActivity, AliveCorEcg paramAliveCorEcg, Size paramSize, File paramFile, String paramString1, PatientInfo paramPatientInfo, String paramString2, String paramString3, PdfListener paramPdfListener, boolean paramBoolean1, boolean paramBoolean2)
+  {
+    yAxisScaleTypes = YAxisScaleTypes.Y_AXIS_SCALE_10;
+    reportRawPDFType = ReportRawPDFType.ORIGINAL;
+    withConfig = false;
+    showEncryptionPromptDialog(paramActivity, paramAliveCorEcg, paramSize, paramFile, paramString1, paramPatientInfo, paramString2, paramString3, paramPdfListener, paramBoolean1, paramBoolean2);
+  }
+  
+  public static class PatientInfo
+  {
+    public final String firstName;
+    public final String lastName;
+    public final Long patientDobMillis;
+    public final String patientId;
+    
+    public PatientInfo(String paramString1, String paramString2, Long paramLong, String paramString3)
+    {
+      firstName = paramString1;
+      lastName = paramString2;
+      patientDobMillis = paramLong;
+      patientId = paramString3;
+    }
+  }
+  
+  public static abstract interface PdfListener
+  {
+    public abstract void onEncryptPdf(File paramFile, String paramString);
+    
+    public abstract void onError();
+    
+    public abstract void onShowPdf(File paramFile);
+  }
+  
+  public static enum Size
+  {
+    static
+    {
+      Size localSize1 = new Size("LETTER", 0);
+      LETTER = localSize1;
+      Size localSize2 = new Size("A_4", 1);
+      A_4 = localSize2;
+      $VALUES = new Size[] { localSize1, localSize2 };
+    }
+  }
+}

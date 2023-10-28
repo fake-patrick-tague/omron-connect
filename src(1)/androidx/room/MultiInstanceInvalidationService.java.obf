@@ -1,0 +1,116 @@
+package androidx.room;
+
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
+import android.os.RemoteCallbackList;
+import android.os.RemoteException;
+import android.util.Log;
+import java.util.HashMap;
+
+public class MultiInstanceInvalidationService
+  extends Service
+{
+  int b = 0;
+  final HashMap<Integer, String> c = new HashMap();
+  final RemoteCallbackList<c> d = new a();
+  private final d.a e = new b();
+  
+  public MultiInstanceInvalidationService() {}
+  
+  public IBinder onBind(Intent paramIntent)
+  {
+    return e;
+  }
+  
+  class a
+    extends RemoteCallbackList<c>
+  {
+    a() {}
+    
+    public void a(c paramC, Object paramObject)
+    {
+      c.remove(Integer.valueOf(((Integer)paramObject).intValue()));
+    }
+  }
+  
+  class b
+    extends d.a
+  {
+    b() {}
+    
+    public int b(c paramC, String paramString)
+    {
+      if (paramString == null) {
+        return 0;
+      }
+      synchronized (d)
+      {
+        MultiInstanceInvalidationService localMultiInstanceInvalidationService = MultiInstanceInvalidationService.this;
+        int i = b + 1;
+        b = i;
+        if (d.register(paramC, Integer.valueOf(i)))
+        {
+          c.put(Integer.valueOf(i), paramString);
+          return i;
+        }
+        paramC = MultiInstanceInvalidationService.this;
+        b -= 1;
+        return 0;
+      }
+    }
+    
+    public void c(int paramInt, String[] paramArrayOfString)
+    {
+      synchronized (d)
+      {
+        String str1 = (String)c.get(Integer.valueOf(paramInt));
+        if (str1 == null)
+        {
+          Log.w("ROOM", "Remote invalidation client ID not registered");
+          return;
+        }
+        int j = d.beginBroadcast();
+        int i = 0;
+        while (i < j) {
+          try
+          {
+            int k = ((Integer)d.getBroadcastCookie(i)).intValue();
+            String str2 = (String)c.get(Integer.valueOf(k));
+            if (paramInt != k)
+            {
+              boolean bool = str1.equals(str2);
+              if (bool) {
+                try
+                {
+                  ((c)d.getBroadcastItem(i)).a(paramArrayOfString);
+                }
+                catch (RemoteException localRemoteException)
+                {
+                  Log.w("ROOM", "Error invoking a remote callback", localRemoteException);
+                }
+              }
+            }
+            i += 1;
+          }
+          finally
+          {
+            d.finishBroadcast();
+          }
+        }
+        d.finishBroadcast();
+        return;
+      }
+    }
+    
+    public void d(c paramC, int paramInt)
+    {
+      synchronized (d)
+      {
+        d.unregister(paramC);
+        c.remove(Integer.valueOf(paramInt));
+        return;
+      }
+    }
+  }
+}

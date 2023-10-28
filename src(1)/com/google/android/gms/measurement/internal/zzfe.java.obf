@@ -1,0 +1,93 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.ServiceConnection;
+import android.net.Uri;
+import android.os.Bundle;
+import com.google.android.gms.common.stats.ConnectionTracker;
+import com.google.android.gms.internal.measurement.zzbr;
+
+final class zzfe
+  implements Runnable
+{
+  zzfe(zzff paramZzff, zzbr paramZzbr, ServiceConnection paramServiceConnection) {}
+  
+  public final void run()
+  {
+    Object localObject1 = zzc;
+    zzfg localZzfg = zza;
+    String str = zzff.zza((zzff)localObject1);
+    Object localObject2 = zza;
+    ServiceConnection localServiceConnection = zzb;
+    zza.zzaz().zzg();
+    Object localObject4 = new Bundle();
+    ((Bundle)localObject4).putString("package_name", str);
+    localObject1 = null;
+    try
+    {
+      localObject2 = ((zzbr)localObject2).zzd((Bundle)localObject4);
+      if (localObject2 == null) {
+        zza.zzay().zzd().zza("Install Referrer Service returned a null response");
+      } else {
+        localObject1 = localObject2;
+      }
+    }
+    catch (Exception localException)
+    {
+      zza.zzay().zzd().zzb("Exception occurred while retrieving the Install Referrer", localException.getMessage());
+    }
+    zza.zzaz().zzg();
+    zzfy.zzO();
+    if (localObject1 != null)
+    {
+      long l1 = ((Bundle)localObject1).getLong("install_begin_timestamp_seconds", 0L) * 1000L;
+      if (l1 == 0L)
+      {
+        zza.zzay().zzk().zza("Service response is missing Install Referrer install timestamp");
+      }
+      else
+      {
+        Object localObject3 = ((Bundle)localObject1).getString("install_referrer");
+        if ((localObject3 != null) && (!((String)localObject3).isEmpty()))
+        {
+          zza.zzay().zzj().zzb("InstallReferrer API result", localObject3);
+          localObject3 = zza.zzv().zzs(Uri.parse("?".concat((String)localObject3)));
+          if (localObject3 == null)
+          {
+            zza.zzay().zzd().zza("No campaign params defined in Install Referrer result");
+          }
+          else
+          {
+            localObject4 = ((Bundle)localObject3).getString("medium");
+            if ((localObject4 != null) && (!"(not set)".equalsIgnoreCase((String)localObject4)) && (!"organic".equalsIgnoreCase((String)localObject4)))
+            {
+              long l2 = ((Bundle)localObject1).getLong("referrer_click_timestamp_seconds", 0L) * 1000L;
+              if (l2 == 0L) {
+                zza.zzay().zzd().zza("Install Referrer is missing click timestamp for ad campaign");
+              } else {
+                ((Bundle)localObject3).putLong("click_timestamp", l2);
+              }
+            }
+            else
+            {
+              if (l1 == zza.zzm().zzd.zza()) {
+                zza.zzay().zzj().zza("Logging Install Referrer campaign from module while it may have already been logged.");
+              }
+              if (zza.zzJ())
+              {
+                zza.zzm().zzd.zzb(l1);
+                zza.zzay().zzj().zzb("Logging Install Referrer campaign from gmscore with ", "referrer API v2");
+                ((Bundle)localObject3).putString("_cis", "referrer API v2");
+                zza.zzq().zzF("auto", "_cmp", (Bundle)localObject3, str);
+              }
+            }
+          }
+        }
+        else
+        {
+          zza.zzay().zzd().zza("No referrer defined in Install Referrer response");
+        }
+      }
+    }
+    ConnectionTracker.getInstance().unbindService(zza.zzau(), localServiceConnection);
+  }
+}

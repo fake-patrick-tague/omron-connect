@@ -1,0 +1,1986 @@
+package androidx.constraintlayout.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
+import android.os.Build.VERSION;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.util.SparseIntArray;
+import android.util.TypedValue;
+import android.util.Xml;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import androidx.constraintlayout.motion.widget.a;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+public class b
+{
+  private static final int[] a = { 0, 4, 8 };
+  private static SparseIntArray b;
+  private HashMap<String, ConstraintAttribute> c = new HashMap();
+  private boolean d = true;
+  private HashMap<Integer, a> e = new HashMap();
+  
+  static
+  {
+    SparseIntArray localSparseIntArray = new SparseIntArray();
+    b = localSparseIntArray;
+    localSparseIntArray.append(e.u0, 25);
+    b.append(e.v0, 26);
+    b.append(e.x0, 29);
+    b.append(e.y0, 30);
+    b.append(e.E0, 36);
+    b.append(e.D0, 35);
+    b.append(e.c0, 4);
+    b.append(e.b0, 3);
+    b.append(e.Z, 1);
+    b.append(e.M0, 6);
+    b.append(e.N0, 7);
+    b.append(e.j0, 17);
+    b.append(e.k0, 18);
+    b.append(e.l0, 19);
+    b.append(e.s, 27);
+    b.append(e.z0, 32);
+    b.append(e.A0, 33);
+    b.append(e.i0, 10);
+    b.append(e.h0, 9);
+    b.append(e.Q0, 13);
+    b.append(e.T0, 16);
+    b.append(e.R0, 14);
+    b.append(e.O0, 11);
+    b.append(e.S0, 15);
+    b.append(e.P0, 12);
+    b.append(e.H0, 40);
+    b.append(e.s0, 39);
+    b.append(e.r0, 41);
+    b.append(e.G0, 42);
+    b.append(e.q0, 20);
+    b.append(e.F0, 37);
+    b.append(e.g0, 5);
+    b.append(e.t0, 82);
+    b.append(e.C0, 82);
+    b.append(e.w0, 82);
+    b.append(e.a0, 82);
+    b.append(e.Y, 82);
+    b.append(e.x, 24);
+    b.append(e.z, 28);
+    b.append(e.L, 31);
+    b.append(e.M, 8);
+    b.append(e.y, 34);
+    b.append(e.A, 2);
+    b.append(e.v, 23);
+    b.append(e.w, 21);
+    b.append(e.u, 22);
+    b.append(e.B, 43);
+    b.append(e.O, 44);
+    b.append(e.J, 45);
+    b.append(e.K, 46);
+    b.append(e.I, 60);
+    b.append(e.G, 47);
+    b.append(e.H, 48);
+    b.append(e.C, 49);
+    b.append(e.D, 50);
+    b.append(e.E, 51);
+    b.append(e.F, 52);
+    b.append(e.N, 53);
+    b.append(e.I0, 54);
+    b.append(e.m0, 55);
+    b.append(e.J0, 56);
+    b.append(e.n0, 57);
+    b.append(e.K0, 58);
+    b.append(e.o0, 59);
+    b.append(e.d0, 61);
+    b.append(e.f0, 62);
+    b.append(e.e0, 63);
+    b.append(e.P, 64);
+    b.append(e.X0, 65);
+    b.append(e.V, 66);
+    b.append(e.Y0, 67);
+    b.append(e.V0, 79);
+    b.append(e.t, 38);
+    b.append(e.U0, 68);
+    b.append(e.L0, 69);
+    b.append(e.p0, 70);
+    b.append(e.T, 71);
+    b.append(e.R, 72);
+    b.append(e.S, 73);
+    b.append(e.U, 74);
+    b.append(e.Q, 75);
+    b.append(e.W0, 76);
+    b.append(e.B0, 77);
+    b.append(e.Z0, 78);
+    b.append(e.X, 80);
+    b.append(e.W, 81);
+  }
+  
+  public b() {}
+  
+  private int[] j(View paramView, String paramString)
+  {
+    String[] arrayOfString = paramString.split(",");
+    Context localContext = paramView.getContext();
+    paramString = new int[arrayOfString.length];
+    int m = 0;
+    int k = m;
+    while (m < arrayOfString.length)
+    {
+      Object localObject = arrayOfString[m].trim();
+      try
+      {
+        j = d.class.getField((String)localObject).getInt(null);
+      }
+      catch (Exception localException)
+      {
+        int j;
+        int i;
+        for (;;) {}
+      }
+      j = 0;
+      i = j;
+      if (j == 0) {
+        i = localContext.getResources().getIdentifier((String)localObject, "id", localContext.getPackageName());
+      }
+      j = i;
+      if (i == 0)
+      {
+        j = i;
+        if (paramView.isInEditMode())
+        {
+          j = i;
+          if ((paramView.getParent() instanceof ConstraintLayout))
+          {
+            localObject = ((ConstraintLayout)paramView.getParent()).g(0, localObject);
+            j = i;
+            if (localObject != null)
+            {
+              j = i;
+              if ((localObject instanceof Integer)) {
+                j = ((Integer)localObject).intValue();
+              }
+            }
+          }
+        }
+      }
+      paramString[k] = j;
+      m += 1;
+      k += 1;
+    }
+    paramView = paramString;
+    if (k != arrayOfString.length) {
+      paramView = Arrays.copyOf(paramString, k);
+    }
+    return paramView;
+  }
+  
+  private a k(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    a localA = new a();
+    paramAttributeSet = paramContext.obtainStyledAttributes(paramAttributeSet, e.r);
+    p(paramContext, localA, paramAttributeSet);
+    paramAttributeSet.recycle();
+    return localA;
+  }
+  
+  private a l(int paramInt)
+  {
+    if (!e.containsKey(Integer.valueOf(paramInt))) {
+      e.put(Integer.valueOf(paramInt), new a());
+    }
+    return (a)e.get(Integer.valueOf(paramInt));
+  }
+  
+  private static int o(TypedArray paramTypedArray, int paramInt1, int paramInt2)
+  {
+    int i = paramTypedArray.getResourceId(paramInt1, paramInt2);
+    paramInt2 = i;
+    if (i == -1) {
+      paramInt2 = paramTypedArray.getInt(paramInt1, -1);
+    }
+    return paramInt2;
+  }
+  
+  private void p(Context paramContext, a paramA, TypedArray paramTypedArray)
+  {
+    int j = paramTypedArray.getIndexCount();
+    int i = 0;
+    while (i < j)
+    {
+      int k = paramTypedArray.getIndex(i);
+      if ((k != e.t) && (e.L != k) && (e.M != k))
+      {
+        c.b = true;
+        d.c = true;
+        b.a = true;
+        e.b = true;
+      }
+      switch (b.get(k))
+      {
+      default: 
+        paramContext = new StringBuilder();
+        paramContext.append("Unknown attribute 0x");
+        paramContext.append(Integer.toHexString(k));
+        paramContext.append("   ");
+        paramContext.append(b.get(k));
+        Log.w("ConstraintSet", paramContext.toString());
+        break;
+      case 82: 
+        paramContext = new StringBuilder();
+        paramContext.append("unused attribute 0x");
+        paramContext.append(Integer.toHexString(k));
+        paramContext.append("   ");
+        paramContext.append(b.get(k));
+        Log.w("ConstraintSet", paramContext.toString());
+        break;
+      case 81: 
+        paramContext = d;
+        j0 = paramTypedArray.getBoolean(k, j0);
+        break;
+      case 80: 
+        paramContext = d;
+        i0 = paramTypedArray.getBoolean(k, i0);
+        break;
+      case 79: 
+        paramContext = c;
+        g = paramTypedArray.getFloat(k, g);
+        break;
+      case 78: 
+        paramContext = b;
+        c = paramTypedArray.getInt(k, c);
+        break;
+      case 77: 
+        d.h0 = paramTypedArray.getString(k);
+        break;
+      case 76: 
+        paramContext = c;
+        e = paramTypedArray.getInt(k, e);
+        break;
+      case 75: 
+        paramContext = d;
+        k0 = paramTypedArray.getBoolean(k, k0);
+        break;
+      case 74: 
+        d.g0 = paramTypedArray.getString(k);
+        break;
+      case 73: 
+        paramContext = d;
+        d0 = paramTypedArray.getDimensionPixelSize(k, d0);
+        break;
+      case 72: 
+        paramContext = d;
+        c0 = paramTypedArray.getInt(k, c0);
+        break;
+      case 71: 
+        Log.e("ConstraintSet", "CURRENTLY UNSUPPORTED");
+        break;
+      case 70: 
+        d.b0 = paramTypedArray.getFloat(k, 1.0F);
+        break;
+      case 69: 
+        d.a0 = paramTypedArray.getFloat(k, 1.0F);
+        break;
+      case 68: 
+        paramContext = b;
+        e = paramTypedArray.getFloat(k, e);
+        break;
+      case 67: 
+        paramContext = c;
+        h = paramTypedArray.getFloat(k, h);
+        break;
+      case 66: 
+        c.f = paramTypedArray.getInt(k, 0);
+        break;
+      case 65: 
+        if (peekValuetype == 3) {
+          c.d = paramTypedArray.getString(k);
+        } else {
+          c.d = c.f.a.a.a.b[paramTypedArray.getInteger(k, 0)];
+        }
+        break;
+      case 64: 
+        paramContext = c;
+        c = o(paramTypedArray, k, c);
+        break;
+      case 63: 
+        paramContext = d;
+        A = paramTypedArray.getFloat(k, A);
+        break;
+      case 62: 
+        paramContext = d;
+        z = paramTypedArray.getDimensionPixelSize(k, z);
+        break;
+      case 61: 
+        paramContext = d;
+        y = o(paramTypedArray, k, y);
+        break;
+      case 60: 
+        paramContext = e;
+        c = paramTypedArray.getFloat(k, c);
+        break;
+      case 59: 
+        paramContext = d;
+        Z = paramTypedArray.getDimensionPixelSize(k, Z);
+        break;
+      case 58: 
+        paramContext = d;
+        Y = paramTypedArray.getDimensionPixelSize(k, Y);
+        break;
+      case 57: 
+        paramContext = d;
+        X = paramTypedArray.getDimensionPixelSize(k, X);
+        break;
+      case 56: 
+        paramContext = d;
+        W = paramTypedArray.getDimensionPixelSize(k, W);
+        break;
+      case 55: 
+        paramContext = d;
+        V = paramTypedArray.getInt(k, V);
+        break;
+      case 54: 
+        paramContext = d;
+        U = paramTypedArray.getInt(k, U);
+        break;
+      case 53: 
+        if (Build.VERSION.SDK_INT >= 21)
+        {
+          paramContext = e;
+          l = paramTypedArray.getDimension(k, l);
+        }
+        break;
+      case 52: 
+        paramContext = e;
+        k = paramTypedArray.getDimension(k, k);
+        break;
+      case 51: 
+        paramContext = e;
+        j = paramTypedArray.getDimension(k, j);
+        break;
+      case 50: 
+        paramContext = e;
+        i = paramTypedArray.getDimension(k, i);
+        break;
+      case 49: 
+        paramContext = e;
+        h = paramTypedArray.getDimension(k, h);
+        break;
+      case 48: 
+        paramContext = e;
+        g = paramTypedArray.getFloat(k, g);
+        break;
+      case 47: 
+        paramContext = e;
+        f = paramTypedArray.getFloat(k, f);
+        break;
+      case 46: 
+        paramContext = e;
+        e = paramTypedArray.getFloat(k, e);
+        break;
+      case 45: 
+        paramContext = e;
+        d = paramTypedArray.getFloat(k, d);
+        break;
+      case 44: 
+        if (Build.VERSION.SDK_INT >= 21)
+        {
+          paramContext = e;
+          m = true;
+          n = paramTypedArray.getDimension(k, n);
+        }
+        break;
+      case 43: 
+        paramContext = b;
+        d = paramTypedArray.getFloat(k, d);
+        break;
+      case 42: 
+        paramContext = d;
+        T = paramTypedArray.getInt(k, T);
+        break;
+      case 41: 
+        paramContext = d;
+        S = paramTypedArray.getInt(k, S);
+        break;
+      case 40: 
+        paramContext = d;
+        Q = paramTypedArray.getFloat(k, Q);
+        break;
+      case 39: 
+        paramContext = d;
+        R = paramTypedArray.getFloat(k, R);
+        break;
+      case 38: 
+        a = paramTypedArray.getResourceId(k, a);
+        break;
+      case 37: 
+        paramContext = d;
+        w = paramTypedArray.getFloat(k, w);
+        break;
+      case 36: 
+        paramContext = d;
+        m = o(paramTypedArray, k, m);
+        break;
+      case 35: 
+        paramContext = d;
+        n = o(paramTypedArray, k, n);
+        break;
+      case 34: 
+        paramContext = d;
+        G = paramTypedArray.getDimensionPixelSize(k, G);
+        break;
+      case 33: 
+        paramContext = d;
+        s = o(paramTypedArray, k, s);
+        break;
+      case 32: 
+        paramContext = d;
+        r = o(paramTypedArray, k, r);
+        break;
+      case 31: 
+        if (Build.VERSION.SDK_INT >= 17)
+        {
+          paramContext = d;
+          J = paramTypedArray.getDimensionPixelSize(k, J);
+        }
+        break;
+      case 30: 
+        paramContext = d;
+        l = o(paramTypedArray, k, l);
+        break;
+      case 29: 
+        paramContext = d;
+        k = o(paramTypedArray, k, k);
+        break;
+      case 28: 
+        paramContext = d;
+        F = paramTypedArray.getDimensionPixelSize(k, F);
+        break;
+      case 27: 
+        paramContext = d;
+        D = paramTypedArray.getInt(k, D);
+        break;
+      case 26: 
+        paramContext = d;
+        j = o(paramTypedArray, k, j);
+        break;
+      case 25: 
+        paramContext = d;
+        i = o(paramTypedArray, k, i);
+        break;
+      case 24: 
+        paramContext = d;
+        E = paramTypedArray.getDimensionPixelSize(k, E);
+        break;
+      case 23: 
+        paramContext = d;
+        d = paramTypedArray.getLayoutDimension(k, d);
+        break;
+      case 22: 
+        paramContext = b;
+        b = paramTypedArray.getInt(k, b);
+        paramContext = b;
+        b = a[b];
+        break;
+      case 21: 
+        paramContext = d;
+        e = paramTypedArray.getLayoutDimension(k, e);
+        break;
+      case 20: 
+        paramContext = d;
+        v = paramTypedArray.getFloat(k, v);
+        break;
+      case 19: 
+        paramContext = d;
+        h = paramTypedArray.getFloat(k, h);
+        break;
+      case 18: 
+        paramContext = d;
+        g = paramTypedArray.getDimensionPixelOffset(k, g);
+        break;
+      case 17: 
+        paramContext = d;
+        f = paramTypedArray.getDimensionPixelOffset(k, f);
+        break;
+      case 16: 
+        paramContext = d;
+        L = paramTypedArray.getDimensionPixelSize(k, L);
+        break;
+      case 15: 
+        paramContext = d;
+        P = paramTypedArray.getDimensionPixelSize(k, P);
+        break;
+      case 14: 
+        paramContext = d;
+        M = paramTypedArray.getDimensionPixelSize(k, M);
+        break;
+      case 13: 
+        paramContext = d;
+        K = paramTypedArray.getDimensionPixelSize(k, K);
+        break;
+      case 12: 
+        paramContext = d;
+        O = paramTypedArray.getDimensionPixelSize(k, O);
+        break;
+      case 11: 
+        paramContext = d;
+        N = paramTypedArray.getDimensionPixelSize(k, N);
+        break;
+      case 10: 
+        paramContext = d;
+        t = o(paramTypedArray, k, t);
+        break;
+      case 9: 
+        paramContext = d;
+        u = o(paramTypedArray, k, u);
+        break;
+      case 8: 
+        if (Build.VERSION.SDK_INT >= 17)
+        {
+          paramContext = d;
+          I = paramTypedArray.getDimensionPixelSize(k, I);
+        }
+        break;
+      case 7: 
+        paramContext = d;
+        C = paramTypedArray.getDimensionPixelOffset(k, C);
+        break;
+      case 6: 
+        paramContext = d;
+        B = paramTypedArray.getDimensionPixelOffset(k, B);
+        break;
+      case 5: 
+        d.x = paramTypedArray.getString(k);
+        break;
+      case 4: 
+        paramContext = d;
+        o = o(paramTypedArray, k, o);
+        break;
+      case 3: 
+        paramContext = d;
+        p = o(paramTypedArray, k, p);
+        break;
+      case 2: 
+        paramContext = d;
+        H = paramTypedArray.getDimensionPixelSize(k, H);
+        break;
+      case 1: 
+        paramContext = d;
+        q = o(paramTypedArray, k, q);
+      }
+      i += 1;
+    }
+  }
+  
+  public void c(ConstraintLayout paramConstraintLayout)
+  {
+    d(paramConstraintLayout, true);
+    paramConstraintLayout.setConstraintSet(null);
+    paramConstraintLayout.requestLayout();
+  }
+  
+  void d(ConstraintLayout paramConstraintLayout, boolean paramBoolean)
+  {
+    int j = paramConstraintLayout.getChildCount();
+    Object localObject1 = new HashSet(e.keySet());
+    int i = 0;
+    Object localObject2;
+    Object localObject3;
+    Object localObject4;
+    Object localObject5;
+    Object localObject6;
+    while (i < j)
+    {
+      localObject2 = paramConstraintLayout.getChildAt(i);
+      int k = ((View)localObject2).getId();
+      if (!e.containsKey(Integer.valueOf(k)))
+      {
+        localObject3 = new StringBuilder();
+        ((StringBuilder)localObject3).append("id unknown ");
+        ((StringBuilder)localObject3).append(a.a((View)localObject2));
+        Log.w("ConstraintSet", ((StringBuilder)localObject3).toString());
+      }
+      else
+      {
+        if ((d) && (k == -1)) {
+          throw new RuntimeException("All children of ConstraintLayout must have ids to use ConstraintSet");
+        }
+        if (k != -1) {
+          if (e.containsKey(Integer.valueOf(k)))
+          {
+            ((HashSet)localObject1).remove(Integer.valueOf(k));
+            localObject3 = (a)e.get(Integer.valueOf(k));
+            if ((localObject2 instanceof Barrier)) {
+              d.e0 = 1;
+            }
+            int m = d.e0;
+            if ((m != -1) && (m == 1))
+            {
+              localObject4 = (Barrier)localObject2;
+              ((View)localObject4).setId(k);
+              ((Barrier)localObject4).setType(d.c0);
+              ((Barrier)localObject4).setMargin(d.d0);
+              ((Barrier)localObject4).setAllowsGoneWidget(d.k0);
+              localObject5 = d;
+              localObject6 = f0;
+              if (localObject6 != null)
+              {
+                ((ConstraintHelper)localObject4).setReferencedIds((int[])localObject6);
+              }
+              else
+              {
+                localObject6 = g0;
+                if (localObject6 != null)
+                {
+                  f0 = j((View)localObject4, (String)localObject6);
+                  ((ConstraintHelper)localObject4).setReferencedIds(d.f0);
+                }
+              }
+            }
+            localObject4 = (ConstraintLayout.LayoutParams)((View)localObject2).getLayoutParams();
+            ((ConstraintLayout.LayoutParams)localObject4).a();
+            ((a)localObject3).d((ConstraintLayout.LayoutParams)localObject4);
+            if (paramBoolean) {
+              ConstraintAttribute.c((View)localObject2, f);
+            }
+            ((View)localObject2).setLayoutParams((ViewGroup.LayoutParams)localObject4);
+            localObject4 = b;
+            if (c == 0) {
+              ((View)localObject2).setVisibility(b);
+            }
+            k = Build.VERSION.SDK_INT;
+            if (k >= 17)
+            {
+              ((View)localObject2).setAlpha(b.d);
+              ((View)localObject2).setRotation(e.c);
+              ((View)localObject2).setRotationX(e.d);
+              ((View)localObject2).setRotationY(e.e);
+              ((View)localObject2).setScaleX(e.f);
+              ((View)localObject2).setScaleY(e.g);
+              if (!Float.isNaN(e.h)) {
+                ((View)localObject2).setPivotX(e.h);
+              }
+              if (!Float.isNaN(e.i)) {
+                ((View)localObject2).setPivotY(e.i);
+              }
+              ((View)localObject2).setTranslationX(e.j);
+              ((View)localObject2).setTranslationY(e.k);
+              if (k >= 21)
+              {
+                ((View)localObject2).setTranslationZ(e.l);
+                localObject3 = e;
+                if (m) {
+                  ((View)localObject2).setElevation(n);
+                }
+              }
+            }
+          }
+          else
+          {
+            localObject2 = new StringBuilder();
+            ((StringBuilder)localObject2).append("WARNING NO CONSTRAINTS for view ");
+            ((StringBuilder)localObject2).append(k);
+            Log.v("ConstraintSet", ((StringBuilder)localObject2).toString());
+          }
+        }
+      }
+      i += 1;
+    }
+    localObject1 = ((HashSet)localObject1).iterator();
+    while (((Iterator)localObject1).hasNext())
+    {
+      localObject3 = (Integer)((Iterator)localObject1).next();
+      localObject2 = (a)e.get(localObject3);
+      i = d.e0;
+      if ((i != -1) && (i == 1))
+      {
+        localObject4 = new Barrier(paramConstraintLayout.getContext());
+        ((View)localObject4).setId(((Integer)localObject3).intValue());
+        localObject5 = d;
+        localObject6 = f0;
+        if (localObject6 != null)
+        {
+          ((ConstraintHelper)localObject4).setReferencedIds((int[])localObject6);
+        }
+        else
+        {
+          localObject6 = g0;
+          if (localObject6 != null)
+          {
+            f0 = j((View)localObject4, (String)localObject6);
+            ((ConstraintHelper)localObject4).setReferencedIds(d.f0);
+          }
+        }
+        ((Barrier)localObject4).setType(d.c0);
+        ((Barrier)localObject4).setMargin(d.d0);
+        localObject5 = paramConstraintLayout.e();
+        ((ConstraintHelper)localObject4).n();
+        ((a)localObject2).d((ConstraintLayout.LayoutParams)localObject5);
+        paramConstraintLayout.addView((View)localObject4, (ViewGroup.LayoutParams)localObject5);
+      }
+      if (d.b)
+      {
+        localObject4 = new Guideline(paramConstraintLayout.getContext());
+        ((View)localObject4).setId(((Integer)localObject3).intValue());
+        localObject3 = paramConstraintLayout.e();
+        ((a)localObject2).d((ConstraintLayout.LayoutParams)localObject3);
+        paramConstraintLayout.addView((View)localObject4, (ViewGroup.LayoutParams)localObject3);
+      }
+    }
+  }
+  
+  public void e(int paramInt1, int paramInt2)
+  {
+    if (e.containsKey(Integer.valueOf(paramInt1)))
+    {
+      Object localObject = (a)e.get(Integer.valueOf(paramInt1));
+      switch (paramInt2)
+      {
+      default: 
+        throw new IllegalArgumentException("unknown constraint");
+      case 7: 
+        localObject = d;
+        t = -1;
+        u = -1;
+        I = -1;
+        O = -1;
+        return;
+      case 6: 
+        localObject = d;
+        r = -1;
+        s = -1;
+        J = -1;
+        P = -1;
+        return;
+      case 5: 
+        d.q = -1;
+        return;
+      case 4: 
+        localObject = d;
+        o = -1;
+        p = -1;
+        H = -1;
+        N = -1;
+        return;
+      case 3: 
+        localObject = d;
+        n = -1;
+        m = -1;
+        G = -1;
+        L = -1;
+        return;
+      case 2: 
+        localObject = d;
+        l = -1;
+        k = -1;
+        F = -1;
+        M = -1;
+        return;
+      }
+      localObject = d;
+      j = -1;
+      i = -1;
+      E = -1;
+      K = -1;
+    }
+  }
+  
+  public void f(Context paramContext, int paramInt)
+  {
+    g((ConstraintLayout)LayoutInflater.from(paramContext).inflate(paramInt, null));
+  }
+  
+  public void g(ConstraintLayout paramConstraintLayout)
+  {
+    int j = paramConstraintLayout.getChildCount();
+    e.clear();
+    int i = 0;
+    while (i < j)
+    {
+      Object localObject1 = paramConstraintLayout.getChildAt(i);
+      Object localObject2 = (ConstraintLayout.LayoutParams)((View)localObject1).getLayoutParams();
+      int k = ((View)localObject1).getId();
+      if ((d) && (k == -1)) {
+        throw new RuntimeException("All children of ConstraintLayout must have ids to use ConstraintSet");
+      }
+      if (!e.containsKey(Integer.valueOf(k))) {
+        e.put(Integer.valueOf(k), new a());
+      }
+      a localA = (a)e.get(Integer.valueOf(k));
+      f = ConstraintAttribute.a(c, (View)localObject1);
+      a.a(localA, k, (ConstraintLayout.LayoutParams)localObject2);
+      b.b = ((View)localObject1).getVisibility();
+      k = Build.VERSION.SDK_INT;
+      if (k >= 17)
+      {
+        b.d = ((View)localObject1).getAlpha();
+        e.c = ((View)localObject1).getRotation();
+        e.d = ((View)localObject1).getRotationX();
+        e.e = ((View)localObject1).getRotationY();
+        e.f = ((View)localObject1).getScaleX();
+        e.g = ((View)localObject1).getScaleY();
+        float f1 = ((View)localObject1).getPivotX();
+        float f2 = ((View)localObject1).getPivotY();
+        if ((f1 != 0.0D) || (f2 != 0.0D))
+        {
+          localObject2 = e;
+          h = f1;
+          i = f2;
+        }
+        e.j = ((View)localObject1).getTranslationX();
+        e.k = ((View)localObject1).getTranslationY();
+        if (k >= 21)
+        {
+          e.l = ((View)localObject1).getTranslationZ();
+          localObject2 = e;
+          if (m) {
+            n = ((View)localObject1).getElevation();
+          }
+        }
+      }
+      if ((localObject1 instanceof Barrier))
+      {
+        localObject1 = (Barrier)localObject1;
+        d.k0 = ((Barrier)localObject1).o();
+        d.f0 = ((ConstraintHelper)localObject1).getReferencedIds();
+        d.c0 = ((Barrier)localObject1).getType();
+        d.d0 = ((Barrier)localObject1).getMargin();
+      }
+      i += 1;
+    }
+  }
+  
+  public void h(Constraints paramConstraints)
+  {
+    int j = paramConstraints.getChildCount();
+    e.clear();
+    int i = 0;
+    while (i < j)
+    {
+      View localView = paramConstraints.getChildAt(i);
+      Constraints.LayoutParams localLayoutParams = (Constraints.LayoutParams)localView.getLayoutParams();
+      int k = localView.getId();
+      if ((d) && (k == -1)) {
+        throw new RuntimeException("All children of ConstraintLayout must have ids to use ConstraintSet");
+      }
+      if (!e.containsKey(Integer.valueOf(k))) {
+        e.put(Integer.valueOf(k), new a());
+      }
+      a localA = (a)e.get(Integer.valueOf(k));
+      if ((localView instanceof ConstraintHelper)) {
+        a.b(localA, (ConstraintHelper)localView, k, localLayoutParams);
+      }
+      a.c(localA, k, localLayoutParams);
+      i += 1;
+    }
+  }
+  
+  public void i(int paramInt1, int paramInt2, int paramInt3, float paramFloat)
+  {
+    b localB = ld;
+    y = paramInt2;
+    z = paramInt3;
+    A = paramFloat;
+  }
+  
+  public void m(Context paramContext, int paramInt)
+  {
+    XmlResourceParser localXmlResourceParser = paramContext.getResources().getXml(paramInt);
+    try
+    {
+      paramInt = localXmlResourceParser.getEventType();
+    }
+    catch (IOException paramContext)
+    {
+      String str;
+      a localA;
+      paramContext.printStackTrace();
+      return;
+    }
+    catch (XmlPullParserException paramContext)
+    {
+      paramContext.printStackTrace();
+    }
+    str = localXmlResourceParser.getName();
+    localA = k(paramContext, Xml.asAttributeSet(localXmlResourceParser));
+    if (str.equalsIgnoreCase("Guideline")) {
+      d.b = true;
+    }
+    e.put(Integer.valueOf(a), localA);
+    break label86;
+    label79:
+    localXmlResourceParser.getName();
+    for (;;)
+    {
+      label86:
+      paramInt = localXmlResourceParser.next();
+      while (paramInt == 1) {
+        return;
+      }
+      if (paramInt == 0) {
+        break label79;
+      }
+      if (paramInt == 2) {
+        break;
+      }
+    }
+  }
+  
+  public void n(Context paramContext, XmlPullParser paramXmlPullParser)
+  {
+    label802:
+    for (;;)
+    {
+      try
+      {
+        int i = paramXmlPullParser.getEventType();
+        Object localObject2 = null;
+        int j;
+        Object localObject1;
+        if (i != 1) {
+          if (i != 0)
+          {
+            j = 3;
+            if (i != 2)
+            {
+              if (i != 3)
+              {
+                localObject1 = localObject2;
+                continue;
+              }
+              String str = paramXmlPullParser.getName();
+              if ("ConstraintSet".equals(str)) {
+                return;
+              }
+              localObject1 = localObject2;
+              if (!str.equalsIgnoreCase("Constraint")) {
+                continue;
+              }
+              e.put(Integer.valueOf(a), localObject2);
+              localObject1 = null;
+              continue;
+            }
+            localObject1 = paramXmlPullParser.getName();
+          }
+        }
+        switch (((String)localObject1).hashCode())
+        {
+        case 1803088381: 
+          if (((String)localObject1).equals("Constraint")) {
+            i = 0;
+          }
+          break;
+        case 1791837707: 
+          if (((String)localObject1).equals("CustomAttribute")) {
+            i = 7;
+          }
+          break;
+        case 1331510167: 
+          if (((String)localObject1).equals("Barrier")) {
+            i = 2;
+          }
+          break;
+        case -71750448: 
+          if (((String)localObject1).equals("Guideline")) {
+            i = 1;
+          }
+          break;
+        case -1238332596: 
+          if (((String)localObject1).equals("Transform")) {
+            i = 4;
+          }
+          break;
+        case -1269513683: 
+          if (((String)localObject1).equals("PropertySet")) {
+            i = j;
+          }
+          break;
+        case -1984451626: 
+          if (((String)localObject1).equals("Motion")) {
+            i = 6;
+          }
+          break;
+        case -2025855158: 
+          boolean bool = ((String)localObject1).equals("Layout");
+          if (bool) {
+            i = 5;
+          } else {
+            i = -1;
+          }
+          switch (i)
+          {
+          default: 
+            localObject1 = localObject2;
+            break;
+          case 7: 
+            if (localObject2 != null)
+            {
+              ConstraintAttribute.b(paramContext, paramXmlPullParser, f);
+              localObject1 = localObject2;
+            }
+            else
+            {
+              paramContext = new StringBuilder();
+              paramContext.append("XML parser error must be within a Constraint ");
+              paramContext.append(paramXmlPullParser.getLineNumber());
+              throw new RuntimeException(paramContext.toString());
+            }
+            break;
+          case 6: 
+            if (localObject2 != null)
+            {
+              c.b(paramContext, Xml.asAttributeSet(paramXmlPullParser));
+              localObject1 = localObject2;
+            }
+            else
+            {
+              paramContext = new StringBuilder();
+              paramContext.append("XML parser error must be within a Constraint ");
+              paramContext.append(paramXmlPullParser.getLineNumber());
+              throw new RuntimeException(paramContext.toString());
+            }
+            break;
+          case 5: 
+            if (localObject2 != null)
+            {
+              d.b(paramContext, Xml.asAttributeSet(paramXmlPullParser));
+              localObject1 = localObject2;
+            }
+            else
+            {
+              paramContext = new StringBuilder();
+              paramContext.append("XML parser error must be within a Constraint ");
+              paramContext.append(paramXmlPullParser.getLineNumber());
+              throw new RuntimeException(paramContext.toString());
+            }
+            break;
+          case 4: 
+            if (localObject2 != null)
+            {
+              e.b(paramContext, Xml.asAttributeSet(paramXmlPullParser));
+              localObject1 = localObject2;
+            }
+            else
+            {
+              paramContext = new StringBuilder();
+              paramContext.append("XML parser error must be within a Constraint ");
+              paramContext.append(paramXmlPullParser.getLineNumber());
+              throw new RuntimeException(paramContext.toString());
+            }
+            break;
+          case 3: 
+            if (localObject2 != null)
+            {
+              b.b(paramContext, Xml.asAttributeSet(paramXmlPullParser));
+              localObject1 = localObject2;
+            }
+            else
+            {
+              paramContext = new StringBuilder();
+              paramContext.append("XML parser error must be within a Constraint ");
+              paramContext.append(paramXmlPullParser.getLineNumber());
+              throw new RuntimeException(paramContext.toString());
+            }
+            break;
+          case 2: 
+            localObject1 = k(paramContext, Xml.asAttributeSet(paramXmlPullParser));
+            d.e0 = 1;
+            break;
+          case 1: 
+            localObject1 = k(paramContext, Xml.asAttributeSet(paramXmlPullParser));
+            localObject2 = d;
+            b = true;
+            c = true;
+            break;
+          case 0: 
+            localObject1 = k(paramContext, Xml.asAttributeSet(paramXmlPullParser));
+            break label802;
+            paramXmlPullParser.getName();
+            localObject1 = localObject2;
+          }
+          i = paramXmlPullParser.next();
+          localObject2 = localObject1;
+          continue;
+          return;
+        }
+      }
+      catch (IOException paramContext)
+      {
+        paramContext.printStackTrace();
+        return;
+      }
+      catch (XmlPullParserException paramContext)
+      {
+        paramContext.printStackTrace();
+      }
+    }
+  }
+  
+  public static class a
+  {
+    int a;
+    public final b.d b = new b.d();
+    public final b.c c = new b.c();
+    public final b.b d = new b.b();
+    public final b.e e = new b.e();
+    public HashMap<String, ConstraintAttribute> f = new HashMap();
+    
+    public a() {}
+    
+    private void f(int paramInt, ConstraintLayout.LayoutParams paramLayoutParams)
+    {
+      a = paramInt;
+      b.b localB = d;
+      i = d;
+      j = e;
+      k = f;
+      l = g;
+      m = h;
+      n = i;
+      o = j;
+      p = k;
+      q = l;
+      r = p;
+      s = q;
+      t = r;
+      u = s;
+      v = z;
+      w = A;
+      x = B;
+      y = m;
+      z = n;
+      A = o;
+      B = Q;
+      C = R;
+      D = S;
+      h = c;
+      f = a;
+      g = b;
+      localB = d;
+      d = width;
+      e = height;
+      E = leftMargin;
+      F = rightMargin;
+      G = topMargin;
+      H = bottomMargin;
+      Q = F;
+      R = E;
+      T = H;
+      S = G;
+      i0 = T;
+      j0 = U;
+      U = I;
+      V = J;
+      W = M;
+      X = N;
+      Y = K;
+      Z = L;
+      a0 = O;
+      b0 = P;
+      h0 = V;
+      L = u;
+      N = w;
+      K = t;
+      M = v;
+      localB = d;
+      P = x;
+      O = y;
+      if (Build.VERSION.SDK_INT >= 17)
+      {
+        I = paramLayoutParams.getMarginEnd();
+        d.J = paramLayoutParams.getMarginStart();
+      }
+    }
+    
+    private void g(int paramInt, Constraints.LayoutParams paramLayoutParams)
+    {
+      f(paramInt, paramLayoutParams);
+      b.d = p0;
+      b.e localE = e;
+      c = s0;
+      d = t0;
+      e = u0;
+      f = v0;
+      g = w0;
+      h = x0;
+      i = y0;
+      j = z0;
+      k = A0;
+      l = B0;
+      n = r0;
+      m = q0;
+    }
+    
+    private void h(ConstraintHelper paramConstraintHelper, int paramInt, Constraints.LayoutParams paramLayoutParams)
+    {
+      g(paramInt, paramLayoutParams);
+      if ((paramConstraintHelper instanceof Barrier))
+      {
+        paramLayoutParams = d;
+        e0 = 1;
+        paramConstraintHelper = (Barrier)paramConstraintHelper;
+        c0 = paramConstraintHelper.getType();
+        d.f0 = paramConstraintHelper.getReferencedIds();
+        d.d0 = paramConstraintHelper.getMargin();
+      }
+    }
+    
+    public void d(ConstraintLayout.LayoutParams paramLayoutParams)
+    {
+      Object localObject = d;
+      d = i;
+      e = j;
+      f = k;
+      g = l;
+      h = m;
+      i = n;
+      j = o;
+      k = p;
+      l = q;
+      p = r;
+      q = s;
+      r = t;
+      s = u;
+      leftMargin = E;
+      rightMargin = F;
+      topMargin = G;
+      bottomMargin = H;
+      x = P;
+      y = O;
+      u = L;
+      w = N;
+      z = v;
+      A = w;
+      m = y;
+      n = z;
+      localObject = d;
+      o = A;
+      B = x;
+      Q = B;
+      R = C;
+      F = Q;
+      E = R;
+      H = T;
+      G = S;
+      T = i0;
+      U = j0;
+      I = U;
+      J = V;
+      M = W;
+      N = X;
+      K = Y;
+      L = Z;
+      O = a0;
+      P = b0;
+      S = D;
+      c = h;
+      a = f;
+      b = g;
+      width = d;
+      height = e;
+      localObject = h0;
+      if (localObject != null) {
+        V = ((String)localObject);
+      }
+      if (Build.VERSION.SDK_INT >= 17)
+      {
+        paramLayoutParams.setMarginStart(d.J);
+        paramLayoutParams.setMarginEnd(d.I);
+      }
+      paramLayoutParams.a();
+    }
+    
+    public a e()
+    {
+      a localA = new a();
+      d.a(d);
+      c.a(c);
+      b.a(b);
+      e.a(e);
+      a = a;
+      return localA;
+    }
+  }
+  
+  public static class b
+  {
+    private static SparseIntArray a;
+    public float A = 0.0F;
+    public int B = -1;
+    public int C = -1;
+    public int D = -1;
+    public int E = -1;
+    public int F = -1;
+    public int G = -1;
+    public int H = -1;
+    public int I = -1;
+    public int J = -1;
+    public int K = -1;
+    public int L = -1;
+    public int M = -1;
+    public int N = -1;
+    public int O = -1;
+    public int P = -1;
+    public float Q = -1.0F;
+    public float R = -1.0F;
+    public int S = 0;
+    public int T = 0;
+    public int U = 0;
+    public int V = 0;
+    public int W = -1;
+    public int X = -1;
+    public int Y = -1;
+    public int Z = -1;
+    public float a0 = 1.0F;
+    public boolean b = false;
+    public float b0 = 1.0F;
+    public boolean c = false;
+    public int c0 = -1;
+    public int d;
+    public int d0 = 0;
+    public int e;
+    public int e0 = -1;
+    public int f = -1;
+    public int[] f0;
+    public int g = -1;
+    public String g0;
+    public float h = -1.0F;
+    public String h0;
+    public int i = -1;
+    public boolean i0 = false;
+    public int j = -1;
+    public boolean j0 = false;
+    public int k = -1;
+    public boolean k0 = true;
+    public int l = -1;
+    public int m = -1;
+    public int n = -1;
+    public int o = -1;
+    public int p = -1;
+    public int q = -1;
+    public int r = -1;
+    public int s = -1;
+    public int t = -1;
+    public int u = -1;
+    public float v = 0.5F;
+    public float w = 0.5F;
+    public String x = null;
+    public int y = -1;
+    public int z = 0;
+    
+    static
+    {
+      SparseIntArray localSparseIntArray = new SparseIntArray();
+      a = localSparseIntArray;
+      localSparseIntArray.append(e.F3, 24);
+      a.append(e.G3, 25);
+      a.append(e.I3, 28);
+      a.append(e.J3, 29);
+      a.append(e.O3, 35);
+      a.append(e.N3, 34);
+      a.append(e.q3, 4);
+      a.append(e.p3, 3);
+      a.append(e.n3, 1);
+      a.append(e.T3, 6);
+      a.append(e.U3, 7);
+      a.append(e.x3, 17);
+      a.append(e.y3, 18);
+      a.append(e.z3, 19);
+      a.append(e.Y2, 26);
+      a.append(e.K3, 31);
+      a.append(e.L3, 32);
+      a.append(e.w3, 10);
+      a.append(e.v3, 9);
+      a.append(e.X3, 13);
+      a.append(e.a4, 16);
+      a.append(e.Y3, 14);
+      a.append(e.V3, 11);
+      a.append(e.Z3, 15);
+      a.append(e.W3, 12);
+      a.append(e.R3, 38);
+      a.append(e.D3, 37);
+      a.append(e.C3, 39);
+      a.append(e.Q3, 40);
+      a.append(e.B3, 20);
+      a.append(e.P3, 36);
+      a.append(e.u3, 5);
+      a.append(e.E3, 76);
+      a.append(e.M3, 76);
+      a.append(e.H3, 76);
+      a.append(e.o3, 76);
+      a.append(e.m3, 76);
+      a.append(e.b3, 23);
+      a.append(e.d3, 27);
+      a.append(e.f3, 30);
+      a.append(e.g3, 8);
+      a.append(e.c3, 33);
+      a.append(e.e3, 2);
+      a.append(e.Z2, 22);
+      a.append(e.a3, 21);
+      a.append(e.r3, 61);
+      a.append(e.t3, 62);
+      a.append(e.s3, 63);
+      a.append(e.S3, 69);
+      a.append(e.A3, 70);
+      a.append(e.k3, 71);
+      a.append(e.i3, 72);
+      a.append(e.j3, 73);
+      a.append(e.l3, 74);
+      a.append(e.h3, 75);
+    }
+    
+    public b() {}
+    
+    public void a(b paramB)
+    {
+      b = b;
+      d = d;
+      c = c;
+      e = e;
+      f = f;
+      g = g;
+      h = h;
+      i = i;
+      j = j;
+      k = k;
+      l = l;
+      m = m;
+      n = n;
+      o = o;
+      p = p;
+      q = q;
+      r = r;
+      s = s;
+      t = t;
+      u = u;
+      v = v;
+      w = w;
+      x = x;
+      y = y;
+      z = z;
+      A = A;
+      B = B;
+      C = C;
+      D = D;
+      E = E;
+      F = F;
+      G = G;
+      H = H;
+      I = I;
+      J = J;
+      K = K;
+      L = L;
+      M = M;
+      N = N;
+      O = O;
+      P = P;
+      Q = Q;
+      R = R;
+      S = S;
+      T = T;
+      U = U;
+      V = V;
+      W = W;
+      X = X;
+      Y = Y;
+      Z = Z;
+      a0 = a0;
+      b0 = b0;
+      c0 = c0;
+      d0 = d0;
+      e0 = e0;
+      h0 = h0;
+      int[] arrayOfInt = f0;
+      if (arrayOfInt != null) {
+        f0 = Arrays.copyOf(arrayOfInt, arrayOfInt.length);
+      } else {
+        f0 = null;
+      }
+      g0 = g0;
+      i0 = i0;
+      j0 = j0;
+      k0 = k0;
+    }
+    
+    void b(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, e.X2);
+      c = true;
+      int i2 = paramContext.getIndexCount();
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        int i3 = paramContext.getIndex(i1);
+        int i4 = a.get(i3);
+        if (i4 != 80)
+        {
+          if (i4 != 81) {
+            switch (i4)
+            {
+            default: 
+              switch (i4)
+              {
+              default: 
+                switch (i4)
+                {
+                default: 
+                  switch (i4)
+                  {
+                  default: 
+                    paramAttributeSet = new StringBuilder();
+                    paramAttributeSet.append("Unknown attribute 0x");
+                    paramAttributeSet.append(Integer.toHexString(i3));
+                    paramAttributeSet.append("   ");
+                    paramAttributeSet.append(a.get(i3));
+                    Log.w("ConstraintSet", paramAttributeSet.toString());
+                    break;
+                  case 77: 
+                    h0 = paramContext.getString(i3);
+                    break;
+                  case 76: 
+                    paramAttributeSet = new StringBuilder();
+                    paramAttributeSet.append("unused attribute 0x");
+                    paramAttributeSet.append(Integer.toHexString(i3));
+                    paramAttributeSet.append("   ");
+                    paramAttributeSet.append(a.get(i3));
+                    Log.w("ConstraintSet", paramAttributeSet.toString());
+                    break;
+                  case 75: 
+                    k0 = paramContext.getBoolean(i3, k0);
+                    break;
+                  case 74: 
+                    g0 = paramContext.getString(i3);
+                    break;
+                  case 73: 
+                    d0 = paramContext.getDimensionPixelSize(i3, d0);
+                    break;
+                  case 72: 
+                    c0 = paramContext.getInt(i3, c0);
+                    break;
+                  case 71: 
+                    Log.e("ConstraintSet", "CURRENTLY UNSUPPORTED");
+                    break;
+                  case 70: 
+                    b0 = paramContext.getFloat(i3, 1.0F);
+                    break;
+                  case 69: 
+                    a0 = paramContext.getFloat(i3, 1.0F);
+                  }
+                  break;
+                case 63: 
+                  A = paramContext.getFloat(i3, A);
+                  break;
+                case 62: 
+                  z = paramContext.getDimensionPixelSize(i3, z);
+                  break;
+                case 61: 
+                  y = b.a(paramContext, i3, y);
+                }
+                break;
+              case 59: 
+                Z = paramContext.getDimensionPixelSize(i3, Z);
+                break;
+              case 58: 
+                Y = paramContext.getDimensionPixelSize(i3, Y);
+                break;
+              case 57: 
+                X = paramContext.getDimensionPixelSize(i3, X);
+                break;
+              case 56: 
+                W = paramContext.getDimensionPixelSize(i3, W);
+                break;
+              case 55: 
+                V = paramContext.getInt(i3, V);
+                break;
+              case 54: 
+                U = paramContext.getInt(i3, U);
+              }
+              break;
+            case 40: 
+              T = paramContext.getInt(i3, T);
+              break;
+            case 39: 
+              S = paramContext.getInt(i3, S);
+              break;
+            case 38: 
+              Q = paramContext.getFloat(i3, Q);
+              break;
+            case 37: 
+              R = paramContext.getFloat(i3, R);
+              break;
+            case 36: 
+              w = paramContext.getFloat(i3, w);
+              break;
+            case 35: 
+              m = b.a(paramContext, i3, m);
+              break;
+            case 34: 
+              n = b.a(paramContext, i3, n);
+              break;
+            case 33: 
+              G = paramContext.getDimensionPixelSize(i3, G);
+              break;
+            case 32: 
+              s = b.a(paramContext, i3, s);
+              break;
+            case 31: 
+              r = b.a(paramContext, i3, r);
+              break;
+            case 30: 
+              if (Build.VERSION.SDK_INT < 17) {
+                break;
+              }
+              J = paramContext.getDimensionPixelSize(i3, J);
+              break;
+            case 29: 
+              l = b.a(paramContext, i3, l);
+              break;
+            case 28: 
+              k = b.a(paramContext, i3, k);
+              break;
+            case 27: 
+              F = paramContext.getDimensionPixelSize(i3, F);
+              break;
+            case 26: 
+              D = paramContext.getInt(i3, D);
+              break;
+            case 25: 
+              j = b.a(paramContext, i3, j);
+              break;
+            case 24: 
+              i = b.a(paramContext, i3, i);
+              break;
+            case 23: 
+              E = paramContext.getDimensionPixelSize(i3, E);
+              break;
+            case 22: 
+              d = paramContext.getLayoutDimension(i3, d);
+              break;
+            case 21: 
+              e = paramContext.getLayoutDimension(i3, e);
+              break;
+            case 20: 
+              v = paramContext.getFloat(i3, v);
+              break;
+            case 19: 
+              h = paramContext.getFloat(i3, h);
+              break;
+            case 18: 
+              g = paramContext.getDimensionPixelOffset(i3, g);
+              break;
+            case 17: 
+              f = paramContext.getDimensionPixelOffset(i3, f);
+              break;
+            case 16: 
+              L = paramContext.getDimensionPixelSize(i3, L);
+              break;
+            case 15: 
+              P = paramContext.getDimensionPixelSize(i3, P);
+              break;
+            case 14: 
+              M = paramContext.getDimensionPixelSize(i3, M);
+              break;
+            case 13: 
+              K = paramContext.getDimensionPixelSize(i3, K);
+              break;
+            case 12: 
+              O = paramContext.getDimensionPixelSize(i3, O);
+              break;
+            case 11: 
+              N = paramContext.getDimensionPixelSize(i3, N);
+              break;
+            case 10: 
+              t = b.a(paramContext, i3, t);
+              break;
+            case 9: 
+              u = b.a(paramContext, i3, u);
+              break;
+            case 8: 
+              if (Build.VERSION.SDK_INT < 17) {
+                break;
+              }
+              I = paramContext.getDimensionPixelSize(i3, I);
+              break;
+            case 7: 
+              C = paramContext.getDimensionPixelOffset(i3, C);
+              break;
+            case 6: 
+              B = paramContext.getDimensionPixelOffset(i3, B);
+              break;
+            case 5: 
+              x = paramContext.getString(i3);
+              break;
+            case 4: 
+              o = b.a(paramContext, i3, o);
+              break;
+            case 3: 
+              p = b.a(paramContext, i3, p);
+              break;
+            case 2: 
+              H = paramContext.getDimensionPixelSize(i3, H);
+              break;
+            case 1: 
+              q = b.a(paramContext, i3, q);
+              break;
+            }
+          } else {
+            j0 = paramContext.getBoolean(i3, j0);
+          }
+        }
+        else {
+          i0 = paramContext.getBoolean(i3, i0);
+        }
+        i1 += 1;
+      }
+      paramContext.recycle();
+    }
+  }
+  
+  public static class c
+  {
+    private static SparseIntArray a;
+    public boolean b = false;
+    public int c = -1;
+    public String d = null;
+    public int e = -1;
+    public int f = 0;
+    public float g = NaN.0F;
+    public float h = NaN.0F;
+    
+    static
+    {
+      SparseIntArray localSparseIntArray = new SparseIntArray();
+      a = localSparseIntArray;
+      localSparseIntArray.append(e.l4, 1);
+      a.append(e.n4, 2);
+      a.append(e.o4, 3);
+      a.append(e.k4, 4);
+      a.append(e.j4, 5);
+      a.append(e.m4, 6);
+    }
+    
+    public c() {}
+    
+    public void a(c paramC)
+    {
+      b = b;
+      c = c;
+      d = d;
+      e = e;
+      f = f;
+      h = h;
+      g = g;
+    }
+    
+    void b(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, e.i4);
+      b = true;
+      int j = paramContext.getIndexCount();
+      int i = 0;
+      while (i < j)
+      {
+        int k = paramContext.getIndex(i);
+        switch (a.get(k))
+        {
+        default: 
+          break;
+        case 6: 
+          g = paramContext.getFloat(k, g);
+          break;
+        case 5: 
+          c = b.a(paramContext, k, c);
+          break;
+        case 4: 
+          f = paramContext.getInt(k, 0);
+          break;
+        case 3: 
+          if (peekValuetype == 3) {
+            d = paramContext.getString(k);
+          } else {
+            d = c.f.a.a.a.b[paramContext.getInteger(k, 0)];
+          }
+          break;
+        case 2: 
+          e = paramContext.getInt(k, e);
+          break;
+        case 1: 
+          h = paramContext.getFloat(k, h);
+        }
+        i += 1;
+      }
+      paramContext.recycle();
+    }
+  }
+  
+  public static class d
+  {
+    public boolean a = false;
+    public int b = 0;
+    public int c = 0;
+    public float d = 1.0F;
+    public float e = NaN.0F;
+    
+    public d() {}
+    
+    public void a(d paramD)
+    {
+      a = a;
+      b = b;
+      d = d;
+      e = e;
+      c = c;
+    }
+    
+    void b(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, e.x4);
+      a = true;
+      int j = paramContext.getIndexCount();
+      int i = 0;
+      while (i < j)
+      {
+        int k = paramContext.getIndex(i);
+        if (k == e.z4)
+        {
+          d = paramContext.getFloat(k, d);
+        }
+        else if (k == e.y4)
+        {
+          b = paramContext.getInt(k, b);
+          b = b.b()[b];
+        }
+        else if (k == e.B4)
+        {
+          c = paramContext.getInt(k, c);
+        }
+        else if (k == e.A4)
+        {
+          e = paramContext.getFloat(k, e);
+        }
+        i += 1;
+      }
+      paramContext.recycle();
+    }
+  }
+  
+  public static class e
+  {
+    private static SparseIntArray a;
+    public boolean b = false;
+    public float c = 0.0F;
+    public float d = 0.0F;
+    public float e = 0.0F;
+    public float f = 1.0F;
+    public float g = 1.0F;
+    public float h = NaN.0F;
+    public float i = NaN.0F;
+    public float j = 0.0F;
+    public float k = 0.0F;
+    public float l = 0.0F;
+    public boolean m = false;
+    public float n = 0.0F;
+    
+    static
+    {
+      SparseIntArray localSparseIntArray = new SparseIntArray();
+      a = localSparseIntArray;
+      localSparseIntArray.append(e.V4, 1);
+      a.append(e.W4, 2);
+      a.append(e.X4, 3);
+      a.append(e.T4, 4);
+      a.append(e.U4, 5);
+      a.append(e.P4, 6);
+      a.append(e.Q4, 7);
+      a.append(e.R4, 8);
+      a.append(e.S4, 9);
+      a.append(e.Y4, 10);
+      a.append(e.Z4, 11);
+    }
+    
+    public e() {}
+    
+    public void a(e paramE)
+    {
+      b = b;
+      c = c;
+      d = d;
+      e = e;
+      f = f;
+      g = g;
+      h = h;
+      i = i;
+      j = j;
+      k = k;
+      l = l;
+      m = m;
+      n = n;
+    }
+    
+    void b(Context paramContext, AttributeSet paramAttributeSet)
+    {
+      paramContext = paramContext.obtainStyledAttributes(paramAttributeSet, e.O4);
+      b = true;
+      int i2 = paramContext.getIndexCount();
+      int i1 = 0;
+      while (i1 < i2)
+      {
+        int i3 = paramContext.getIndex(i1);
+        switch (a.get(i3))
+        {
+        default: 
+          break;
+        case 11: 
+          if (Build.VERSION.SDK_INT >= 21)
+          {
+            m = true;
+            n = paramContext.getDimension(i3, n);
+          }
+          break;
+        case 10: 
+          if (Build.VERSION.SDK_INT >= 21) {
+            l = paramContext.getDimension(i3, l);
+          }
+          break;
+        case 9: 
+          k = paramContext.getDimension(i3, k);
+          break;
+        case 8: 
+          j = paramContext.getDimension(i3, j);
+          break;
+        case 7: 
+          i = paramContext.getDimension(i3, i);
+          break;
+        case 6: 
+          h = paramContext.getDimension(i3, h);
+          break;
+        case 5: 
+          g = paramContext.getFloat(i3, g);
+          break;
+        case 4: 
+          f = paramContext.getFloat(i3, f);
+          break;
+        case 3: 
+          e = paramContext.getFloat(i3, e);
+          break;
+        case 2: 
+          d = paramContext.getFloat(i3, d);
+          break;
+        case 1: 
+          c = paramContext.getFloat(i3, c);
+        }
+        i1 += 1;
+      }
+      paramContext.recycle();
+    }
+  }
+}

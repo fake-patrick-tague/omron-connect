@@ -1,0 +1,65 @@
+package com.google.android.gms.common.api.internal;
+
+import android.os.Handler;
+import android.util.Log;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.internal.BaseGmsClient.ConnectionProgressReportCallbacks;
+import com.google.android.gms.common.internal.IAccountAccessor;
+import java.util.Map;
+import java.util.Set;
+
+final class zabu
+  implements BaseGmsClient.ConnectionProgressReportCallbacks, zacs
+{
+  private final Api.Client zab;
+  private final ApiKey<?> zac;
+  private IAccountAccessor zad = null;
+  private Set<Scope> zae = null;
+  private boolean zaf = false;
+  
+  public zabu(Api.Client paramClient, ApiKey<?> paramApiKey)
+  {
+    zab = paramApiKey;
+    Object localObject;
+    zac = localObject;
+  }
+  
+  private final void zag()
+  {
+    if (zaf)
+    {
+      IAccountAccessor localIAccountAccessor = zad;
+      if (localIAccountAccessor != null) {
+        zab.getRemoteService(localIAccountAccessor, zae);
+      }
+    }
+  }
+  
+  public final void onReportServiceBinding(ConnectionResult paramConnectionResult)
+  {
+    GoogleApiManager.zaf(zaa).post(new zabt(this, paramConnectionResult));
+  }
+  
+  public final void zae(ConnectionResult paramConnectionResult)
+  {
+    zabq localZabq = (zabq)GoogleApiManager.zat(zaa).get(zac);
+    if (localZabq != null) {
+      localZabq.zas(paramConnectionResult);
+    }
+  }
+  
+  public final void zaf(IAccountAccessor paramIAccountAccessor, Set<Scope> paramSet)
+  {
+    if ((paramIAccountAccessor != null) && (paramSet != null))
+    {
+      zad = paramIAccountAccessor;
+      zae = paramSet;
+      zag();
+      return;
+    }
+    Log.wtf("GoogleApiManager", "Received null response from onSignInSuccess", new Exception());
+    zae(new ConnectionResult(4));
+  }
+}

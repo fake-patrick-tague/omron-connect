@@ -1,0 +1,324 @@
+package androidx.appcompat.view.menu;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.os.Parcelable;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
+import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow.OnDismissListener;
+import android.widget.TextView;
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.appcompat.widget.c0;
+import c.a.d;
+import c.h.q.f0;
+
+final class q
+  extends k
+  implements PopupWindow.OnDismissListener, AdapterView.OnItemClickListener, m, View.OnKeyListener
+{
+  private static final int c = c.a.g.m;
+  private final Context d;
+  private final g e;
+  private final f f;
+  private final boolean g;
+  private final int h;
+  private final int i;
+  private final int j;
+  final c0 k;
+  final ViewTreeObserver.OnGlobalLayoutListener l = new a();
+  private final View.OnAttachStateChangeListener m = new b();
+  private PopupWindow.OnDismissListener n;
+  private View o;
+  View p;
+  private m.a q;
+  ViewTreeObserver r;
+  private boolean s;
+  private boolean t;
+  private int u;
+  private int v = 0;
+  private boolean w;
+  
+  public q(Context paramContext, g paramG, View paramView, int paramInt1, int paramInt2, boolean paramBoolean)
+  {
+    d = paramContext;
+    e = paramG;
+    g = paramBoolean;
+    f = new f(paramG, LayoutInflater.from(paramContext), paramBoolean, c);
+    i = paramInt1;
+    j = paramInt2;
+    Resources localResources = paramContext.getResources();
+    h = Math.max(getDisplayMetricswidthPixels / 2, localResources.getDimensionPixelSize(d.d));
+    o = paramView;
+    k = new c0(paramContext, null, paramInt1, paramInt2);
+    paramG.c(this, paramContext);
+  }
+  
+  private boolean B()
+  {
+    if (b()) {
+      return true;
+    }
+    if (!s)
+    {
+      Object localObject1 = o;
+      if (localObject1 == null) {
+        return false;
+      }
+      p = ((View)localObject1);
+      k.K(this);
+      k.L(this);
+      k.J(true);
+      localObject1 = p;
+      int i1;
+      if (r == null) {
+        i1 = 1;
+      } else {
+        i1 = 0;
+      }
+      Object localObject2 = ((View)localObject1).getViewTreeObserver();
+      r = ((ViewTreeObserver)localObject2);
+      if (i1 != 0) {
+        ((ViewTreeObserver)localObject2).addOnGlobalLayoutListener(l);
+      }
+      ((View)localObject1).addOnAttachStateChangeListener(m);
+      k.D((View)localObject1);
+      k.G(v);
+      if (!t)
+      {
+        u = k.q(f, null, d, h);
+        t = true;
+      }
+      k.F(u);
+      k.I(2);
+      k.H(p());
+      k.h();
+      localObject1 = k.k();
+      ((ListView)localObject1).setOnKeyListener(this);
+      if ((w) && (e.z() != null))
+      {
+        localObject2 = (FrameLayout)LayoutInflater.from(d).inflate(c.a.g.l, (ViewGroup)localObject1, false);
+        TextView localTextView = (TextView)((FrameLayout)localObject2).findViewById(16908310);
+        if (localTextView != null) {
+          localTextView.setText(e.z());
+        }
+        ((FrameLayout)localObject2).setEnabled(false);
+        ((ListView)localObject1).addHeaderView((View)localObject2, null, false);
+      }
+      k.p(f);
+      k.h();
+      return true;
+    }
+    return false;
+  }
+  
+  public void a(g paramG, boolean paramBoolean)
+  {
+    if (paramG != e) {
+      return;
+    }
+    dismiss();
+    m.a localA = q;
+    if (localA != null) {
+      localA.a(paramG, paramBoolean);
+    }
+  }
+  
+  public boolean b()
+  {
+    return (!s) && (k.b());
+  }
+  
+  public void c(boolean paramBoolean)
+  {
+    t = false;
+    f localF = f;
+    if (localF != null) {
+      localF.notifyDataSetChanged();
+    }
+  }
+  
+  public boolean d()
+  {
+    return false;
+  }
+  
+  public void dismiss()
+  {
+    if (b()) {
+      k.dismiss();
+    }
+  }
+  
+  public void g(m.a paramA)
+  {
+    q = paramA;
+  }
+  
+  public void h()
+  {
+    if (B()) {
+      return;
+    }
+    throw new IllegalStateException("StandardMenuPopup cannot be used without an anchor");
+  }
+  
+  public void j(Parcelable paramParcelable) {}
+  
+  public ListView k()
+  {
+    return k.k();
+  }
+  
+  public boolean l(r paramR)
+  {
+    if (paramR.hasVisibleItems())
+    {
+      Object localObject = new l(d, paramR, p, g, i, j);
+      ((l)localObject).j(q);
+      ((l)localObject).g(k.z(paramR));
+      ((l)localObject).i(n);
+      n = null;
+      e.e(false);
+      int i2 = k.c();
+      int i3 = k.o();
+      int i1 = i2;
+      if ((Gravity.getAbsoluteGravity(v, f0.D(o)) & 0x7) == 5) {
+        i1 = i2 + o.getWidth();
+      }
+      if (((l)localObject).n(i1, i3))
+      {
+        localObject = q;
+        if (localObject != null) {
+          ((m.a)localObject).b(paramR);
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public Parcelable m()
+  {
+    return null;
+  }
+  
+  public void n(g paramG) {}
+  
+  public void onDismiss()
+  {
+    s = true;
+    e.close();
+    Object localObject = r;
+    if (localObject != null)
+    {
+      if (!((ViewTreeObserver)localObject).isAlive()) {
+        r = p.getViewTreeObserver();
+      }
+      r.removeGlobalOnLayoutListener(l);
+      r = null;
+    }
+    p.removeOnAttachStateChangeListener(m);
+    localObject = n;
+    if (localObject != null) {
+      ((PopupWindow.OnDismissListener)localObject).onDismiss();
+    }
+  }
+  
+  public boolean onKey(View paramView, int paramInt, KeyEvent paramKeyEvent)
+  {
+    if ((paramKeyEvent.getAction() == 1) && (paramInt == 82))
+    {
+      dismiss();
+      return true;
+    }
+    return false;
+  }
+  
+  public void r(View paramView)
+  {
+    o = paramView;
+  }
+  
+  public void t(boolean paramBoolean)
+  {
+    f.d(paramBoolean);
+  }
+  
+  public void u(int paramInt)
+  {
+    v = paramInt;
+  }
+  
+  public void v(int paramInt)
+  {
+    k.e(paramInt);
+  }
+  
+  public void w(PopupWindow.OnDismissListener paramOnDismissListener)
+  {
+    n = paramOnDismissListener;
+  }
+  
+  public void x(boolean paramBoolean)
+  {
+    w = paramBoolean;
+  }
+  
+  public void y(int paramInt)
+  {
+    k.l(paramInt);
+  }
+  
+  class a
+    implements ViewTreeObserver.OnGlobalLayoutListener
+  {
+    a() {}
+    
+    public void onGlobalLayout()
+    {
+      if ((b()) && (!k.B()))
+      {
+        View localView = p;
+        if ((localView != null) && (localView.isShown()))
+        {
+          k.h();
+          return;
+        }
+        dismiss();
+      }
+    }
+  }
+  
+  class b
+    implements View.OnAttachStateChangeListener
+  {
+    b() {}
+    
+    public void onViewAttachedToWindow(View paramView) {}
+    
+    public void onViewDetachedFromWindow(View paramView)
+    {
+      Object localObject = r;
+      if (localObject != null)
+      {
+        if (!((ViewTreeObserver)localObject).isAlive()) {
+          r = paramView.getViewTreeObserver();
+        }
+        localObject = q.this;
+        r.removeGlobalOnLayoutListener(l);
+      }
+      paramView.removeOnAttachStateChangeListener(this);
+    }
+  }
+}

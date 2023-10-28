@@ -1,0 +1,55 @@
+package androidx.work.impl.utils;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import androidx.work.j;
+
+public class d
+{
+  private static final String a = j.f("PackageManagerHelper");
+  
+  public static void a(Context paramContext, Class<?> paramClass, boolean paramBoolean)
+  {
+    String str1 = "enabled";
+    for (;;)
+    {
+      try
+      {
+        Object localObject1 = paramContext.getPackageManager();
+        paramContext = new ComponentName(paramContext, paramClass.getName());
+        if (paramBoolean)
+        {
+          i = 1;
+          ((PackageManager)localObject1).setComponentEnabledSetting(paramContext, i, 1);
+          localObject1 = j.c();
+          localObject2 = a;
+          str2 = paramClass.getName();
+          if (!paramBoolean) {
+            break label165;
+          }
+          paramContext = "enabled";
+          ((j)localObject1).a((String)localObject2, String.format("%s %s", new Object[] { str2, paramContext }), new Throwable[0]);
+          return;
+        }
+      }
+      catch (Exception localException)
+      {
+        Object localObject2 = j.c();
+        String str2 = a;
+        paramClass = paramClass.getName();
+        if (paramBoolean) {
+          paramContext = str1;
+        } else {
+          paramContext = "disabled";
+        }
+        ((j)localObject2).a(str2, String.format("%s could not be %s", new Object[] { paramClass, paramContext }), new Throwable[] { localException });
+        return;
+      }
+      int i = 2;
+      continue;
+      label165:
+      paramContext = "disabled";
+    }
+  }
+}

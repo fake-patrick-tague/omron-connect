@@ -1,0 +1,309 @@
+package d.c.a.a.x;
+
+import android.graphics.Matrix;
+import android.graphics.Path;
+import android.graphics.Path.Direction;
+import android.graphics.Path.Op;
+import android.graphics.PointF;
+import android.graphics.RectF;
+import android.os.Build.VERSION;
+
+public class l
+{
+  private final m[] a = new m[4];
+  private final Matrix[] b = new Matrix[4];
+  private final Matrix[] c = new Matrix[4];
+  private final PointF d = new PointF();
+  private final Path e = new Path();
+  private final Path f = new Path();
+  private final m g = new m();
+  private final float[] h = new float[2];
+  private final float[] i = new float[2];
+  private final Path j = new Path();
+  private final Path k = new Path();
+  private boolean l = true;
+  
+  public l()
+  {
+    int m = 0;
+    while (m < 4)
+    {
+      a[m] = new m();
+      b[m] = new Matrix();
+      c[m] = new Matrix();
+      m += 1;
+    }
+  }
+  
+  private float a(int paramInt)
+  {
+    return (paramInt + 1) * 90;
+  }
+  
+  private void b(c paramC, int paramInt)
+  {
+    h[0] = a[paramInt].k();
+    h[1] = a[paramInt].l();
+    b[paramInt].mapPoints(h);
+    Path localPath;
+    float[] arrayOfFloat;
+    if (paramInt == 0)
+    {
+      localPath = b;
+      arrayOfFloat = h;
+      localPath.moveTo(arrayOfFloat[0], arrayOfFloat[1]);
+    }
+    else
+    {
+      localPath = b;
+      arrayOfFloat = h;
+      localPath.lineTo(arrayOfFloat[0], arrayOfFloat[1]);
+    }
+    a[paramInt].d(b[paramInt], b);
+    paramC = d;
+    if (paramC != null) {
+      paramC.a(a[paramInt], b[paramInt], paramInt);
+    }
+  }
+  
+  private void c(c paramC, int paramInt)
+  {
+    int m = (paramInt + 1) % 4;
+    h[0] = a[paramInt].i();
+    h[1] = a[paramInt].j();
+    b[paramInt].mapPoints(h);
+    i[0] = a[m].k();
+    i[1] = a[m].l();
+    b[m].mapPoints(i);
+    Object localObject = h;
+    float f1 = localObject[0];
+    float[] arrayOfFloat = i;
+    f1 = Math.max((float)Math.hypot(f1 - arrayOfFloat[0], localObject[1] - arrayOfFloat[1]) - 0.001F, 0.0F);
+    float f2 = i(c, paramInt);
+    g.n(0.0F, 0.0F);
+    localObject = j(paramInt, a);
+    ((f)localObject).c(f1, f2, e, g);
+    j.reset();
+    g.d(c[paramInt], j);
+    if ((l) && (Build.VERSION.SDK_INT >= 19) && ((((f)localObject).b()) || (l(j, paramInt)) || (l(j, m))))
+    {
+      localObject = j;
+      ((Path)localObject).op((Path)localObject, f, Path.Op.DIFFERENCE);
+      h[0] = g.k();
+      h[1] = g.l();
+      c[paramInt].mapPoints(h);
+      localObject = e;
+      arrayOfFloat = h;
+      ((Path)localObject).moveTo(arrayOfFloat[0], arrayOfFloat[1]);
+      g.d(c[paramInt], e);
+    }
+    else
+    {
+      g.d(c[paramInt], b);
+    }
+    paramC = d;
+    if (paramC != null) {
+      paramC.b(g, c[paramInt], paramInt);
+    }
+  }
+  
+  private void f(int paramInt, RectF paramRectF, PointF paramPointF)
+  {
+    if (paramInt != 1)
+    {
+      if (paramInt != 2)
+      {
+        if (paramInt != 3)
+        {
+          paramPointF.set(right, top);
+          return;
+        }
+        paramPointF.set(left, top);
+        return;
+      }
+      paramPointF.set(left, bottom);
+      return;
+    }
+    paramPointF.set(right, bottom);
+  }
+  
+  private c g(int paramInt, k paramK)
+  {
+    if (paramInt != 1)
+    {
+      if (paramInt != 2)
+      {
+        if (paramInt != 3) {
+          return paramK.t();
+        }
+        return paramK.r();
+      }
+      return paramK.j();
+    }
+    return paramK.l();
+  }
+  
+  private d h(int paramInt, k paramK)
+  {
+    if (paramInt != 1)
+    {
+      if (paramInt != 2)
+      {
+        if (paramInt != 3) {
+          return paramK.s();
+        }
+        return paramK.q();
+      }
+      return paramK.i();
+    }
+    return paramK.k();
+  }
+  
+  private float i(RectF paramRectF, int paramInt)
+  {
+    float[] arrayOfFloat = h;
+    m[] arrayOfM = a;
+    arrayOfFloat[0] = c;
+    arrayOfFloat[1] = d;
+    b[paramInt].mapPoints(arrayOfFloat);
+    if ((paramInt != 1) && (paramInt != 3)) {
+      return Math.abs(paramRectF.centerY() - h[1]);
+    }
+    return Math.abs(paramRectF.centerX() - h[0]);
+  }
+  
+  private f j(int paramInt, k paramK)
+  {
+    if (paramInt != 1)
+    {
+      if (paramInt != 2)
+      {
+        if (paramInt != 3) {
+          return paramK.o();
+        }
+        return paramK.p();
+      }
+      return paramK.n();
+    }
+    return paramK.h();
+  }
+  
+  public static l k()
+  {
+    return a.a;
+  }
+  
+  private boolean l(Path paramPath, int paramInt)
+  {
+    k.reset();
+    a[paramInt].d(b[paramInt], k);
+    RectF localRectF = new RectF();
+    boolean bool = true;
+    paramPath.computeBounds(localRectF, true);
+    k.computeBounds(localRectF, true);
+    paramPath.op(k, Path.Op.INTERSECT);
+    paramPath.computeBounds(localRectF, true);
+    if (localRectF.isEmpty())
+    {
+      if ((localRectF.width() > 1.0F) && (localRectF.height() > 1.0F)) {
+        return true;
+      }
+      bool = false;
+    }
+    return bool;
+  }
+  
+  private void m(c paramC, int paramInt)
+  {
+    Object localObject = g(paramInt, a);
+    h(paramInt, a).b(a[paramInt], 90.0F, e, c, (c)localObject);
+    float f1 = a(paramInt);
+    b[paramInt].reset();
+    f(paramInt, c, d);
+    paramC = b[paramInt];
+    localObject = d;
+    paramC.setTranslate(x, y);
+    b[paramInt].preRotate(f1);
+  }
+  
+  private void n(int paramInt)
+  {
+    h[0] = a[paramInt].i();
+    h[1] = a[paramInt].j();
+    b[paramInt].mapPoints(h);
+    float f1 = a(paramInt);
+    c[paramInt].reset();
+    Matrix localMatrix = c[paramInt];
+    float[] arrayOfFloat = h;
+    localMatrix.setTranslate(arrayOfFloat[0], arrayOfFloat[1]);
+    c[paramInt].preRotate(f1);
+  }
+  
+  public void d(k paramK, float paramFloat, RectF paramRectF, Path paramPath)
+  {
+    e(paramK, paramFloat, paramRectF, null, paramPath);
+  }
+  
+  public void e(k paramK, float paramFloat, RectF paramRectF, b paramB, Path paramPath)
+  {
+    paramPath.rewind();
+    e.rewind();
+    f.rewind();
+    f.addRect(paramRectF, Path.Direction.CW);
+    paramK = new c(paramK, paramFloat, paramRectF, paramB, paramPath);
+    int i1 = 0;
+    int m = 0;
+    int n;
+    for (;;)
+    {
+      n = i1;
+      if (m >= 4) {
+        break;
+      }
+      m(paramK, m);
+      n(m);
+      m += 1;
+    }
+    while (n < 4)
+    {
+      b(paramK, n);
+      c(paramK, n);
+      n += 1;
+    }
+    paramPath.close();
+    e.close();
+    if ((Build.VERSION.SDK_INT >= 19) && (!e.isEmpty())) {
+      paramPath.op(e, Path.Op.UNION);
+    }
+  }
+  
+  private static class a
+  {
+    static final l a = new l();
+  }
+  
+  public static abstract interface b
+  {
+    public abstract void a(m paramM, Matrix paramMatrix, int paramInt);
+    
+    public abstract void b(m paramM, Matrix paramMatrix, int paramInt);
+  }
+  
+  static final class c
+  {
+    public final k a;
+    public final Path b;
+    public final RectF c;
+    public final l.b d;
+    public final float e;
+    
+    c(k paramK, float paramFloat, RectF paramRectF, l.b paramB, Path paramPath)
+    {
+      d = paramB;
+      a = paramK;
+      e = paramFloat;
+      c = paramRectF;
+      b = paramPath;
+    }
+  }
+}

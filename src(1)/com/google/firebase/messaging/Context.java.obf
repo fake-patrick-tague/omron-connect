@@ -1,0 +1,420 @@
+package com.google.firebase.messaging;
+
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.MissingFormatArgumentException;
+import java.util.Objects;
+import java.util.Set;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+public class s0
+{
+  private final Bundle a;
+  
+  public s0(Bundle paramBundle)
+  {
+    Objects.requireNonNull(paramBundle, "data");
+    a = new Bundle(paramBundle);
+  }
+  
+  private static int d(String paramString)
+  {
+    int i = Color.parseColor(paramString);
+    if (i != -16777216) {
+      return i;
+    }
+    throw new IllegalArgumentException("Transparent color is invalid");
+  }
+  
+  private static boolean s(String paramString)
+  {
+    return (paramString.startsWith("google.c.a.")) || (paramString.equals("from"));
+  }
+  
+  public static boolean t(Bundle paramBundle)
+  {
+    return ("1".equals(paramBundle.getString("gcm.n.e"))) || ("1".equals(paramBundle.getString(v("gcm.n.e"))));
+  }
+  
+  private static boolean u(String paramString)
+  {
+    return (paramString.startsWith("google.c.")) || (paramString.startsWith("gcm.n.")) || (paramString.startsWith("gcm.notification."));
+  }
+  
+  private static String v(String paramString)
+  {
+    if (!paramString.startsWith("gcm.n.")) {
+      return paramString;
+    }
+    return paramString.replace("gcm.n.", "gcm.notification.");
+  }
+  
+  private String w(String paramString)
+  {
+    if ((!a.containsKey(paramString)) && (paramString.startsWith("gcm.n.")))
+    {
+      String str = v(paramString);
+      if (a.containsKey(str)) {
+        return str;
+      }
+    }
+    return paramString;
+  }
+  
+  private static String z(String paramString)
+  {
+    String str = paramString;
+    if (paramString.startsWith("gcm.n.")) {
+      str = paramString.substring(6);
+    }
+    return str;
+  }
+  
+  public boolean a(String paramString)
+  {
+    paramString = p(paramString);
+    return ("1".equals(paramString)) || (Boolean.parseBoolean(paramString));
+  }
+  
+  public Integer b(String paramString)
+  {
+    String str = p(paramString);
+    if (!TextUtils.isEmpty(str)) {}
+    try
+    {
+      int i = Integer.parseInt(str);
+      return Integer.valueOf(i);
+    }
+    catch (NumberFormatException localNumberFormatException)
+    {
+      StringBuilder localStringBuilder;
+      for (;;) {}
+    }
+    localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Couldn't parse value of ");
+    localStringBuilder.append(z(paramString));
+    localStringBuilder.append("(");
+    localStringBuilder.append(str);
+    localStringBuilder.append(") into an int");
+    Log.w("NotificationParams", localStringBuilder.toString());
+    return null;
+  }
+  
+  public JSONArray c(String paramString)
+  {
+    String str = p(paramString);
+    if (!TextUtils.isEmpty(str)) {}
+    try
+    {
+      localObject = new JSONArray(str);
+      return localObject;
+    }
+    catch (JSONException localJSONException)
+    {
+      Object localObject;
+      for (;;) {}
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("Malformed JSON for key ");
+    ((StringBuilder)localObject).append(z(paramString));
+    ((StringBuilder)localObject).append(": ");
+    ((StringBuilder)localObject).append(str);
+    ((StringBuilder)localObject).append(", falling back to default");
+    Log.w("NotificationParams", ((StringBuilder)localObject).toString());
+    return null;
+  }
+  
+  int[] e()
+  {
+    JSONArray localJSONArray = c("gcm.n.light_settings");
+    if (localJSONArray == null) {
+      return null;
+    }
+    try
+    {
+      if (localJSONArray.length() == 3) {
+        return new int[] { d(localJSONArray.optString(0)), localJSONArray.optInt(1), localJSONArray.optInt(2) };
+      }
+      throw new JSONException("lightSettings don't have all three fields");
+    }
+    catch (IllegalArgumentException localIllegalArgumentException)
+    {
+      StringBuilder localStringBuilder2 = new StringBuilder();
+      localStringBuilder2.append("LightSettings is invalid: ");
+      localStringBuilder2.append(localJSONArray);
+      localStringBuilder2.append(". ");
+      localStringBuilder2.append(localIllegalArgumentException.getMessage());
+      localStringBuilder2.append(". Skipping setting LightSettings");
+      Log.w("NotificationParams", localStringBuilder2.toString());
+      return null;
+      StringBuilder localStringBuilder1 = new StringBuilder();
+      localStringBuilder1.append("LightSettings is invalid: ");
+      localStringBuilder1.append(localJSONArray);
+      localStringBuilder1.append(". Skipping setting LightSettings");
+      Log.w("NotificationParams", localStringBuilder1.toString());
+      return null;
+    }
+    catch (JSONException localJSONException)
+    {
+      for (;;) {}
+    }
+  }
+  
+  public Uri f()
+  {
+    String str2 = p("gcm.n.link_android");
+    String str1 = str2;
+    if (TextUtils.isEmpty(str2)) {
+      str1 = p("gcm.n.link");
+    }
+    if (!TextUtils.isEmpty(str1)) {
+      return Uri.parse(str1);
+    }
+    return null;
+  }
+  
+  public Object[] g(String paramString)
+  {
+    Object localObject = new StringBuilder();
+    ((StringBuilder)localObject).append(paramString);
+    ((StringBuilder)localObject).append("_loc_args");
+    paramString = c(((StringBuilder)localObject).toString());
+    if (paramString == null) {
+      return null;
+    }
+    int j = paramString.length();
+    localObject = new String[j];
+    int i = 0;
+    while (i < j)
+    {
+      localObject[i] = paramString.optString(i);
+      i += 1;
+    }
+    return localObject;
+  }
+  
+  public String h(String paramString)
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append(paramString);
+    localStringBuilder.append("_loc_key");
+    return p(localStringBuilder.toString());
+  }
+  
+  public String i(Resources paramResources, String paramString1, String paramString2)
+  {
+    Object localObject = h(paramString2);
+    if (TextUtils.isEmpty((CharSequence)localObject)) {
+      return null;
+    }
+    int i = paramResources.getIdentifier((String)localObject, "string", paramString1);
+    if (i == 0)
+    {
+      paramResources = new StringBuilder();
+      paramString1 = new StringBuilder();
+      paramString1.append(paramString2);
+      paramString1.append("_loc_key");
+      paramResources.append(z(paramString1.toString()));
+      paramResources.append(" resource not found: ");
+      paramResources.append(paramString2);
+      paramResources.append(" Default value will be used.");
+      Log.w("NotificationParams", paramResources.toString());
+      return null;
+    }
+    paramString1 = g(paramString2);
+    if (paramString1 == null) {
+      return paramResources.getString(i);
+    }
+    try
+    {
+      paramResources = paramResources.getString(i, paramString1);
+      return paramResources;
+    }
+    catch (MissingFormatArgumentException paramResources)
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Missing format argument for ");
+      ((StringBuilder)localObject).append(z(paramString2));
+      ((StringBuilder)localObject).append(": ");
+      ((StringBuilder)localObject).append(Arrays.toString(paramString1));
+      ((StringBuilder)localObject).append(" Default value will be used.");
+      Log.w("NotificationParams", ((StringBuilder)localObject).toString(), paramResources);
+    }
+    return null;
+  }
+  
+  public Long j(String paramString)
+  {
+    String str = p(paramString);
+    if (!TextUtils.isEmpty(str)) {}
+    try
+    {
+      long l = Long.parseLong(str);
+      return Long.valueOf(l);
+    }
+    catch (NumberFormatException localNumberFormatException)
+    {
+      StringBuilder localStringBuilder;
+      for (;;) {}
+    }
+    localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Couldn't parse value of ");
+    localStringBuilder.append(z(paramString));
+    localStringBuilder.append("(");
+    localStringBuilder.append(str);
+    localStringBuilder.append(") into a long");
+    Log.w("NotificationParams", localStringBuilder.toString());
+    return null;
+  }
+  
+  public String k()
+  {
+    return p("gcm.n.android_channel_id");
+  }
+  
+  Integer l()
+  {
+    Integer localInteger = b("gcm.n.notification_count");
+    if (localInteger == null) {
+      return null;
+    }
+    if (localInteger.intValue() < 0)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("notificationCount is invalid: ");
+      localStringBuilder.append(localInteger);
+      localStringBuilder.append(". Skipping setting notificationCount.");
+      Log.w("FirebaseMessaging", localStringBuilder.toString());
+      return null;
+    }
+    return localInteger;
+  }
+  
+  Integer m()
+  {
+    Integer localInteger = b("gcm.n.notification_priority");
+    if (localInteger == null) {
+      return null;
+    }
+    if ((localInteger.intValue() >= -2) && (localInteger.intValue() <= 2)) {
+      return localInteger;
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("notificationPriority is invalid ");
+    localStringBuilder.append(localInteger);
+    localStringBuilder.append(". Skipping setting notificationPriority.");
+    Log.w("FirebaseMessaging", localStringBuilder.toString());
+    return null;
+  }
+  
+  public String n(Resources paramResources, String paramString1, String paramString2)
+  {
+    String str = p(paramString2);
+    if (!TextUtils.isEmpty(str)) {
+      return str;
+    }
+    return i(paramResources, paramString1, paramString2);
+  }
+  
+  public String o()
+  {
+    String str2 = p("gcm.n.sound2");
+    String str1 = str2;
+    if (TextUtils.isEmpty(str2)) {
+      str1 = p("gcm.n.sound");
+    }
+    return str1;
+  }
+  
+  public String p(String paramString)
+  {
+    return a.getString(w(paramString));
+  }
+  
+  public long[] q()
+  {
+    JSONArray localJSONArray = c("gcm.n.vibrate_timings");
+    if (localJSONArray == null) {
+      return null;
+    }
+    try
+    {
+      if (localJSONArray.length() > 1)
+      {
+        int j = localJSONArray.length();
+        localObject = new long[j];
+        int i = 0;
+        while (i < j)
+        {
+          localObject[i] = localJSONArray.optLong(i);
+          i += 1;
+        }
+      }
+      throw new JSONException("vibrateTimings have invalid length");
+    }
+    catch (JSONException|NumberFormatException localJSONException)
+    {
+      Object localObject;
+      for (;;) {}
+      return localJSONException;
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("User defined vibrateTimings is invalid: ");
+    ((StringBuilder)localObject).append(localJSONArray);
+    ((StringBuilder)localObject).append(". Skipping setting vibrateTimings.");
+    Log.w("NotificationParams", ((StringBuilder)localObject).toString());
+    return null;
+  }
+  
+  Integer r()
+  {
+    Integer localInteger = b("gcm.n.visibility");
+    if (localInteger == null) {
+      return null;
+    }
+    if ((localInteger.intValue() >= -1) && (localInteger.intValue() <= 1)) {
+      return localInteger;
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("visibility is invalid: ");
+    localStringBuilder.append(localInteger);
+    localStringBuilder.append(". Skipping setting visibility.");
+    Log.w("NotificationParams", localStringBuilder.toString());
+    return null;
+  }
+  
+  public Bundle x()
+  {
+    Bundle localBundle = new Bundle(a);
+    Iterator localIterator = a.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      if (!s(str)) {
+        localBundle.remove(str);
+      }
+    }
+    return localBundle;
+  }
+  
+  public Bundle y()
+  {
+    Bundle localBundle = new Bundle(a);
+    Iterator localIterator = a.keySet().iterator();
+    while (localIterator.hasNext())
+    {
+      String str = (String)localIterator.next();
+      if (u(str)) {
+        localBundle.remove(str);
+      }
+    }
+    return localBundle;
+  }
+}

@@ -1,0 +1,934 @@
+package com.braze.images;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.TrafficStats;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.LruCache;
+import android.widget.ImageView;
+import com.braze.R.string;
+import com.braze.coroutine.BrazeCoroutineScope;
+import com.braze.enums.BrazeViewBounds;
+import com.braze.models.cards.Card;
+import com.braze.models.inappmessage.IInAppMessage;
+import com.braze.support.BrazeFileUtils;
+import com.braze.support.BrazeImageUtils;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import java.io.File;
+import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import kotlin.n;
+import kotlin.t;
+import kotlin.text.g;
+import kotlin.w.d;
+import kotlin.w.i.a.f;
+import kotlin.w.i.a.l;
+import kotlin.x.c.p;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+import kotlinx.coroutines.b1;
+import kotlinx.coroutines.m0;
+
+public final class DefaultBrazeImageLoader
+  implements IBrazeImageLoader
+{
+  public static final b Companion = new b(null);
+  private static final String TAG = BrazeLogger.getBrazeLogTag(DefaultBrazeImageLoader.class);
+  private final ReentrantLock diskCacheLock = new ReentrantLock();
+  private bo.app.h diskLruCache;
+  private boolean isDiskCacheStarting = true;
+  private boolean isOffline;
+  private final LruCache<String, Bitmap> memoryCache = new a(BrazeImageUtils.getImageLoaderCacheSize());
+  
+  public DefaultBrazeImageLoader(Context paramContext)
+  {
+    initDiskCacheTask(paramContext);
+  }
+  
+  private final void initDiskCacheTask(Context paramContext)
+  {
+    kotlinx.coroutines.h.d(BrazeCoroutineScope.INSTANCE, null, null, new k(paramContext, this, null), 3, null);
+  }
+  
+  private final Bitmap putBitmapIntoMemCache(String paramString, Bitmap paramBitmap)
+  {
+    return (Bitmap)memoryCache.put(paramString, paramBitmap);
+  }
+  
+  private final void renderUrlIntoView(Context paramContext, String paramString, ImageView paramImageView, BrazeViewBounds paramBrazeViewBounds)
+  {
+    if (g.o(paramString))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, o.b, 3, null);
+      return;
+    }
+    try
+    {
+      renderUrlIntoViewTask(paramContext, paramImageView, paramBrazeViewBounds, paramString);
+      return;
+    }
+    finally
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramContext, new p(paramString));
+    }
+  }
+  
+  private final void renderUrlIntoViewTask(final Context paramContext, final ImageView paramImageView, final BrazeViewBounds paramBrazeViewBounds, final String paramString)
+  {
+    paramImageView.setTag(R.string.com_braze_image_lru_cache_image_url_key, paramString);
+    kotlinx.coroutines.h.d(BrazeCoroutineScope.INSTANCE, null, null, new q(this, paramContext, paramString, paramBrazeViewBounds, paramImageView, null), 3, null);
+  }
+  
+  public final Bitmap downloadBitmapFromUrl(Context paramContext, Uri paramUri, BrazeViewBounds paramBrazeViewBounds)
+  {
+    i.e(paramContext, "context");
+    i.e(paramUri, "imageUri");
+    BrazeViewBounds localBrazeViewBounds = paramBrazeViewBounds;
+    if (paramBrazeViewBounds == null) {
+      localBrazeViewBounds = BrazeViewBounds.NO_BOUNDS;
+    }
+    return BrazeImageUtils.getBitmap(paramContext, paramUri, localBrazeViewBounds);
+  }
+  
+  public final Bitmap getBitmapFromCache(String paramString)
+  {
+    i.e(paramString, "key");
+    Bitmap localBitmap = (Bitmap)memoryCache.get(paramString);
+    if (localBitmap != null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, new c(paramString, this), 2, null);
+      return localBitmap;
+    }
+    localBitmap = getBitmapFromDiskCache(paramString);
+    if (localBitmap != null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, new d(paramString), 2, null);
+      putBitmapIntoMemCache(paramString, localBitmap);
+      return localBitmap;
+    }
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new e(paramString), 3, null);
+    return null;
+  }
+  
+  public final Bitmap getBitmapFromDiskCache(String paramString)
+  {
+    i.e(paramString, "key");
+    ReentrantLock localReentrantLock = diskCacheLock;
+    localReentrantLock.lock();
+    label163:
+    for (;;)
+    {
+      try
+      {
+        boolean bool = isDiskCacheStarting;
+        Object localObject2 = null;
+        if (bool)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, new f(paramString), 2, null);
+        }
+        else
+        {
+          bo.app.h localH = diskLruCache;
+          Object localObject1 = localH;
+          if (localH == null)
+          {
+            i.o("diskLruCache");
+            localObject1 = null;
+          }
+          if (((bo.app.h)localObject1).a(paramString))
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, new g(paramString), 2, null);
+            localObject1 = diskLruCache;
+            if (localObject1 != null) {
+              break label163;
+            }
+            i.o("diskLruCache");
+            localObject1 = localObject2;
+            paramString = ((bo.app.h)localObject1).b(paramString);
+            return paramString;
+          }
+        }
+        paramString = t.a;
+        return null;
+      }
+      finally
+      {
+        localReentrantLock.unlock();
+      }
+    }
+  }
+  
+  public final Bitmap getBitmapFromMemCache(String paramString)
+  {
+    i.e(paramString, "key");
+    return (Bitmap)memoryCache.get(paramString);
+  }
+  
+  public final Bitmap getBitmapFromUrl(Context paramContext, String paramString, BrazeViewBounds paramBrazeViewBounds)
+  {
+    i.e(paramContext, "context");
+    i.e(paramString, "imageUrl");
+    if (g.o(paramString))
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, h.b, 3, null);
+      return null;
+    }
+    try
+    {
+      Object localObject = getBitmapFromCache(paramString);
+      if (localObject != null) {
+        return localObject;
+      }
+      if (isOffline)
+      {
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, i.b, 3, null);
+        return null;
+      }
+      localObject = Uri.parse(paramString);
+      i.d(localObject, "imageUri");
+      paramContext = downloadBitmapFromUrl(paramContext, (Uri)localObject, paramBrazeViewBounds);
+      if (paramContext != null)
+      {
+        putBitmapIntoCache(paramString, paramContext, BrazeFileUtils.isLocalUri((Uri)localObject));
+        return paramContext;
+      }
+    }
+    finally
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramContext, new j(paramString));
+    }
+    return null;
+  }
+  
+  public Bitmap getInAppMessageBitmapFromUrl(Context paramContext, IInAppMessage paramIInAppMessage, String paramString, BrazeViewBounds paramBrazeViewBounds)
+  {
+    i.e(paramContext, "context");
+    i.e(paramIInAppMessage, "inAppMessage");
+    i.e(paramString, "imageUrl");
+    return getBitmapFromUrl(paramContext, paramString, paramBrazeViewBounds);
+  }
+  
+  public final LruCache<String, Bitmap> getMemoryCache()
+  {
+    return memoryCache;
+  }
+  
+  public Bitmap getPushBitmapFromUrl(Context paramContext, Bundle paramBundle, String paramString, BrazeViewBounds paramBrazeViewBounds)
+  {
+    i.e(paramContext, "context");
+    i.e(paramString, "imageUrl");
+    return getBitmapFromUrl(paramContext, paramString, paramBrazeViewBounds);
+  }
+  
+  public final void putBitmapIntoCache(String paramString, Bitmap paramBitmap, boolean paramBoolean)
+  {
+    i.e(paramString, "key");
+    i.e(paramBitmap, "bitmap");
+    if (getBitmapFromMemCache(paramString) == null)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new l(paramString), 3, null);
+      memoryCache.put(paramString, paramBitmap);
+    }
+    if (paramBoolean)
+    {
+      BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new m(paramString), 3, null);
+      return;
+    }
+    ReentrantLock localReentrantLock = diskCacheLock;
+    localReentrantLock.lock();
+    label200:
+    for (;;)
+    {
+      try
+      {
+        if (!isDiskCacheStarting)
+        {
+          bo.app.h localH = diskLruCache;
+          Object localObject2 = null;
+          Object localObject1 = localH;
+          if (localH == null)
+          {
+            i.o("diskLruCache");
+            localObject1 = null;
+          }
+          if (!((bo.app.h)localObject1).a(paramString))
+          {
+            BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, null, null, new n(paramString), 3, null);
+            localObject1 = diskLruCache;
+            if (localObject1 != null) {
+              break label200;
+            }
+            i.o("diskLruCache");
+            localObject1 = localObject2;
+            ((bo.app.h)localObject1).a(paramString, paramBitmap);
+          }
+        }
+        paramString = t.a;
+        return;
+      }
+      finally
+      {
+        localReentrantLock.unlock();
+      }
+    }
+  }
+  
+  public void renderUrlIntoCardView(Context paramContext, Card paramCard, String paramString, ImageView paramImageView, BrazeViewBounds paramBrazeViewBounds)
+  {
+    i.e(paramContext, "context");
+    i.e(paramCard, "card");
+    i.e(paramString, "imageUrl");
+    i.e(paramImageView, "imageView");
+    renderUrlIntoView(paramContext, paramString, paramImageView, paramBrazeViewBounds);
+  }
+  
+  public void renderUrlIntoInAppMessageView(Context paramContext, IInAppMessage paramIInAppMessage, String paramString, ImageView paramImageView, BrazeViewBounds paramBrazeViewBounds)
+  {
+    i.e(paramContext, "context");
+    i.e(paramIInAppMessage, "inAppMessage");
+    i.e(paramString, "imageUrl");
+    i.e(paramImageView, "imageView");
+    renderUrlIntoView(paramContext, paramString, paramImageView, paramBrazeViewBounds);
+  }
+  
+  public void setOffline(boolean paramBoolean)
+  {
+    BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.I, null, new r(paramBoolean), 2, null);
+    isOffline = paramBoolean;
+  }
+  
+  public static final class a
+    extends LruCache<String, Bitmap>
+  {
+    a(int paramInt)
+    {
+      super();
+    }
+    
+    protected int a(String paramString, Bitmap paramBitmap)
+    {
+      i.e(paramString, "key");
+      i.e(paramBitmap, "image");
+      return paramBitmap.getByteCount();
+    }
+  }
+  
+  public static final class b
+  {
+    private b() {}
+    
+    public final File a(Context paramContext, String paramString)
+    {
+      i.e(paramContext, "context");
+      i.e(paramString, "uniqueName");
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append(paramContext.getCacheDir().getPath());
+      localStringBuilder.append(File.separator);
+      localStringBuilder.append(paramString);
+      return new File(localStringBuilder.toString());
+    }
+    
+    public final void a(Context paramContext)
+    {
+      i.e(paramContext, "context");
+      try
+      {
+        paramContext = new File(paramContext.getCacheDir(), "appboy.imageloader.lru.cache");
+        BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, this, BrazeLogger.Priority.V, null, new a(paramContext), 2, null);
+        BrazeFileUtils.deleteFileOrDirectory(paramContext);
+        return;
+      }
+      catch (Exception paramContext)
+      {
+        BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.E, paramContext, b.b);
+      }
+    }
+    
+    static final class a
+      extends j
+      implements kotlin.x.c.a<String>
+    {
+      a(File paramFile)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Deleting lru image cache directory at: ");
+        localStringBuilder.append(b.getAbsolutePath());
+        return localStringBuilder.toString();
+      }
+    }
+    
+    static final class b
+      extends j
+      implements kotlin.x.c.a<String>
+    {
+      public static final b b = new b();
+      
+      b()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Failed to delete stored data in image loader";
+      }
+    }
+  }
+  
+  static final class c
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    c(String paramString, DefaultBrazeImageLoader paramDefaultBrazeImageLoader)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Got bitmap from mem cache for key ");
+      localStringBuilder.append(b);
+      localStringBuilder.append("\nMemory cache stats: ");
+      localStringBuilder.append(jdField_this.getMemoryCache());
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class d
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    d(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Got bitmap from disk cache for key ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class e
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    e(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("No cache hit for bitmap: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class f
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    f(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Disk cache still starting. Cannot retrieve key from disk cache: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class g
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    g(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Getting bitmap from disk cache for key: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class h
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    public static final h b = new h();
+    
+    h()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Cannot retrieve bitmap with blank image url";
+    }
+  }
+  
+  static final class i
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    public static final i b = new i();
+    
+    i()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Cache is currently in offline mode. Not downloading bitmap.";
+    }
+  }
+  
+  static final class j
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    j(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to get bitmap from url. Url: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  @f(c="com.braze.images.DefaultBrazeImageLoader$initDiskCacheTask$1", f="DefaultBrazeImageLoader.kt", l={}, m="invokeSuspend")
+  static final class k
+    extends l
+    implements p<m0, d<? super t>, Object>
+  {
+    int b;
+    
+    k(Context paramContext, DefaultBrazeImageLoader paramDefaultBrazeImageLoader, d<? super k> paramD)
+    {
+      super(paramD);
+    }
+    
+    public final Object a(m0 paramM0, d<? super t> paramD)
+    {
+      return ((k)create(paramM0, paramD)).invokeSuspend(t.a);
+    }
+    
+    public final d<t> create(Object paramObject, d<?> paramD)
+    {
+      return new k(c, jdField_this, paramD);
+    }
+    
+    /* Error */
+    public final Object invokeSuspend(Object paramObject)
+    {
+      // Byte code:
+      //   0: invokestatic 76	kotlin/coroutines/intrinsics/a:c	()Ljava/lang/Object;
+      //   3: pop
+      //   4: aload_0
+      //   5: getfield 78	com/braze/images/DefaultBrazeImageLoader$k:b	I
+      //   8: ifne +142 -> 150
+      //   11: aload_1
+      //   12: invokestatic 83	kotlin/n:b	(Ljava/lang/Object;)V
+      //   15: getstatic 87	com/braze/images/DefaultBrazeImageLoader:Companion	Lcom/braze/images/DefaultBrazeImageLoader$b;
+      //   18: aload_0
+      //   19: getfield 35	com/braze/images/DefaultBrazeImageLoader$k:c	Landroid/content/Context;
+      //   22: ldc 89
+      //   24: invokevirtual 94	com/braze/images/DefaultBrazeImageLoader$b:a	(Landroid/content/Context;Ljava/lang/String;)Ljava/io/File;
+      //   27: astore_2
+      //   28: aload_0
+      //   29: getfield 37	com/braze/images/DefaultBrazeImageLoader$k:d	Lcom/braze/images/DefaultBrazeImageLoader;
+      //   32: invokestatic 98	com/braze/images/DefaultBrazeImageLoader:access$getDiskCacheLock$p	(Lcom/braze/images/DefaultBrazeImageLoader;)Ljava/util/concurrent/locks/ReentrantLock;
+      //   35: astore_1
+      //   36: aload_0
+      //   37: getfield 37	com/braze/images/DefaultBrazeImageLoader$k:d	Lcom/braze/images/DefaultBrazeImageLoader;
+      //   40: astore_3
+      //   41: aload_1
+      //   42: invokeinterface 104 1 0
+      //   47: getstatic 110	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+      //   50: astore 4
+      //   52: aload 4
+      //   54: invokestatic 114	com/braze/images/DefaultBrazeImageLoader:access$getTAG$cp	()Ljava/lang/String;
+      //   57: aconst_null
+      //   58: aconst_null
+      //   59: getstatic 117	com/braze/images/DefaultBrazeImageLoader$k$a:b	Lcom/braze/images/DefaultBrazeImageLoader$k$a;
+      //   62: bipush 6
+      //   64: aconst_null
+      //   65: invokestatic 121	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+      //   68: aload_3
+      //   69: new 123	bo/app/h
+      //   72: dup
+      //   73: aload_2
+      //   74: iconst_1
+      //   75: iconst_1
+      //   76: ldc2_w 124
+      //   79: invokespecial 128	bo/app/h:<init>	(Ljava/io/File;IIJ)V
+      //   82: invokestatic 132	com/braze/images/DefaultBrazeImageLoader:access$setDiskLruCache$p	(Lcom/braze/images/DefaultBrazeImageLoader;Lbo/app/h;)V
+      //   85: aload 4
+      //   87: invokestatic 114	com/braze/images/DefaultBrazeImageLoader:access$getTAG$cp	()Ljava/lang/String;
+      //   90: aconst_null
+      //   91: aconst_null
+      //   92: getstatic 135	com/braze/images/DefaultBrazeImageLoader$k$b:b	Lcom/braze/images/DefaultBrazeImageLoader$k$b;
+      //   95: bipush 6
+      //   97: aconst_null
+      //   98: invokestatic 121	com/braze/support/BrazeLogger:brazelog$default	(Lcom/braze/support/BrazeLogger;Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;ILjava/lang/Object;)V
+      //   101: aload_3
+      //   102: iconst_0
+      //   103: invokestatic 139	com/braze/images/DefaultBrazeImageLoader:access$setDiskCacheStarting$p	(Lcom/braze/images/DefaultBrazeImageLoader;Z)V
+      //   106: goto +24 -> 130
+      //   109: astore_2
+      //   110: goto +32 -> 142
+      //   113: astore_2
+      //   114: getstatic 110	com/braze/support/BrazeLogger:INSTANCE	Lcom/braze/support/BrazeLogger;
+      //   117: invokestatic 114	com/braze/images/DefaultBrazeImageLoader:access$getTAG$cp	()Ljava/lang/String;
+      //   120: getstatic 145	com/braze/support/BrazeLogger$Priority:E	Lcom/braze/support/BrazeLogger$Priority;
+      //   123: aload_2
+      //   124: getstatic 148	com/braze/images/DefaultBrazeImageLoader$k$c:b	Lcom/braze/images/DefaultBrazeImageLoader$k$c;
+      //   127: invokevirtual 152	com/braze/support/BrazeLogger:brazelog	(Ljava/lang/String;Lcom/braze/support/BrazeLogger$Priority;Ljava/lang/Throwable;Lkotlin/x/c/a;)V
+      //   130: getstatic 54	kotlin/t:a	Lkotlin/t;
+      //   133: astore_2
+      //   134: aload_1
+      //   135: invokeinterface 155 1 0
+      //   140: aload_2
+      //   141: areturn
+      //   142: aload_1
+      //   143: invokeinterface 155 1 0
+      //   148: aload_2
+      //   149: athrow
+      //   150: new 157	java/lang/IllegalStateException
+      //   153: dup
+      //   154: ldc -97
+      //   156: invokespecial 162	java/lang/IllegalStateException:<init>	(Ljava/lang/String;)V
+      //   159: athrow
+      // Local variable table:
+      //   start	length	slot	name	signature
+      //   0	160	0	this	k
+      //   0	160	1	paramObject	Object
+      //   27	47	2	localFile	File
+      //   109	1	2	localObject	Object
+      //   113	11	2	localException	Exception
+      //   133	16	2	localT	t
+      //   40	62	3	localDefaultBrazeImageLoader	DefaultBrazeImageLoader
+      //   50	36	4	localBrazeLogger	BrazeLogger
+      // Exception table:
+      //   from	to	target	type
+      //   47	106	109	finally
+      //   114	130	109	finally
+      //   130	134	109	finally
+      //   47	106	113	java/lang/Exception
+    }
+    
+    static final class a
+      extends j
+      implements kotlin.x.c.a<String>
+    {
+      public static final a b = new a();
+      
+      a()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Initializing disk cache";
+      }
+    }
+    
+    static final class b
+      extends j
+      implements kotlin.x.c.a<String>
+    {
+      public static final b b = new b();
+      
+      b()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Disk cache initialized";
+      }
+    }
+    
+    static final class c
+      extends j
+      implements kotlin.x.c.a<String>
+    {
+      public static final c b = new c();
+      
+      c()
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        return "Caught exception creating new disk cache. Unable to create new disk cache";
+      }
+    }
+  }
+  
+  static final class l
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    l(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Adding bitmap to mem cache for key ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class m
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    m(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Skipping disk cache for key: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class n
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    n(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Adding bitmap to disk cache for key ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class o
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    public static final o b = new o();
+    
+    o()
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return "Cannot retrieve bitmap with a blank image url";
+    }
+  }
+  
+  static final class p
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    p(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Failed to render url into view. Url: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  @f(c="com.braze.images.DefaultBrazeImageLoader$renderUrlIntoViewTask$1", f="DefaultBrazeImageLoader.kt", l={249}, m="invokeSuspend")
+  static final class q
+    extends l
+    implements p<m0, d<? super t>, Object>
+  {
+    int b;
+    
+    q(DefaultBrazeImageLoader paramDefaultBrazeImageLoader, Context paramContext, String paramString, BrazeViewBounds paramBrazeViewBounds, ImageView paramImageView, d<? super q> paramD)
+    {
+      super(paramD);
+    }
+    
+    public final Object a(m0 paramM0, d<? super t> paramD)
+    {
+      return ((q)create(paramM0, paramD)).invokeSuspend(t.a);
+    }
+    
+    public final d<t> create(Object paramObject, d<?> paramD)
+    {
+      return new q(c, paramContext, paramString, paramBrazeViewBounds, paramImageView, paramD);
+    }
+    
+    public final Object invokeSuspend(Object paramObject)
+    {
+      Object localObject1 = kotlin.coroutines.intrinsics.a.c();
+      int i = b;
+      if (i != 0)
+      {
+        if (i == 1) {
+          n.b(paramObject);
+        } else {
+          throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+        }
+      }
+      else
+      {
+        n.b(paramObject);
+        TrafficStats.setThreadStatsTag(1337);
+        Object localObject2 = c.getBitmapFromUrl(paramContext, paramString, paramBrazeViewBounds);
+        if (localObject2 == null)
+        {
+          BrazeLogger.brazelog$default(BrazeLogger.INSTANCE, DefaultBrazeImageLoader.access$getTAG$cp(), null, null, new a(paramString), 6, null);
+        }
+        else
+        {
+          paramObject = b1.c();
+          localObject2 = new b(paramString, paramImageView, (Bitmap)localObject2, paramBrazeViewBounds, null);
+          b = 1;
+          if (kotlinx.coroutines.h.g(paramObject, (p)localObject2, this) == localObject1) {
+            return localObject1;
+          }
+        }
+      }
+      return t.a;
+    }
+    
+    static final class a
+      extends j
+      implements kotlin.x.c.a<String>
+    {
+      a(String paramString)
+      {
+        super();
+      }
+      
+      public final String a()
+      {
+        StringBuilder localStringBuilder = new StringBuilder();
+        localStringBuilder.append("Failed to retrieve bitmap from url: ");
+        localStringBuilder.append(b);
+        return localStringBuilder.toString();
+      }
+    }
+    
+    @f(c="com.braze.images.DefaultBrazeImageLoader$renderUrlIntoViewTask$1$2", f="DefaultBrazeImageLoader.kt", l={}, m="invokeSuspend")
+    static final class b
+      extends l
+      implements p<m0, d<? super t>, Object>
+    {
+      int b;
+      
+      b(String paramString, ImageView paramImageView, Bitmap paramBitmap, BrazeViewBounds paramBrazeViewBounds, d<? super b> paramD)
+      {
+        super(paramD);
+      }
+      
+      public final Object a(m0 paramM0, d<? super t> paramD)
+      {
+        return ((b)create(paramM0, paramD)).invokeSuspend(t.a);
+      }
+      
+      public final d<t> create(Object paramObject, d<?> paramD)
+      {
+        return new b(c, d, e, f, paramD);
+      }
+      
+      public final Object invokeSuspend(Object paramObject)
+      {
+        kotlin.coroutines.intrinsics.a.c();
+        if (b == 0)
+        {
+          n.b(paramObject);
+          paramObject = c;
+          Object localObject = d.getTag(R.string.com_braze_image_lru_cache_image_url_key);
+          Objects.requireNonNull(localObject, "null cannot be cast to non-null type kotlin.String");
+          if (i.a(paramObject, (String)localObject))
+          {
+            d.setImageBitmap(e);
+            if (f == BrazeViewBounds.BASE_CARD_VIEW) {
+              BrazeImageUtils.resizeImageViewToBitmapDimensions(e, d);
+            }
+          }
+          return t.a;
+        }
+        throw new IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+      }
+    }
+  }
+  
+  static final class r
+    extends j
+    implements kotlin.x.c.a<String>
+  {
+    r(boolean paramBoolean)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("DefaultBrazeImageLoader outbound network requests are now ");
+      String str;
+      if (b) {
+        str = "disabled";
+      } else {
+        str = "enabled";
+      }
+      localStringBuilder.append(str);
+      return localStringBuilder.toString();
+    }
+  }
+}

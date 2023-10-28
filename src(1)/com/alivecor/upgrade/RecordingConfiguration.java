@@ -1,0 +1,161 @@
+package com.alivecor.upgrade;
+
+import com.alivecor.mapsforge.core.model.YAxisScaleTypes;
+import com.alivecor.mapsforge.record.ReportRawPDFType;
+import java.io.Serializable;
+
+public class RecordingConfiguration
+  implements Serializable
+{
+  public static final FilterType DEFAULT_FILTER_TYPE = FilterType.ENHANCED;
+  public static final int DEFAULT_MAX_DURATION_SECONDS = 30;
+  public static final int DEFAULT_RESET_DURATION_SECONDS = 10;
+  private static final int DEFAULT_SAMPLE_RATE_Hz = 300;
+  public static final int MAINS_FREQUENCY_50Hz = 50;
+  public static final int MAINS_FREQUENCY_60Hz = 60;
+  private static final long serialVersionUID = 3L;
+  private AliveCorDevice device;
+  private FilterType filterType = DEFAULT_FILTER_TYPE;
+  private boolean hideTrace;
+  private LeadConfiguration leads;
+  private int mainsFrequency;
+  private int maxDurationSeconds = 30;
+  private String overrideDeviceName;
+  private ReportRawPDFType reportRawPDF = ReportRawPDFType.ORIGINAL;
+  private int resetDurationSeconds = 10;
+  private YAxisScaleTypes yAxisScaleTypes = YAxisScaleTypes.Y_AXIS_SCALE_10;
+  
+  public RecordingConfiguration(AliveCorDevice paramAliveCorDevice, LeadConfiguration paramLeadConfiguration)
+  {
+    device = paramAliveCorDevice;
+    leads = paramLeadConfiguration;
+  }
+  
+  public AliveCorDevice getDevice()
+  {
+    return device;
+  }
+  
+  public FilterType getFilterType()
+  {
+    return filterType;
+  }
+  
+  public LeadConfiguration getLeads()
+  {
+    return leads;
+  }
+  
+  public int getMainsFrequency()
+  {
+    return mainsFrequency;
+  }
+  
+  public int getMaxDurationSeconds()
+  {
+    return maxDurationSeconds;
+  }
+  
+  public String getOverrideDeviceName()
+  {
+    return overrideDeviceName;
+  }
+  
+  public int getResetDurationSeconds()
+  {
+    return resetDurationSeconds;
+  }
+  
+  public int getSampleRate()
+  {
+    return 300;
+  }
+  
+  public YAxisScaleTypes getyAxisScaleTypes()
+  {
+    return yAxisScaleTypes;
+  }
+  
+  public boolean isHideTrace()
+  {
+    return hideTrace;
+  }
+  
+  public ReportRawPDFType isReportRawPDF()
+  {
+    return reportRawPDF;
+  }
+  
+  public void setDevice(AliveCorDevice paramAliveCorDevice)
+  {
+    device = paramAliveCorDevice;
+  }
+  
+  public void setFilterType(FilterType paramFilterType)
+  {
+    filterType = paramFilterType;
+  }
+  
+  public void setHideTrace(boolean paramBoolean)
+  {
+    hideTrace = paramBoolean;
+  }
+  
+  public void setLeads(LeadConfiguration paramLeadConfiguration)
+  {
+    leads = paramLeadConfiguration;
+  }
+  
+  public void setMainsFrequency(int paramInt)
+  {
+    mainsFrequency = paramInt;
+  }
+  
+  public void setMaxDurationSeconds(int paramInt)
+  {
+    maxDurationSeconds = paramInt;
+  }
+  
+  public void setOverrideDeviceName(String paramString)
+  {
+    overrideDeviceName = paramString;
+  }
+  
+  public void setReportRawPDF(ReportRawPDFType paramReportRawPDFType)
+  {
+    reportRawPDF = paramReportRawPDFType;
+  }
+  
+  public void setResetDurationSeconds(int paramInt)
+  {
+    resetDurationSeconds = paramInt;
+  }
+  
+  public void setyAxisScaleTypes(YAxisScaleTypes paramYAxisScaleTypes)
+  {
+    yAxisScaleTypes = paramYAxisScaleTypes;
+  }
+  
+  public String toString()
+  {
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("RecordingConfiguration{device=");
+    localStringBuilder.append(device);
+    localStringBuilder.append(", leads=");
+    localStringBuilder.append(leads);
+    localStringBuilder.append(", filterType=");
+    localStringBuilder.append(filterType);
+    localStringBuilder.append(", maxDurationSeconds=");
+    localStringBuilder.append(maxDurationSeconds);
+    localStringBuilder.append(", resetDurationSeconds=");
+    localStringBuilder.append(resetDurationSeconds);
+    localStringBuilder.append(", mainsFrequency=");
+    localStringBuilder.append(mainsFrequency);
+    localStringBuilder.append(", previewRawPDF=");
+    localStringBuilder.append(reportRawPDF);
+    localStringBuilder.append(", yAxisScaleTypes=");
+    localStringBuilder.append(yAxisScaleTypes);
+    localStringBuilder.append('}');
+    return localStringBuilder.toString();
+  }
+}

@@ -1,0 +1,103 @@
+package com.google.android.material.datepicker;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.b0;
+import d.c.a.a.h;
+import d.c.a.a.j;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Locale;
+
+class o
+  extends RecyclerView.Adapter<b>
+{
+  private final MaterialCalendar<?> a;
+  
+  o(MaterialCalendar<?> paramMaterialCalendar)
+  {
+    a = paramMaterialCalendar;
+  }
+  
+  private View.OnClickListener d(final int paramInt)
+  {
+    return new a(paramInt);
+  }
+  
+  int e(int paramInt)
+  {
+    return paramInt - a.v().k().d;
+  }
+  
+  int f(int paramInt)
+  {
+    return a.v().k().d + paramInt;
+  }
+  
+  public void g(b paramB, int paramInt)
+  {
+    paramInt = f(paramInt);
+    Object localObject = a.getContext().getString(j.o);
+    a.setText(String.format(Locale.getDefault(), "%d", new Object[] { Integer.valueOf(paramInt) }));
+    a.setContentDescription(String.format((String)localObject, new Object[] { Integer.valueOf(paramInt) }));
+    b localB = a.w();
+    Calendar localCalendar = n.i();
+    if (localCalendar.get(1) == paramInt) {
+      localObject = f;
+    } else {
+      localObject = d;
+    }
+    Iterator localIterator = a.y().i0().iterator();
+    while (localIterator.hasNext())
+    {
+      localCalendar.setTimeInMillis(((Long)localIterator.next()).longValue());
+      if (localCalendar.get(1) == paramInt) {
+        localObject = e;
+      }
+    }
+    ((a)localObject).d(a);
+    a.setOnClickListener(d(paramInt));
+  }
+  
+  public int getItemCount()
+  {
+    return a.v().l();
+  }
+  
+  public b h(ViewGroup paramViewGroup, int paramInt)
+  {
+    return new b((TextView)LayoutInflater.from(paramViewGroup.getContext()).inflate(h.r, paramViewGroup, false));
+  }
+  
+  class a
+    implements View.OnClickListener
+  {
+    a(int paramInt) {}
+    
+    public void onClick(View paramView)
+    {
+      paramView = Month.b(paramInt, cxc);
+      paramView = o.c(o.this).v().e(paramView);
+      o.c(o.this).E(paramView);
+      o.c(o.this).F(MaterialCalendar.CalendarSelector.b);
+    }
+  }
+  
+  public static class b
+    extends RecyclerView.b0
+  {
+    final TextView a;
+    
+    b(TextView paramTextView)
+    {
+      super();
+      a = paramTextView;
+    }
+  }
+}

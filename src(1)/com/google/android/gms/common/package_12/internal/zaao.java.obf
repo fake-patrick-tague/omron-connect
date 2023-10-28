@@ -1,0 +1,103 @@
+package com.google.android.gms.common.api.internal;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.Api.Client;
+import com.google.android.gms.common.internal.BaseGmsClient.ConnectionProgressReportCallbacks;
+import com.google.android.gms.common.internal.zal;
+import com.google.android.gms.signin.zae;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+final class zaao
+  extends zaav
+{
+  private final Map<Api.Client, zaal> zac;
+  
+  public zaao(Map<Api.Client, zaal> paramMap)
+  {
+    super(paramMap, null);
+    Object localObject;
+    zac = localObject;
+  }
+  
+  public final void zaa()
+  {
+    Object localObject1 = new zal(zaaw.zaf(zaa));
+    Object localObject2 = new ArrayList();
+    Object localObject3 = new ArrayList();
+    Object localObject4 = zac.keySet().iterator();
+    while (((Iterator)localObject4).hasNext())
+    {
+      Api.Client localClient = (Api.Client)((Iterator)localObject4).next();
+      if ((localClient.requiresGooglePlayServices()) && (!zaal.zaa((zaal)zac.get(localClient)))) {
+        ((List)localObject2).add(localClient);
+      } else {
+        ((List)localObject3).add(localClient);
+      }
+    }
+    boolean bool = ((List)localObject2).isEmpty();
+    int i = -1;
+    int k = 0;
+    int j = 0;
+    int m;
+    if (bool)
+    {
+      m = ((List)localObject3).size();
+      do
+      {
+        if (j >= m) {
+          break;
+        }
+        localObject2 = (Api.Client)((List)localObject3).get(j);
+        k = ((zal)localObject1).zab(zaaw.zac(zaa), (Api.Client)localObject2);
+        j += 1;
+        i = k;
+      } while (k != 0);
+      i = k;
+    }
+    else
+    {
+      m = ((List)localObject2).size();
+      j = k;
+      while (j < m)
+      {
+        localObject3 = (Api.Client)((List)localObject2).get(j);
+        k = ((zal)localObject1).zab(zaaw.zac(zaa), (Api.Client)localObject3);
+        j += 1;
+        i = k;
+        if (k != 0) {
+          i = k;
+        }
+      }
+    }
+    if (i != 0)
+    {
+      localObject1 = new ConnectionResult(i, null);
+      localObject2 = zaa;
+      zaaw.zak((zaaw)localObject2).zal(new zaam(this, (zabf)localObject2, (ConnectionResult)localObject1));
+      return;
+    }
+    localObject2 = zaa;
+    if ((zaaw.zav((zaaw)localObject2)) && (zaaw.zan((zaaw)localObject2) != null)) {
+      zaaw.zan((zaaw)localObject2).zab();
+    }
+    localObject2 = zac.keySet().iterator();
+    while (((Iterator)localObject2).hasNext())
+    {
+      localObject4 = (Api.Client)((Iterator)localObject2).next();
+      localObject3 = (BaseGmsClient.ConnectionProgressReportCallbacks)zac.get(localObject4);
+      if ((((Api.Client)localObject4).requiresGooglePlayServices()) && (((zal)localObject1).zab(zaaw.zac(zaa), (Api.Client)localObject4) != 0))
+      {
+        localObject4 = zaa;
+        zaaw.zak((zaaw)localObject4).zal(new zaan(this, (zabf)localObject4, (BaseGmsClient.ConnectionProgressReportCallbacks)localObject3));
+      }
+      else
+      {
+        ((Api.Client)localObject4).connect((BaseGmsClient.ConnectionProgressReportCallbacks)localObject3);
+      }
+    }
+  }
+}

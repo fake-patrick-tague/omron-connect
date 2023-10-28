@@ -1,0 +1,173 @@
+package com.google.android.gms.measurement.internal;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
+import com.google.android.gms.common.internal.Preconditions;
+import java.util.Iterator;
+import java.util.Set;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public final class zzey
+{
+  private final String zzb;
+  private final Bundle zzc;
+  private Bundle zzd;
+  
+  public zzey(zzfd paramZzfd, String paramString, Bundle paramBundle)
+  {
+    Preconditions.checkNotEmpty("default_event_parameters");
+    zzb = "default_event_parameters";
+    zzc = new Bundle();
+  }
+  
+  public final Bundle zza()
+  {
+    Object localObject;
+    if (zzd == null)
+    {
+      localObject = zza.zza().getString(zzb, null);
+      if (localObject == null) {}
+    }
+    try
+    {
+      localBundle = new Bundle();
+      localObject = new JSONArray((String)localObject);
+      j = 0;
+    }
+    catch (JSONException localJSONException1)
+    {
+      int j;
+      label166:
+      for (;;)
+      {
+        Bundle localBundle;
+        int i;
+      }
+    }
+    i = ((JSONArray)localObject).length();
+    if (j < i) {}
+    try
+    {
+      JSONObject localJSONObject = ((JSONArray)localObject).getJSONObject(j);
+      String str1 = localJSONObject.getString("n");
+      String str2 = localJSONObject.getString("t");
+      i = str2.hashCode();
+      if (i != 100)
+      {
+        if (i != 108)
+        {
+          if ((i == 115) && (str2.equals("s")))
+          {
+            i = 0;
+            break label166;
+          }
+        }
+        else if (str2.equals("l"))
+        {
+          i = 2;
+          break label166;
+        }
+      }
+      else if (str2.equals("d"))
+      {
+        i = 1;
+        break label166;
+      }
+      i = -1;
+      if (i != 0)
+      {
+        if (i != 1)
+        {
+          if (i != 2) {
+            zza.zzs.zzay().zzd().zzb("Unrecognized persisted bundle type. Type", str2);
+          } else {
+            localBundle.putLong(str1, Long.parseLong(localJSONObject.getString("v")));
+          }
+        }
+        else {
+          localBundle.putDouble(str1, Double.parseDouble(localJSONObject.getString("v")));
+        }
+      }
+      else {
+        localBundle.putString(str1, localJSONObject.getString("v"));
+      }
+    }
+    catch (JSONException|NumberFormatException localJSONException2)
+    {
+      for (;;) {}
+      j += 1;
+    }
+    zza.zzs.zzay().zzd().zza("Error reading value from SharedPreferences. Value dropped");
+    break label333;
+    zzd = localBundle;
+    break label304;
+    zza.zzs.zzay().zzd().zza("Error loading bundle from SharedPreferences. Values will be lost");
+    label304:
+    if (zzd == null) {
+      zzd = zzc;
+    }
+    return zzd;
+  }
+  
+  public final void zzb(Bundle paramBundle)
+  {
+    Bundle localBundle = paramBundle;
+    if (paramBundle == null) {
+      localBundle = new Bundle();
+    }
+    paramBundle = zza.zza().edit();
+    if (localBundle.size() == 0)
+    {
+      paramBundle.remove(zzb);
+    }
+    else
+    {
+      String str1 = zzb;
+      JSONArray localJSONArray = new JSONArray();
+      Iterator localIterator = localBundle.keySet().iterator();
+      while (localIterator.hasNext())
+      {
+        String str2 = (String)localIterator.next();
+        Object localObject = localBundle.get(str2);
+        if (localObject != null) {
+          try
+          {
+            JSONObject localJSONObject = new JSONObject();
+            localJSONObject.put("n", str2);
+            localJSONObject.put("v", localObject.toString());
+            boolean bool = localObject instanceof String;
+            if (bool)
+            {
+              localJSONObject.put("t", "s");
+            }
+            else if ((localObject instanceof Long))
+            {
+              localJSONObject.put("t", "l");
+            }
+            else
+            {
+              if (!(localObject instanceof Double)) {
+                break label214;
+              }
+              localJSONObject.put("t", "d");
+            }
+            localJSONArray.put(localJSONObject);
+            continue;
+            label214:
+            zza.zzs.zzay().zzd().zzb("Cannot serialize bundle value to SharedPreferences. Type", localObject.getClass());
+          }
+          catch (JSONException localJSONException)
+          {
+            zza.zzs.zzay().zzd().zzb("Cannot serialize bundle value to SharedPreferences", localJSONException);
+          }
+        }
+      }
+      paramBundle.putString(str1, localJSONArray.toString());
+    }
+    paramBundle.apply();
+    zzd = localBundle;
+  }
+}

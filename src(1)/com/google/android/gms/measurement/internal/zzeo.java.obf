@@ -1,0 +1,268 @@
+package com.google.android.gms.measurement.internal;
+
+import android.text.TextUtils;
+import android.util.Log;
+import com.google.android.gms.common.internal.Preconditions;
+import com.google.android.gms.common.util.VisibleForTesting;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+
+public final class zzeo
+  extends zzgs
+{
+  private char zza = '\000';
+  private long zzb = -1L;
+  private String zzc;
+  private final zzem zzd = new zzem(this, 6, false, false);
+  private final zzem zze = new zzem(this, 6, true, false);
+  private final zzem zzf = new zzem(this, 6, false, true);
+  private final zzem zzg = new zzem(this, 5, false, false);
+  private final zzem zzh = new zzem(this, 5, true, false);
+  private final zzem zzi = new zzem(this, 5, false, true);
+  private final zzem zzj = new zzem(this, 4, false, false);
+  private final zzem zzk = new zzem(this, 3, false, false);
+  private final zzem zzl = new zzem(this, 2, false, false);
+  
+  zzeo(zzfy paramZzfy)
+  {
+    super(paramZzfy);
+  }
+  
+  protected static Object zzn(String paramString)
+  {
+    if (paramString == null) {
+      return null;
+    }
+    return new zzen(paramString);
+  }
+  
+  static String zzo(boolean paramBoolean, String paramString, Object paramObject1, Object paramObject2, Object paramObject3)
+  {
+    String str2 = "";
+    String str1 = paramString;
+    if (paramString == null) {
+      str1 = "";
+    }
+    String str3 = zzp(paramBoolean, paramObject1);
+    String str4 = zzp(paramBoolean, paramObject2);
+    paramObject3 = zzp(paramBoolean, paramObject3);
+    StringBuilder localStringBuilder = new StringBuilder();
+    paramString = str2;
+    if (!TextUtils.isEmpty(str1))
+    {
+      localStringBuilder.append(str1);
+      paramString = ": ";
+    }
+    paramBoolean = TextUtils.isEmpty(str3);
+    paramObject2 = ", ";
+    paramObject1 = paramString;
+    if (!paramBoolean)
+    {
+      localStringBuilder.append(paramString);
+      localStringBuilder.append(str3);
+      paramObject1 = ", ";
+    }
+    if (!TextUtils.isEmpty(str4))
+    {
+      localStringBuilder.append(paramObject1);
+      localStringBuilder.append(str4);
+      paramObject1 = paramObject2;
+    }
+    if (!TextUtils.isEmpty(paramObject3))
+    {
+      localStringBuilder.append(paramObject1);
+      localStringBuilder.append(paramObject3);
+    }
+    return localStringBuilder.toString();
+  }
+  
+  @VisibleForTesting
+  static String zzp(boolean paramBoolean, Object paramObject)
+  {
+    String str1 = "";
+    if (paramObject == null) {
+      return "";
+    }
+    Object localObject = paramObject;
+    if ((paramObject instanceof Integer)) {
+      localObject = Long.valueOf(((Integer)paramObject).intValue());
+    }
+    boolean bool = localObject instanceof Long;
+    int i = 0;
+    Long localLong;
+    if (bool)
+    {
+      if (!paramBoolean) {
+        return localObject.toString();
+      }
+      localLong = (Long)localObject;
+      if (Math.abs(localLong.longValue()) < 100L) {
+        return localObject.toString();
+      }
+      paramObject = str1;
+      if (localObject.toString().charAt(0) == '-') {
+        paramObject = "-";
+      }
+      localObject = String.valueOf(Math.abs(localLong.longValue()));
+      long l1 = Math.round(Math.pow(10.0D, ((String)localObject).length() - 1));
+      long l2 = Math.round(Math.pow(10.0D, ((String)localObject).length()) - 1.0D);
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append(paramObject);
+      ((StringBuilder)localObject).append(l1);
+      ((StringBuilder)localObject).append("...");
+      ((StringBuilder)localObject).append(paramObject);
+      ((StringBuilder)localObject).append(l2);
+      return ((StringBuilder)localObject).toString();
+    }
+    if ((localObject instanceof Boolean)) {
+      return localObject.toString();
+    }
+    if ((localObject instanceof Throwable))
+    {
+      localObject = (Throwable)localObject;
+      if (paramBoolean) {
+        paramObject = localObject.getClass().getName();
+      } else {
+        paramObject = ((Throwable)localObject).toString();
+      }
+      paramObject = new StringBuilder(paramObject);
+      str1 = zzy(zzfy.class.getCanonicalName());
+      localObject = ((Throwable)localObject).getStackTrace();
+      int j = localObject.length;
+      while (i < j)
+      {
+        localLong = localObject[i];
+        if (!localLong.isNativeMethod())
+        {
+          String str2 = localLong.getClassName();
+          if ((str2 != null) && (zzy(str2).equals(str1)))
+          {
+            paramObject.append(": ");
+            paramObject.append(localLong);
+            break;
+          }
+        }
+        i += 1;
+      }
+      return paramObject.toString();
+    }
+    if ((localObject instanceof zzen)) {
+      return zzen.zza((zzen)localObject);
+    }
+    if (paramBoolean) {
+      return "-";
+    }
+    return localObject.toString();
+  }
+  
+  private static String zzy(String paramString)
+  {
+    if (TextUtils.isEmpty(paramString)) {
+      return "";
+    }
+    int i = paramString.lastIndexOf('.');
+    if (i == -1) {
+      return paramString;
+    }
+    return paramString.substring(0, i);
+  }
+  
+  public final zzem zzc()
+  {
+    return zzk;
+  }
+  
+  public final zzem zzd()
+  {
+    return zzd;
+  }
+  
+  public final zzem zze()
+  {
+    return zzf;
+  }
+  
+  protected final boolean zzf()
+  {
+    return false;
+  }
+  
+  public final zzem zzh()
+  {
+    return zze;
+  }
+  
+  public final zzem zzi()
+  {
+    return zzj;
+  }
+  
+  public final zzem zzj()
+  {
+    return zzl;
+  }
+  
+  public final zzem zzk()
+  {
+    return zzg;
+  }
+  
+  public final zzem zzl()
+  {
+    return zzi;
+  }
+  
+  public final zzem zzm()
+  {
+    return zzh;
+  }
+  
+  @EnsuresNonNull({"logTagDoNotUseDirectly"})
+  @VisibleForTesting
+  protected final String zzq()
+  {
+    try
+    {
+      if (zzc == null) {
+        if (zzs.zzy() != null) {
+          zzc = zzs.zzy();
+        } else {
+          zzc = zzs.zzf().zzn();
+        }
+      }
+      Preconditions.checkNotNull(zzc);
+      String str = zzc;
+      return str;
+    }
+    finally {}
+  }
+  
+  protected final void zzt(int paramInt, boolean paramBoolean1, boolean paramBoolean2, String paramString, Object paramObject1, Object paramObject2, Object paramObject3)
+  {
+    Object localObject;
+    if ((!paramBoolean1) && (Log.isLoggable(zzq(), paramInt)))
+    {
+      localObject = zzo(false, paramString, paramObject1, paramObject2, paramObject3);
+      Log.println(paramInt, zzq(), (String)localObject);
+    }
+    if ((!paramBoolean2) && (paramInt >= 5))
+    {
+      Preconditions.checkNotNull(paramString);
+      localObject = zzs.zzo();
+      if (localObject == null)
+      {
+        Log.println(6, zzq(), "Scheduler not set. Not logging error/warn");
+        return;
+      }
+      if (!((zzgs)localObject).zzx())
+      {
+        Log.println(6, zzq(), "Scheduler not initialized. Not logging error/warn");
+        return;
+      }
+      int i = paramInt;
+      if (paramInt >= 9) {
+        i = 8;
+      }
+      ((zzfv)localObject).zzp(new zzel(this, i, paramString, paramObject1, paramObject2, paramObject3));
+    }
+  }
+}

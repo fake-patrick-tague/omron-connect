@@ -1,0 +1,133 @@
+package com.android.volley;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+
+class WaitingRequestManager
+  implements Request.NetworkRequestCompleteListener
+{
+  private final CacheDispatcher mCacheDispatcher;
+  private final BlockingQueue<Request<?>> mNetworkQueue;
+  private final RequestQueue mRequestQueue;
+  private final ResponseDelivery mResponseDelivery;
+  private final Map<String, List<Request<?>>> mWaitingRequests = new HashMap();
+  
+  WaitingRequestManager(CacheDispatcher paramCacheDispatcher, BlockingQueue<Request<?>> paramBlockingQueue, ResponseDelivery paramResponseDelivery)
+  {
+    mRequestQueue = null;
+    mResponseDelivery = paramResponseDelivery;
+    mCacheDispatcher = paramCacheDispatcher;
+    mNetworkQueue = paramBlockingQueue;
+  }
+  
+  WaitingRequestManager(RequestQueue paramRequestQueue)
+  {
+    mRequestQueue = paramRequestQueue;
+    mResponseDelivery = paramRequestQueue.getResponseDelivery();
+    mCacheDispatcher = null;
+    mNetworkQueue = null;
+  }
+  
+  boolean maybeAddToWaitingRequests(Request<?> paramRequest)
+  {
+    try
+    {
+      String str = paramRequest.getCacheKey();
+      if (mWaitingRequests.containsKey(str))
+      {
+        List localList = (List)mWaitingRequests.get(str);
+        Object localObject = localList;
+        if (localList == null) {
+          localObject = new ArrayList();
+        }
+        paramRequest.addMarker("waiting-for-response");
+        ((List)localObject).add(paramRequest);
+        mWaitingRequests.put(str, localObject);
+        if (VolleyLog.DEBUG) {
+          VolleyLog.d("Request for cacheKey=%s is in flight, putting on hold.", new Object[] { str });
+        }
+        return true;
+      }
+      mWaitingRequests.put(str, null);
+      paramRequest.setNetworkRequestCompleteListener(this);
+      if (VolleyLog.DEBUG) {
+        VolleyLog.d("new request, sending to network %s", new Object[] { str });
+      }
+      return false;
+    }
+    finally {}
+  }
+  
+  public void onNoUsableResponseReceived(Request<?> paramRequest)
+  {
+    try
+    {
+      Object localObject = paramRequest.getCacheKey();
+      List localList = (List)mWaitingRequests.remove(localObject);
+      if ((localList != null) && (!localList.isEmpty()))
+      {
+        if (VolleyLog.DEBUG) {
+          VolleyLog.v("%d waiting requests for cacheKey=%s; resend to network", new Object[] { Integer.valueOf(localList.size()), localObject });
+        }
+        paramRequest = (Request)localList.remove(0);
+        mWaitingRequests.put(localObject, localList);
+        paramRequest.setNetworkRequestCompleteListener(this);
+        localObject = mRequestQueue;
+        if (localObject != null)
+        {
+          ((RequestQueue)localObject).sendRequestOverNetwork(paramRequest);
+        }
+        else if (mCacheDispatcher != null)
+        {
+          localObject = mNetworkQueue;
+          if (localObject != null) {
+            try
+            {
+              ((BlockingQueue)localObject).put(paramRequest);
+            }
+            catch (InterruptedException paramRequest)
+            {
+              VolleyLog.e("Couldn't add request to queue. %s", new Object[] { paramRequest.toString() });
+              Thread.currentThread().interrupt();
+              mCacheDispatcher.quit();
+            }
+          }
+        }
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  public void onResponseReceived(Request<?> paramRequest, Response<?> paramResponse)
+  {
+    Object localObject = cacheEntry;
+    if ((localObject != null) && (!((Cache.Entry)localObject).isExpired()))
+    {
+      paramRequest = paramRequest.getCacheKey();
+      try
+      {
+        localObject = (List)mWaitingRequests.remove(paramRequest);
+        if (localObject != null)
+        {
+          if (VolleyLog.DEBUG) {
+            VolleyLog.v("Releasing %d waiting requests for cacheKey=%s.", new Object[] { Integer.valueOf(((List)localObject).size()), paramRequest });
+          }
+          paramRequest = ((List)localObject).iterator();
+          while (paramRequest.hasNext())
+          {
+            localObject = (Request)paramRequest.next();
+            mResponseDelivery.postResponse((Request)localObject, paramResponse);
+          }
+        }
+        return;
+      }
+      finally {}
+    }
+    onNoUsableResponseReceived(paramRequest);
+  }
+}

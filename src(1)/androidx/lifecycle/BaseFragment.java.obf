@@ -1,0 +1,188 @@
+package androidx.lifecycle;
+
+import android.app.Activity;
+import android.app.Application.ActivityLifecycleCallbacks;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+
+public class w
+  extends Fragment
+{
+  private a b;
+  
+  public w() {}
+  
+  static void a(Activity paramActivity, Lifecycle.Event paramEvent)
+  {
+    if ((paramActivity instanceof o))
+    {
+      ((o)paramActivity).getLifecycle().h(paramEvent);
+      return;
+    }
+    if ((paramActivity instanceof m))
+    {
+      paramActivity = ((m)paramActivity).getLifecycle();
+      if ((paramActivity instanceof n)) {
+        ((n)paramActivity).h(paramEvent);
+      }
+    }
+  }
+  
+  private void b(Lifecycle.Event paramEvent)
+  {
+    if (Build.VERSION.SDK_INT < 29) {
+      a(getActivity(), paramEvent);
+    }
+  }
+  
+  private void c(a paramA)
+  {
+    if (paramA != null) {
+      paramA.a();
+    }
+  }
+  
+  private void d(a paramA)
+  {
+    if (paramA != null) {
+      paramA.onResume();
+    }
+  }
+  
+  private void e(a paramA)
+  {
+    if (paramA != null) {
+      paramA.onStart();
+    }
+  }
+  
+  static w f(Activity paramActivity)
+  {
+    return (w)paramActivity.getFragmentManager().findFragmentByTag("androidx.lifecycle.LifecycleDispatcher.report_fragment_tag");
+  }
+  
+  public static void g(Activity paramActivity)
+  {
+    if (Build.VERSION.SDK_INT >= 29) {
+      b.registerIn(paramActivity);
+    }
+    paramActivity = paramActivity.getFragmentManager();
+    if (paramActivity.findFragmentByTag("androidx.lifecycle.LifecycleDispatcher.report_fragment_tag") == null)
+    {
+      paramActivity.beginTransaction().add(new w(), "androidx.lifecycle.LifecycleDispatcher.report_fragment_tag").commit();
+      paramActivity.executePendingTransactions();
+    }
+  }
+  
+  void h(a paramA)
+  {
+    b = paramA;
+  }
+  
+  public void onActivityCreated(Bundle paramBundle)
+  {
+    super.onActivityCreated(paramBundle);
+    c(b);
+    b(Lifecycle.Event.ON_CREATE);
+  }
+  
+  public void onDestroy()
+  {
+    super.onDestroy();
+    b(Lifecycle.Event.ON_DESTROY);
+    b = null;
+  }
+  
+  public void onPause()
+  {
+    super.onPause();
+    b(Lifecycle.Event.ON_PAUSE);
+  }
+  
+  public void onResume()
+  {
+    super.onResume();
+    d(b);
+    b(Lifecycle.Event.ON_RESUME);
+  }
+  
+  public void onStart()
+  {
+    super.onStart();
+    e(b);
+    b(Lifecycle.Event.ON_START);
+  }
+  
+  public void onStop()
+  {
+    super.onStop();
+    b(Lifecycle.Event.ON_STOP);
+  }
+  
+  static abstract interface a
+  {
+    public abstract void a();
+    
+    public abstract void onResume();
+    
+    public abstract void onStart();
+  }
+  
+  static class b
+    implements Application.ActivityLifecycleCallbacks
+  {
+    b() {}
+    
+    static void registerIn(Activity paramActivity)
+    {
+      paramActivity.registerActivityLifecycleCallbacks(new b());
+    }
+    
+    public void onActivityCreated(Activity paramActivity, Bundle paramBundle) {}
+    
+    public void onActivityDestroyed(Activity paramActivity) {}
+    
+    public void onActivityPaused(Activity paramActivity) {}
+    
+    public void onActivityPostCreated(Activity paramActivity, Bundle paramBundle)
+    {
+      w.a(paramActivity, Lifecycle.Event.ON_CREATE);
+    }
+    
+    public void onActivityPostResumed(Activity paramActivity)
+    {
+      w.a(paramActivity, Lifecycle.Event.ON_RESUME);
+    }
+    
+    public void onActivityPostStarted(Activity paramActivity)
+    {
+      w.a(paramActivity, Lifecycle.Event.ON_START);
+    }
+    
+    public void onActivityPreDestroyed(Activity paramActivity)
+    {
+      w.a(paramActivity, Lifecycle.Event.ON_DESTROY);
+    }
+    
+    public void onActivityPrePaused(Activity paramActivity)
+    {
+      w.a(paramActivity, Lifecycle.Event.ON_PAUSE);
+    }
+    
+    public void onActivityPreStopped(Activity paramActivity)
+    {
+      w.a(paramActivity, Lifecycle.Event.ON_STOP);
+    }
+    
+    public void onActivityResumed(Activity paramActivity) {}
+    
+    public void onActivitySaveInstanceState(Activity paramActivity, Bundle paramBundle) {}
+    
+    public void onActivityStarted(Activity paramActivity) {}
+    
+    public void onActivityStopped(Activity paramActivity) {}
+  }
+}

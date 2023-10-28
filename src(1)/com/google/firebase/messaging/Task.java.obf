@@ -1,0 +1,83 @@
+package com.google.firebase.messaging;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.util.Base64;
+import android.util.Log;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.util.PlatformVersion;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import java.util.concurrent.Executor;
+
+@KeepForSdk
+public class l0
+{
+  private static final Object a = new Object();
+  private static j1 b;
+  private final Context c;
+  private final Executor d;
+  
+  public l0(Context paramContext)
+  {
+    c = paramContext;
+    d = w.b;
+  }
+  
+  private static Task<Integer> a(Context paramContext, Intent paramIntent)
+  {
+    if (Log.isLoggable("FirebaseMessaging", 3)) {
+      Log.d("FirebaseMessaging", "Binding to service");
+    }
+    if (z0.b().e(paramContext)) {
+      h1.e(paramContext, b(paramContext, "com.google.firebase.MESSAGING_EVENT"), paramIntent);
+    } else {
+      b(paramContext, "com.google.firebase.MESSAGING_EVENT").c(paramIntent);
+    }
+    return Tasks.forResult(Integer.valueOf(-1));
+  }
+  
+  private static j1 b(Context paramContext, String paramString)
+  {
+    synchronized (a)
+    {
+      if (b == null) {
+        b = new j1(paramContext, paramString);
+      }
+      paramContext = b;
+      return paramContext;
+    }
+  }
+  
+  @KeepForSdk
+  public Task<Integer> f(Intent paramIntent)
+  {
+    String str = paramIntent.getStringExtra("gcm.rawData64");
+    if (str != null)
+    {
+      paramIntent.putExtra("rawData", Base64.decode(str, 0));
+      paramIntent.removeExtra("gcm.rawData64");
+    }
+    return g(c, paramIntent);
+  }
+  
+  public Task<Integer> g(Context paramContext, Intent paramIntent)
+  {
+    boolean bool = PlatformVersion.isAtLeastO();
+    int j = 1;
+    int i;
+    if ((bool) && (getApplicationInfotargetSdkVersion >= 26)) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if ((paramIntent.getFlags() & 0x10000000) == 0) {
+      j = 0;
+    }
+    if ((i != 0) && (j == 0)) {
+      return a(paramContext, paramIntent);
+    }
+    return Tasks.call(d, new d(paramContext, paramIntent)).continueWithTask(d, new f(paramContext, paramIntent));
+  }
+}

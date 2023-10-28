@@ -1,0 +1,404 @@
+package androidx.work.impl;
+
+import androidx.room.RoomDatabase.b;
+import androidx.room.a;
+import androidx.room.j;
+import androidx.room.j.a;
+import androidx.room.j.b;
+import androidx.room.q.f.a;
+import androidx.room.q.f.b;
+import androidx.room.q.f.d;
+import androidx.work.impl.n.e;
+import androidx.work.impl.n.h;
+import androidx.work.impl.n.i;
+import androidx.work.impl.n.k;
+import androidx.work.impl.n.l;
+import androidx.work.impl.n.n;
+import androidx.work.impl.n.o;
+import androidx.work.impl.n.q;
+import androidx.work.impl.n.r;
+import androidx.work.impl.n.t;
+import androidx.work.impl.n.u;
+import c.t.a.c.a;
+import c.t.a.c.b;
+import c.t.a.c.b.a;
+import c.t.a.c.c;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public final class WorkDatabase_Impl
+  extends WorkDatabase
+{
+  private volatile q m;
+  private volatile androidx.work.impl.n.b n;
+  private volatile t o;
+  private volatile h p;
+  private volatile k q;
+  private volatile n r;
+  private volatile e s;
+  
+  public WorkDatabase_Impl() {}
+  
+  public n A()
+  {
+    if (r != null) {
+      return r;
+    }
+    try
+    {
+      if (r == null) {
+        r = new o(this);
+      }
+      n localN = r;
+      return localN;
+    }
+    finally {}
+  }
+  
+  public q B()
+  {
+    if (m != null) {
+      return m;
+    }
+    try
+    {
+      if (m == null) {
+        m = new r(this);
+      }
+      q localQ = m;
+      return localQ;
+    }
+    finally {}
+  }
+  
+  public t C()
+  {
+    if (o != null) {
+      return o;
+    }
+    try
+    {
+      if (o == null) {
+        o = new u(this);
+      }
+      t localT = o;
+      return localT;
+    }
+    finally {}
+  }
+  
+  protected androidx.room.f e()
+  {
+    return new androidx.room.f(this, new HashMap(0), new HashMap(0), new String[] { "Dependency", "WorkSpec", "WorkTag", "SystemIdInfo", "WorkName", "WorkProgress", "Preference" });
+  }
+  
+  protected c.t.a.c f(a paramA)
+  {
+    Object localObject = new j(paramA, new a(12), "c103703e120ae8cc73c9248622f3cd1e", "49f946663a8deb7054212b8adda248c6");
+    localObject = c.b.a(b).c(c).b((c.a)localObject).a();
+    return a.create((c.b)localObject);
+  }
+  
+  public androidx.work.impl.n.b t()
+  {
+    if (n != null) {
+      return n;
+    }
+    try
+    {
+      if (n == null) {
+        n = new androidx.work.impl.n.c(this);
+      }
+      androidx.work.impl.n.b localB = n;
+      return localB;
+    }
+    finally {}
+  }
+  
+  public e x()
+  {
+    if (s != null) {
+      return s;
+    }
+    try
+    {
+      if (s == null) {
+        s = new androidx.work.impl.n.f(this);
+      }
+      e localE = s;
+      return localE;
+    }
+    finally {}
+  }
+  
+  public h y()
+  {
+    if (p != null) {
+      return p;
+    }
+    try
+    {
+      if (p == null) {
+        p = new i(this);
+      }
+      h localH = p;
+      return localH;
+    }
+    finally {}
+  }
+  
+  public k z()
+  {
+    if (q != null) {
+      return q;
+    }
+    try
+    {
+      if (q == null) {
+        q = new l(this);
+      }
+      k localK = q;
+      return localK;
+    }
+    finally {}
+  }
+  
+  class a
+    extends j.a
+  {
+    a(int paramInt)
+    {
+      super();
+    }
+    
+    public void a(c.t.a.b paramB)
+    {
+      paramB.execSQL("CREATE TABLE IF NOT EXISTS `Dependency` (`work_spec_id` TEXT NOT NULL, `prerequisite_id` TEXT NOT NULL, PRIMARY KEY(`work_spec_id`, `prerequisite_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`prerequisite_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )");
+      paramB.execSQL("CREATE INDEX IF NOT EXISTS `index_Dependency_work_spec_id` ON `Dependency` (`work_spec_id`)");
+      paramB.execSQL("CREATE INDEX IF NOT EXISTS `index_Dependency_prerequisite_id` ON `Dependency` (`prerequisite_id`)");
+      paramB.execSQL("CREATE TABLE IF NOT EXISTS `WorkSpec` (`id` TEXT NOT NULL, `state` INTEGER NOT NULL, `worker_class_name` TEXT NOT NULL, `input_merger_class_name` TEXT, `input` BLOB NOT NULL, `output` BLOB NOT NULL, `initial_delay` INTEGER NOT NULL, `interval_duration` INTEGER NOT NULL, `flex_duration` INTEGER NOT NULL, `run_attempt_count` INTEGER NOT NULL, `backoff_policy` INTEGER NOT NULL, `backoff_delay_duration` INTEGER NOT NULL, `period_start_time` INTEGER NOT NULL, `minimum_retention_duration` INTEGER NOT NULL, `schedule_requested_at` INTEGER NOT NULL, `run_in_foreground` INTEGER NOT NULL, `out_of_quota_policy` INTEGER NOT NULL, `required_network_type` INTEGER, `requires_charging` INTEGER NOT NULL, `requires_device_idle` INTEGER NOT NULL, `requires_battery_not_low` INTEGER NOT NULL, `requires_storage_not_low` INTEGER NOT NULL, `trigger_content_update_delay` INTEGER NOT NULL, `trigger_max_content_delay` INTEGER NOT NULL, `content_uri_triggers` BLOB, PRIMARY KEY(`id`))");
+      paramB.execSQL("CREATE INDEX IF NOT EXISTS `index_WorkSpec_schedule_requested_at` ON `WorkSpec` (`schedule_requested_at`)");
+      paramB.execSQL("CREATE INDEX IF NOT EXISTS `index_WorkSpec_period_start_time` ON `WorkSpec` (`period_start_time`)");
+      paramB.execSQL("CREATE TABLE IF NOT EXISTS `WorkTag` (`tag` TEXT NOT NULL, `work_spec_id` TEXT NOT NULL, PRIMARY KEY(`tag`, `work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )");
+      paramB.execSQL("CREATE INDEX IF NOT EXISTS `index_WorkTag_work_spec_id` ON `WorkTag` (`work_spec_id`)");
+      paramB.execSQL("CREATE TABLE IF NOT EXISTS `SystemIdInfo` (`work_spec_id` TEXT NOT NULL, `system_id` INTEGER NOT NULL, PRIMARY KEY(`work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )");
+      paramB.execSQL("CREATE TABLE IF NOT EXISTS `WorkName` (`name` TEXT NOT NULL, `work_spec_id` TEXT NOT NULL, PRIMARY KEY(`name`, `work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )");
+      paramB.execSQL("CREATE INDEX IF NOT EXISTS `index_WorkName_work_spec_id` ON `WorkName` (`work_spec_id`)");
+      paramB.execSQL("CREATE TABLE IF NOT EXISTS `WorkProgress` (`work_spec_id` TEXT NOT NULL, `progress` BLOB NOT NULL, PRIMARY KEY(`work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )");
+      paramB.execSQL("CREATE TABLE IF NOT EXISTS `Preference` (`key` TEXT NOT NULL, `long_value` INTEGER, PRIMARY KEY(`key`))");
+      paramB.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
+      paramB.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c103703e120ae8cc73c9248622f3cd1e')");
+    }
+    
+    public void b(c.t.a.b paramB)
+    {
+      paramB.execSQL("DROP TABLE IF EXISTS `Dependency`");
+      paramB.execSQL("DROP TABLE IF EXISTS `WorkSpec`");
+      paramB.execSQL("DROP TABLE IF EXISTS `WorkTag`");
+      paramB.execSQL("DROP TABLE IF EXISTS `SystemIdInfo`");
+      paramB.execSQL("DROP TABLE IF EXISTS `WorkName`");
+      paramB.execSQL("DROP TABLE IF EXISTS `WorkProgress`");
+      paramB.execSQL("DROP TABLE IF EXISTS `Preference`");
+      if (WorkDatabase_Impl.D(WorkDatabase_Impl.this) != null)
+      {
+        int i = 0;
+        int j = WorkDatabase_Impl.E(WorkDatabase_Impl.this).size();
+        while (i < j)
+        {
+          ((RoomDatabase.b)WorkDatabase_Impl.G(WorkDatabase_Impl.this).get(i)).b(paramB);
+          i += 1;
+        }
+      }
+    }
+    
+    protected void c(c.t.a.b paramB)
+    {
+      if (WorkDatabase_Impl.H(WorkDatabase_Impl.this) != null)
+      {
+        int i = 0;
+        int j = WorkDatabase_Impl.I(WorkDatabase_Impl.this).size();
+        while (i < j)
+        {
+          ((RoomDatabase.b)WorkDatabase_Impl.J(WorkDatabase_Impl.this).get(i)).a(paramB);
+          i += 1;
+        }
+      }
+    }
+    
+    public void d(c.t.a.b paramB)
+    {
+      WorkDatabase_Impl.K(WorkDatabase_Impl.this, paramB);
+      paramB.execSQL("PRAGMA foreign_keys = ON");
+      WorkDatabase_Impl.L(WorkDatabase_Impl.this, paramB);
+      if (WorkDatabase_Impl.M(WorkDatabase_Impl.this) != null)
+      {
+        int i = 0;
+        int j = WorkDatabase_Impl.N(WorkDatabase_Impl.this).size();
+        while (i < j)
+        {
+          ((RoomDatabase.b)WorkDatabase_Impl.F(WorkDatabase_Impl.this).get(i)).c(paramB);
+          i += 1;
+        }
+      }
+    }
+    
+    public void e(c.t.a.b paramB) {}
+    
+    public void f(c.t.a.b paramB)
+    {
+      androidx.room.q.c.a(paramB);
+    }
+    
+    protected j.b g(c.t.a.b paramB)
+    {
+      Object localObject1 = new HashMap(2);
+      ((HashMap)localObject1).put("work_spec_id", new f.a("work_spec_id", "TEXT", true, 1, null, 1));
+      ((HashMap)localObject1).put("prerequisite_id", new f.a("prerequisite_id", "TEXT", true, 2, null, 1));
+      Object localObject2 = new HashSet(2);
+      ((HashSet)localObject2).add(new f.b("WorkSpec", "CASCADE", "CASCADE", Arrays.asList(new String[] { "work_spec_id" }), Arrays.asList(new String[] { "id" })));
+      ((HashSet)localObject2).add(new f.b("WorkSpec", "CASCADE", "CASCADE", Arrays.asList(new String[] { "prerequisite_id" }), Arrays.asList(new String[] { "id" })));
+      HashSet localHashSet = new HashSet(2);
+      localHashSet.add(new f.d("index_Dependency_work_spec_id", false, Arrays.asList(new String[] { "work_spec_id" })));
+      localHashSet.add(new f.d("index_Dependency_prerequisite_id", false, Arrays.asList(new String[] { "prerequisite_id" })));
+      localObject1 = new androidx.room.q.f("Dependency", (Map)localObject1, (Set)localObject2, localHashSet);
+      localObject2 = androidx.room.q.f.a(paramB, "Dependency");
+      if (!((androidx.room.q.f)localObject1).equals(localObject2))
+      {
+        paramB = new StringBuilder();
+        paramB.append("Dependency(androidx.work.impl.model.Dependency).\n Expected:\n");
+        paramB.append(localObject1);
+        paramB.append("\n Found:\n");
+        paramB.append(localObject2);
+        return new j.b(false, paramB.toString());
+      }
+      localObject1 = new HashMap(25);
+      ((HashMap)localObject1).put("id", new f.a("id", "TEXT", true, 1, null, 1));
+      ((HashMap)localObject1).put("state", new f.a("state", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("worker_class_name", new f.a("worker_class_name", "TEXT", true, 0, null, 1));
+      ((HashMap)localObject1).put("input_merger_class_name", new f.a("input_merger_class_name", "TEXT", false, 0, null, 1));
+      ((HashMap)localObject1).put("input", new f.a("input", "BLOB", true, 0, null, 1));
+      ((HashMap)localObject1).put("output", new f.a("output", "BLOB", true, 0, null, 1));
+      ((HashMap)localObject1).put("initial_delay", new f.a("initial_delay", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("interval_duration", new f.a("interval_duration", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("flex_duration", new f.a("flex_duration", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("run_attempt_count", new f.a("run_attempt_count", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("backoff_policy", new f.a("backoff_policy", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("backoff_delay_duration", new f.a("backoff_delay_duration", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("period_start_time", new f.a("period_start_time", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("minimum_retention_duration", new f.a("minimum_retention_duration", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("schedule_requested_at", new f.a("schedule_requested_at", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("run_in_foreground", new f.a("run_in_foreground", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("out_of_quota_policy", new f.a("out_of_quota_policy", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("required_network_type", new f.a("required_network_type", "INTEGER", false, 0, null, 1));
+      ((HashMap)localObject1).put("requires_charging", new f.a("requires_charging", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("requires_device_idle", new f.a("requires_device_idle", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("requires_battery_not_low", new f.a("requires_battery_not_low", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("requires_storage_not_low", new f.a("requires_storage_not_low", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("trigger_content_update_delay", new f.a("trigger_content_update_delay", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("trigger_max_content_delay", new f.a("trigger_max_content_delay", "INTEGER", true, 0, null, 1));
+      ((HashMap)localObject1).put("content_uri_triggers", new f.a("content_uri_triggers", "BLOB", false, 0, null, 1));
+      localObject2 = new HashSet(0);
+      localHashSet = new HashSet(2);
+      localHashSet.add(new f.d("index_WorkSpec_schedule_requested_at", false, Arrays.asList(new String[] { "schedule_requested_at" })));
+      localHashSet.add(new f.d("index_WorkSpec_period_start_time", false, Arrays.asList(new String[] { "period_start_time" })));
+      localObject1 = new androidx.room.q.f("WorkSpec", (Map)localObject1, (Set)localObject2, localHashSet);
+      localObject2 = androidx.room.q.f.a(paramB, "WorkSpec");
+      if (!((androidx.room.q.f)localObject1).equals(localObject2))
+      {
+        paramB = new StringBuilder();
+        paramB.append("WorkSpec(androidx.work.impl.model.WorkSpec).\n Expected:\n");
+        paramB.append(localObject1);
+        paramB.append("\n Found:\n");
+        paramB.append(localObject2);
+        return new j.b(false, paramB.toString());
+      }
+      localObject1 = new HashMap(2);
+      ((HashMap)localObject1).put("tag", new f.a("tag", "TEXT", true, 1, null, 1));
+      ((HashMap)localObject1).put("work_spec_id", new f.a("work_spec_id", "TEXT", true, 2, null, 1));
+      localObject2 = new HashSet(1);
+      ((HashSet)localObject2).add(new f.b("WorkSpec", "CASCADE", "CASCADE", Arrays.asList(new String[] { "work_spec_id" }), Arrays.asList(new String[] { "id" })));
+      localHashSet = new HashSet(1);
+      localHashSet.add(new f.d("index_WorkTag_work_spec_id", false, Arrays.asList(new String[] { "work_spec_id" })));
+      localObject1 = new androidx.room.q.f("WorkTag", (Map)localObject1, (Set)localObject2, localHashSet);
+      localObject2 = androidx.room.q.f.a(paramB, "WorkTag");
+      if (!((androidx.room.q.f)localObject1).equals(localObject2))
+      {
+        paramB = new StringBuilder();
+        paramB.append("WorkTag(androidx.work.impl.model.WorkTag).\n Expected:\n");
+        paramB.append(localObject1);
+        paramB.append("\n Found:\n");
+        paramB.append(localObject2);
+        return new j.b(false, paramB.toString());
+      }
+      localObject1 = new HashMap(2);
+      ((HashMap)localObject1).put("work_spec_id", new f.a("work_spec_id", "TEXT", true, 1, null, 1));
+      ((HashMap)localObject1).put("system_id", new f.a("system_id", "INTEGER", true, 0, null, 1));
+      localObject2 = new HashSet(1);
+      ((HashSet)localObject2).add(new f.b("WorkSpec", "CASCADE", "CASCADE", Arrays.asList(new String[] { "work_spec_id" }), Arrays.asList(new String[] { "id" })));
+      localObject1 = new androidx.room.q.f("SystemIdInfo", (Map)localObject1, (Set)localObject2, new HashSet(0));
+      localObject2 = androidx.room.q.f.a(paramB, "SystemIdInfo");
+      if (!((androidx.room.q.f)localObject1).equals(localObject2))
+      {
+        paramB = new StringBuilder();
+        paramB.append("SystemIdInfo(androidx.work.impl.model.SystemIdInfo).\n Expected:\n");
+        paramB.append(localObject1);
+        paramB.append("\n Found:\n");
+        paramB.append(localObject2);
+        return new j.b(false, paramB.toString());
+      }
+      localObject1 = new HashMap(2);
+      ((HashMap)localObject1).put("name", new f.a("name", "TEXT", true, 1, null, 1));
+      ((HashMap)localObject1).put("work_spec_id", new f.a("work_spec_id", "TEXT", true, 2, null, 1));
+      localObject2 = new HashSet(1);
+      ((HashSet)localObject2).add(new f.b("WorkSpec", "CASCADE", "CASCADE", Arrays.asList(new String[] { "work_spec_id" }), Arrays.asList(new String[] { "id" })));
+      localHashSet = new HashSet(1);
+      localHashSet.add(new f.d("index_WorkName_work_spec_id", false, Arrays.asList(new String[] { "work_spec_id" })));
+      localObject1 = new androidx.room.q.f("WorkName", (Map)localObject1, (Set)localObject2, localHashSet);
+      localObject2 = androidx.room.q.f.a(paramB, "WorkName");
+      if (!((androidx.room.q.f)localObject1).equals(localObject2))
+      {
+        paramB = new StringBuilder();
+        paramB.append("WorkName(androidx.work.impl.model.WorkName).\n Expected:\n");
+        paramB.append(localObject1);
+        paramB.append("\n Found:\n");
+        paramB.append(localObject2);
+        return new j.b(false, paramB.toString());
+      }
+      localObject1 = new HashMap(2);
+      ((HashMap)localObject1).put("work_spec_id", new f.a("work_spec_id", "TEXT", true, 1, null, 1));
+      ((HashMap)localObject1).put("progress", new f.a("progress", "BLOB", true, 0, null, 1));
+      localObject2 = new HashSet(1);
+      ((HashSet)localObject2).add(new f.b("WorkSpec", "CASCADE", "CASCADE", Arrays.asList(new String[] { "work_spec_id" }), Arrays.asList(new String[] { "id" })));
+      localObject1 = new androidx.room.q.f("WorkProgress", (Map)localObject1, (Set)localObject2, new HashSet(0));
+      localObject2 = androidx.room.q.f.a(paramB, "WorkProgress");
+      if (!((androidx.room.q.f)localObject1).equals(localObject2))
+      {
+        paramB = new StringBuilder();
+        paramB.append("WorkProgress(androidx.work.impl.model.WorkProgress).\n Expected:\n");
+        paramB.append(localObject1);
+        paramB.append("\n Found:\n");
+        paramB.append(localObject2);
+        return new j.b(false, paramB.toString());
+      }
+      localObject1 = new HashMap(2);
+      ((HashMap)localObject1).put("key", new f.a("key", "TEXT", true, 1, null, 1));
+      ((HashMap)localObject1).put("long_value", new f.a("long_value", "INTEGER", false, 0, null, 1));
+      localObject1 = new androidx.room.q.f("Preference", (Map)localObject1, new HashSet(0), new HashSet(0));
+      paramB = androidx.room.q.f.a(paramB, "Preference");
+      if (!((androidx.room.q.f)localObject1).equals(paramB))
+      {
+        localObject2 = new StringBuilder();
+        ((StringBuilder)localObject2).append("Preference(androidx.work.impl.model.Preference).\n Expected:\n");
+        ((StringBuilder)localObject2).append(localObject1);
+        ((StringBuilder)localObject2).append("\n Found:\n");
+        ((StringBuilder)localObject2).append(paramB);
+        return new j.b(false, ((StringBuilder)localObject2).toString());
+      }
+      return new j.b(true, null);
+    }
+  }
+}

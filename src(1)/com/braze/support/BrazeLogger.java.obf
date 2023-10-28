@@ -1,0 +1,427 @@
+package com.braze.support;
+
+import android.util.Log;
+import bo.app.s5;
+import kotlin.h;
+import kotlin.t;
+import kotlin.x.c.a;
+import kotlin.x.c.q;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public final class BrazeLogger
+{
+  public static final BrazeLogger INSTANCE = new BrazeLogger();
+  private static boolean hasLogLevelBeenSetForAppRun;
+  private static boolean isSystemPropLogLevelSet;
+  private static int logLevel = 4;
+  private static q<? super Priority, ? super String, ? super Throwable, t> onLoggedCallback;
+  
+  private BrazeLogger() {}
+  
+  public static final void checkForSystemLogLevelProperty(boolean paramBoolean)
+  {
+    try
+    {
+      BrazeLogger localBrazeLogger = INSTANCE;
+      String str = s5.a("log.tag.APPBOY");
+      if (kotlin.text.g.n("verbose", kotlin.text.g.l0(str).toString(), true))
+      {
+        setLogLevel(2);
+        isSystemPropLogLevelSet = true;
+        brazelog$default(localBrazeLogger, localBrazeLogger, Priority.I, null, new c(str), 2, null);
+      }
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  public static final void d(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    d$default(paramString1, paramString2, null, 4, null);
+  }
+  
+  public static final void d(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    INSTANCE.brazelog(paramString1, Priority.D, paramThrowable, new d(paramString2));
+  }
+  
+  public static final void e(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    i.e(paramThrowable, "tr");
+    INSTANCE.brazelog(paramString1, Priority.D, paramThrowable, new e(paramString2));
+  }
+  
+  public static final String getBrazeLogTag(Class<?> paramClass)
+  {
+    i.e(paramClass, "classForTag");
+    paramClass = paramClass.getName();
+    int i = paramClass.length();
+    if (i <= 65)
+    {
+      i.d(paramClass, "{\n            // No need?  fullClassName\n        }");
+    }
+    else
+    {
+      i.d(paramClass, "fullClassName");
+      paramClass = paramClass.substring(i - 65);
+      i.d(paramClass, "this as java.lang.String).substring(startIndex)");
+    }
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Braze v25.0.0 .");
+    localStringBuilder.append(paramClass);
+    return localStringBuilder.toString();
+  }
+  
+  public static final void i(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    i$default(paramString1, paramString2, null, 4, null);
+  }
+  
+  public static final void i(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    INSTANCE.brazelog(paramString1, Priority.I, paramThrowable, new f(paramString2));
+  }
+  
+  public static final void setInitialLogLevelFromConfiguration(int paramInt)
+  {
+    try
+    {
+      if (!hasLogLevelBeenSetForAppRun) {
+        setLogLevel(paramInt);
+      }
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  public static final void setLogLevel(int paramInt)
+  {
+    try
+    {
+      if (!isSystemPropLogLevelSet)
+      {
+        hasLogLevelBeenSetForAppRun = true;
+        logLevel = paramInt;
+      }
+      else
+      {
+        BrazeLogger localBrazeLogger = INSTANCE;
+        brazelog$default(localBrazeLogger, localBrazeLogger, Priority.W, null, new g(paramInt), 2, null);
+      }
+      return;
+    }
+    finally {}
+  }
+  
+  private final String toStringSafe(a<? extends Object> paramA)
+  {
+    try
+    {
+      paramA = String.valueOf(paramA.invoke());
+      return paramA;
+    }
+    catch (Exception paramA)
+    {
+      for (;;) {}
+    }
+    return "";
+  }
+  
+  public static final void v(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    v$default(paramString1, paramString2, null, 4, null);
+  }
+  
+  public static final void v(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    INSTANCE.brazelog(paramString1, Priority.V, paramThrowable, new h(paramString2));
+  }
+  
+  public static final void w(String paramString1, String paramString2)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    w$default(paramString1, paramString2, null, 4, null);
+  }
+  
+  public static final void w(String paramString1, String paramString2, Throwable paramThrowable)
+  {
+    i.e(paramString1, "tag");
+    i.e(paramString2, "msg");
+    INSTANCE.brazelog(paramString1, Priority.W, paramThrowable, new i(paramString2));
+  }
+  
+  public final String brazeLogTag(Object paramObject)
+  {
+    i.e(paramObject, "<this>");
+    paramObject = paramObject.getClass().getName();
+    i.d(paramObject, "fullClassName");
+    String str = kotlin.text.g.g0(kotlin.text.g.j0(paramObject, '$', null, 2, null), '.', null, 2, null);
+    int i;
+    if (str.length() == 0) {
+      i = 1;
+    } else {
+      i = 0;
+    }
+    if (i != 0) {
+      return getBrazeLogTag(paramObject);
+    }
+    return getBrazeLogTag(str);
+  }
+  
+  public final void brazelog(Object paramObject, Priority paramPriority, Throwable paramThrowable, a<String> paramA)
+  {
+    i.e(paramObject, "<this>");
+    i.e(paramPriority, "priority");
+    i.e(paramA, "message");
+    if (logLevel <= paramPriority.getLogLevel()) {
+      brazelog(brazeLogTag(paramObject), paramPriority, paramThrowable, paramA);
+    }
+  }
+  
+  public final void brazelog(String paramString, Priority paramPriority, Throwable paramThrowable, a<String> paramA)
+  {
+    i.e(paramString, "tag");
+    i.e(paramPriority, "priority");
+    i.e(paramA, "message");
+    paramA = h.b(new b(paramA));
+    q localQ = onLoggedCallback;
+    if (localQ != null) {
+      localQ.a(paramPriority, paramA.getValue(), paramThrowable);
+    }
+    if (logLevel <= paramPriority.getLogLevel())
+    {
+      int i = a.a[paramPriority.ordinal()];
+      if (i != 1)
+      {
+        if (i != 2)
+        {
+          if (i != 3)
+          {
+            if (i != 4)
+            {
+              if (i != 5) {
+                return;
+              }
+              if (paramThrowable == null)
+              {
+                Log.v(paramString, (String)paramA.getValue());
+                return;
+              }
+              Log.v(paramString, (String)paramA.getValue(), paramThrowable);
+              return;
+            }
+            if (paramThrowable == null)
+            {
+              Log.w(paramString, (String)paramA.getValue());
+              return;
+            }
+            Log.w(paramString, (String)paramA.getValue(), paramThrowable);
+            return;
+          }
+          if (paramThrowable == null)
+          {
+            Log.w(paramString, (String)paramA.getValue());
+            return;
+          }
+          Log.e(paramString, (String)paramA.getValue(), paramThrowable);
+          return;
+        }
+        if (paramThrowable == null)
+        {
+          Log.i(paramString, (String)paramA.getValue());
+          return;
+        }
+        Log.i(paramString, (String)paramA.getValue(), paramThrowable);
+        return;
+      }
+      if (paramThrowable == null)
+      {
+        Log.d(paramString, (String)paramA.getValue());
+        return;
+      }
+      Log.d(paramString, (String)paramA.getValue(), paramThrowable);
+    }
+  }
+  
+  public final String getBrazeLogTag(String paramString)
+  {
+    i.e(paramString, "<this>");
+    StringBuilder localStringBuilder = new StringBuilder();
+    localStringBuilder.append("Braze v25.0.0 .");
+    localStringBuilder.append(paramString);
+    return localStringBuilder.toString();
+  }
+  
+  public static enum Priority
+  {
+    private final int logLevel;
+    
+    static
+    {
+      E = new Priority("E", 2, 6);
+      V = new Priority("V", 3, 2);
+      W = new Priority("W", 4, 5);
+    }
+    
+    private Priority(int paramInt)
+    {
+      logLevel = paramInt;
+    }
+    
+    public final int getLogLevel()
+    {
+      return logLevel;
+    }
+  }
+  
+  static final class b
+    extends j
+    implements a<String>
+  {
+    b(a<String> paramA)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return BrazeLogger.access$toStringSafe(BrazeLogger.INSTANCE, b);
+    }
+  }
+  
+  static final class c
+    extends j
+    implements a<String>
+  {
+    c(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("BrazeLogger log level set to ");
+      localStringBuilder.append(b);
+      localStringBuilder.append(" via device system property. Note that subsequent calls to BrazeLogger.setLogLevel() will have no effect.");
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class d
+    extends j
+    implements a<String>
+  {
+    d(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return b;
+    }
+  }
+  
+  static final class e
+    extends j
+    implements a<String>
+  {
+    e(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return b;
+    }
+  }
+  
+  static final class f
+    extends j
+    implements a<String>
+  {
+    f(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return b;
+    }
+  }
+  
+  static final class g
+    extends j
+    implements a<String>
+  {
+    g(int paramInt)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Log level already set via system property. BrazeLogger.setLogLevel() ignored for level: ");
+      localStringBuilder.append(b);
+      return localStringBuilder.toString();
+    }
+  }
+  
+  static final class h
+    extends j
+    implements a<String>
+  {
+    h(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return b;
+    }
+  }
+  
+  static final class i
+    extends j
+    implements a<String>
+  {
+    i(String paramString)
+    {
+      super();
+    }
+    
+    public final String a()
+    {
+      return b;
+    }
+  }
+}

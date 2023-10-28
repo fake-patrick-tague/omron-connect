@@ -1,0 +1,145 @@
+package c.a.n;
+
+import android.view.View;
+import android.view.animation.Interpolator;
+import c.h.q.j0;
+import c.h.q.k0;
+import c.h.q.l0;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class h
+{
+  final ArrayList<j0> a = new ArrayList();
+  private long b = -1L;
+  private Interpolator c;
+  k0 d;
+  private boolean e;
+  private final l0 f = new a();
+  
+  public h() {}
+  
+  public void a()
+  {
+    if (!e) {
+      return;
+    }
+    Iterator localIterator = a.iterator();
+    while (localIterator.hasNext()) {
+      ((j0)localIterator.next()).b();
+    }
+    e = false;
+  }
+  
+  void b()
+  {
+    e = false;
+  }
+  
+  public h c(j0 paramJ0)
+  {
+    if (!e) {
+      a.add(paramJ0);
+    }
+    return this;
+  }
+  
+  public h d(j0 paramJ01, j0 paramJ02)
+  {
+    a.add(paramJ01);
+    paramJ02.i(paramJ01.c());
+    a.add(paramJ02);
+    return this;
+  }
+  
+  public h e(long paramLong)
+  {
+    if (!e) {
+      b = paramLong;
+    }
+    return this;
+  }
+  
+  public h f(Interpolator paramInterpolator)
+  {
+    if (!e) {
+      c = paramInterpolator;
+    }
+    return this;
+  }
+  
+  public h g(k0 paramK0)
+  {
+    if (!e) {
+      d = paramK0;
+    }
+    return this;
+  }
+  
+  public void h()
+  {
+    if (e) {
+      return;
+    }
+    Iterator localIterator = a.iterator();
+    while (localIterator.hasNext())
+    {
+      j0 localJ0 = (j0)localIterator.next();
+      long l = b;
+      if (l >= 0L) {
+        localJ0.e(l);
+      }
+      Interpolator localInterpolator = c;
+      if (localInterpolator != null) {
+        localJ0.f(localInterpolator);
+      }
+      if (d != null) {
+        localJ0.g(f);
+      }
+      localJ0.k();
+    }
+    e = true;
+  }
+  
+  class a
+    extends l0
+  {
+    private boolean a = false;
+    private int b = 0;
+    
+    a() {}
+    
+    public void b(View paramView)
+    {
+      int i = b + 1;
+      b = i;
+      if (i == a.size())
+      {
+        paramView = d;
+        if (paramView != null) {
+          paramView.b(null);
+        }
+        d();
+      }
+    }
+    
+    public void c(View paramView)
+    {
+      if (a) {
+        return;
+      }
+      a = true;
+      paramView = d;
+      if (paramView != null) {
+        paramView.c(null);
+      }
+    }
+    
+    void d()
+    {
+      b = 0;
+      a = false;
+      b();
+    }
+  }
+}

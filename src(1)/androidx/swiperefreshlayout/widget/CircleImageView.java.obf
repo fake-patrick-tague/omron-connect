@@ -1,0 +1,138 @@
+package androidx.swiperefreshlayout.widget;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RadialGradient;
+import android.graphics.RectF;
+import android.graphics.Shader.TileMode;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.os.Build.VERSION;
+import android.util.DisplayMetrics;
+import android.view.animation.Animation.AnimationListener;
+import android.widget.ImageView;
+import c.h.q.f0;
+
+class a
+  extends ImageView
+{
+  private Animation.AnimationListener b;
+  private int c;
+  private int d;
+  
+  a(Context paramContext)
+  {
+    super(paramContext);
+    float f = getContextgetResourcesgetDisplayMetricsdensity;
+    int i = (int)(1.75F * f);
+    int j = (int)(0.0F * f);
+    c = ((int)(3.5F * f));
+    paramContext = getContext().obtainStyledAttributes(c.u.a.f);
+    d = paramContext.getColor(c.u.a.g, -328966);
+    paramContext.recycle();
+    if (a())
+    {
+      paramContext = new ShapeDrawable(new OvalShape());
+      f0.x0(this, f * 4.0F);
+    }
+    else
+    {
+      paramContext = new ShapeDrawable(new a(this, c));
+      setLayerType(1, paramContext.getPaint());
+      paramContext.getPaint().setShadowLayer(c, j, i, 503316480);
+      i = c;
+      setPadding(i, i, i, i);
+    }
+    paramContext.getPaint().setColor(d);
+    f0.t0(this, paramContext);
+  }
+  
+  private boolean a()
+  {
+    return Build.VERSION.SDK_INT >= 21;
+  }
+  
+  public void b(Animation.AnimationListener paramAnimationListener)
+  {
+    b = paramAnimationListener;
+  }
+  
+  public void onAnimationEnd()
+  {
+    super.onAnimationEnd();
+    Animation.AnimationListener localAnimationListener = b;
+    if (localAnimationListener != null) {
+      localAnimationListener.onAnimationEnd(getAnimation());
+    }
+  }
+  
+  public void onAnimationStart()
+  {
+    super.onAnimationStart();
+    Animation.AnimationListener localAnimationListener = b;
+    if (localAnimationListener != null) {
+      localAnimationListener.onAnimationStart(getAnimation());
+    }
+  }
+  
+  protected void onMeasure(int paramInt1, int paramInt2)
+  {
+    super.onMeasure(paramInt1, paramInt2);
+    if (!a()) {
+      setMeasuredDimension(getMeasuredWidth() + c * 2, getMeasuredHeight() + c * 2);
+    }
+  }
+  
+  public void setBackgroundColor(int paramInt)
+  {
+    if ((getBackground() instanceof ShapeDrawable))
+    {
+      ((ShapeDrawable)getBackground()).getPaint().setColor(paramInt);
+      d = paramInt;
+    }
+  }
+  
+  private static class a
+    extends OvalShape
+  {
+    private Paint b;
+    private int c;
+    private a d;
+    
+    a(a paramA, int paramInt)
+    {
+      d = paramA;
+      b = new Paint();
+      c = paramInt;
+      b((int)rect().width());
+    }
+    
+    private void b(int paramInt)
+    {
+      Paint localPaint = b;
+      float f1 = paramInt / 2;
+      float f2 = c;
+      Shader.TileMode localTileMode = Shader.TileMode.CLAMP;
+      localPaint.setShader(new RadialGradient(f1, f1, f2, new int[] { 1023410176, 0 }, null, localTileMode));
+    }
+    
+    public void draw(Canvas paramCanvas, Paint paramPaint)
+    {
+      int i = d.getWidth() / 2;
+      int j = d.getHeight() / 2;
+      float f1 = i;
+      float f2 = j;
+      paramCanvas.drawCircle(f1, f2, f1, b);
+      paramCanvas.drawCircle(f1, f2, i - c, paramPaint);
+    }
+    
+    protected void onResize(float paramFloat1, float paramFloat2)
+    {
+      super.onResize(paramFloat1, paramFloat2);
+      b((int)paramFloat1);
+    }
+  }
+}

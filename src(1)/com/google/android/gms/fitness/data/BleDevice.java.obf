@@ -1,0 +1,103 @@
+package com.google.android.gms.fitness.data;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.ReflectedParcelable;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
+@Deprecated
+@SafeParcelable.Class(creator="BleDeviceCreator")
+@SafeParcelable.Reserved({1000})
+public class BleDevice
+  extends AbstractSafeParcelable
+  implements ReflectedParcelable
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<BleDevice> CREATOR = new zzd();
+  @SafeParcelable.Field(getter="getName", id=2)
+  private final String name;
+  @SafeParcelable.Field(getter="getAddress", id=1)
+  private final String zzld;
+  @SafeParcelable.Field(getter="getSupportedProfiles", id=3)
+  private final List<String> zzle;
+  @SafeParcelable.Field(getter="getDataTypes", id=4)
+  private final List<DataType> zzlf;
+  
+  @SafeParcelable.Constructor
+  BleDevice(@SafeParcelable.Param(id=1) String paramString1, @SafeParcelable.Param(id=2) String paramString2, @SafeParcelable.Param(id=3) List<String> paramList, @SafeParcelable.Param(id=4) List<DataType> paramList1)
+  {
+    zzld = paramString1;
+    name = paramString2;
+    zzle = Collections.unmodifiableList(paramList);
+    zzlf = Collections.unmodifiableList(paramList1);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (paramObject == this) {
+      return true;
+    }
+    if (!(paramObject instanceof BleDevice)) {
+      return false;
+    }
+    paramObject = (BleDevice)paramObject;
+    return (name.equals(name)) && (zzld.equals(zzld)) && (new HashSet(zzle).equals(new HashSet(zzle))) && (new HashSet(zzlf).equals(new HashSet(zzlf)));
+  }
+  
+  @RecentlyNonNull
+  public String getAddress()
+  {
+    return zzld;
+  }
+  
+  @RecentlyNonNull
+  public List<DataType> getDataTypes()
+  {
+    return zzlf;
+  }
+  
+  @RecentlyNonNull
+  public String getName()
+  {
+    return name;
+  }
+  
+  @RecentlyNonNull
+  public List<String> getSupportedProfiles()
+  {
+    return zzle;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { name, zzld, zzle, zzlf });
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    return Objects.toStringHelper(this).add("name", name).add("address", zzld).add("dataTypes", zzlf).add("supportedProfiles", zzle).toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeString(paramParcel, 1, getAddress(), false);
+    SafeParcelWriter.writeString(paramParcel, 2, getName(), false);
+    SafeParcelWriter.writeStringList(paramParcel, 3, getSupportedProfiles(), false);
+    SafeParcelWriter.writeTypedList(paramParcel, 4, getDataTypes(), false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+}

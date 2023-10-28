@@ -1,0 +1,120 @@
+package com.google.android.gms.measurement.internal;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.job.JobInfo.Builder;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build.VERSION;
+import android.os.PersistableBundle;
+import com.google.android.gms.common.util.Clock;
+import com.google.android.gms.internal.measurement.zzbs;
+import com.google.android.gms.internal.measurement.zzbt;
+
+public final class zzkl
+  extends zzkn
+{
+  private final AlarmManager zza = (AlarmManager)zzs.zzau().getSystemService("alarm");
+  private zzap zzb;
+  private Integer zzc;
+  
+  protected zzkl(zzkz paramZzkz)
+  {
+    super(paramZzkz);
+  }
+  
+  private final int zzf()
+  {
+    if (zzc == null) {
+      zzc = Integer.valueOf("measurement".concat(String.valueOf(zzs.zzau().getPackageName())).hashCode());
+    }
+    return zzc.intValue();
+  }
+  
+  private final PendingIntent zzh()
+  {
+    Context localContext = zzs.zzau();
+    return PendingIntent.getBroadcast(localContext, 0, new Intent().setClassName(localContext, "com.google.android.gms.measurement.AppMeasurementReceiver").setAction("com.google.android.gms.measurement.UPLOAD"), zzbs.zza);
+  }
+  
+  private final zzap zzi()
+  {
+    if (zzb == null) {
+      zzb = new zzkk(this, zzf.zzq());
+    }
+    return zzb;
+  }
+  
+  private final void zzj()
+  {
+    JobScheduler localJobScheduler = (JobScheduler)zzs.zzau().getSystemService("jobscheduler");
+    if (localJobScheduler != null) {
+      localJobScheduler.cancel(zzf());
+    }
+  }
+  
+  public final void zza()
+  {
+    zzW();
+    zzs.zzay().zzj().zza("Unscheduling upload");
+    AlarmManager localAlarmManager = zza;
+    if (localAlarmManager != null) {
+      localAlarmManager.cancel(zzh());
+    }
+    zzi().zzb();
+    if (Build.VERSION.SDK_INT >= 24) {
+      zzj();
+    }
+  }
+  
+  protected final boolean zzb()
+  {
+    AlarmManager localAlarmManager = zza;
+    if (localAlarmManager != null) {
+      localAlarmManager.cancel(zzh());
+    }
+    if (Build.VERSION.SDK_INT >= 24) {
+      zzj();
+    }
+    return false;
+  }
+  
+  public final void zzd(long paramLong)
+  {
+    zzW();
+    zzs.zzaw();
+    Object localObject = zzs.zzau();
+    if (!zzlh.zzaj((Context)localObject)) {
+      zzs.zzay().zzc().zza("Receiver not registered/enabled");
+    }
+    if (!zzlh.zzak((Context)localObject, false)) {
+      zzs.zzay().zzc().zza("Service not registered/enabled");
+    }
+    zza();
+    zzs.zzay().zzj().zzb("Scheduling upload, millis", Long.valueOf(paramLong));
+    long l = zzs.zzav().elapsedRealtime();
+    zzs.zzf();
+    if ((paramLong < Math.max(0L, ((Long)zzeb.zzw.zza(null)).longValue())) && (!zzi().zze())) {
+      zzi().zzd(paramLong);
+    }
+    zzs.zzaw();
+    if (Build.VERSION.SDK_INT >= 24)
+    {
+      localObject = zzs.zzau();
+      ComponentName localComponentName = new ComponentName((Context)localObject, "com.google.android.gms.measurement.AppMeasurementJobService");
+      int i = zzf();
+      PersistableBundle localPersistableBundle = new PersistableBundle();
+      localPersistableBundle.putString("action", "com.google.android.gms.measurement.UPLOAD");
+      zzbt.zza((Context)localObject, new JobInfo.Builder(i, localComponentName).setMinimumLatency(paramLong).setOverrideDeadline(paramLong + paramLong).setExtras(localPersistableBundle).build(), "com.google.android.gms", "UploadAlarm");
+      return;
+    }
+    localObject = zza;
+    if (localObject != null)
+    {
+      zzs.zzf();
+      ((AlarmManager)localObject).setInexactRepeating(2, l + paramLong, Math.max(((Long)zzeb.zzr.zza(null)).longValue(), paramLong), zzh());
+    }
+  }
+}

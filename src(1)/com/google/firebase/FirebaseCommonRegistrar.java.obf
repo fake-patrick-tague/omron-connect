@@ -1,0 +1,41 @@
+package com.google.firebase;
+
+import android.os.Build;
+import android.os.Build.VERSION;
+import com.google.firebase.components.ComponentRegistrar;
+import com.google.firebase.components.m;
+import com.google.firebase.t.h;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FirebaseCommonRegistrar
+  implements ComponentRegistrar
+{
+  public FirebaseCommonRegistrar() {}
+  
+  private static String e(String paramString)
+  {
+    return paramString.replace(' ', '_').replace('/', '_');
+  }
+  
+  public List<m<?>> getComponents()
+  {
+    ArrayList localArrayList = new ArrayList();
+    localArrayList.add(com.google.firebase.t.d.b());
+    localArrayList.add(com.google.firebase.heartbeatinfo.f.c());
+    localArrayList.add(h.a("fire-android", String.valueOf(Build.VERSION.SDK_INT)));
+    localArrayList.add(h.a("fire-core", "20.3.1"));
+    localArrayList.add(h.a("device-name", e(Build.PRODUCT)));
+    localArrayList.add(h.a("device-model", e(Build.DEVICE)));
+    localArrayList.add(h.a("device-brand", e(Build.BRAND)));
+    localArrayList.add(h.b("android-target-sdk", d.a));
+    localArrayList.add(h.b("android-min-sdk", e.a));
+    localArrayList.add(h.b("android-platform", f.a));
+    localArrayList.add(h.b("android-installer", c.a));
+    String str = com.google.firebase.t.f.a();
+    if (str != null) {
+      localArrayList.add(h.a("kotlin", str));
+    }
+    return localArrayList;
+  }
+}

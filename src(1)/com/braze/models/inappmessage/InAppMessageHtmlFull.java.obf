@@ -1,0 +1,38 @@
+package com.braze.models.inappmessage;
+
+import bo.app.z1;
+import com.braze.enums.inappmessage.MessageType;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public final class InAppMessageHtmlFull
+  extends InAppMessageZippedAssetHtmlBase
+{
+  public InAppMessageHtmlFull() {}
+  
+  public InAppMessageHtmlFull(JSONObject paramJSONObject, z1 paramZ1)
+  {
+    super(paramJSONObject, paramZ1);
+  }
+  
+  public JSONObject forJsonPut()
+  {
+    JSONObject localJSONObject = getJsonObject();
+    if (localJSONObject != null) {
+      return localJSONObject;
+    }
+    localJSONObject = super.forJsonPut();
+    try
+    {
+      localJSONObject.put("type", getMessageType().name());
+      return localJSONObject;
+    }
+    catch (JSONException localJSONException) {}
+    return localJSONObject;
+  }
+  
+  public MessageType getMessageType()
+  {
+    return MessageType.HTML_FULL;
+  }
+}

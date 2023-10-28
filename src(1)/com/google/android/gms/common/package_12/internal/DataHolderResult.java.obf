@@ -1,0 +1,45 @@
+package com.google.android.gms.common.api.internal;
+
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.api.Releasable;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.data.DataHolder;
+
+@KeepForSdk
+public abstract class DataHolderResult
+  implements Result, Releasable
+{
+  @KeepForSdk
+  protected final DataHolder mDataHolder;
+  @KeepForSdk
+  protected final Status mStatus;
+  
+  @KeepForSdk
+  protected DataHolderResult(DataHolder paramDataHolder)
+  {
+    this(paramDataHolder, new Status(paramDataHolder.getStatusCode()));
+  }
+  
+  @KeepForSdk
+  protected DataHolderResult(DataHolder paramDataHolder, Status paramStatus)
+  {
+    mStatus = paramStatus;
+    mDataHolder = paramDataHolder;
+  }
+  
+  @KeepForSdk
+  public Status getStatus()
+  {
+    return mStatus;
+  }
+  
+  @KeepForSdk
+  public void release()
+  {
+    DataHolder localDataHolder = mDataHolder;
+    if (localDataHolder != null) {
+      localDataHolder.close();
+    }
+  }
+}

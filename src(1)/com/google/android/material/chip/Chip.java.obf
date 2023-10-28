@@ -1,0 +1,1944 @@
+package com.google.android.material.chip;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Outline;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.text.TextPaint;
+import android.text.TextUtils;
+import android.text.TextUtils.TruncateAt;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.PointerIcon;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewOutlineProvider;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.CheckBox;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TextView.BufferType;
+import androidx.appcompat.widget.AppCompatCheckBox;
+import c.h.q.f0;
+import c.h.q.p0.c.a;
+import c.h.q.p0.c.c;
+import com.google.android.material.internal.FlowLayout;
+import com.google.android.material.internal.i;
+import d.c.a.a.l;
+import d.c.a.a.u.d;
+import d.c.a.a.u.f;
+import d.c.a.a.x.g;
+import d.c.a.a.x.n;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+
+public class Chip
+  extends AppCompatCheckBox
+  implements a.a, n
+{
+  private static final int f = d.c.a.a.k.s;
+  private static final Rect g = new Rect();
+  private static final int[] h = { 16842913 };
+  private static final int[] i = { 16842911 };
+  private a j;
+  private InsetDrawable k;
+  private RippleDrawable l;
+  private View.OnClickListener m;
+  private CompoundButton.OnCheckedChangeListener n;
+  private boolean o;
+  private boolean p;
+  private boolean q;
+  private boolean r;
+  private boolean s;
+  private int t;
+  private int u;
+  private final c v;
+  private final Rect w = new Rect();
+  private final RectF x = new RectF();
+  private final f y = new a();
+  
+  public Chip(Context paramContext, AttributeSet paramAttributeSet)
+  {
+    this(paramContext, paramAttributeSet, d.c.a.a.b.h);
+  }
+  
+  public Chip(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    super(com.google.android.material.theme.a.a.c(paramContext, paramAttributeSet, paramInt, i1), paramAttributeSet, paramInt);
+    paramContext = getContext();
+    C(paramAttributeSet);
+    a localA = a.v0(paramContext, paramAttributeSet, paramInt, i1);
+    o(paramContext, paramAttributeSet, paramInt);
+    setChipDrawable(localA);
+    localA.W(f0.x(this));
+    paramAttributeSet = i.h(paramContext, paramAttributeSet, l.o0, paramInt, i1, new int[0]);
+    if (Build.VERSION.SDK_INT < 23) {
+      setTextColor(d.c.a.a.u.c.a(paramContext, paramAttributeSet, l.r0));
+    }
+    boolean bool = paramAttributeSet.hasValue(l.a1);
+    paramAttributeSet.recycle();
+    v = new c(this);
+    x();
+    if (!bool) {
+      p();
+    }
+    setChecked(o);
+    setText(localA.h1());
+    setEllipsize(localA.b1());
+    B();
+    if (!j.L2())
+    {
+      setLines(1);
+      setHorizontallyScrolling(true);
+    }
+    setGravity(8388627);
+    A();
+    if (v()) {
+      setMinHeight(u);
+    }
+    t = f0.D(this);
+  }
+  
+  private void A()
+  {
+    if (!TextUtils.isEmpty(getText()))
+    {
+      Object localObject = j;
+      if (localObject == null) {
+        return;
+      }
+      int i3 = (int)(((a)localObject).J0() + j.j1() + j.q0());
+      int i4 = (int)(j.O0() + j.k1() + j.m0());
+      int i2 = i3;
+      int i1 = i4;
+      if (k != null)
+      {
+        localObject = new Rect();
+        k.getPadding((Rect)localObject);
+        i1 = i4 + left;
+        i2 = i3 + right;
+      }
+      f0.D0(this, i1, getPaddingTop(), i2, getPaddingBottom());
+    }
+  }
+  
+  private void B()
+  {
+    TextPaint localTextPaint = getPaint();
+    Object localObject = j;
+    if (localObject != null) {
+      drawableState = ((Drawable)localObject).getState();
+    }
+    localObject = getTextAppearance();
+    if (localObject != null) {
+      ((d)localObject).j(getContext(), localTextPaint, y);
+    }
+  }
+  
+  private void C(AttributeSet paramAttributeSet)
+  {
+    if (paramAttributeSet == null) {
+      return;
+    }
+    if (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res/android", "background") != null) {
+      Log.w("Chip", "Do not set the background; Chip manages its own background drawable.");
+    }
+    if (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res/android", "drawableLeft") == null)
+    {
+      if (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res/android", "drawableStart") == null)
+      {
+        if (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res/android", "drawableEnd") == null)
+        {
+          if (paramAttributeSet.getAttributeValue("http://schemas.android.com/apk/res/android", "drawableRight") == null)
+          {
+            if ((paramAttributeSet.getAttributeBooleanValue("http://schemas.android.com/apk/res/android", "singleLine", true)) && (paramAttributeSet.getAttributeIntValue("http://schemas.android.com/apk/res/android", "lines", 1) == 1) && (paramAttributeSet.getAttributeIntValue("http://schemas.android.com/apk/res/android", "minLines", 1) == 1) && (paramAttributeSet.getAttributeIntValue("http://schemas.android.com/apk/res/android", "maxLines", 1) == 1))
+            {
+              if (paramAttributeSet.getAttributeIntValue("http://schemas.android.com/apk/res/android", "gravity", 8388627) != 8388627) {
+                Log.w("Chip", "Chip text must be vertically center and start aligned");
+              }
+              return;
+            }
+            throw new UnsupportedOperationException("Chip does not support multi-line text");
+          }
+          throw new UnsupportedOperationException("Please set end drawable using R.attr#closeIcon.");
+        }
+        throw new UnsupportedOperationException("Please set end drawable using R.attr#closeIcon.");
+      }
+      throw new UnsupportedOperationException("Please set start drawable using R.attr#chipIcon.");
+    }
+    throw new UnsupportedOperationException("Please set left drawable using R.attr#chipIcon.");
+  }
+  
+  private RectF getCloseIconTouchBounds()
+  {
+    x.setEmpty();
+    if ((n()) && (m != null)) {
+      j.Y0(x);
+    }
+    return x;
+  }
+  
+  private Rect getCloseIconTouchBoundsInt()
+  {
+    RectF localRectF = getCloseIconTouchBounds();
+    w.set((int)left, (int)top, (int)right, (int)bottom);
+    return w;
+  }
+  
+  private d getTextAppearance()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.i1();
+    }
+    return null;
+  }
+  
+  private void i(a paramA)
+  {
+    paramA.p2(this);
+  }
+  
+  private int[] j()
+  {
+    boolean bool = isEnabled();
+    int i3 = 0;
+    if (bool) {
+      i2 = 1;
+    } else {
+      i2 = 0;
+    }
+    int i1 = i2;
+    if (r) {
+      i1 = i2 + 1;
+    }
+    int i2 = i1;
+    if (q) {
+      i2 = i1 + 1;
+    }
+    i1 = i2;
+    if (p) {
+      i1 = i2 + 1;
+    }
+    i2 = i1;
+    if (isChecked()) {
+      i2 = i1 + 1;
+    }
+    int[] arrayOfInt = new int[i2];
+    i2 = i3;
+    if (isEnabled())
+    {
+      arrayOfInt[0] = 16842910;
+      i2 = 1;
+    }
+    i1 = i2;
+    if (r)
+    {
+      arrayOfInt[i2] = 16842908;
+      i1 = i2 + 1;
+    }
+    i2 = i1;
+    if (q)
+    {
+      arrayOfInt[i1] = 16843623;
+      i2 = i1 + 1;
+    }
+    i1 = i2;
+    if (p)
+    {
+      arrayOfInt[i2] = 16842919;
+      i1 = i2 + 1;
+    }
+    if (isChecked()) {
+      arrayOfInt[i1] = 16842913;
+    }
+    return arrayOfInt;
+  }
+  
+  private void l()
+  {
+    if ((getBackgroundDrawable() == k) && (j.getCallback() == null)) {
+      j.setCallback(k);
+    }
+  }
+  
+  private boolean m(MotionEvent paramMotionEvent)
+  {
+    if (paramMotionEvent.getAction() == 10) {
+      try
+      {
+        paramMotionEvent = c.j.a.a.class.getDeclaredField("p");
+        paramMotionEvent.setAccessible(true);
+        if (((Integer)paramMotionEvent.get(v)).intValue() != Integer.MIN_VALUE)
+        {
+          paramMotionEvent = c.j.a.a.class.getDeclaredMethod("V", new Class[] { Integer.TYPE });
+          paramMotionEvent.setAccessible(true);
+          paramMotionEvent.invoke(v, new Object[] { Integer.valueOf(Integer.MIN_VALUE) });
+          return true;
+        }
+      }
+      catch (NoSuchFieldException paramMotionEvent)
+      {
+        Log.e("Chip", "Unable to send Accessibility Exit event", paramMotionEvent);
+        return false;
+      }
+      catch (InvocationTargetException paramMotionEvent)
+      {
+        Log.e("Chip", "Unable to send Accessibility Exit event", paramMotionEvent);
+        return false;
+      }
+      catch (IllegalAccessException paramMotionEvent)
+      {
+        Log.e("Chip", "Unable to send Accessibility Exit event", paramMotionEvent);
+        return false;
+      }
+      catch (NoSuchMethodException paramMotionEvent)
+      {
+        Log.e("Chip", "Unable to send Accessibility Exit event", paramMotionEvent);
+      }
+    }
+    return false;
+  }
+  
+  private boolean n()
+  {
+    a localA = j;
+    return (localA != null) && (localA.R0() != null);
+  }
+  
+  private void o(Context paramContext, AttributeSet paramAttributeSet, int paramInt)
+  {
+    paramContext = i.h(paramContext, paramAttributeSet, l.o0, paramInt, f, new int[0]);
+    s = paramContext.getBoolean(l.V0, false);
+    float f1 = (float)Math.ceil(com.google.android.material.internal.j.b(getContext(), 48));
+    u = ((int)Math.ceil(paramContext.getDimension(l.J0, f1)));
+    paramContext.recycle();
+  }
+  
+  private void p()
+  {
+    if (Build.VERSION.SDK_INT >= 21) {
+      setOutlineProvider(new b());
+    }
+  }
+  
+  private void q(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    k = new InsetDrawable(j, paramInt1, paramInt2, paramInt3, paramInt4);
+  }
+  
+  private void setCloseIconHovered(boolean paramBoolean)
+  {
+    if (q != paramBoolean)
+    {
+      q = paramBoolean;
+      refreshDrawableState();
+    }
+  }
+  
+  private void setCloseIconPressed(boolean paramBoolean)
+  {
+    if (p != paramBoolean)
+    {
+      p = paramBoolean;
+      refreshDrawableState();
+    }
+  }
+  
+  private void u()
+  {
+    if (k != null)
+    {
+      k = null;
+      setMinWidth(0);
+      setMinHeight((int)getChipMinHeight());
+      y();
+    }
+  }
+  
+  private void w(a paramA)
+  {
+    if (paramA != null) {
+      paramA.p2(null);
+    }
+  }
+  
+  private void x()
+  {
+    if ((n()) && (s()) && (m != null))
+    {
+      f0.p0(this, v);
+      return;
+    }
+    f0.p0(this, null);
+  }
+  
+  private void y()
+  {
+    if (d.c.a.a.v.b.a)
+    {
+      z();
+      return;
+    }
+    j.K2(true);
+    f0.t0(this, getBackgroundDrawable());
+    A();
+    l();
+  }
+  
+  private void z()
+  {
+    l = new RippleDrawable(d.c.a.a.v.b.d(j.f1()), getBackgroundDrawable(), null);
+    j.K2(false);
+    f0.t0(this, l);
+    A();
+  }
+  
+  public void a()
+  {
+    k(u);
+    requestLayout();
+    if (Build.VERSION.SDK_INT >= 21) {
+      invalidateOutline();
+    }
+  }
+  
+  protected boolean dispatchHoverEvent(MotionEvent paramMotionEvent)
+  {
+    return (m(paramMotionEvent)) || (v.v(paramMotionEvent)) || (super.dispatchHoverEvent(paramMotionEvent));
+  }
+  
+  public boolean dispatchKeyEvent(KeyEvent paramKeyEvent)
+  {
+    if ((v.w(paramKeyEvent)) && (v.A() != Integer.MIN_VALUE)) {
+      return true;
+    }
+    return super.dispatchKeyEvent(paramKeyEvent);
+  }
+  
+  protected void drawableStateChanged()
+  {
+    super.drawableStateChanged();
+    a localA = j;
+    boolean bool;
+    if ((localA != null) && (localA.p1())) {
+      bool = j.l2(j());
+    } else {
+      bool = false;
+    }
+    if (bool) {
+      invalidate();
+    }
+  }
+  
+  public Drawable getBackgroundDrawable()
+  {
+    InsetDrawable localInsetDrawable = k;
+    Object localObject = localInsetDrawable;
+    if (localInsetDrawable == null) {
+      localObject = j;
+    }
+    return localObject;
+  }
+  
+  public Drawable getCheckedIcon()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.F0();
+    }
+    return null;
+  }
+  
+  public ColorStateList getCheckedIconTint()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.G0();
+    }
+    return null;
+  }
+  
+  public ColorStateList getChipBackgroundColor()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.H0();
+    }
+    return null;
+  }
+  
+  public float getChipCornerRadius()
+  {
+    a localA = j;
+    float f1 = 0.0F;
+    if (localA != null) {
+      f1 = Math.max(0.0F, localA.I0());
+    }
+    return f1;
+  }
+  
+  public Drawable getChipDrawable()
+  {
+    return j;
+  }
+  
+  public float getChipEndPadding()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.J0();
+    }
+    return 0.0F;
+  }
+  
+  public Drawable getChipIcon()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.K0();
+    }
+    return null;
+  }
+  
+  public float getChipIconSize()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.L0();
+    }
+    return 0.0F;
+  }
+  
+  public ColorStateList getChipIconTint()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.M0();
+    }
+    return null;
+  }
+  
+  public float getChipMinHeight()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.N0();
+    }
+    return 0.0F;
+  }
+  
+  public float getChipStartPadding()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.O0();
+    }
+    return 0.0F;
+  }
+  
+  public ColorStateList getChipStrokeColor()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.P0();
+    }
+    return null;
+  }
+  
+  public float getChipStrokeWidth()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.Q0();
+    }
+    return 0.0F;
+  }
+  
+  @Deprecated
+  public CharSequence getChipText()
+  {
+    return getText();
+  }
+  
+  public Drawable getCloseIcon()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.R0();
+    }
+    return null;
+  }
+  
+  public CharSequence getCloseIconContentDescription()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.S0();
+    }
+    return null;
+  }
+  
+  public float getCloseIconEndPadding()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.T0();
+    }
+    return 0.0F;
+  }
+  
+  public float getCloseIconSize()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.U0();
+    }
+    return 0.0F;
+  }
+  
+  public float getCloseIconStartPadding()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.V0();
+    }
+    return 0.0F;
+  }
+  
+  public ColorStateList getCloseIconTint()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.X0();
+    }
+    return null;
+  }
+  
+  public TextUtils.TruncateAt getEllipsize()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.b1();
+    }
+    return null;
+  }
+  
+  public void getFocusedRect(Rect paramRect)
+  {
+    if ((v.A() != 1) && (v.x() != 1))
+    {
+      super.getFocusedRect(paramRect);
+      return;
+    }
+    paramRect.set(getCloseIconTouchBoundsInt());
+  }
+  
+  public d.c.a.a.m.h getHideMotionSpec()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.c1();
+    }
+    return null;
+  }
+  
+  public float getIconEndPadding()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.d1();
+    }
+    return 0.0F;
+  }
+  
+  public float getIconStartPadding()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.e1();
+    }
+    return 0.0F;
+  }
+  
+  public ColorStateList getRippleColor()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.f1();
+    }
+    return null;
+  }
+  
+  public d.c.a.a.x.k getShapeAppearanceModel()
+  {
+    return j.C();
+  }
+  
+  public d.c.a.a.m.h getShowMotionSpec()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.g1();
+    }
+    return null;
+  }
+  
+  public float getTextEndPadding()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.j1();
+    }
+    return 0.0F;
+  }
+  
+  public float getTextStartPadding()
+  {
+    a localA = j;
+    if (localA != null) {
+      return localA.k1();
+    }
+    return 0.0F;
+  }
+  
+  public boolean k(int paramInt)
+  {
+    u = paramInt;
+    boolean bool = v();
+    int i2 = 0;
+    if (!bool)
+    {
+      if (k != null)
+      {
+        u();
+        return false;
+      }
+      y();
+      return false;
+    }
+    int i3 = Math.max(0, paramInt - j.getIntrinsicHeight());
+    int i1 = Math.max(0, paramInt - j.getIntrinsicWidth());
+    if ((i1 <= 0) && (i3 <= 0))
+    {
+      if (k != null)
+      {
+        u();
+        return false;
+      }
+      y();
+      return false;
+    }
+    if (i1 > 0) {
+      i1 /= 2;
+    } else {
+      i1 = 0;
+    }
+    if (i3 > 0) {
+      i2 = i3 / 2;
+    }
+    if (k != null)
+    {
+      Rect localRect = new Rect();
+      k.getPadding(localRect);
+      if ((top == i2) && (bottom == i2) && (left == i1) && (right == i1))
+      {
+        y();
+        return true;
+      }
+    }
+    if (Build.VERSION.SDK_INT >= 16)
+    {
+      if (getMinHeight() != paramInt) {
+        setMinHeight(paramInt);
+      }
+      if (getMinWidth() != paramInt) {
+        setMinWidth(paramInt);
+      }
+    }
+    else
+    {
+      setMinHeight(paramInt);
+      setMinWidth(paramInt);
+    }
+    q(i1, i2, i1, i2);
+    y();
+    return true;
+  }
+  
+  protected void onAttachedToWindow()
+  {
+    super.onAttachedToWindow();
+    d.c.a.a.x.h.f(this, j);
+  }
+  
+  protected int[] onCreateDrawableState(int paramInt)
+  {
+    int[] arrayOfInt = super.onCreateDrawableState(paramInt + 2);
+    if (isChecked()) {
+      CheckBox.mergeDrawableStates(arrayOfInt, h);
+    }
+    if (r()) {
+      CheckBox.mergeDrawableStates(arrayOfInt, i);
+    }
+    return arrayOfInt;
+  }
+  
+  protected void onFocusChanged(boolean paramBoolean, int paramInt, Rect paramRect)
+  {
+    super.onFocusChanged(paramBoolean, paramInt, paramRect);
+    v.I(paramBoolean, paramInt, paramRect);
+  }
+  
+  public boolean onHoverEvent(MotionEvent paramMotionEvent)
+  {
+    int i1 = paramMotionEvent.getActionMasked();
+    if (i1 != 7)
+    {
+      if (i1 == 10) {
+        setCloseIconHovered(false);
+      }
+    }
+    else {
+      setCloseIconHovered(getCloseIconTouchBounds().contains(paramMotionEvent.getX(), paramMotionEvent.getY()));
+    }
+    return super.onHoverEvent(paramMotionEvent);
+  }
+  
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo paramAccessibilityNodeInfo)
+  {
+    super.onInitializeAccessibilityNodeInfo(paramAccessibilityNodeInfo);
+    Object localObject;
+    if ((!r()) && (!isClickable()))
+    {
+      paramAccessibilityNodeInfo.setClassName("android.view.View");
+    }
+    else
+    {
+      if (r()) {
+        localObject = "android.widget.CompoundButton";
+      } else {
+        localObject = "android.widget.Button";
+      }
+      paramAccessibilityNodeInfo.setClassName((CharSequence)localObject);
+    }
+    paramAccessibilityNodeInfo.setCheckable(r());
+    paramAccessibilityNodeInfo.setClickable(isClickable());
+    if ((getParent() instanceof ChipGroup))
+    {
+      localObject = (ChipGroup)getParent();
+      paramAccessibilityNodeInfo = c.h.q.p0.c.y0(paramAccessibilityNodeInfo);
+      int i1;
+      if (((ChipGroup)localObject).c()) {
+        i1 = ((ChipGroup)localObject).o(this);
+      } else {
+        i1 = -1;
+      }
+      paramAccessibilityNodeInfo.b0(c.c.a(((FlowLayout)localObject).b(this), 1, i1, 1, false, isChecked()));
+    }
+  }
+  
+  public PointerIcon onResolvePointerIcon(MotionEvent paramMotionEvent, int paramInt)
+  {
+    if ((getCloseIconTouchBounds().contains(paramMotionEvent.getX(), paramMotionEvent.getY())) && (isEnabled())) {
+      return PointerIcon.getSystemIcon(getContext(), 1002);
+    }
+    return null;
+  }
+  
+  public void onRtlPropertiesChanged(int paramInt)
+  {
+    super.onRtlPropertiesChanged(paramInt);
+    if (t != paramInt)
+    {
+      t = paramInt;
+      A();
+    }
+  }
+  
+  public boolean onTouchEvent(MotionEvent paramMotionEvent)
+  {
+    int i1 = paramMotionEvent.getActionMasked();
+    boolean bool2 = getCloseIconTouchBounds().contains(paramMotionEvent.getX(), paramMotionEvent.getY());
+    boolean bool1 = false;
+    if (i1 != 0)
+    {
+      if (i1 != 1)
+      {
+        if (i1 != 2)
+        {
+          if (i1 != 3) {
+            break label108;
+          }
+        }
+        else
+        {
+          if (!p) {
+            break label108;
+          }
+          if (bool2) {
+            break label103;
+          }
+          setCloseIconPressed(false);
+          break label103;
+        }
+      }
+      else if (p)
+      {
+        t();
+        i1 = 1;
+        break label85;
+      }
+      i1 = 0;
+      label85:
+      setCloseIconPressed(false);
+      break label110;
+    }
+    else
+    {
+      if (!bool2) {
+        break label108;
+      }
+      setCloseIconPressed(true);
+    }
+    label103:
+    i1 = 1;
+    break label110;
+    label108:
+    i1 = 0;
+    label110:
+    if ((i1 != 0) || (super.onTouchEvent(paramMotionEvent))) {
+      bool1 = true;
+    }
+    return bool1;
+  }
+  
+  public boolean r()
+  {
+    a localA = j;
+    return (localA != null) && (localA.o1());
+  }
+  
+  public boolean s()
+  {
+    a localA = j;
+    return (localA != null) && (localA.q1());
+  }
+  
+  public void setBackground(Drawable paramDrawable)
+  {
+    if ((paramDrawable != getBackgroundDrawable()) && (paramDrawable != l))
+    {
+      Log.w("Chip", "Do not set the background; Chip manages its own background drawable.");
+      return;
+    }
+    super.setBackground(paramDrawable);
+  }
+  
+  public void setBackgroundColor(int paramInt)
+  {
+    Log.w("Chip", "Do not set the background color; Chip manages its own background drawable.");
+  }
+  
+  public void setBackgroundDrawable(Drawable paramDrawable)
+  {
+    if ((paramDrawable != getBackgroundDrawable()) && (paramDrawable != l))
+    {
+      Log.w("Chip", "Do not set the background drawable; Chip manages its own background drawable.");
+      return;
+    }
+    super.setBackgroundDrawable(paramDrawable);
+  }
+  
+  public void setBackgroundResource(int paramInt)
+  {
+    Log.w("Chip", "Do not set the background resource; Chip manages its own background drawable.");
+  }
+  
+  public void setBackgroundTintList(ColorStateList paramColorStateList)
+  {
+    Log.w("Chip", "Do not set the background tint list; Chip manages its own background drawable.");
+  }
+  
+  public void setBackgroundTintMode(PorterDuff.Mode paramMode)
+  {
+    Log.w("Chip", "Do not set the background tint mode; Chip manages its own background drawable.");
+  }
+  
+  public void setCheckable(boolean paramBoolean)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.x1(paramBoolean);
+    }
+  }
+  
+  public void setCheckableResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.y1(paramInt);
+    }
+  }
+  
+  public void setChecked(boolean paramBoolean)
+  {
+    Object localObject = j;
+    if (localObject == null)
+    {
+      o = paramBoolean;
+      return;
+    }
+    if (((a)localObject).o1())
+    {
+      boolean bool = isChecked();
+      super.setChecked(paramBoolean);
+      if (bool != paramBoolean)
+      {
+        localObject = n;
+        if (localObject != null) {
+          ((CompoundButton.OnCheckedChangeListener)localObject).onCheckedChanged(this, paramBoolean);
+        }
+      }
+    }
+  }
+  
+  public void setCheckedIcon(Drawable paramDrawable)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.z1(paramDrawable);
+    }
+  }
+  
+  @Deprecated
+  public void setCheckedIconEnabled(boolean paramBoolean)
+  {
+    setCheckedIconVisible(paramBoolean);
+  }
+  
+  @Deprecated
+  public void setCheckedIconEnabledResource(int paramInt)
+  {
+    setCheckedIconVisible(paramInt);
+  }
+  
+  public void setCheckedIconResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.A1(paramInt);
+    }
+  }
+  
+  public void setCheckedIconTint(ColorStateList paramColorStateList)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.B1(paramColorStateList);
+    }
+  }
+  
+  public void setCheckedIconTintResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.C1(paramInt);
+    }
+  }
+  
+  public void setCheckedIconVisible(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.D1(paramInt);
+    }
+  }
+  
+  public void setCheckedIconVisible(boolean paramBoolean)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.E1(paramBoolean);
+    }
+  }
+  
+  public void setChipBackgroundColor(ColorStateList paramColorStateList)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.F1(paramColorStateList);
+    }
+  }
+  
+  public void setChipBackgroundColorResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.G1(paramInt);
+    }
+  }
+  
+  @Deprecated
+  public void setChipCornerRadius(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.H1(paramFloat);
+    }
+  }
+  
+  @Deprecated
+  public void setChipCornerRadiusResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.I1(paramInt);
+    }
+  }
+  
+  public void setChipDrawable(a paramA)
+  {
+    a localA = j;
+    if (localA != paramA)
+    {
+      w(localA);
+      j = paramA;
+      paramA.A2(false);
+      i(j);
+      k(u);
+    }
+  }
+  
+  public void setChipEndPadding(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.J1(paramFloat);
+    }
+  }
+  
+  public void setChipEndPaddingResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.K1(paramInt);
+    }
+  }
+  
+  public void setChipIcon(Drawable paramDrawable)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.L1(paramDrawable);
+    }
+  }
+  
+  @Deprecated
+  public void setChipIconEnabled(boolean paramBoolean)
+  {
+    setChipIconVisible(paramBoolean);
+  }
+  
+  @Deprecated
+  public void setChipIconEnabledResource(int paramInt)
+  {
+    setChipIconVisible(paramInt);
+  }
+  
+  public void setChipIconResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.M1(paramInt);
+    }
+  }
+  
+  public void setChipIconSize(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.N1(paramFloat);
+    }
+  }
+  
+  public void setChipIconSizeResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.O1(paramInt);
+    }
+  }
+  
+  public void setChipIconTint(ColorStateList paramColorStateList)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.P1(paramColorStateList);
+    }
+  }
+  
+  public void setChipIconTintResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.Q1(paramInt);
+    }
+  }
+  
+  public void setChipIconVisible(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.R1(paramInt);
+    }
+  }
+  
+  public void setChipIconVisible(boolean paramBoolean)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.S1(paramBoolean);
+    }
+  }
+  
+  public void setChipMinHeight(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.T1(paramFloat);
+    }
+  }
+  
+  public void setChipMinHeightResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.U1(paramInt);
+    }
+  }
+  
+  public void setChipStartPadding(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.V1(paramFloat);
+    }
+  }
+  
+  public void setChipStartPaddingResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.W1(paramInt);
+    }
+  }
+  
+  public void setChipStrokeColor(ColorStateList paramColorStateList)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.X1(paramColorStateList);
+    }
+  }
+  
+  public void setChipStrokeColorResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.Y1(paramInt);
+    }
+  }
+  
+  public void setChipStrokeWidth(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.Z1(paramFloat);
+    }
+  }
+  
+  public void setChipStrokeWidthResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.a2(paramInt);
+    }
+  }
+  
+  @Deprecated
+  public void setChipText(CharSequence paramCharSequence)
+  {
+    setText(paramCharSequence);
+  }
+  
+  @Deprecated
+  public void setChipTextResource(int paramInt)
+  {
+    setText(getResources().getString(paramInt));
+  }
+  
+  public void setCloseIcon(Drawable paramDrawable)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.c2(paramDrawable);
+    }
+    x();
+  }
+  
+  public void setCloseIconContentDescription(CharSequence paramCharSequence)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.d2(paramCharSequence);
+    }
+  }
+  
+  @Deprecated
+  public void setCloseIconEnabled(boolean paramBoolean)
+  {
+    setCloseIconVisible(paramBoolean);
+  }
+  
+  @Deprecated
+  public void setCloseIconEnabledResource(int paramInt)
+  {
+    setCloseIconVisible(paramInt);
+  }
+  
+  public void setCloseIconEndPadding(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.e2(paramFloat);
+    }
+  }
+  
+  public void setCloseIconEndPaddingResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.f2(paramInt);
+    }
+  }
+  
+  public void setCloseIconResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.g2(paramInt);
+    }
+    x();
+  }
+  
+  public void setCloseIconSize(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.h2(paramFloat);
+    }
+  }
+  
+  public void setCloseIconSizeResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.i2(paramInt);
+    }
+  }
+  
+  public void setCloseIconStartPadding(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.j2(paramFloat);
+    }
+  }
+  
+  public void setCloseIconStartPaddingResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.k2(paramInt);
+    }
+  }
+  
+  public void setCloseIconTint(ColorStateList paramColorStateList)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.m2(paramColorStateList);
+    }
+  }
+  
+  public void setCloseIconTintResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.n2(paramInt);
+    }
+  }
+  
+  public void setCloseIconVisible(int paramInt)
+  {
+    setCloseIconVisible(getResources().getBoolean(paramInt));
+  }
+  
+  public void setCloseIconVisible(boolean paramBoolean)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.o2(paramBoolean);
+    }
+    x();
+  }
+  
+  public void setCompoundDrawables(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+  {
+    if (paramDrawable1 == null)
+    {
+      if (paramDrawable3 == null)
+      {
+        super.setCompoundDrawables(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+        return;
+      }
+      throw new UnsupportedOperationException("Please set end drawable using R.attr#closeIcon.");
+    }
+    throw new UnsupportedOperationException("Please set start drawable using R.attr#chipIcon.");
+  }
+  
+  public void setCompoundDrawablesRelative(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+  {
+    if (paramDrawable1 == null)
+    {
+      if (paramDrawable3 == null)
+      {
+        super.setCompoundDrawablesRelative(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+        return;
+      }
+      throw new UnsupportedOperationException("Please set end drawable using R.attr#closeIcon.");
+    }
+    throw new UnsupportedOperationException("Please set start drawable using R.attr#chipIcon.");
+  }
+  
+  public void setCompoundDrawablesRelativeWithIntrinsicBounds(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    if (paramInt1 == 0)
+    {
+      if (paramInt3 == 0)
+      {
+        super.setCompoundDrawablesRelativeWithIntrinsicBounds(paramInt1, paramInt2, paramInt3, paramInt4);
+        return;
+      }
+      throw new UnsupportedOperationException("Please set end drawable using R.attr#closeIcon.");
+    }
+    throw new UnsupportedOperationException("Please set start drawable using R.attr#chipIcon.");
+  }
+  
+  public void setCompoundDrawablesRelativeWithIntrinsicBounds(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+  {
+    if (paramDrawable1 == null)
+    {
+      if (paramDrawable3 == null)
+      {
+        super.setCompoundDrawablesRelativeWithIntrinsicBounds(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+        return;
+      }
+      throw new UnsupportedOperationException("Please set end drawable using R.attr#closeIcon.");
+    }
+    throw new UnsupportedOperationException("Please set start drawable using R.attr#chipIcon.");
+  }
+  
+  public void setCompoundDrawablesWithIntrinsicBounds(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    if (paramInt1 == 0)
+    {
+      if (paramInt3 == 0)
+      {
+        super.setCompoundDrawablesWithIntrinsicBounds(paramInt1, paramInt2, paramInt3, paramInt4);
+        return;
+      }
+      throw new UnsupportedOperationException("Please set end drawable using R.attr#closeIcon.");
+    }
+    throw new UnsupportedOperationException("Please set start drawable using R.attr#chipIcon.");
+  }
+  
+  public void setCompoundDrawablesWithIntrinsicBounds(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+  {
+    if (paramDrawable1 == null)
+    {
+      if (paramDrawable3 == null)
+      {
+        super.setCompoundDrawablesWithIntrinsicBounds(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+        return;
+      }
+      throw new UnsupportedOperationException("Please set right drawable using R.attr#closeIcon.");
+    }
+    throw new UnsupportedOperationException("Please set left drawable using R.attr#chipIcon.");
+  }
+  
+  public void setElevation(float paramFloat)
+  {
+    super.setElevation(paramFloat);
+    a localA = j;
+    if (localA != null) {
+      localA.W(paramFloat);
+    }
+  }
+  
+  public void setEllipsize(TextUtils.TruncateAt paramTruncateAt)
+  {
+    if (j == null) {
+      return;
+    }
+    if (paramTruncateAt != TextUtils.TruncateAt.MARQUEE)
+    {
+      super.setEllipsize(paramTruncateAt);
+      a localA = j;
+      if (localA != null) {
+        localA.q2(paramTruncateAt);
+      }
+      return;
+    }
+    throw new UnsupportedOperationException("Text within a chip are not allowed to scroll.");
+  }
+  
+  public void setEnsureMinTouchTargetSize(boolean paramBoolean)
+  {
+    s = paramBoolean;
+    k(u);
+  }
+  
+  public void setGravity(int paramInt)
+  {
+    if (paramInt != 8388627)
+    {
+      Log.w("Chip", "Chip text must be vertically center and start aligned");
+      return;
+    }
+    super.setGravity(paramInt);
+  }
+  
+  public void setHideMotionSpec(d.c.a.a.m.h paramH)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.r2(paramH);
+    }
+  }
+  
+  public void setHideMotionSpecResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.s2(paramInt);
+    }
+  }
+  
+  public void setIconEndPadding(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.t2(paramFloat);
+    }
+  }
+  
+  public void setIconEndPaddingResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.u2(paramInt);
+    }
+  }
+  
+  public void setIconStartPadding(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.v2(paramFloat);
+    }
+  }
+  
+  public void setIconStartPaddingResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.w2(paramInt);
+    }
+  }
+  
+  public void setLayoutDirection(int paramInt)
+  {
+    if (j == null) {
+      return;
+    }
+    if (Build.VERSION.SDK_INT >= 17) {
+      super.setLayoutDirection(paramInt);
+    }
+  }
+  
+  public void setLines(int paramInt)
+  {
+    if (paramInt <= 1)
+    {
+      super.setLines(paramInt);
+      return;
+    }
+    throw new UnsupportedOperationException("Chip does not support multi-line text");
+  }
+  
+  public void setMaxLines(int paramInt)
+  {
+    if (paramInt <= 1)
+    {
+      super.setMaxLines(paramInt);
+      return;
+    }
+    throw new UnsupportedOperationException("Chip does not support multi-line text");
+  }
+  
+  public void setMaxWidth(int paramInt)
+  {
+    super.setMaxWidth(paramInt);
+    a localA = j;
+    if (localA != null) {
+      localA.x2(paramInt);
+    }
+  }
+  
+  public void setMinLines(int paramInt)
+  {
+    if (paramInt <= 1)
+    {
+      super.setMinLines(paramInt);
+      return;
+    }
+    throw new UnsupportedOperationException("Chip does not support multi-line text");
+  }
+  
+  void setOnCheckedChangeListenerInternal(CompoundButton.OnCheckedChangeListener paramOnCheckedChangeListener)
+  {
+    n = paramOnCheckedChangeListener;
+  }
+  
+  public void setOnCloseIconClickListener(View.OnClickListener paramOnClickListener)
+  {
+    m = paramOnClickListener;
+    x();
+  }
+  
+  public void setRippleColor(ColorStateList paramColorStateList)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.y2(paramColorStateList);
+    }
+    if (!j.m1()) {
+      z();
+    }
+  }
+  
+  public void setRippleColorResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null)
+    {
+      localA.z2(paramInt);
+      if (!j.m1()) {
+        z();
+      }
+    }
+  }
+  
+  public void setShapeAppearanceModel(d.c.a.a.x.k paramK)
+  {
+    j.setShapeAppearanceModel(paramK);
+  }
+  
+  public void setShowMotionSpec(d.c.a.a.m.h paramH)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.B2(paramH);
+    }
+  }
+  
+  public void setShowMotionSpecResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.C2(paramInt);
+    }
+  }
+  
+  public void setSingleLine(boolean paramBoolean)
+  {
+    if (paramBoolean)
+    {
+      super.setSingleLine(paramBoolean);
+      return;
+    }
+    throw new UnsupportedOperationException("Chip does not support multi-line text");
+  }
+  
+  public void setText(CharSequence paramCharSequence, TextView.BufferType paramBufferType)
+  {
+    a localA = j;
+    if (localA == null) {
+      return;
+    }
+    Object localObject = paramCharSequence;
+    if (paramCharSequence == null) {
+      localObject = "";
+    }
+    if (localA.L2()) {
+      paramCharSequence = null;
+    } else {
+      paramCharSequence = (CharSequence)localObject;
+    }
+    super.setText(paramCharSequence, paramBufferType);
+    paramCharSequence = j;
+    if (paramCharSequence != null) {
+      paramCharSequence.D2((CharSequence)localObject);
+    }
+  }
+  
+  public void setTextAppearance(int paramInt)
+  {
+    super.setTextAppearance(paramInt);
+    a localA = j;
+    if (localA != null) {
+      localA.F2(paramInt);
+    }
+    B();
+  }
+  
+  public void setTextAppearance(Context paramContext, int paramInt)
+  {
+    super.setTextAppearance(paramContext, paramInt);
+    paramContext = j;
+    if (paramContext != null) {
+      paramContext.F2(paramInt);
+    }
+    B();
+  }
+  
+  public void setTextAppearance(d paramD)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.E2(paramD);
+    }
+    B();
+  }
+  
+  public void setTextAppearanceResource(int paramInt)
+  {
+    setTextAppearance(getContext(), paramInt);
+  }
+  
+  public void setTextEndPadding(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.G2(paramFloat);
+    }
+  }
+  
+  public void setTextEndPaddingResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.H2(paramInt);
+    }
+  }
+  
+  public void setTextStartPadding(float paramFloat)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.I2(paramFloat);
+    }
+  }
+  
+  public void setTextStartPaddingResource(int paramInt)
+  {
+    a localA = j;
+    if (localA != null) {
+      localA.J2(paramInt);
+    }
+  }
+  
+  public boolean t()
+  {
+    boolean bool = false;
+    playSoundEffect(0);
+    View.OnClickListener localOnClickListener = m;
+    if (localOnClickListener != null)
+    {
+      localOnClickListener.onClick(this);
+      bool = true;
+    }
+    v.U(1, 1);
+    return bool;
+  }
+  
+  public boolean v()
+  {
+    return s;
+  }
+  
+  class a
+    extends f
+  {
+    a() {}
+    
+    public void a(int paramInt) {}
+    
+    public void b(Typeface paramTypeface, boolean paramBoolean)
+    {
+      Chip localChip = Chip.this;
+      if (Chip.b(localChip).L2()) {
+        paramTypeface = Chip.b(Chip.this).h1();
+      } else {
+        paramTypeface = getText();
+      }
+      localChip.setText(paramTypeface);
+      requestLayout();
+      invalidate();
+    }
+  }
+  
+  class b
+    extends ViewOutlineProvider
+  {
+    b() {}
+    
+    public void getOutline(View paramView, Outline paramOutline)
+    {
+      if (Chip.b(Chip.this) != null)
+      {
+        Chip.b(Chip.this).getOutline(paramOutline);
+        return;
+      }
+      paramOutline.setAlpha(0.0F);
+    }
+  }
+  
+  private class c
+    extends c.j.a.a
+  {
+    c(Chip paramChip)
+    {
+      super();
+    }
+    
+    protected int B(float paramFloat1, float paramFloat2)
+    {
+      if ((Chip.c(Chip.this)) && (Chip.d(Chip.this).contains(paramFloat1, paramFloat2))) {
+        return 1;
+      }
+      return 0;
+    }
+    
+    protected void C(List<Integer> paramList)
+    {
+      paramList.add(Integer.valueOf(0));
+      if ((Chip.c(Chip.this)) && (s()) && (Chip.e(Chip.this) != null)) {
+        paramList.add(Integer.valueOf(1));
+      }
+    }
+    
+    protected boolean J(int paramInt1, int paramInt2, Bundle paramBundle)
+    {
+      if (paramInt2 == 16)
+      {
+        if (paramInt1 == 0) {
+          return performClick();
+        }
+        if (paramInt1 == 1) {
+          return t();
+        }
+      }
+      return false;
+    }
+    
+    protected void M(c.h.q.p0.c paramC)
+    {
+      paramC.W(r());
+      paramC.Z(isClickable());
+      if ((!r()) && (!isClickable()))
+      {
+        paramC.Y("android.view.View");
+      }
+      else
+      {
+        if (r()) {
+          localObject = "android.widget.CompoundButton";
+        } else {
+          localObject = "android.widget.Button";
+        }
+        paramC.Y((CharSequence)localObject);
+      }
+      Object localObject = getText();
+      if (Build.VERSION.SDK_INT >= 23)
+      {
+        paramC.u0((CharSequence)localObject);
+        return;
+      }
+      paramC.c0((CharSequence)localObject);
+    }
+    
+    protected void N(int paramInt, c.h.q.p0.c paramC)
+    {
+      Object localObject = "";
+      if (paramInt == 1)
+      {
+        CharSequence localCharSequence = getCloseIconContentDescription();
+        if (localCharSequence != null)
+        {
+          paramC.c0(localCharSequence);
+        }
+        else
+        {
+          localCharSequence = getText();
+          Context localContext = getContext();
+          paramInt = d.c.a.a.j.j;
+          if (!TextUtils.isEmpty(localCharSequence)) {
+            localObject = localCharSequence;
+          }
+          paramC.c0(localContext.getString(paramInt, new Object[] { localObject }).trim());
+        }
+        paramC.U(Chip.g(Chip.this));
+        paramC.b(c.a.e);
+        paramC.d0(isEnabled());
+        return;
+      }
+      paramC.c0("");
+      paramC.U(Chip.h());
+    }
+    
+    protected void O(int paramInt, boolean paramBoolean)
+    {
+      if (paramInt == 1)
+      {
+        Chip.f(Chip.this, paramBoolean);
+        refreshDrawableState();
+      }
+    }
+  }
+}

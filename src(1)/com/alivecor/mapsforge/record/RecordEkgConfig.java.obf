@@ -1,0 +1,76 @@
+package com.alivecor.ecg.record;
+
+import android.content.Context;
+import com.alivecor.ai.l;
+import com.alivecor.ecg.core.model.c;
+import java.util.Collections;
+import java.util.List;
+
+public class RecordEkgConfig
+{
+  private static RecordEkgConfig INSTANCE;
+  private final String appName;
+  private final Context context;
+  private final List<c> enabledDevices;
+  private final RecordDependencyComponent recordDependencyComponent;
+  
+  protected RecordEkgConfig(Context paramContext, String paramString, List<c> paramList, com.alivecor.ai.a paramA)
+  {
+    context = paramContext.getApplicationContext();
+    recordDependencyComponent = DaggerRecordDependencyComponent.builder().aiComponent(paramA).contextModule(new b.a.a.a.a(paramContext.getApplicationContext())).build();
+    enabledDevices = Collections.unmodifiableList(paramList);
+    appName = paramString;
+  }
+  
+  public static RecordEkgConfig get()
+  {
+    try
+    {
+      RecordEkgConfig localRecordEkgConfig = INSTANCE;
+      if (localRecordEkgConfig != null) {
+        return localRecordEkgConfig;
+      }
+      throw new IllegalStateException("Must initialize RecordEkgConfig before getting its instance");
+    }
+    finally {}
+  }
+  
+  public static void init(Context paramContext, String paramString, List<c> paramList, com.alivecor.ai.a paramA)
+  {
+    try
+    {
+      INSTANCE = new RecordEkgConfig(paramContext, paramString, paramList, paramA);
+      return;
+    }
+    finally
+    {
+      paramContext = finally;
+      throw paramContext;
+    }
+  }
+  
+  Context appContext()
+  {
+    return context;
+  }
+  
+  String getAppName()
+  {
+    return appName;
+  }
+  
+  public l getClassifyRunner()
+  {
+    return recordDependencyComponent.classifyRunner();
+  }
+  
+  List<c> getEnabledDevices()
+  {
+    return enabledDevices;
+  }
+  
+  RecordDependencyComponent getRecordDependencyComponent()
+  {
+    return recordDependencyComponent;
+  }
+}

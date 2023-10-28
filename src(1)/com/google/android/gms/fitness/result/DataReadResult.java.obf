@@ -1,0 +1,267 @@
+package com.google.android.gms.fitness.result;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import androidx.annotation.RecentlyNonNull;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.internal.Objects;
+import com.google.android.gms.common.internal.Objects.ToStringHelper;
+import com.google.android.gms.common.internal.ShowFirstParty;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Reserved;
+import com.google.android.gms.fitness.data.Bucket;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataSet.Builder;
+import com.google.android.gms.fitness.data.DataSource;
+import com.google.android.gms.fitness.data.DataSource.Builder;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.RawBucket;
+import com.google.android.gms.fitness.data.RawDataSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+@SafeParcelable.Class(creator="DataReadResultCreator")
+@SafeParcelable.Reserved({7, 1000})
+public class DataReadResult
+  extends AbstractSafeParcelable
+  implements Result
+{
+  @RecentlyNonNull
+  public static final Parcelable.Creator<DataReadResult> CREATOR = new zzc();
+  @SafeParcelable.Field(getter="getRawDataSets", id=1, type="java.util.List")
+  private final List<DataSet> zzlh;
+  @SafeParcelable.Field(getter="getUniqueDataSources", id=6)
+  private final List<DataSource> zzlr;
+  @SafeParcelable.Field(getter="getStatus", id=2)
+  private final Status zzsv;
+  @SafeParcelable.Field(getter="getRawBuckets", id=3, type="java.util.List")
+  private final List<Bucket> zzsw;
+  @SafeParcelable.Field(getter="getBatchCount", id=5)
+  private int zzsx;
+  
+  @SafeParcelable.Constructor
+  DataReadResult(@SafeParcelable.Param(id=1) List<RawDataSet> paramList, @SafeParcelable.Param(id=2) Status paramStatus, @SafeParcelable.Param(id=3) List<RawBucket> paramList1, @SafeParcelable.Param(id=5) int paramInt, @SafeParcelable.Param(id=6) List<DataSource> paramList2)
+  {
+    zzsv = paramStatus;
+    zzsx = paramInt;
+    zzlr = paramList2;
+    zzlh = new ArrayList(paramList.size());
+    paramList = paramList.iterator();
+    while (paramList.hasNext())
+    {
+      paramStatus = (RawDataSet)paramList.next();
+      zzlh.add(new DataSet(paramStatus, paramList2));
+    }
+    zzsw = new ArrayList(paramList1.size());
+    paramList = paramList1.iterator();
+    while (paramList.hasNext())
+    {
+      paramStatus = (RawBucket)paramList.next();
+      zzsw.add(new Bucket(paramStatus, paramList2));
+    }
+  }
+  
+  @ShowFirstParty
+  private DataReadResult(List<DataSet> paramList, List<Bucket> paramList1, Status paramStatus)
+  {
+    zzlh = paramList;
+    zzsv = paramStatus;
+    zzsw = paramList1;
+    zzsx = 1;
+    zzlr = new ArrayList();
+  }
+  
+  @RecentlyNonNull
+  @ShowFirstParty
+  public static DataReadResult zza(@RecentlyNonNull Status paramStatus, @RecentlyNonNull List<DataType> paramList, @RecentlyNonNull List<DataSource> paramList1)
+  {
+    ArrayList localArrayList = new ArrayList();
+    paramList1 = paramList1.iterator();
+    while (paramList1.hasNext()) {
+      localArrayList.add(DataSet.builder((DataSource)paramList1.next()).build());
+    }
+    paramList = paramList.iterator();
+    while (paramList.hasNext())
+    {
+      paramList1 = (DataType)paramList.next();
+      localArrayList.add(DataSet.builder(new DataSource.Builder().setType(1).setDataType(paramList1).setStreamName("Default").build()).build());
+    }
+    return new DataReadResult(localArrayList, Collections.emptyList(), paramStatus);
+  }
+  
+  private static void zza(DataSet paramDataSet, List<DataSet> paramList)
+  {
+    Iterator localIterator = paramList.iterator();
+    while (localIterator.hasNext())
+    {
+      DataSet localDataSet = (DataSet)localIterator.next();
+      if (localDataSet.getDataSource().equals(paramDataSet.getDataSource()))
+      {
+        localDataSet.zza(paramDataSet.getDataPoints());
+        return;
+      }
+    }
+    paramList.add(paramDataSet);
+  }
+  
+  public boolean equals(Object paramObject)
+  {
+    if (this == paramObject) {
+      return true;
+    }
+    if (!(paramObject instanceof DataReadResult)) {
+      return false;
+    }
+    paramObject = (DataReadResult)paramObject;
+    return (zzsv.equals(zzsv)) && (Objects.equal(zzlh, zzlh)) && (Objects.equal(zzsw, zzsw));
+  }
+  
+  @RecentlyNonNull
+  public List<Bucket> getBuckets()
+  {
+    return zzsw;
+  }
+  
+  @RecentlyNonNull
+  public DataSet getDataSet(@RecentlyNonNull DataSource paramDataSource)
+  {
+    Iterator localIterator = zzlh.iterator();
+    while (localIterator.hasNext())
+    {
+      DataSet localDataSet = (DataSet)localIterator.next();
+      if (paramDataSource.equals(localDataSet.getDataSource())) {
+        return localDataSet;
+      }
+    }
+    return DataSet.builder(paramDataSource).build();
+  }
+  
+  @RecentlyNonNull
+  public DataSet getDataSet(@RecentlyNonNull DataType paramDataType)
+  {
+    Iterator localIterator = zzlh.iterator();
+    while (localIterator.hasNext())
+    {
+      DataSet localDataSet = (DataSet)localIterator.next();
+      if (paramDataType.equals(localDataSet.getDataType())) {
+        return localDataSet;
+      }
+    }
+    return DataSet.builder(new DataSource.Builder().setType(1).setDataType(paramDataType).build()).build();
+  }
+  
+  @RecentlyNonNull
+  public List<DataSet> getDataSets()
+  {
+    return zzlh;
+  }
+  
+  @RecentlyNonNull
+  public Status getStatus()
+  {
+    return zzsv;
+  }
+  
+  public int hashCode()
+  {
+    return Objects.hashCode(new Object[] { zzsv, zzlh, zzsw });
+  }
+  
+  @RecentlyNonNull
+  public String toString()
+  {
+    Objects.ToStringHelper localToStringHelper = Objects.toStringHelper(this).add("status", zzsv);
+    int i;
+    Object localObject;
+    if (zzlh.size() > 5)
+    {
+      i = zzlh.size();
+      localObject = new StringBuilder(21);
+      ((StringBuilder)localObject).append(i);
+      ((StringBuilder)localObject).append(" data sets");
+      localObject = ((StringBuilder)localObject).toString();
+    }
+    else
+    {
+      localObject = zzlh;
+    }
+    localToStringHelper = localToStringHelper.add("dataSets", localObject);
+    if (zzsw.size() > 5)
+    {
+      i = zzsw.size();
+      localObject = new StringBuilder(19);
+      ((StringBuilder)localObject).append(i);
+      ((StringBuilder)localObject).append(" buckets");
+      localObject = ((StringBuilder)localObject).toString();
+    }
+    else
+    {
+      localObject = zzsw;
+    }
+    return localToStringHelper.add("buckets", localObject).toString();
+  }
+  
+  public void writeToParcel(@RecentlyNonNull Parcel paramParcel, int paramInt)
+  {
+    int i = SafeParcelWriter.beginObjectHeader(paramParcel);
+    ArrayList localArrayList = new ArrayList(zzlh.size());
+    Iterator localIterator = zzlh.iterator();
+    while (localIterator.hasNext()) {
+      localArrayList.add(new RawDataSet((DataSet)localIterator.next(), zzlr));
+    }
+    SafeParcelWriter.writeList(paramParcel, 1, localArrayList, false);
+    SafeParcelWriter.writeParcelable(paramParcel, 2, getStatus(), paramInt, false);
+    localArrayList = new ArrayList(zzsw.size());
+    localIterator = zzsw.iterator();
+    while (localIterator.hasNext()) {
+      localArrayList.add(new RawBucket((Bucket)localIterator.next(), zzlr));
+    }
+    SafeParcelWriter.writeList(paramParcel, 3, localArrayList, false);
+    SafeParcelWriter.writeInt(paramParcel, 5, zzsx);
+    SafeParcelWriter.writeTypedList(paramParcel, 6, zzlr, false);
+    SafeParcelWriter.finishObjectHeader(paramParcel, i);
+  }
+  
+  public final int zzab()
+  {
+    return zzsx;
+  }
+  
+  public final void zzb(@RecentlyNonNull DataReadResult paramDataReadResult)
+  {
+    Object localObject1 = paramDataReadResult.getDataSets().iterator();
+    while (((Iterator)localObject1).hasNext()) {
+      zza((DataSet)((Iterator)localObject1).next(), zzlh);
+    }
+    paramDataReadResult = paramDataReadResult.getBuckets().iterator();
+    while (paramDataReadResult.hasNext())
+    {
+      Object localObject2 = (Bucket)paramDataReadResult.next();
+      Iterator localIterator = zzsw.iterator();
+      for (;;)
+      {
+        if (localIterator.hasNext())
+        {
+          localObject1 = (Bucket)localIterator.next();
+          if (((Bucket)localObject1).zza((Bucket)localObject2))
+          {
+            localObject2 = ((Bucket)localObject2).getDataSets().iterator();
+            while (((Iterator)localObject2).hasNext()) {
+              zza((DataSet)((Iterator)localObject2).next(), ((Bucket)localObject1).getDataSets());
+            }
+            break;
+          }
+        }
+      }
+      zzsw.add(localObject2);
+    }
+  }
+}

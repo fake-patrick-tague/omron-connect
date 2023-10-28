@@ -1,0 +1,607 @@
+package com.google.android.datatransport.cct;
+
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.telephony.TelephonyManager;
+import com.google.android.datatransport.cct.internal.ClientInfo;
+import com.google.android.datatransport.cct.internal.ClientInfo.ClientType;
+import com.google.android.datatransport.cct.internal.ClientInfo.a;
+import com.google.android.datatransport.cct.internal.NetworkConnectionInfo;
+import com.google.android.datatransport.cct.internal.NetworkConnectionInfo.MobileSubtype;
+import com.google.android.datatransport.cct.internal.NetworkConnectionInfo.NetworkType;
+import com.google.android.datatransport.cct.internal.NetworkConnectionInfo.a;
+import com.google.android.datatransport.cct.internal.QosTier;
+import com.google.android.datatransport.cct.internal.a.a;
+import com.google.android.datatransport.cct.internal.k;
+import com.google.android.datatransport.cct.internal.k.a;
+import com.google.android.datatransport.cct.internal.l.a;
+import com.google.android.datatransport.h.i;
+import com.google.android.datatransport.h.j.a;
+import com.google.android.datatransport.runtime.backends.BackendResponse;
+import com.google.android.datatransport.runtime.backends.f;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.zip.GZIPInputStream;
+
+final class d
+  implements com.google.android.datatransport.runtime.backends.l
+{
+  private final com.google.firebase.p.a a = com.google.android.datatransport.cct.internal.j.b();
+  private final ConnectivityManager b;
+  private final Context c;
+  final URL d;
+  private final com.google.android.datatransport.h.a0.a e;
+  private final com.google.android.datatransport.h.a0.a f;
+  private final int g;
+  
+  d(Context paramContext, com.google.android.datatransport.h.a0.a paramA1, com.google.android.datatransport.h.a0.a paramA2)
+  {
+    this(paramContext, paramA1, paramA2, 130000);
+  }
+  
+  d(Context paramContext, com.google.android.datatransport.h.a0.a paramA1, com.google.android.datatransport.h.a0.a paramA2, int paramInt)
+  {
+    c = paramContext;
+    b = ((ConnectivityManager)paramContext.getSystemService("connectivity"));
+    d = m(c.a);
+    e = paramA2;
+    f = paramA1;
+    g = paramInt;
+  }
+  
+  /* Error */
+  private b c(a paramA)
+    throws IOException
+  {
+    // Byte code:
+    //   0: ldc 82
+    //   2: ldc 84
+    //   4: aload_1
+    //   5: getfield 86	com/google/android/datatransport/cct/d$a:a	Ljava/net/URL;
+    //   8: invokestatic 91	com/google/android/datatransport/h/w/a:f	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
+    //   11: aload_1
+    //   12: getfield 86	com/google/android/datatransport/cct/d$a:a	Ljava/net/URL;
+    //   15: invokevirtual 97	java/net/URL:openConnection	()Ljava/net/URLConnection;
+    //   18: checkcast 99	java/net/HttpURLConnection
+    //   21: astore 4
+    //   23: aload 4
+    //   25: sipush 30000
+    //   28: invokevirtual 103	java/net/HttpURLConnection:setConnectTimeout	(I)V
+    //   31: aload 4
+    //   33: aload_0
+    //   34: getfield 71	com/google/android/datatransport/cct/d:g	I
+    //   37: invokevirtual 106	java/net/HttpURLConnection:setReadTimeout	(I)V
+    //   40: aload 4
+    //   42: iconst_1
+    //   43: invokevirtual 110	java/net/HttpURLConnection:setDoOutput	(Z)V
+    //   46: aload 4
+    //   48: iconst_0
+    //   49: invokevirtual 113	java/net/HttpURLConnection:setInstanceFollowRedirects	(Z)V
+    //   52: aload 4
+    //   54: ldc 115
+    //   56: invokevirtual 119	java/net/HttpURLConnection:setRequestMethod	(Ljava/lang/String;)V
+    //   59: aload 4
+    //   61: ldc 121
+    //   63: ldc 123
+    //   65: iconst_1
+    //   66: anewarray 4	java/lang/Object
+    //   69: dup
+    //   70: iconst_0
+    //   71: ldc 125
+    //   73: aastore
+    //   74: invokestatic 131	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+    //   77: invokevirtual 135	java/net/HttpURLConnection:setRequestProperty	(Ljava/lang/String;Ljava/lang/String;)V
+    //   80: aload 4
+    //   82: ldc -119
+    //   84: ldc -117
+    //   86: invokevirtual 135	java/net/HttpURLConnection:setRequestProperty	(Ljava/lang/String;Ljava/lang/String;)V
+    //   89: aload 4
+    //   91: ldc -115
+    //   93: ldc -113
+    //   95: invokevirtual 135	java/net/HttpURLConnection:setRequestProperty	(Ljava/lang/String;Ljava/lang/String;)V
+    //   98: aload 4
+    //   100: ldc -111
+    //   102: ldc -117
+    //   104: invokevirtual 135	java/net/HttpURLConnection:setRequestProperty	(Ljava/lang/String;Ljava/lang/String;)V
+    //   107: aload_1
+    //   108: getfield 147	com/google/android/datatransport/cct/d$a:c	Ljava/lang/String;
+    //   111: astore_3
+    //   112: aload_3
+    //   113: ifnull +11 -> 124
+    //   116: aload 4
+    //   118: ldc -107
+    //   120: aload_3
+    //   121: invokevirtual 135	java/net/HttpURLConnection:setRequestProperty	(Ljava/lang/String;Ljava/lang/String;)V
+    //   124: aload 4
+    //   126: invokevirtual 153	java/net/HttpURLConnection:getOutputStream	()Ljava/io/OutputStream;
+    //   129: astore_3
+    //   130: new 155	java/util/zip/GZIPOutputStream
+    //   133: dup
+    //   134: aload_3
+    //   135: invokespecial 158	java/util/zip/GZIPOutputStream:<init>	(Ljava/io/OutputStream;)V
+    //   138: astore 5
+    //   140: aload_0
+    //   141: getfield 40	com/google/android/datatransport/cct/d:a	Lcom/google/firebase/p/a;
+    //   144: aload_1
+    //   145: getfield 161	com/google/android/datatransport/cct/d$a:b	Lcom/google/android/datatransport/cct/internal/j;
+    //   148: new 163	java/io/BufferedWriter
+    //   151: dup
+    //   152: new 165	java/io/OutputStreamWriter
+    //   155: dup
+    //   156: aload 5
+    //   158: invokespecial 166	java/io/OutputStreamWriter:<init>	(Ljava/io/OutputStream;)V
+    //   161: invokespecial 169	java/io/BufferedWriter:<init>	(Ljava/io/Writer;)V
+    //   164: invokeinterface 174 3 0
+    //   169: aload 5
+    //   171: invokevirtual 179	java/io/OutputStream:close	()V
+    //   174: aload_3
+    //   175: ifnull +7 -> 182
+    //   178: aload_3
+    //   179: invokevirtual 179	java/io/OutputStream:close	()V
+    //   182: aload 4
+    //   184: invokevirtual 183	java/net/HttpURLConnection:getResponseCode	()I
+    //   187: istore_2
+    //   188: ldc 82
+    //   190: ldc -71
+    //   192: iload_2
+    //   193: invokestatic 191	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+    //   196: invokestatic 91	com/google/android/datatransport/h/w/a:f	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
+    //   199: ldc 82
+    //   201: ldc -63
+    //   203: aload 4
+    //   205: ldc -115
+    //   207: invokevirtual 197	java/net/HttpURLConnection:getHeaderField	(Ljava/lang/String;)Ljava/lang/String;
+    //   210: invokestatic 199	com/google/android/datatransport/h/w/a:b	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
+    //   213: ldc 82
+    //   215: ldc -55
+    //   217: aload 4
+    //   219: ldc -119
+    //   221: invokevirtual 197	java/net/HttpURLConnection:getHeaderField	(Ljava/lang/String;)Ljava/lang/String;
+    //   224: invokestatic 199	com/google/android/datatransport/h/w/a:b	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V
+    //   227: iload_2
+    //   228: sipush 302
+    //   231: if_icmpeq +150 -> 381
+    //   234: iload_2
+    //   235: sipush 301
+    //   238: if_icmpeq +143 -> 381
+    //   241: iload_2
+    //   242: sipush 307
+    //   245: if_icmpne +6 -> 251
+    //   248: goto +133 -> 381
+    //   251: iload_2
+    //   252: sipush 200
+    //   255: if_icmpeq +14 -> 269
+    //   258: new 11	com/google/android/datatransport/cct/d$b
+    //   261: dup
+    //   262: iload_2
+    //   263: aconst_null
+    //   264: lconst_0
+    //   265: invokespecial 204	com/google/android/datatransport/cct/d$b:<init>	(ILjava/net/URL;J)V
+    //   268: areturn
+    //   269: aload 4
+    //   271: invokevirtual 208	java/net/HttpURLConnection:getInputStream	()Ljava/io/InputStream;
+    //   274: astore_1
+    //   275: aload_1
+    //   276: aload 4
+    //   278: ldc -119
+    //   280: invokevirtual 197	java/net/HttpURLConnection:getHeaderField	(Ljava/lang/String;)Ljava/lang/String;
+    //   283: invokestatic 212	com/google/android/datatransport/cct/d:l	(Ljava/io/InputStream;Ljava/lang/String;)Ljava/io/InputStream;
+    //   286: astore_3
+    //   287: new 11	com/google/android/datatransport/cct/d$b
+    //   290: dup
+    //   291: iload_2
+    //   292: aconst_null
+    //   293: new 214	java/io/BufferedReader
+    //   296: dup
+    //   297: new 216	java/io/InputStreamReader
+    //   300: dup
+    //   301: aload_3
+    //   302: invokespecial 219	java/io/InputStreamReader:<init>	(Ljava/io/InputStream;)V
+    //   305: invokespecial 222	java/io/BufferedReader:<init>	(Ljava/io/Reader;)V
+    //   308: invokestatic 227	com/google/android/datatransport/cct/internal/m:b	(Ljava/io/Reader;)Lcom/google/android/datatransport/cct/internal/m;
+    //   311: invokevirtual 230	com/google/android/datatransport/cct/internal/m:c	()J
+    //   314: invokespecial 204	com/google/android/datatransport/cct/d$b:<init>	(ILjava/net/URL;J)V
+    //   317: astore 4
+    //   319: aload_3
+    //   320: ifnull +7 -> 327
+    //   323: aload_3
+    //   324: invokevirtual 233	java/io/InputStream:close	()V
+    //   327: aload_1
+    //   328: ifnull +7 -> 335
+    //   331: aload_1
+    //   332: invokevirtual 233	java/io/InputStream:close	()V
+    //   335: aload 4
+    //   337: areturn
+    //   338: astore 4
+    //   340: aload_3
+    //   341: ifnull +17 -> 358
+    //   344: aload_3
+    //   345: invokevirtual 233	java/io/InputStream:close	()V
+    //   348: goto +10 -> 358
+    //   351: astore_3
+    //   352: aload 4
+    //   354: aload_3
+    //   355: invokevirtual 239	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   358: aload 4
+    //   360: athrow
+    //   361: astore_3
+    //   362: aload_1
+    //   363: ifnull +16 -> 379
+    //   366: aload_1
+    //   367: invokevirtual 233	java/io/InputStream:close	()V
+    //   370: goto +9 -> 379
+    //   373: astore_1
+    //   374: aload_3
+    //   375: aload_1
+    //   376: invokevirtual 239	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   379: aload_3
+    //   380: athrow
+    //   381: new 11	com/google/android/datatransport/cct/d$b
+    //   384: dup
+    //   385: iload_2
+    //   386: new 93	java/net/URL
+    //   389: dup
+    //   390: aload 4
+    //   392: ldc -15
+    //   394: invokevirtual 197	java/net/HttpURLConnection:getHeaderField	(Ljava/lang/String;)Ljava/lang/String;
+    //   397: invokespecial 243	java/net/URL:<init>	(Ljava/lang/String;)V
+    //   400: lconst_0
+    //   401: invokespecial 204	com/google/android/datatransport/cct/d$b:<init>	(ILjava/net/URL;J)V
+    //   404: areturn
+    //   405: astore_1
+    //   406: aload 5
+    //   408: invokevirtual 179	java/io/OutputStream:close	()V
+    //   411: goto +11 -> 422
+    //   414: astore 4
+    //   416: aload_1
+    //   417: aload 4
+    //   419: invokevirtual 239	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   422: aload_1
+    //   423: athrow
+    //   424: astore_1
+    //   425: aload_3
+    //   426: ifnull +16 -> 442
+    //   429: aload_3
+    //   430: invokevirtual 179	java/io/OutputStream:close	()V
+    //   433: goto +9 -> 442
+    //   436: astore_3
+    //   437: aload_1
+    //   438: aload_3
+    //   439: invokevirtual 239	java/lang/Throwable:addSuppressed	(Ljava/lang/Throwable;)V
+    //   442: aload_1
+    //   443: athrow
+    //   444: astore_1
+    //   445: goto +4 -> 449
+    //   448: astore_1
+    //   449: ldc 82
+    //   451: ldc -11
+    //   453: aload_1
+    //   454: invokestatic 248	com/google/android/datatransport/h/w/a:d	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   457: new 11	com/google/android/datatransport/cct/d$b
+    //   460: dup
+    //   461: sipush 400
+    //   464: aconst_null
+    //   465: lconst_0
+    //   466: invokespecial 204	com/google/android/datatransport/cct/d$b:<init>	(ILjava/net/URL;J)V
+    //   469: areturn
+    //   470: astore_1
+    //   471: goto +4 -> 475
+    //   474: astore_1
+    //   475: ldc 82
+    //   477: ldc -6
+    //   479: aload_1
+    //   480: invokestatic 248	com/google/android/datatransport/h/w/a:d	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   483: new 11	com/google/android/datatransport/cct/d$b
+    //   486: dup
+    //   487: sipush 500
+    //   490: aconst_null
+    //   491: lconst_0
+    //   492: invokespecial 204	com/google/android/datatransport/cct/d$b:<init>	(ILjava/net/URL;J)V
+    //   495: areturn
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	496	0	this	d
+    //   0	496	1	paramA	a
+    //   187	199	2	i	int
+    //   111	234	3	localObject1	Object
+    //   351	4	3	localThrowable1	Throwable
+    //   361	69	3	localObject2	Object
+    //   436	3	3	localThrowable2	Throwable
+    //   21	315	4	localObject3	Object
+    //   338	53	4	localObject4	Object
+    //   414	4	4	localThrowable3	Throwable
+    //   138	269	5	localGZIPOutputStream	java.util.zip.GZIPOutputStream
+    // Exception table:
+    //   from	to	target	type
+    //   287	319	338	finally
+    //   344	348	351	finally
+    //   275	287	361	finally
+    //   323	327	361	finally
+    //   352	358	361	finally
+    //   358	361	361	finally
+    //   366	370	373	finally
+    //   140	169	405	finally
+    //   406	411	414	finally
+    //   130	140	424	finally
+    //   169	174	424	finally
+    //   416	422	424	finally
+    //   422	424	424	finally
+    //   429	433	436	finally
+    //   124	130	444	java/io/IOException
+    //   178	182	444	java/io/IOException
+    //   437	442	444	java/io/IOException
+    //   442	444	444	java/io/IOException
+    //   124	130	448	com/google/firebase/p/b
+    //   178	182	448	com/google/firebase/p/b
+    //   437	442	448	com/google/firebase/p/b
+    //   442	444	448	com/google/firebase/p/b
+    //   124	130	470	java/net/UnknownHostException
+    //   178	182	470	java/net/UnknownHostException
+    //   437	442	470	java/net/UnknownHostException
+    //   442	444	470	java/net/UnknownHostException
+    //   124	130	474	java/net/ConnectException
+    //   178	182	474	java/net/ConnectException
+    //   437	442	474	java/net/ConnectException
+    //   442	444	474	java/net/ConnectException
+  }
+  
+  private static int d(NetworkInfo paramNetworkInfo)
+  {
+    if (paramNetworkInfo == null) {
+      return NetworkConnectionInfo.MobileSubtype.b.b();
+    }
+    int i = paramNetworkInfo.getSubtype();
+    if (i == -1) {
+      return NetworkConnectionInfo.MobileSubtype.v.b();
+    }
+    if (NetworkConnectionInfo.MobileSubtype.a(i) != null) {
+      return i;
+    }
+    return 0;
+  }
+  
+  private static int e(NetworkInfo paramNetworkInfo)
+  {
+    if (paramNetworkInfo == null) {
+      return NetworkConnectionInfo.NetworkType.t.b();
+    }
+    return paramNetworkInfo.getType();
+  }
+  
+  private static int f(Context paramContext)
+  {
+    try
+    {
+      int i = getPackageManagergetPackageInfogetPackageName0versionCode;
+      return i;
+    }
+    catch (PackageManager.NameNotFoundException paramContext)
+    {
+      com.google.android.datatransport.h.w.a.d("CctTransportBackend", "Unable to find version code for package", paramContext);
+    }
+    return -1;
+  }
+  
+  private com.google.android.datatransport.cct.internal.j g(f paramF)
+  {
+    Object localObject2 = new HashMap();
+    paramF = paramF.b().iterator();
+    Object localObject3;
+    ArrayList localArrayList;
+    while (paramF.hasNext())
+    {
+      localObject1 = (com.google.android.datatransport.h.j)paramF.next();
+      localObject3 = ((com.google.android.datatransport.h.j)localObject1).j();
+      if (!((HashMap)localObject2).containsKey(localObject3))
+      {
+        localArrayList = new ArrayList();
+        localArrayList.add(localObject1);
+        ((HashMap)localObject2).put(localObject3, localArrayList);
+      }
+      else
+      {
+        ((List)((HashMap)localObject2).get(localObject3)).add(localObject1);
+      }
+    }
+    Object localObject1 = new ArrayList();
+    localObject2 = ((HashMap)localObject2).entrySet().iterator();
+    while (((Iterator)localObject2).hasNext())
+    {
+      paramF = (Map.Entry)((Iterator)localObject2).next();
+      localObject3 = (com.google.android.datatransport.h.j)((List)paramF.getValue()).get(0);
+      localObject3 = com.google.android.datatransport.cct.internal.l.a().f(QosTier.b).g(f.a()).h(e.a()).b(ClientInfo.a().c(ClientInfo.ClientType.c).b(com.google.android.datatransport.cct.internal.a.a().m(Integer.valueOf(((com.google.android.datatransport.h.j)localObject3).g("sdk-version"))).j(((com.google.android.datatransport.h.j)localObject3).b("model")).f(((com.google.android.datatransport.h.j)localObject3).b("hardware")).d(((com.google.android.datatransport.h.j)localObject3).b("device")).l(((com.google.android.datatransport.h.j)localObject3).b("product")).k(((com.google.android.datatransport.h.j)localObject3).b("os-uild")).h(((com.google.android.datatransport.h.j)localObject3).b("manufacturer")).e(((com.google.android.datatransport.h.j)localObject3).b("fingerprint")).c(((com.google.android.datatransport.h.j)localObject3).b("country")).g(((com.google.android.datatransport.h.j)localObject3).b("locale")).i(((com.google.android.datatransport.h.j)localObject3).b("mcc_mnc")).b(((com.google.android.datatransport.h.j)localObject3).b("application_build")).a()).a());
+      try
+      {
+        ((l.a)localObject3).i(Integer.parseInt((String)paramF.getKey()));
+      }
+      catch (NumberFormatException localNumberFormatException)
+      {
+        Iterator localIterator;
+        for (;;) {}
+      }
+      ((l.a)localObject3).j((String)paramF.getKey());
+      localArrayList = new ArrayList();
+      localIterator = ((List)paramF.getValue()).iterator();
+      while (localIterator.hasNext())
+      {
+        com.google.android.datatransport.h.j localJ = (com.google.android.datatransport.h.j)localIterator.next();
+        paramF = localJ.e();
+        com.google.android.datatransport.b localB = paramF.b();
+        if (localB.equals(com.google.android.datatransport.b.b("proto")))
+        {
+          paramF = k.j(paramF.a());
+        }
+        else
+        {
+          if (!localB.equals(com.google.android.datatransport.b.b("json"))) {
+            break label606;
+          }
+          paramF = k.i(new String(paramF.a(), Charset.forName("UTF-8")));
+        }
+        paramF.c(localJ.f()).d(localJ.k()).h(localJ.h("tz-offset")).e(NetworkConnectionInfo.a().c(NetworkConnectionInfo.NetworkType.a(localJ.g("net-type"))).b(NetworkConnectionInfo.MobileSubtype.a(localJ.g("mobile-subtype"))).a());
+        if (localJ.d() != null) {
+          paramF.b(localJ.d());
+        }
+        localArrayList.add(paramF.a());
+        continue;
+        label606:
+        com.google.android.datatransport.h.w.a.g("CctTransportBackend", "Received event of unsupported encoding %s. Skipping...", localB);
+      }
+      ((l.a)localObject3).c(localArrayList);
+      ((List)localObject1).add(((l.a)localObject3).a());
+    }
+    return com.google.android.datatransport.cct.internal.j.a((List)localObject1);
+  }
+  
+  private static TelephonyManager h(Context paramContext)
+  {
+    return (TelephonyManager)paramContext.getSystemService("phone");
+  }
+  
+  static long i()
+  {
+    Calendar.getInstance();
+    return TimeZone.getDefault().getOffset(Calendar.getInstance().getTimeInMillis()) / 1000;
+  }
+  
+  private static InputStream l(InputStream paramInputStream, String paramString)
+    throws IOException
+  {
+    if ("gzip".equals(paramString)) {
+      return new GZIPInputStream(paramInputStream);
+    }
+    return paramInputStream;
+  }
+  
+  private static URL m(String paramString)
+  {
+    try
+    {
+      URL localURL = new URL(paramString);
+      return localURL;
+    }
+    catch (MalformedURLException localMalformedURLException)
+    {
+      StringBuilder localStringBuilder = new StringBuilder();
+      localStringBuilder.append("Invalid url: ");
+      localStringBuilder.append(paramString);
+      throw new IllegalArgumentException(localStringBuilder.toString(), localMalformedURLException);
+    }
+  }
+  
+  public BackendResponse a(f paramF)
+  {
+    com.google.android.datatransport.cct.internal.j localJ = g(paramF);
+    URL localURL2 = d;
+    Object localObject2 = paramF.c();
+    f localF = null;
+    Object localObject1 = null;
+    URL localURL1 = localURL2;
+    if (localObject2 != null) {}
+    try
+    {
+      localObject2 = c.c(paramF.c());
+      paramF = localObject1;
+      if (((c)localObject2).d() != null) {
+        paramF = ((c)localObject2).d();
+      }
+      localURL1 = localURL2;
+      localF = paramF;
+      if (((c)localObject2).e() == null) {
+        break label92;
+      }
+      localURL1 = m(((c)localObject2).e());
+      localF = paramF;
+    }
+    catch (IllegalArgumentException paramF)
+    {
+      for (;;)
+      {
+        int i;
+        continue;
+        if (i < 500) {
+          if (i != 404) {}
+        }
+      }
+    }
+    return BackendResponse.a();
+    try
+    {
+      label92:
+      paramF = (b)com.google.android.datatransport.h.x.b.a(5, new a(localURL1, localJ, localF), new b(this), a.a);
+      i = a;
+      if (i != 200) {
+        break label182;
+      }
+      return BackendResponse.e(c);
+    }
+    catch (IOException paramF)
+    {
+      com.google.android.datatransport.h.w.a.d("CctTransportBackend", "Could not make request to the backend", paramF);
+      return BackendResponse.f();
+    }
+    if (i == 400) {
+      return BackendResponse.d();
+    }
+    return BackendResponse.a();
+    paramF = BackendResponse.f();
+    return paramF;
+  }
+  
+  public com.google.android.datatransport.h.j b(com.google.android.datatransport.h.j paramJ)
+  {
+    NetworkInfo localNetworkInfo = b.getActiveNetworkInfo();
+    return paramJ.l().a("sdk-version", Build.VERSION.SDK_INT).c("model", Build.MODEL).c("hardware", Build.HARDWARE).c("device", Build.DEVICE).c("product", Build.PRODUCT).c("os-uild", Build.ID).c("manufacturer", Build.MANUFACTURER).c("fingerprint", Build.FINGERPRINT).b("tz-offset", i()).a("net-type", e(localNetworkInfo)).a("mobile-subtype", d(localNetworkInfo)).c("country", Locale.getDefault().getCountry()).c("locale", Locale.getDefault().getLanguage()).c("mcc_mnc", h(c).getSimOperator()).c("application_build", Integer.toString(f(c))).d();
+  }
+  
+  static final class a
+  {
+    final URL a;
+    final com.google.android.datatransport.cct.internal.j b;
+    final String c;
+    
+    a(URL paramURL, com.google.android.datatransport.cct.internal.j paramJ, String paramString)
+    {
+      a = paramURL;
+      b = paramJ;
+      c = paramString;
+    }
+    
+    a a(URL paramURL)
+    {
+      return new a(paramURL, b, c);
+    }
+  }
+  
+  static final class b
+  {
+    final int a;
+    final URL b;
+    final long c;
+    
+    b(int paramInt, URL paramURL, long paramLong)
+    {
+      a = paramInt;
+      b = paramURL;
+      c = paramLong;
+    }
+  }
+}

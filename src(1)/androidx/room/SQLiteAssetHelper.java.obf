@@ -1,0 +1,293 @@
+package androidx.room;
+
+import android.content.Context;
+import android.content.res.AssetManager;
+import androidx.room.q.d;
+import c.t.a.b;
+import c.t.a.c;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+
+class l
+  implements c
+{
+  private final Context b;
+  private final String c;
+  private final File d;
+  private final int e;
+  private final c f;
+  private a g;
+  private boolean h;
+  
+  l(Context paramContext, String paramString, File paramFile, int paramInt, c paramC)
+  {
+    b = paramContext;
+    c = paramString;
+    d = paramFile;
+    e = paramInt;
+    f = paramC;
+  }
+  
+  private void a(File paramFile)
+    throws IOException
+  {
+    if (c != null)
+    {
+      localObject = Channels.newChannel(b.getAssets().open(c));
+    }
+    else
+    {
+      if (d == null) {
+        break label214;
+      }
+      localObject = new FileInputStream(d).getChannel();
+    }
+    File localFile = File.createTempFile("room-copy-helper", ".tmp", b.getCacheDir());
+    localFile.deleteOnExit();
+    d.a((ReadableByteChannel)localObject, new FileOutputStream(localFile).getChannel());
+    Object localObject = paramFile.getParentFile();
+    if ((localObject != null) && (!((File)localObject).exists()) && (!((File)localObject).mkdirs()))
+    {
+      localObject = new StringBuilder();
+      ((StringBuilder)localObject).append("Failed to create directories for ");
+      ((StringBuilder)localObject).append(paramFile.getAbsolutePath());
+      throw new IOException(((StringBuilder)localObject).toString());
+    }
+    if (localFile.renameTo(paramFile)) {
+      return;
+    }
+    localObject = new StringBuilder();
+    ((StringBuilder)localObject).append("Failed to move intermediate file (");
+    ((StringBuilder)localObject).append(localFile.getAbsolutePath());
+    ((StringBuilder)localObject).append(") to destination (");
+    ((StringBuilder)localObject).append(paramFile.getAbsolutePath());
+    ((StringBuilder)localObject).append(").");
+    throw new IOException(((StringBuilder)localObject).toString());
+    label214:
+    throw new IllegalStateException("copyFromAssetPath and copyFromFile == null!");
+  }
+  
+  /* Error */
+  private void i()
+  {
+    // Byte code:
+    //   0: aload_0
+    //   1: invokevirtual 141	androidx/room/l:getDatabaseName	()Ljava/lang/String;
+    //   4: astore 5
+    //   6: aload_0
+    //   7: getfield 27	androidx/room/l:b	Landroid/content/Context;
+    //   10: aload 5
+    //   12: invokevirtual 145	android/content/Context:getDatabasePath	(Ljava/lang/String;)Ljava/io/File;
+    //   15: astore 6
+    //   17: aload_0
+    //   18: getfield 147	androidx/room/l:g	Landroidx/room/a;
+    //   21: astore 4
+    //   23: aload 4
+    //   25: ifnull +19 -> 44
+    //   28: aload 4
+    //   30: getfield 152	androidx/room/a:j	Z
+    //   33: ifeq +6 -> 39
+    //   36: goto +8 -> 44
+    //   39: iconst_0
+    //   40: istore_3
+    //   41: goto +5 -> 46
+    //   44: iconst_1
+    //   45: istore_3
+    //   46: new 154	androidx/room/q/a
+    //   49: dup
+    //   50: aload 5
+    //   52: aload_0
+    //   53: getfield 27	androidx/room/l:b	Landroid/content/Context;
+    //   56: invokevirtual 157	android/content/Context:getFilesDir	()Ljava/io/File;
+    //   59: iload_3
+    //   60: invokespecial 160	androidx/room/q/a:<init>	(Ljava/lang/String;Ljava/io/File;Z)V
+    //   63: astore 4
+    //   65: aload 4
+    //   67: invokevirtual 162	androidx/room/q/a:b	()V
+    //   70: aload 6
+    //   72: invokevirtual 99	java/io/File:exists	()Z
+    //   75: istore_3
+    //   76: iload_3
+    //   77: ifne +29 -> 106
+    //   80: aload_0
+    //   81: aload 6
+    //   83: invokespecial 164	androidx/room/l:a	(Ljava/io/File;)V
+    //   86: aload 4
+    //   88: invokevirtual 166	androidx/room/q/a:c	()V
+    //   91: return
+    //   92: astore 5
+    //   94: new 168	java/lang/RuntimeException
+    //   97: dup
+    //   98: ldc -86
+    //   100: aload 5
+    //   102: invokespecial 173	java/lang/RuntimeException:<init>	(Ljava/lang/String;Ljava/lang/Throwable;)V
+    //   105: athrow
+    //   106: aload_0
+    //   107: getfield 147	androidx/room/l:g	Landroidx/room/a;
+    //   110: astore 7
+    //   112: aload 7
+    //   114: ifnonnull +9 -> 123
+    //   117: aload 4
+    //   119: invokevirtual 166	androidx/room/q/a:c	()V
+    //   122: return
+    //   123: aload 6
+    //   125: invokestatic 178	androidx/room/q/c:c	(Ljava/io/File;)I
+    //   128: istore_1
+    //   129: aload_0
+    //   130: getfield 33	androidx/room/l:e	I
+    //   133: istore_2
+    //   134: iload_1
+    //   135: iload_2
+    //   136: if_icmpne +9 -> 145
+    //   139: aload 4
+    //   141: invokevirtual 166	androidx/room/q/a:c	()V
+    //   144: return
+    //   145: aload_0
+    //   146: getfield 147	androidx/room/l:g	Landroidx/room/a;
+    //   149: iload_1
+    //   150: iload_2
+    //   151: invokevirtual 181	androidx/room/a:a	(II)Z
+    //   154: istore_3
+    //   155: iload_3
+    //   156: ifeq +9 -> 165
+    //   159: aload 4
+    //   161: invokevirtual 166	androidx/room/q/a:c	()V
+    //   164: return
+    //   165: aload_0
+    //   166: getfield 27	androidx/room/l:b	Landroid/content/Context;
+    //   169: aload 5
+    //   171: invokevirtual 185	android/content/Context:deleteDatabase	(Ljava/lang/String;)Z
+    //   174: istore_3
+    //   175: iload_3
+    //   176: ifeq +27 -> 203
+    //   179: aload_0
+    //   180: aload 6
+    //   182: invokespecial 164	androidx/room/l:a	(Ljava/io/File;)V
+    //   185: goto +62 -> 247
+    //   188: astore 5
+    //   190: ldc -69
+    //   192: ldc -86
+    //   194: aload 5
+    //   196: invokestatic 193	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    //   199: pop
+    //   200: goto +47 -> 247
+    //   203: new 104	java/lang/StringBuilder
+    //   206: dup
+    //   207: invokespecial 105	java/lang/StringBuilder:<init>	()V
+    //   210: astore 6
+    //   212: aload 6
+    //   214: ldc -61
+    //   216: invokevirtual 111	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   219: pop
+    //   220: aload 6
+    //   222: aload 5
+    //   224: invokevirtual 111	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   227: pop
+    //   228: aload 6
+    //   230: ldc -59
+    //   232: invokevirtual 111	java/lang/StringBuilder:append	(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    //   235: pop
+    //   236: ldc -69
+    //   238: aload 6
+    //   240: invokevirtual 118	java/lang/StringBuilder:toString	()Ljava/lang/String;
+    //   243: invokestatic 200	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;)I
+    //   246: pop
+    //   247: aload 4
+    //   249: invokevirtual 166	androidx/room/q/a:c	()V
+    //   252: return
+    //   253: astore 5
+    //   255: ldc -69
+    //   257: ldc -54
+    //   259: aload 5
+    //   261: invokestatic 193	android/util/Log:w	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+    //   264: pop
+    //   265: aload 4
+    //   267: invokevirtual 166	androidx/room/q/a:c	()V
+    //   270: return
+    //   271: astore 5
+    //   273: aload 4
+    //   275: invokevirtual 166	androidx/room/q/a:c	()V
+    //   278: aload 5
+    //   280: athrow
+    // Local variable table:
+    //   start	length	slot	name	signature
+    //   0	281	0	this	l
+    //   128	22	1	i	int
+    //   133	18	2	j	int
+    //   40	136	3	bool	boolean
+    //   21	253	4	localObject1	Object
+    //   4	47	5	str	String
+    //   92	78	5	localIOException1	IOException
+    //   188	35	5	localIOException2	IOException
+    //   253	7	5	localIOException3	IOException
+    //   271	8	5	localObject2	Object
+    //   15	224	6	localObject3	Object
+    //   110	3	7	localA	a
+    // Exception table:
+    //   from	to	target	type
+    //   80	86	92	java/io/IOException
+    //   179	185	188	java/io/IOException
+    //   123	129	253	java/io/IOException
+    //   65	76	271	finally
+    //   80	86	271	finally
+    //   94	106	271	finally
+    //   106	112	271	finally
+    //   123	129	271	finally
+    //   129	134	271	finally
+    //   145	155	271	finally
+    //   165	175	271	finally
+    //   179	185	271	finally
+    //   190	200	271	finally
+    //   203	247	271	finally
+    //   255	265	271	finally
+  }
+  
+  public void close()
+  {
+    try
+    {
+      f.close();
+      h = false;
+      return;
+    }
+    finally
+    {
+      localObject = finally;
+      throw localObject;
+    }
+  }
+  
+  public String getDatabaseName()
+  {
+    return f.getDatabaseName();
+  }
+  
+  public b getWritableDatabase()
+  {
+    try
+    {
+      if (!h)
+      {
+        i();
+        h = true;
+      }
+      b localB = f.getWritableDatabase();
+      return localB;
+    }
+    finally {}
+  }
+  
+  void h(a paramA)
+  {
+    g = paramA;
+  }
+  
+  public void setWriteAheadLoggingEnabled(boolean paramBoolean)
+  {
+    f.setWriteAheadLoggingEnabled(paramBoolean);
+  }
+}

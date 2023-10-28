@@ -1,0 +1,45 @@
+package com.braze.ui.inappmessage.factories;
+
+import android.content.res.Resources;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import com.braze.enums.inappmessage.SlideFrom;
+import com.braze.models.inappmessage.IInAppMessage;
+import com.braze.models.inappmessage.InAppMessageSlideup;
+import com.braze.ui.inappmessage.IInAppMessageAnimationFactory;
+import com.braze.ui.support.AnimationUtils;
+import kotlin.x.d.i;
+
+public class DefaultInAppMessageAnimationFactory
+  implements IInAppMessageAnimationFactory
+{
+  private final long shortAnimationDurationMs = Resources.getSystem().getInteger(17694720);
+  
+  public DefaultInAppMessageAnimationFactory() {}
+  
+  public Animation getClosingAnimation(IInAppMessage paramIInAppMessage)
+  {
+    i.e(paramIInAppMessage, "inAppMessage");
+    if ((paramIInAppMessage instanceof InAppMessageSlideup))
+    {
+      if (((InAppMessageSlideup)paramIInAppMessage).getSlideFrom() == SlideFrom.TOP) {
+        return AnimationUtils.createVerticalAnimation(0.0F, -1.0F, shortAnimationDurationMs, false);
+      }
+      return AnimationUtils.createVerticalAnimation(0.0F, 1.0F, shortAnimationDurationMs, false);
+    }
+    return AnimationUtils.setAnimationParams(new AlphaAnimation(1.0F, 0.0F), shortAnimationDurationMs, false);
+  }
+  
+  public Animation getOpeningAnimation(IInAppMessage paramIInAppMessage)
+  {
+    i.e(paramIInAppMessage, "inAppMessage");
+    if ((paramIInAppMessage instanceof InAppMessageSlideup))
+    {
+      if (((InAppMessageSlideup)paramIInAppMessage).getSlideFrom() == SlideFrom.TOP) {
+        return AnimationUtils.createVerticalAnimation(-1.0F, 0.0F, shortAnimationDurationMs, false);
+      }
+      return AnimationUtils.createVerticalAnimation(1.0F, 0.0F, shortAnimationDurationMs, false);
+    }
+    return AnimationUtils.setAnimationParams(new AlphaAnimation(0.0F, 1.0F), shortAnimationDurationMs, true);
+  }
+}

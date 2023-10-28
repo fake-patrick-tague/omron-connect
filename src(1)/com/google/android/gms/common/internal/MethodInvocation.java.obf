@@ -1,0 +1,73 @@
+package com.google.android.gms.common.internal;
+
+import android.os.Parcel;
+import android.os.Parcelable.Creator;
+import com.google.android.gms.common.annotation.KeepForSdk;
+import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Class;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Constructor;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param;
+
+@KeepForSdk
+@SafeParcelable.Class(creator="MethodInvocationCreator")
+public class MethodInvocation
+  extends AbstractSafeParcelable
+{
+  public static final Parcelable.Creator<MethodInvocation> CREATOR = new zan();
+  @SafeParcelable.Field(getter="getMethodKey", id=1)
+  private final int zaa;
+  @SafeParcelable.Field(getter="getResultStatusCode", id=2)
+  private final int zab;
+  @SafeParcelable.Field(getter="getConnectionResultStatusCode", id=3)
+  private final int zac;
+  @SafeParcelable.Field(getter="getStartTimeMillis", id=4)
+  private final long zad;
+  @SafeParcelable.Field(getter="getEndTimeMillis", id=5)
+  private final long zae;
+  @SafeParcelable.Field(getter="getCallingModuleId", id=6)
+  private final String zaf;
+  @SafeParcelable.Field(getter="getCallingEntryPoint", id=7)
+  private final String zag;
+  @SafeParcelable.Field(defaultValue="0", getter="getServiceId", id=8)
+  private final int zah;
+  @SafeParcelable.Field(defaultValue="-1", getter="getLatencyMillis", id=9)
+  private final int zai;
+  
+  @Deprecated
+  @KeepForSdk
+  public MethodInvocation(int paramInt1, int paramInt2, int paramInt3, long paramLong1, long paramLong2, String paramString1, String paramString2, int paramInt4)
+  {
+    this(paramInt1, paramInt2, paramInt3, paramLong1, paramLong2, paramString1, paramString2, paramInt4, -1);
+  }
+  
+  @SafeParcelable.Constructor
+  public MethodInvocation(@SafeParcelable.Param(id=1) int paramInt1, @SafeParcelable.Param(id=2) int paramInt2, @SafeParcelable.Param(id=3) int paramInt3, @SafeParcelable.Param(id=4) long paramLong1, @SafeParcelable.Param(id=5) long paramLong2, @SafeParcelable.Param(id=6) String paramString1, @SafeParcelable.Param(id=7) String paramString2, @SafeParcelable.Param(id=8) int paramInt4, @SafeParcelable.Param(id=9) int paramInt5)
+  {
+    zaa = paramInt1;
+    zab = paramInt2;
+    zac = paramInt3;
+    zad = paramLong1;
+    zae = paramLong2;
+    zaf = paramString1;
+    zag = paramString2;
+    zah = paramInt4;
+    zai = paramInt5;
+  }
+  
+  public final void writeToParcel(Parcel paramParcel, int paramInt)
+  {
+    paramInt = SafeParcelWriter.beginObjectHeader(paramParcel);
+    SafeParcelWriter.writeInt(paramParcel, 1, zaa);
+    SafeParcelWriter.writeInt(paramParcel, 2, zab);
+    SafeParcelWriter.writeInt(paramParcel, 3, zac);
+    SafeParcelWriter.writeLong(paramParcel, 4, zad);
+    SafeParcelWriter.writeLong(paramParcel, 5, zae);
+    SafeParcelWriter.writeString(paramParcel, 6, zaf, false);
+    SafeParcelWriter.writeString(paramParcel, 7, zag, false);
+    SafeParcelWriter.writeInt(paramParcel, 8, zah);
+    SafeParcelWriter.writeInt(paramParcel, 9, zai);
+    SafeParcelWriter.finishObjectHeader(paramParcel, paramInt);
+  }
+}

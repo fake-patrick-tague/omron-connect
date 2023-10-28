@@ -1,0 +1,499 @@
+package androidx.work.impl.background.systemalarm;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.PowerManager.WakeLock;
+import android.text.TextUtils;
+import androidx.work.impl.d;
+import androidx.work.impl.utils.g;
+import androidx.work.impl.utils.k;
+import androidx.work.impl.utils.o;
+import androidx.work.impl.utils.p.a;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class e
+  implements androidx.work.impl.b
+{
+  static final String b = androidx.work.j.f("SystemAlarmDispatcher");
+  final Context c;
+  private final a d;
+  private final o e;
+  private final d f;
+  private final androidx.work.impl.j g;
+  final b h;
+  private final Handler i;
+  final List<Intent> j;
+  Intent k;
+  private c l;
+  
+  e(Context paramContext)
+  {
+    this(paramContext, null, null);
+  }
+  
+  e(Context paramContext, d paramD, androidx.work.impl.j paramJ)
+  {
+    Context localContext = paramContext.getApplicationContext();
+    c = localContext;
+    h = new b(localContext);
+    e = new o();
+    if (paramJ == null) {
+      paramJ = androidx.work.impl.j.l(paramContext);
+    }
+    g = paramJ;
+    if (paramD == null) {
+      paramD = paramJ.n();
+    }
+    f = paramD;
+    d = paramJ.q();
+    paramD.c(this);
+    j = new ArrayList();
+    k = null;
+    i = new Handler(Looper.getMainLooper());
+  }
+  
+  private void b()
+  {
+    if (i.getLooper().getThread() == Thread.currentThread()) {
+      return;
+    }
+    throw new IllegalStateException("Needs to be invoked on the main thread.");
+  }
+  
+  private boolean i(String paramString)
+  {
+    b();
+    synchronized (j)
+    {
+      Iterator localIterator = j.iterator();
+      while (localIterator.hasNext()) {
+        if (paramString.equals(((Intent)localIterator.next()).getAction())) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+  
+  private void l()
+  {
+    b();
+    PowerManager.WakeLock localWakeLock = k.b(c, "ProcessCommand");
+    try
+    {
+      localWakeLock.acquire();
+      g.q().b(new a());
+      return;
+    }
+    finally
+    {
+      localWakeLock.release();
+    }
+  }
+  
+  public boolean a(Intent paramIntent, int paramInt)
+  {
+    Object localObject2 = androidx.work.j.c();
+    Object localObject1 = b;
+    int m = 0;
+    ((androidx.work.j)localObject2).a((String)localObject1, String.format("Adding command %s (%s)", new Object[] { paramIntent, Integer.valueOf(paramInt) }), new Throwable[0]);
+    b();
+    localObject2 = paramIntent.getAction();
+    if (TextUtils.isEmpty((CharSequence)localObject2))
+    {
+      androidx.work.j.c().h((String)localObject1, "Unknown command. Ignoring", new Throwable[0]);
+      return false;
+    }
+    if (("ACTION_CONSTRAINTS_CHANGED".equals(localObject2)) && (i("ACTION_CONSTRAINTS_CHANGED"))) {
+      return false;
+    }
+    paramIntent.putExtra("KEY_START_ID", paramInt);
+    localObject1 = j;
+    paramInt = m;
+    try
+    {
+      if (!j.isEmpty()) {
+        paramInt = 1;
+      }
+      j.add(paramIntent);
+      if (paramInt == 0) {
+        l();
+      }
+      return true;
+    }
+    finally {}
+  }
+  
+  void c()
+  {
+    ??? = androidx.work.j.c();
+    Object localObject2 = b;
+    ((androidx.work.j)???).a((String)localObject2, "Checking if commands are complete.", new Throwable[0]);
+    b();
+    synchronized (j)
+    {
+      if (k != null)
+      {
+        androidx.work.j.c().a((String)localObject2, String.format("Removing command %s", new Object[] { k }), new Throwable[0]);
+        if (((Intent)j.remove(0)).equals(k)) {
+          k = null;
+        } else {
+          throw new IllegalStateException("Dequeue-d command is not the first.");
+        }
+      }
+      g localG = d.c();
+      if ((!h.o()) && (j.isEmpty()) && (!localG.a()))
+      {
+        androidx.work.j.c().a((String)localObject2, "No more commands & intents.", new Throwable[0]);
+        localObject2 = l;
+        if (localObject2 != null) {
+          ((c)localObject2).a();
+        }
+      }
+      else if (!j.isEmpty())
+      {
+        l();
+      }
+      return;
+    }
+  }
+  
+  public void d(String paramString, boolean paramBoolean)
+  {
+    k(new b(this, b.c(c, paramString, paramBoolean), 0));
+  }
+  
+  d e()
+  {
+    return f;
+  }
+  
+  a f()
+  {
+    return d;
+  }
+  
+  androidx.work.impl.j g()
+  {
+    return g;
+  }
+  
+  o h()
+  {
+    return e;
+  }
+  
+  void j()
+  {
+    androidx.work.j.c().a(b, "Destroying SystemAlarmDispatcher", new Throwable[0]);
+    f.i(this);
+    e.a();
+    l = null;
+  }
+  
+  void k(Runnable paramRunnable)
+  {
+    i.post(paramRunnable);
+  }
+  
+  void m(c paramC)
+  {
+    if (l != null)
+    {
+      androidx.work.j.c().b(b, "A completion listener for SystemAlarmDispatcher already exists.", new Throwable[0]);
+      return;
+    }
+    l = paramC;
+  }
+  
+  class a
+    implements Runnable
+  {
+    a() {}
+    
+    /* Error */
+    public void run()
+    {
+      // Byte code:
+      //   0: aload_0
+      //   1: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   4: getfield 25	androidx/work/impl/background/systemalarm/e:j	Ljava/util/List;
+      //   7: astore_2
+      //   8: aload_2
+      //   9: monitorenter
+      //   10: aload_0
+      //   11: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   14: astore_3
+      //   15: aload_3
+      //   16: aload_3
+      //   17: getfield 25	androidx/work/impl/background/systemalarm/e:j	Ljava/util/List;
+      //   20: iconst_0
+      //   21: invokeinterface 31 2 0
+      //   26: checkcast 33	android/content/Intent
+      //   29: putfield 37	androidx/work/impl/background/systemalarm/e:k	Landroid/content/Intent;
+      //   32: aload_2
+      //   33: monitorexit
+      //   34: aload_0
+      //   35: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   38: getfield 37	androidx/work/impl/background/systemalarm/e:k	Landroid/content/Intent;
+      //   41: astore_2
+      //   42: aload_2
+      //   43: ifnull +342 -> 385
+      //   46: aload_2
+      //   47: invokevirtual 41	android/content/Intent:getAction	()Ljava/lang/String;
+      //   50: astore_2
+      //   51: aload_0
+      //   52: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   55: getfield 37	androidx/work/impl/background/systemalarm/e:k	Landroid/content/Intent;
+      //   58: ldc 43
+      //   60: iconst_0
+      //   61: invokevirtual 47	android/content/Intent:getIntExtra	(Ljava/lang/String;I)I
+      //   64: istore_1
+      //   65: invokestatic 53	androidx/work/j:c	()Landroidx/work/j;
+      //   68: astore_3
+      //   69: getstatic 56	androidx/work/impl/background/systemalarm/e:b	Ljava/lang/String;
+      //   72: astore 4
+      //   74: aload_3
+      //   75: aload 4
+      //   77: ldc 58
+      //   79: iconst_2
+      //   80: anewarray 4	java/lang/Object
+      //   83: dup
+      //   84: iconst_0
+      //   85: aload_0
+      //   86: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   89: getfield 37	androidx/work/impl/background/systemalarm/e:k	Landroid/content/Intent;
+      //   92: aastore
+      //   93: dup
+      //   94: iconst_1
+      //   95: iload_1
+      //   96: invokestatic 64	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+      //   99: aastore
+      //   100: invokestatic 70	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   103: iconst_0
+      //   104: anewarray 72	java/lang/Throwable
+      //   107: invokevirtual 76	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   110: aload_0
+      //   111: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   114: getfield 79	androidx/work/impl/background/systemalarm/e:c	Landroid/content/Context;
+      //   117: ldc 81
+      //   119: iconst_2
+      //   120: anewarray 4	java/lang/Object
+      //   123: dup
+      //   124: iconst_0
+      //   125: aload_2
+      //   126: aastore
+      //   127: dup
+      //   128: iconst_1
+      //   129: iload_1
+      //   130: invokestatic 64	java/lang/Integer:valueOf	(I)Ljava/lang/Integer;
+      //   133: aastore
+      //   134: invokestatic 70	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   137: invokestatic 86	androidx/work/impl/utils/k:b	(Landroid/content/Context;Ljava/lang/String;)Landroid/os/PowerManager$WakeLock;
+      //   140: astore_3
+      //   141: invokestatic 53	androidx/work/j:c	()Landroidx/work/j;
+      //   144: aload 4
+      //   146: ldc 88
+      //   148: iconst_2
+      //   149: anewarray 4	java/lang/Object
+      //   152: dup
+      //   153: iconst_0
+      //   154: aload_2
+      //   155: aastore
+      //   156: dup
+      //   157: iconst_1
+      //   158: aload_3
+      //   159: aastore
+      //   160: invokestatic 70	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   163: iconst_0
+      //   164: anewarray 72	java/lang/Throwable
+      //   167: invokevirtual 76	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   170: aload_3
+      //   171: invokevirtual 93	android/os/PowerManager$WakeLock:acquire	()V
+      //   174: aload_0
+      //   175: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   178: astore 5
+      //   180: aload 5
+      //   182: getfield 97	androidx/work/impl/background/systemalarm/e:h	Landroidx/work/impl/background/systemalarm/b;
+      //   185: aload 5
+      //   187: getfield 37	androidx/work/impl/background/systemalarm/e:k	Landroid/content/Intent;
+      //   190: iload_1
+      //   191: aload 5
+      //   193: invokevirtual 103	androidx/work/impl/background/systemalarm/b:p	(Landroid/content/Intent;ILandroidx/work/impl/background/systemalarm/e;)V
+      //   196: invokestatic 53	androidx/work/j:c	()Landroidx/work/j;
+      //   199: aload 4
+      //   201: ldc 105
+      //   203: iconst_2
+      //   204: anewarray 4	java/lang/Object
+      //   207: dup
+      //   208: iconst_0
+      //   209: aload_2
+      //   210: aastore
+      //   211: dup
+      //   212: iconst_1
+      //   213: aload_3
+      //   214: aastore
+      //   215: invokestatic 70	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   218: iconst_0
+      //   219: anewarray 72	java/lang/Throwable
+      //   222: invokevirtual 76	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   225: aload_3
+      //   226: invokevirtual 108	android/os/PowerManager$WakeLock:release	()V
+      //   229: aload_0
+      //   230: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   233: astore_2
+      //   234: new 110	androidx/work/impl/background/systemalarm/e$d
+      //   237: dup
+      //   238: aload_2
+      //   239: invokespecial 112	androidx/work/impl/background/systemalarm/e$d:<init>	(Landroidx/work/impl/background/systemalarm/e;)V
+      //   242: astore_3
+      //   243: goto +80 -> 323
+      //   246: astore 4
+      //   248: invokestatic 53	androidx/work/j:c	()Landroidx/work/j;
+      //   251: astore 5
+      //   253: getstatic 56	androidx/work/impl/background/systemalarm/e:b	Ljava/lang/String;
+      //   256: astore 6
+      //   258: aload 5
+      //   260: aload 6
+      //   262: ldc 114
+      //   264: iconst_1
+      //   265: anewarray 72	java/lang/Throwable
+      //   268: dup
+      //   269: iconst_0
+      //   270: aload 4
+      //   272: aastore
+      //   273: invokevirtual 116	androidx/work/j:b	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   276: invokestatic 53	androidx/work/j:c	()Landroidx/work/j;
+      //   279: aload 6
+      //   281: ldc 105
+      //   283: iconst_2
+      //   284: anewarray 4	java/lang/Object
+      //   287: dup
+      //   288: iconst_0
+      //   289: aload_2
+      //   290: aastore
+      //   291: dup
+      //   292: iconst_1
+      //   293: aload_3
+      //   294: aastore
+      //   295: invokestatic 70	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   298: iconst_0
+      //   299: anewarray 72	java/lang/Throwable
+      //   302: invokevirtual 76	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   305: aload_3
+      //   306: invokevirtual 108	android/os/PowerManager$WakeLock:release	()V
+      //   309: aload_0
+      //   310: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   313: astore_2
+      //   314: new 110	androidx/work/impl/background/systemalarm/e$d
+      //   317: dup
+      //   318: aload_2
+      //   319: invokespecial 112	androidx/work/impl/background/systemalarm/e$d:<init>	(Landroidx/work/impl/background/systemalarm/e;)V
+      //   322: astore_3
+      //   323: aload_2
+      //   324: aload_3
+      //   325: invokevirtual 119	androidx/work/impl/background/systemalarm/e:k	(Ljava/lang/Runnable;)V
+      //   328: return
+      //   329: astore 4
+      //   331: invokestatic 53	androidx/work/j:c	()Landroidx/work/j;
+      //   334: getstatic 56	androidx/work/impl/background/systemalarm/e:b	Ljava/lang/String;
+      //   337: ldc 105
+      //   339: iconst_2
+      //   340: anewarray 4	java/lang/Object
+      //   343: dup
+      //   344: iconst_0
+      //   345: aload_2
+      //   346: aastore
+      //   347: dup
+      //   348: iconst_1
+      //   349: aload_3
+      //   350: aastore
+      //   351: invokestatic 70	java/lang/String:format	(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      //   354: iconst_0
+      //   355: anewarray 72	java/lang/Throwable
+      //   358: invokevirtual 76	androidx/work/j:a	(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Throwable;)V
+      //   361: aload_3
+      //   362: invokevirtual 108	android/os/PowerManager$WakeLock:release	()V
+      //   365: aload_0
+      //   366: getfield 17	androidx/work/impl/background/systemalarm/e$a:b	Landroidx/work/impl/background/systemalarm/e;
+      //   369: astore_2
+      //   370: aload_2
+      //   371: new 110	androidx/work/impl/background/systemalarm/e$d
+      //   374: dup
+      //   375: aload_2
+      //   376: invokespecial 112	androidx/work/impl/background/systemalarm/e$d:<init>	(Landroidx/work/impl/background/systemalarm/e;)V
+      //   379: invokevirtual 119	androidx/work/impl/background/systemalarm/e:k	(Ljava/lang/Runnable;)V
+      //   382: aload 4
+      //   384: athrow
+      //   385: return
+      //   386: astore_3
+      //   387: aload_2
+      //   388: monitorexit
+      //   389: aload_3
+      //   390: athrow
+      // Local variable table:
+      //   start	length	slot	name	signature
+      //   0	391	0	this	a
+      //   64	127	1	i	int
+      //   7	381	2	localObject1	Object
+      //   14	348	3	localObject2	Object
+      //   386	4	3	localObject3	Object
+      //   72	128	4	str1	String
+      //   246	25	4	localObject4	Object
+      //   329	54	4	localObject5	Object
+      //   178	81	5	localObject6	Object
+      //   256	24	6	str2	String
+      // Exception table:
+      //   from	to	target	type
+      //   141	196	246	finally
+      //   248	276	329	finally
+      //   10	34	386	finally
+      //   387	389	386	finally
+    }
+  }
+  
+  static class b
+    implements Runnable
+  {
+    private final e b;
+    private final Intent c;
+    private final int d;
+    
+    b(e paramE, Intent paramIntent, int paramInt)
+    {
+      b = paramE;
+      c = paramIntent;
+      d = paramInt;
+    }
+    
+    public void run()
+    {
+      b.a(c, d);
+    }
+  }
+  
+  static abstract interface c
+  {
+    public abstract void a();
+  }
+  
+  static class d
+    implements Runnable
+  {
+    private final e b;
+    
+    d(e paramE)
+    {
+      b = paramE;
+    }
+    
+    public void run()
+    {
+      b.c();
+    }
+  }
+}

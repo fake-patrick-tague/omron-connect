@@ -1,0 +1,114 @@
+package androidx.work.impl.m.f;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build.VERSION;
+import androidx.work.j;
+
+public class a
+  extends c<Boolean>
+{
+  private static final String i = j.f("BatteryChrgTracker");
+  
+  public a(Context paramContext, androidx.work.impl.utils.p.a paramA)
+  {
+    super(paramContext, paramA);
+  }
+  
+  private boolean j(Intent paramIntent)
+  {
+    if (Build.VERSION.SDK_INT >= 23)
+    {
+      j = paramIntent.getIntExtra("status", -1);
+      if (j == 2) {
+        break label40;
+      }
+      if (j == 5) {
+        return true;
+      }
+    }
+    while (paramIntent.getIntExtra("plugged", 0) == 0)
+    {
+      int j;
+      return false;
+    }
+    label40:
+    return true;
+  }
+  
+  public IntentFilter g()
+  {
+    IntentFilter localIntentFilter = new IntentFilter();
+    if (Build.VERSION.SDK_INT >= 23)
+    {
+      localIntentFilter.addAction("android.os.action.CHARGING");
+      localIntentFilter.addAction("android.os.action.DISCHARGING");
+      return localIntentFilter;
+    }
+    localIntentFilter.addAction("android.intent.action.ACTION_POWER_CONNECTED");
+    localIntentFilter.addAction("android.intent.action.ACTION_POWER_DISCONNECTED");
+    return localIntentFilter;
+  }
+  
+  public void h(Context paramContext, Intent paramIntent)
+  {
+    paramContext = paramIntent.getAction();
+    if (paramContext == null) {
+      return;
+    }
+    paramIntent = j.c();
+    String str = i;
+    int j = 1;
+    paramIntent.a(str, String.format("Received %s", new Object[] { paramContext }), new Throwable[0]);
+    switch (paramContext.hashCode())
+    {
+    }
+    do
+    {
+      do
+      {
+        do
+        {
+          j = -1;
+          break;
+        } while (!paramContext.equals("android.intent.action.ACTION_POWER_CONNECTED"));
+        j = 3;
+        break;
+      } while (!paramContext.equals("android.os.action.CHARGING"));
+      j = 2;
+      break;
+      if (paramContext.equals("android.os.action.DISCHARGING")) {
+        break;
+      }
+    } while ((goto 92) || (!paramContext.equals("android.intent.action.ACTION_POWER_DISCONNECTED")));
+    j = 0;
+    switch (j)
+    {
+    default: 
+      return;
+    case 3: 
+      d(Boolean.TRUE);
+      return;
+    case 2: 
+      d(Boolean.TRUE);
+      return;
+    case 1: 
+      d(Boolean.FALSE);
+      return;
+    }
+    d(Boolean.FALSE);
+  }
+  
+  public Boolean i()
+  {
+    Object localObject = new IntentFilter("android.intent.action.BATTERY_CHANGED");
+    localObject = c.registerReceiver(null, (IntentFilter)localObject);
+    if (localObject == null)
+    {
+      j.c().b(i, "getInitialState - null intent received", new Throwable[0]);
+      return null;
+    }
+    return Boolean.valueOf(j((Intent)localObject));
+  }
+}

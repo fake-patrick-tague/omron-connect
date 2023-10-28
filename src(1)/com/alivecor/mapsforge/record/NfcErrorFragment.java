@@ -1,0 +1,74 @@
+package com.alivecor.mapsforge.record;
+
+import android.content.Intent;
+import android.os.BaseBundle;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.fragment.package_11.Fragment;
+import com.alivecor.alivecorkitlite.R.drawable;
+import com.alivecor.alivecorkitlite.R.string;
+import com.alivecor.mapsforge.core.model.c;
+
+public class NfcErrorFragment
+  extends RecordingError1ButtonFragment
+{
+  AppPreferences appPreferences;
+  
+  public NfcErrorFragment() {}
+  
+  private void startNFCSettingsActivity()
+  {
+    startActivity(new Intent("android.settings.NFC_SETTINGS"));
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramBundle = super.onCreateView(paramLayoutInflater, paramViewGroup, paramBundle);
+    title.setText(R.string.recording_error_nfc_title);
+    if ((getArguments() != null) && (getArguments().containsKey("com.alivecor.ecg.record.ARG_OVERRIDE_DEVICE_NAME"))) {
+      paramLayoutInflater = getArguments().getString("com.alivecor.ecg.record.ARG_OVERRIDE_DEVICE_NAME");
+    } else {
+      paramLayoutInflater = "";
+    }
+    paramViewGroup = paramLayoutInflater;
+    if (TextUtils.isEmpty(paramLayoutInflater))
+    {
+      paramViewGroup = paramLayoutInflater;
+      if (getViewModel().getRecordingConfig() != null)
+      {
+        paramViewGroup = paramLayoutInflater;
+        if (getViewModelgetRecordingConfigselectedDevice != null)
+        {
+          paramViewGroup = paramLayoutInflater;
+          if (getViewModelgetRecordingConfigselectedDevice.a() != null) {
+            paramViewGroup = getViewModelgetRecordingConfigselectedDevice.a();
+          }
+        }
+      }
+    }
+    message.setText(getString(R.string.recording_error_nfc_message, new Object[] { paramViewGroup }));
+    icon.setImageResource(R.drawable.nfc_icon);
+    actionBtn.setText(R.string.go_to_settings);
+    actionBtn.setOnClickListener(new DashboardFragment.6(this));
+    return paramBundle;
+  }
+  
+  void onHelp()
+  {
+    String str2 = Urls.getFullUrl("app-redirect/i-need-help-nfc-error");
+    String str1 = str2;
+    if (getArguments() != null)
+    {
+      str1 = str2;
+      if (getArguments().containsKey("help url")) {
+        str1 = getArguments().getString("help url");
+      }
+    }
+    Util.openInBrowser(requireContext(), str1);
+  }
+}

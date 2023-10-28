@@ -1,0 +1,263 @@
+package com.google.android.gms.internal.base;
+
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.Callback;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.os.SystemClock;
+
+public final class zai
+  extends Drawable
+  implements Drawable.Callback
+{
+  private int zaa = 0;
+  private long zab;
+  private int zac;
+  private int zad = 255;
+  private int zae;
+  private int zaf = 0;
+  private boolean zag = true;
+  private boolean zah;
+  private zah zai;
+  private Drawable zaj;
+  private Drawable zak;
+  private boolean zal;
+  private boolean zam;
+  private boolean zan;
+  private int zao;
+  
+  public zai(Drawable paramDrawable1, Drawable paramDrawable2)
+  {
+    this(null);
+    Object localObject = paramDrawable1;
+    if (paramDrawable1 == null) {
+      localObject = zag.zaa();
+    }
+    zaj = ((Drawable)localObject);
+    ((Drawable)localObject).setCallback(this);
+    paramDrawable1 = zai;
+    int i = zab;
+    zab = (((Drawable)localObject).getChangingConfigurations() | i);
+    paramDrawable1 = paramDrawable2;
+    if (paramDrawable2 == null) {
+      paramDrawable1 = zag.zaa();
+    }
+    zak = paramDrawable1;
+    paramDrawable1.setCallback(this);
+    paramDrawable2 = zai;
+    i = zab;
+    zab = (paramDrawable1.getChangingConfigurations() | i);
+  }
+  
+  zai(zah paramZah)
+  {
+    zai = new zah(paramZah);
+  }
+  
+  public final void draw(Canvas paramCanvas)
+  {
+    int m = zaa;
+    int k = 0;
+    int i = 1;
+    int j = 1;
+    if (m != 1)
+    {
+      if ((m == 2) && (zab >= 0L))
+      {
+        float f = (float)(SystemClock.uptimeMillis() - zab) / zae;
+        if (f >= 1.0F) {
+          i = j;
+        } else {
+          i = 0;
+        }
+        if (i != 0) {
+          zaa = 0;
+        }
+        f = Math.min(f, 1.0F);
+        zaf = ((int)(zac * f + 0.0F));
+      }
+    }
+    else
+    {
+      zab = SystemClock.uptimeMillis();
+      zaa = 2;
+      i = 0;
+    }
+    j = zaf;
+    boolean bool = zag;
+    Drawable localDrawable1 = zaj;
+    Drawable localDrawable2 = zak;
+    if (i != 0)
+    {
+      if (bool)
+      {
+        i = j;
+        if (j != 0) {
+          break label170;
+        }
+        i = k;
+      }
+      else
+      {
+        i = j;
+      }
+      localDrawable1.draw(paramCanvas);
+      label170:
+      j = zad;
+      if (i == j)
+      {
+        localDrawable2.setAlpha(j);
+        localDrawable2.draw(paramCanvas);
+      }
+      return;
+    }
+    if (bool) {
+      localDrawable1.setAlpha(zad - j);
+    }
+    localDrawable1.draw(paramCanvas);
+    if (bool) {
+      localDrawable1.setAlpha(zad);
+    }
+    if (j > 0)
+    {
+      localDrawable2.setAlpha(j);
+      localDrawable2.draw(paramCanvas);
+      localDrawable2.setAlpha(zad);
+    }
+    invalidateSelf();
+  }
+  
+  public final int getChangingConfigurations()
+  {
+    int i = super.getChangingConfigurations();
+    zah localZah = zai;
+    return i | zaa | zab;
+  }
+  
+  public final Drawable.ConstantState getConstantState()
+  {
+    if (zac())
+    {
+      zai.zaa = getChangingConfigurations();
+      return zai;
+    }
+    return null;
+  }
+  
+  public final int getIntrinsicHeight()
+  {
+    return Math.max(zaj.getIntrinsicHeight(), zak.getIntrinsicHeight());
+  }
+  
+  public final int getIntrinsicWidth()
+  {
+    return Math.max(zaj.getIntrinsicWidth(), zak.getIntrinsicWidth());
+  }
+  
+  public final int getOpacity()
+  {
+    if (!zan)
+    {
+      zao = Drawable.resolveOpacity(zaj.getOpacity(), zak.getOpacity());
+      zan = true;
+    }
+    return zao;
+  }
+  
+  public final void invalidateDrawable(Drawable paramDrawable)
+  {
+    paramDrawable = getCallback();
+    if (paramDrawable != null) {
+      paramDrawable.invalidateDrawable(this);
+    }
+  }
+  
+  public final Drawable mutate()
+  {
+    if ((!zah) && (super.mutate() == this))
+    {
+      if (zac())
+      {
+        zaj.mutate();
+        zak.mutate();
+        zah = true;
+        return this;
+      }
+      throw new IllegalStateException("One or more children of this LayerDrawable does not have constant state; this drawable cannot be mutated.");
+    }
+    return this;
+  }
+  
+  protected final void onBoundsChange(Rect paramRect)
+  {
+    zaj.setBounds(paramRect);
+    zak.setBounds(paramRect);
+  }
+  
+  public final void scheduleDrawable(Drawable paramDrawable, Runnable paramRunnable, long paramLong)
+  {
+    paramDrawable = getCallback();
+    if (paramDrawable != null) {
+      paramDrawable.scheduleDrawable(this, paramRunnable, paramLong);
+    }
+  }
+  
+  public final void setAlpha(int paramInt)
+  {
+    if (zaf == zad) {
+      zaf = paramInt;
+    }
+    zad = paramInt;
+    invalidateSelf();
+  }
+  
+  public final void setColorFilter(ColorFilter paramColorFilter)
+  {
+    zaj.setColorFilter(paramColorFilter);
+    zak.setColorFilter(paramColorFilter);
+  }
+  
+  public final void unscheduleDrawable(Drawable paramDrawable, Runnable paramRunnable)
+  {
+    paramDrawable = getCallback();
+    if (paramDrawable != null) {
+      paramDrawable.unscheduleDrawable(this, paramRunnable);
+    }
+  }
+  
+  public final Drawable zaa()
+  {
+    return zak;
+  }
+  
+  public final void zab(int paramInt)
+  {
+    zac = zad;
+    zaf = 0;
+    zae = 250;
+    zaa = 1;
+    invalidateSelf();
+  }
+  
+  public final boolean zac()
+  {
+    if (!zal)
+    {
+      Drawable.ConstantState localConstantState = zaj.getConstantState();
+      boolean bool2 = false;
+      boolean bool1 = bool2;
+      if (localConstantState != null)
+      {
+        bool1 = bool2;
+        if (zak.getConstantState() != null) {
+          bool1 = true;
+        }
+      }
+      zam = bool1;
+      zal = true;
+    }
+    return zam;
+  }
+}

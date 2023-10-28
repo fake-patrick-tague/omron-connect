@@ -1,0 +1,77 @@
+package com.alivecor.ecg.record;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.f0;
+import c.h.p.d;
+import com.alivecor.alivecorkitlite.R.drawable;
+import com.alivecor.alivecorkitlite.R.id;
+import com.alivecor.alivecorkitlite.R.layout;
+import com.alivecor.universal_monitor.LeadState;
+
+public class KardiaMobileIntroFragment
+  extends Fragment
+{
+  ImageView deviceImg;
+  
+  public KardiaMobileIntroFragment() {}
+  
+  void goToHelp()
+  {
+    Util.openInBrowser(requireContext(), Urls.getFullUrl("app-redirect/i-need-help-recording-km"));
+  }
+  
+  public void leadStateUpdated(d<LeadState, LeadState> paramD)
+  {
+    l.a.a.d("leadStateUpdated: %s", new Object[] { paramD });
+    Object localObject = paramD;
+    if (paramD == null)
+    {
+      paramD = LeadState.OFF;
+      localObject = new d(paramD, paramD);
+    }
+    if (deviceImg != null)
+    {
+      if (!isAdded()) {
+        return;
+      }
+      int i;
+      if (a != LeadState.OFF)
+      {
+        paramD = deviceImg;
+        i = R.drawable.kmobile_active_hud;
+      }
+      else
+      {
+        paramD = deviceImg;
+        i = R.drawable.kmobile_hud;
+      }
+      paramD.setImageResource(i);
+    }
+  }
+  
+  public void onActivityCreated(Bundle paramBundle)
+  {
+    super.onActivityCreated(paramBundle);
+    ((EcgMonitorViewModel)new f0(requireActivity()).a(EcgMonitorViewModel.class)).leadState().observe(requireActivity(), new a(this));
+  }
+  
+  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  {
+    paramLayoutInflater = paramLayoutInflater.inflate(R.layout.fragment_km_intro_hud, paramViewGroup, false);
+    deviceImg = ((ImageView)paramLayoutInflater.findViewById(R.id.km_intro_hud_device_top));
+    ((TextView)paramLayoutInflater.findViewById(R.id.km_intro_hud_help)).setOnClickListener(new z0(this));
+    return paramLayoutInflater;
+  }
+  
+  public void onDestroyView()
+  {
+    super.onDestroyView();
+  }
+}

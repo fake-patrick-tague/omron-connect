@@ -1,0 +1,108 @@
+package com.braze.ui;
+
+import android.content.Context;
+import android.net.Uri;
+import android.os.Bundle;
+import com.braze.IBrazeDeeplinkHandler;
+import com.braze.IBrazeDeeplinkHandler.IntentFlagPurpose;
+import com.braze.enums.Channel;
+import com.braze.support.BrazeLogger;
+import com.braze.support.BrazeLogger.Priority;
+import com.braze.ui.actions.NewsfeedAction;
+import com.braze.ui.actions.UriAction;
+import kotlin.k;
+import kotlin.text.g;
+import kotlin.x.c.a;
+import kotlin.x.d.i;
+import kotlin.x.d.j;
+
+public class BrazeDeeplinkHandler
+  implements IBrazeDeeplinkHandler
+{
+  public static final Companion Companion = new Companion(null);
+  private static volatile IBrazeDeeplinkHandler customHandler;
+  private static final IBrazeDeeplinkHandler defaultHandler = new BrazeDeeplinkHandler();
+  
+  public BrazeDeeplinkHandler() {}
+  
+  public UriAction createUriActionFromUri(Uri paramUri, Bundle paramBundle, boolean paramBoolean, Channel paramChannel)
+  {
+    i.e(paramUri, "uri");
+    i.e(paramChannel, "channel");
+    return new UriAction(paramUri, paramBundle, paramBoolean, paramChannel);
+  }
+  
+  public UriAction createUriActionFromUrlString(String paramString, Bundle paramBundle, boolean paramBoolean, Channel paramChannel)
+  {
+    i.e(paramString, "url");
+    i.e(paramChannel, "channel");
+    try
+    {
+      boolean bool = g.o(paramString);
+      if ((bool ^ true))
+      {
+        paramString = Uri.parse(paramString);
+        i.d(paramString, "uri");
+        paramString = createUriActionFromUri(paramString, paramBundle, paramBoolean, paramChannel);
+        return paramString;
+      }
+      paramString = BrazeLogger.INSTANCE;
+      paramBundle = BrazeLogger.Priority.this$0;
+      paramChannel = createUriActionFromUrlString.1.INSTANCE;
+      BrazeLogger.brazelog$default(paramString, this, paramBundle, null, paramChannel, 2, null);
+      return null;
+    }
+    catch (Exception paramString)
+    {
+      BrazeLogger.INSTANCE.brazelog(this, BrazeLogger.Priority.this$0, paramString, createUriActionFromUrlString.2.INSTANCE);
+    }
+    return null;
+  }
+  
+  public int getIntentFlags(IBrazeDeeplinkHandler.IntentFlagPurpose paramIntentFlagPurpose)
+  {
+    i.e(paramIntentFlagPurpose, "intentFlagPurpose");
+    switch (WhenMappings.$EnumSwitchMapping$0[paramIntentFlagPurpose.ordinal()])
+    {
+    default: 
+      throw ((Throwable)new k());
+    case 6: 
+    case 7: 
+      return 268435456;
+    case 3: 
+    case 4: 
+    case 5: 
+      return 872415232;
+    }
+    return 1073741824;
+  }
+  
+  public void gotoNewsFeed(Context paramContext, NewsfeedAction paramNewsfeedAction)
+  {
+    i.e(paramContext, "context");
+    i.e(paramNewsfeedAction, "newsfeedAction");
+    paramNewsfeedAction.execute(paramContext);
+  }
+  
+  public void gotoUri(Context paramContext, UriAction paramUriAction)
+  {
+    i.e(paramContext, "context");
+    i.e(paramUriAction, "uriAction");
+    paramUriAction.execute(paramContext);
+  }
+  
+  public static final class Companion
+  {
+    private Companion() {}
+    
+    public final IBrazeDeeplinkHandler getInstance()
+    {
+      IBrazeDeeplinkHandler localIBrazeDeeplinkHandler2 = BrazeDeeplinkHandler.access$getCustomHandler$cp();
+      IBrazeDeeplinkHandler localIBrazeDeeplinkHandler1 = localIBrazeDeeplinkHandler2;
+      if (localIBrazeDeeplinkHandler2 == null) {
+        localIBrazeDeeplinkHandler1 = BrazeDeeplinkHandler.access$getDefaultHandler$cp();
+      }
+      return localIBrazeDeeplinkHandler1;
+    }
+  }
+}

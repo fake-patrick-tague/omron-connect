@@ -1,0 +1,46 @@
+package com.google.android.gms.internal.measurement;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+public final class zzw
+  extends zzai
+{
+  final Map zza = new HashMap();
+  private final zzj zzb;
+  
+  public zzw(zzj paramZzj)
+  {
+    super("require");
+    zzb = paramZzj;
+  }
+  
+  public final zzap zza(zzg paramZzg, List paramList)
+  {
+    zzh.zzh("require", 1, paramList);
+    paramList = paramZzg.zzb((zzap)paramList.get(0)).zzi();
+    if (zza.containsKey(paramList)) {
+      return (zzap)zza.get(paramList);
+    }
+    paramZzg = zzb;
+    if (zza.containsKey(paramList)) {
+      paramZzg = (Callable)zza.get(paramList);
+    }
+    try
+    {
+      paramZzg = (zzap)paramZzg.call();
+    }
+    catch (Exception paramZzg)
+    {
+      for (;;) {}
+    }
+    throw new IllegalStateException("Failed to create API implementation: ".concat(String.valueOf(paramList)));
+    paramZzg = zzap.zzf;
+    if ((paramZzg instanceof zzai)) {
+      zza.put(paramList, (zzai)paramZzg);
+    }
+    return paramZzg;
+  }
+}

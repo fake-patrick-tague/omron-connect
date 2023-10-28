@@ -1,0 +1,162 @@
+package com.google.android.gms.internal.measurement;
+
+import android.content.Context;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+public abstract class zzia
+{
+  private static final Object zzd = new Object();
+  private static volatile zzhy zze;
+  private static volatile boolean zzf = false;
+  private static final AtomicReference zzg = new AtomicReference();
+  private static final zzic zzh = new zzic(zzhs.zza, null);
+  private static final AtomicInteger zzi = new AtomicInteger();
+  final zzhx zza;
+  final String zzb;
+  private final Object zzj;
+  private volatile int zzk;
+  private volatile Object zzl;
+  private final boolean zzm;
+  
+  public static void zzd()
+  {
+    zzi.incrementAndGet();
+  }
+  
+  public static void zze(Context paramContext)
+  {
+    if (zze == null) {
+      synchronized (zzd)
+      {
+        if (zze == null) {
+          try
+          {
+            zzhy localZzhy = zze;
+            Context localContext = paramContext.getApplicationContext();
+            if (localContext != null) {
+              paramContext = localContext;
+            }
+            if ((localZzhy == null) || (localZzhy.zza() != paramContext))
+            {
+              zzhe.zze();
+              zzib.zzc();
+              zzhm.zze();
+              zze = new zzhb(paramContext, zzil.zza(new zzhr(paramContext)));
+              zzi.incrementAndGet();
+            }
+          }
+          finally {}
+        }
+        return;
+      }
+    }
+  }
+  
+  abstract Object zza(Object paramObject);
+  
+  public final Object zzb()
+  {
+    if (!zzm) {
+      Objects.requireNonNull(zzb, "flagName must not be null");
+    }
+    int i = zzi.get();
+    if (zzk < i) {}
+    for (;;)
+    {
+      Object localObject4;
+      try
+      {
+        if (zzk < i)
+        {
+          zzhy localZzhy = zze;
+          if (localZzhy != null)
+          {
+            Object localObject1 = zza;
+            boolean bool = zzf;
+            if (zzb != null)
+            {
+              if (!zzho.zza(localZzhy.zza(), zza.zzb)) {
+                break label360;
+              }
+              bool = zza.zzh;
+              localObject1 = zzhe.zza(localZzhy.zza().getContentResolver(), zza.zzb, zzhq.zza);
+            }
+            else
+            {
+              localObject1 = localZzhy.zza();
+              localObject4 = zza.zza;
+              localObject1 = zzib.zza((Context)localObject1, null, zzhq.zza);
+            }
+            if (localObject1 == null) {
+              break label365;
+            }
+            localObject1 = ((zzhj)localObject1).zzb(zzc());
+            if (localObject1 == null) {
+              break label365;
+            }
+            localObject1 = zza(localObject1);
+            break label367;
+            if (zza.zze) {
+              break label374;
+            }
+            localObject4 = zzhm.zza(localZzhy.zza());
+            if (zza.zze) {
+              localObject1 = null;
+            } else {
+              localObject1 = zzb;
+            }
+            localObject1 = ((zzhm)localObject4).zzc((String)localObject1);
+            if (localObject1 == null) {
+              break label374;
+            }
+            localObject4 = zza(localObject1);
+            localObject1 = localObject4;
+            if (localObject4 == null) {
+              localObject1 = zzj;
+            }
+            localObject4 = (zzif)localZzhy.zzb().zza();
+            if (((zzif)localObject4).zzb())
+            {
+              localObject1 = (zzhg)((zzif)localObject4).zza();
+              localObject4 = zza;
+              localObject1 = ((zzhg)localObject1).zza(zzb, null, zzd, zzb);
+              if (localObject1 == null) {
+                localObject1 = zzj;
+              } else {
+                localObject1 = zza(localObject1);
+              }
+            }
+            zzl = localObject1;
+            zzk = i;
+          }
+          else
+          {
+            throw new IllegalStateException("Must call PhenotypeFlag.init() first");
+          }
+        }
+      }
+      finally {}
+      return zzl;
+      label360:
+      Object localObject3 = null;
+      continue;
+      label365:
+      localObject3 = null;
+      label367:
+      if (localObject3 != null)
+      {
+        continue;
+        label374:
+        localObject4 = null;
+      }
+    }
+  }
+  
+  public final String zzc()
+  {
+    String str = zza.zzd;
+    return zzb;
+  }
+}

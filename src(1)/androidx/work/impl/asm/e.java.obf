@@ -1,0 +1,98 @@
+package androidx.work.impl.n;
+
+import android.database.Cursor;
+import androidx.room.RoomDatabase;
+import androidx.room.b;
+import androidx.room.k;
+import androidx.room.q.c;
+
+public final class f
+  implements e
+{
+  private final RoomDatabase a;
+  private final b<d> b;
+  
+  public f(RoomDatabase paramRoomDatabase)
+  {
+    a = paramRoomDatabase;
+    b = new a(paramRoomDatabase);
+  }
+  
+  public Long a(String paramString)
+  {
+    k localK = k.n("SELECT long_value FROM Preference where `key`=?", 1);
+    if (paramString == null) {
+      localK.bindNull(1);
+    } else {
+      localK.bindString(1, paramString);
+    }
+    a.b();
+    paramString = a;
+    Object localObject = null;
+    Cursor localCursor = c.b(paramString, localK, false, null);
+    paramString = localObject;
+    try
+    {
+      if (localCursor.moveToFirst()) {
+        if (localCursor.isNull(0)) {
+          paramString = localObject;
+        } else {
+          paramString = Long.valueOf(localCursor.getLong(0));
+        }
+      }
+      return paramString;
+    }
+    finally
+    {
+      localCursor.close();
+      localK.release();
+    }
+  }
+  
+  public void b(d paramD)
+  {
+    a.b();
+    a.c();
+    try
+    {
+      b.h(paramD);
+      a.r();
+      return;
+    }
+    finally
+    {
+      a.g();
+    }
+  }
+  
+  class a
+    extends b<d>
+  {
+    a(RoomDatabase paramRoomDatabase)
+    {
+      super();
+    }
+    
+    public String d()
+    {
+      return "INSERT OR REPLACE INTO `Preference` (`key`,`long_value`) VALUES (?,?)";
+    }
+    
+    public void i(c.t.a.f paramF, d paramD)
+    {
+      String str = a;
+      if (str == null) {
+        paramF.bindNull(1);
+      } else {
+        paramF.bindString(1, str);
+      }
+      paramD = b;
+      if (paramD == null)
+      {
+        paramF.bindNull(2);
+        return;
+      }
+      paramF.bindLong(2, paramD.longValue());
+    }
+  }
+}

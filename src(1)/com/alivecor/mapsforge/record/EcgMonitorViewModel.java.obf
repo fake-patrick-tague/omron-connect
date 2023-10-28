@@ -1,0 +1,811 @@
+package com.alivecor.ecg.record;
+
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.e0;
+import com.alivecor.ai.ClassifierData;
+import com.alivecor.ai.ClassifierData.b;
+import com.alivecor.ai.u.b;
+import com.alivecor.ecg.core.model.MainsFilterFrequency;
+import com.alivecor.ecg.core.model.c;
+import com.alivecor.ecg.core.model.d.a;
+import com.alivecor.universal_monitor.ECGMonitor;
+import com.alivecor.universal_monitor.ECGMonitorCallback;
+import com.alivecor.universal_monitor.LeadState;
+import com.alivecor.universal_monitor.LeadValues;
+import com.alivecor.universal_monitor.RecordingStatus;
+import com.alivecor.universal_monitor.bluetooth.BluetoothDeviceProperties;
+import com.alivecor.universal_monitor.bluetooth.ble.BleUtil;
+import com.alivecor.universal_monitor.devices.Device;
+import com.alivecor.universal_monitor.devices.KardiaMobileDevice;
+import com.alivecor.universal_monitor.devices.SakuraOneDevice;
+import com.alivecor.universal_monitor.devices.TriangleDevice;
+import com.alivecor.universal_monitor.devices.TripodDevice;
+import java.io.File;
+import java.util.Objects;
+import k.a.a.f;
+
+public class EcgMonitorViewModel
+  extends e0
+{
+  private static final long IDLE_TIMEOUT_MS = 1000L;
+  private static final String TAG = "EcgMonitorViewModel";
+  private static final long TRIANGLE_MIN_BATTERY_PERCENT = 1L;
+  AppPreferences appPreferences;
+  Context applicationContext;
+  private final androidx.lifecycle.s<Integer> beatOffsetsLiveData;
+  private RecordResult completedRecordResult;
+  private final androidx.lifecycle.s<Integer> currentHr;
+  private final androidx.lifecycle.s<com.alivecor.ecg.core.model.d> deviceData;
+  private Device ecgDevice;
+  com.alivecor.ai.p ecgEvaluator;
+  private ECGMonitor ecgMonitor;
+  private final androidx.lifecycle.s<Integer> elapsedRecTimeMs;
+  private androidx.lifecycle.t<TriangleBluetoothWrapperClass.BLEConnectionState> errorOnTriangleError;
+  private final androidx.lifecycle.s<c.h.p.d<LeadState, LeadState>> leadState;
+  private String pairedTriangleAddress;
+  private io.reactivex.v.b postRecordingProcess;
+  private io.reactivex.v.b prepareToStart;
+  private final androidx.lifecycle.s<LeadValues> previewValuesLiveData;
+  private RecordingConfig recordingConfig;
+  private RecordingError recordingError;
+  private RecordingSettings recordingSettings;
+  private final androidx.lifecycle.s<State> recordingState;
+  private com.alivecor.ai.s savedEvaluationResult;
+  private final androidx.lifecycle.s<RecordingSettings> settingsLiveData;
+  private final androidx.lifecycle.s<Integer> signalPercent;
+  androidx.lifecycle.s<Tasks> task;
+  private final androidx.lifecycle.s<String> triangleAddress;
+  private final LiveData<Integer> triangleBattery;
+  private androidx.lifecycle.t<Integer> triangleBatteryError;
+  private final LiveData<TriangleBluetoothWrapperClass.BLEConnectionState> triangleConnectionState;
+  private androidx.lifecycle.t<BluetoothDeviceProperties> trianglePropertiesObserver;
+  private final TriangleBluetoothWrapperClass triangleWrapper;
+  
+  public EcgMonitorViewModel()
+  {
+    TriangleBluetoothWrapperClass localTriangleBluetoothWrapperClass = TriangleBluetoothWrapperClass.getInstance();
+    triangleWrapper = localTriangleBluetoothWrapperClass;
+    triangleConnectionState = localTriangleBluetoothWrapperClass.connectionState();
+    triangleAddress = new androidx.lifecycle.s();
+    deviceData = new androidx.lifecycle.s();
+    recordingState = new StateLiveData(null);
+    elapsedRecTimeMs = new androidx.lifecycle.s();
+    leadState = new androidx.lifecycle.s();
+    previewValuesLiveData = new androidx.lifecycle.s();
+    beatOffsetsLiveData = new androidx.lifecycle.s();
+    currentHr = new androidx.lifecycle.s();
+    signalPercent = new androidx.lifecycle.s();
+    settingsLiveData = new androidx.lifecycle.s();
+    triangleBattery = localTriangleBluetoothWrapperClass.triangleBattery();
+    task = new androidx.lifecycle.s();
+    trianglePropertiesObserver = new androidx.lifecycle.t()
+    {
+      public void onChanged(BluetoothDeviceProperties paramAnonymousBluetoothDeviceProperties)
+      {
+        if ((paramAnonymousBluetoothDeviceProperties != null) && (ecgMonitor != null))
+        {
+          ecgMonitor.setDeviceData(paramAnonymousBluetoothDeviceProperties.deviceData());
+          ecgMonitor.setRecorderHardware(paramAnonymousBluetoothDeviceProperties.recorderHardware());
+        }
+        if (recordingConfig.selectedDevice == c.c)
+        {
+          deviceData.setValue(EcgMonitorViewModel.this.createTriangleData(paramAnonymousBluetoothDeviceProperties));
+          return;
+        }
+        deviceData.setValue(EcgMonitorViewModel.this.createNonTriangleDeviceData());
+      }
+    };
+    errorOnTriangleError = new z(this);
+    triangleBatteryError = new w(this);
+    RecordEkgConfig.get().getRecordDependencyComponent().inject(this);
+    resetRecordingState();
+  }
+  
+  private RecordingError checkRecordingPreconditions(RecordingConfig paramRecordingConfig, RecordingSettings paramRecordingSettings)
+  {
+    if (!PermissionsUtil.hasRecordAudio(applicationContext))
+    {
+      if (selectedDevice != c.c)
+      {
+        l.a.a.d("checkRecordingPreconditions: Non-Triangle Device Needs Audio", new Object[0]);
+        return RecordingError.MIC_PERMISSION_EKG;
+      }
+      if (voiceEnabled) {
+        return RecordingError.MIC_PERMISSION_VOICE;
+      }
+    }
+    if (selectedDevice == c.c)
+    {
+      if (Build.VERSION.SDK_INT >= 31)
+      {
+        if (!PermissionsUtil.isBleEnabled(applicationContext).booleanValue())
+        {
+          l.a.a.d("checkRecordingPreconditions: Triangle Device Needs NEARBY_DEVICES_PERMISSION (BLUETOOTH_CONNECT, BLUETOOTH_SCAN).", new Object[0]);
+          return RecordingError.NEARBY_DEVICES_PERMISSION;
+        }
+      }
+      else if (!PermissionsUtil.hasFineLocation(applicationContext))
+      {
+        l.a.a.d("checkRecordingPreconditions: Triangle Device Needs Location Permission", new Object[0]);
+        return RecordingError.LOCATION_PERMISSION;
+      }
+      if (!Util.isNetworkLocationEnabled((LocationManager)applicationContext.getSystemService("location")))
+      {
+        l.a.a.d("checkRecordingPreconditions: Triangle Device Needs Location Services ON", new Object[0]);
+        return RecordingError.LOCATION_OFF;
+      }
+      if (!BleUtil.isBluetoothEnabled(applicationContext))
+      {
+        l.a.a.d("checkRecordingPreconditions: Triangle Device Needs Bluetooth ON", new Object[0]);
+        return RecordingError.BLUETOOTH_OFF;
+      }
+    }
+    if (Util.isNFCEnabled(applicationContext))
+    {
+      l.a.a.d("checkRecordingPreconditions: Recording Needs NFC OFF", new Object[0]);
+      return RecordingError.NFC_ON;
+    }
+    return null;
+  }
+  
+  private void clearRecordingPreviewState()
+  {
+    l.a.a.d("clearRecordingPreviewState: Nulling samples/record state stuff", new Object[0]);
+    previewValuesLiveData.setValue(null);
+    beatOffsetsLiveData.setValue(null);
+    elapsedRecTimeMs.setValue(null);
+    leadState.setValue(null);
+    setCurrentHrValue(null);
+  }
+  
+  private RecordResult convertToRecordResult(com.alivecor.ai.s paramS, String paramString1, String paramString2)
+  {
+    l.a.a.g("convertToRecordResult(): Evaluation Result: %s", new Object[] { paramS });
+    l.a.a.a("convertToRecordResult(): Device Data: %s", new Object[] { deviceData });
+    com.alivecor.ecg.core.model.b localB = recordingConfig.deviceLeads;
+    Object localObject = j;
+    long l = ((k.a.a.r.d)localObject).y();
+    int i = ((k.a.a.r.b)localObject).c().A(l);
+    localObject = new RecordResult(e);
+    ((RecordResult)localObject).setDateTimeUtcMillis(l);
+    ((RecordResult)localObject).setLeadsConfig(localB);
+    ((RecordResult)localObject).setOriginalPath(paramString1);
+    ((RecordResult)localObject).setEnhancedPath(paramString2);
+    ((RecordResult)localObject).setVoiceEnabled(recordingSettings.voiceEnabled);
+    ((RecordResult)localObject).setTimezoneOffset(i);
+    ((RecordResult)localObject).setAverageHeartRate(g);
+    if (deviceData.getValue() != null)
+    {
+      ((RecordResult)localObject).setRecordingDeviceData((com.alivecor.ecg.core.model.d)deviceData.getValue());
+      ((RecordResult)localObject).setDeviceBluetoothAddress((String)triangleAddress.getValue());
+    }
+    paramString1 = (com.alivecor.ai.u)paramS.a(com.alivecor.ai.u.class);
+    if (paramString1 != null)
+    {
+      boolean bool;
+      if (((u.b)paramString1.d()).b() == 1) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+      ((RecordResult)localObject).setInverted(bool);
+    }
+    else
+    {
+      l.a.a.h("convertToRecordResult(): No inversion result", new Object[0]);
+    }
+    if (paramS.a(ClassifierData.class) == null)
+    {
+      l.a.a.g("convertToRecordResult(): Recording had mains noise and no classifier data.  Saving with 0 HR", new Object[0]);
+    }
+    else
+    {
+      l.a.a.g("convertToRecordResult(): Saving determination and HR", new Object[0]);
+      paramS = (ClassifierData)paramS.a(ClassifierData.class);
+      l.a.a.g("convertToRecordResult(): Classify Result %s", new Object[] { paramS });
+      if ((paramS != null) && (paramS.d() != null))
+      {
+        paramS = ((ClassifierData.b)paramS.d()).getDetermination();
+      }
+      else
+      {
+        l.a.a.h("convertToRecordResult(): No/Bad Classify Result: %s", new Object[] { paramS });
+        paramS = com.alivecor.ai.o.i;
+      }
+      if (Util.oneOf(paramS, new Object[] { com.alivecor.ai.o.h, com.alivecor.ai.o.f, com.alivecor.ai.o.g, com.alivecor.ai.o.i })) {
+        l.a.a.g("convertToRecordResult(): Skipping HR for determination %s", new Object[] { paramS });
+      }
+    }
+    l.a.a.d(TAG, new Object[] { "convertToRecordResult() saved EcgRecord %s", localObject });
+    return localObject;
+  }
+  
+  private Device createAcousticDevice()
+  {
+    Object localObject = recordingConfig;
+    l.a.a.d("createAcousticDevice: Creating %s with leads %s", new Object[] { selectedDevice, deviceLeads });
+    int i = 3.$SwitchMap$com$alivecor$ecg$core$model$RecordingDevice[recordingConfig.selectedDevice.ordinal()];
+    if (i != 1)
+    {
+      if (i != 2)
+      {
+        if (i == 3) {
+          return new TripodDevice();
+        }
+        localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("Selected Device ");
+        ((StringBuilder)localObject).append(recordingConfig.selectedDevice);
+        ((StringBuilder)localObject).append(" not supported or is bluetooth");
+        throw new IllegalStateException(((StringBuilder)localObject).toString());
+      }
+      return new SakuraOneDevice();
+    }
+    return new KardiaMobileDevice();
+  }
+  
+  private ECGMonitor createEcgMonitor(Device paramDevice, int paramInt, boolean paramBoolean)
+  {
+    l.a.a.d("createEcgMonitor: Device %s, Audio: %b", new Object[] { paramDevice, Boolean.valueOf(paramBoolean) });
+    String str = applicationContext.getPackageName();
+    Object localObject1 = applicationContext.getPackageManager();
+    try
+    {
+      localObject1 = ((PackageManager)localObject1).getPackageInfo(str, 0);
+      str = versionName;
+      localObject1 = TAG;
+      Object localObject2 = new StringBuilder();
+      ((StringBuilder)localObject2).append("Ecg file path : ");
+      ((StringBuilder)localObject2).append(com.alivecor.ecg.core.a.b.b().getPath());
+      Log.e((String)localObject1, ((StringBuilder)localObject2).toString());
+      localObject1 = com.alivecor.ecg.core.a.b.b().getPath();
+      localObject2 = Build.MODEL;
+      RecordingSettings localRecordingSettings = recordingSettings;
+      return new ECGMonitor(paramDevice, (String)localObject1, "", (String)localObject2, str, paramInt, paramBoolean, previewFilter, minRecDurationMs, maxRecDurationMs, createMonitorCallback());
+    }
+    catch (PackageManager.NameNotFoundException paramDevice)
+    {
+      localObject1 = new StringBuilder();
+      ((StringBuilder)localObject1).append("Couldn't find own package: ");
+      ((StringBuilder)localObject1).append(str);
+      throw new RuntimeException(((StringBuilder)localObject1).toString(), paramDevice);
+    }
+  }
+  
+  private ECGMonitorCallback createMonitorCallback()
+  {
+    new ECGMonitorCallback()
+    {
+      public void monitorBeatDetected(int paramAnonymousInt1, int paramAnonymousInt2)
+      {
+        beatOffsetsLiveData.setValue(Integer.valueOf(paramAnonymousInt2));
+        EcgMonitorViewModel.this.setCurrentHrValue(Integer.valueOf(paramAnonymousInt1));
+      }
+      
+      public void monitorLeadsStateUpdated(LeadState paramAnonymousLeadState1, LeadState paramAnonymousLeadState2)
+      {
+        l.a.a.g("monitorLeadsStateUpdated: %s/%s", new Object[] { paramAnonymousLeadState1, paramAnonymousLeadState2 });
+        leadState.setValue(new c.h.p.d(paramAnonymousLeadState1, paramAnonymousLeadState2));
+      }
+      
+      public void monitorMainsNoiseStarted()
+      {
+        l.a.a.g("monitorMainsNoiseStarted", new Object[0]);
+        EcgMonitorViewModel.this.onError(RecordingError.MAINS_NOISE_EARLY);
+      }
+      
+      public void monitorMainsNoiseStopped()
+      {
+        l.a.a.g("monitorMainsNoiseStopped", new Object[0]);
+      }
+      
+      public void monitorPreviewSamples(LeadValues paramAnonymousLeadValues)
+      {
+        previewValuesLiveData.setValue(paramAnonymousLeadValues);
+      }
+      
+      public void monitorRecordingComplete(RecordingStatus paramAnonymousRecordingStatus, boolean paramAnonymousBoolean, String paramAnonymousString1, String paramAnonymousString2, String paramAnonymousString3)
+      {
+        Object localObject = new StringBuilder();
+        ((StringBuilder)localObject).append("monitorRecordingComplete: ATC ");
+        ((StringBuilder)localObject).append(paramAnonymousString1);
+        ((StringBuilder)localObject).append("\nEnhanced");
+        ((StringBuilder)localObject).append(paramAnonymousString2);
+        ((StringBuilder)localObject).append("\nPCM ");
+        ((StringBuilder)localObject).append(paramAnonymousString3);
+        l.a.a.d(((StringBuilder)localObject).toString(), new Object[0]);
+        EcgMonitorViewModel.this.shutdownMonitor();
+        recordingState.setValue(EcgMonitorViewModel.State.EVALUATING);
+        localObject = EcgMonitorViewModel.this;
+        EcgMonitorViewModel.access$1002((EcgMonitorViewModel)localObject, ((EcgMonitorViewModel)localObject).processRecording(paramAnonymousRecordingStatus, paramAnonymousString1, paramAnonymousString2, paramAnonymousString3).q(io.reactivex.u.b.a.a()).i(new j(this)).p(new m(this, paramAnonymousString1, paramAnonymousString2)).t(new k(this), new l(this)));
+      }
+      
+      public void monitorRecordingFailed(RecordingStatus paramAnonymousRecordingStatus, String paramAnonymousString)
+      {
+        l.a.a.b("monitorRecordingFailed! %s:%s", new Object[] { paramAnonymousRecordingStatus, paramAnonymousString });
+        switch (EcgMonitorViewModel.3.$SwitchMap$com$alivecor$universal_monitor$RecordingStatus[paramAnonymousRecordingStatus.ordinal()])
+        {
+        default: 
+          return;
+        case 4: 
+        case 5: 
+          l.a.a.h("monitorRecordingFailed: Suspect RecordingStatus %s", new Object[] { paramAnonymousRecordingStatus });
+        case 6: 
+          EcgMonitorViewModel.this.clearRecordingPreviewState();
+          return;
+        case 2: 
+        case 3: 
+          paramAnonymousRecordingStatus = EcgMonitorViewModel.this;
+          paramAnonymousString = RecordingError.UNKNOWN;
+          break;
+        case 1: 
+          paramAnonymousRecordingStatus = EcgMonitorViewModel.this;
+          paramAnonymousString = RecordingError.MAINS_NOISE_EARLY;
+        }
+        paramAnonymousRecordingStatus.onError(paramAnonymousString);
+      }
+      
+      public void monitorRecordingProgress(int paramAnonymousInt)
+      {
+        elapsedRecTimeMs.setValue(Integer.valueOf(paramAnonymousInt));
+      }
+      
+      public void monitorRecordingResumed()
+      {
+        l.a.a.g("monitorRecordingResumed", new Object[0]);
+        recordingState.setValue(EcgMonitorViewModel.State.CAPTURING);
+      }
+      
+      public void monitorRecordingStarted()
+      {
+        l.a.a.g("monitorRecordingStarted", new Object[0]);
+        recordingState.setValue(EcgMonitorViewModel.State.CAPTURING);
+      }
+      
+      public void monitorRecordingStopped()
+      {
+        l.a.a.g("monitorRecordingStopped", new Object[0]);
+      }
+      
+      public void monitorSignalStrengthUpdated(int paramAnonymousInt)
+      {
+        signalPercent.setValue(Integer.valueOf(paramAnonymousInt));
+      }
+      
+      public void monitorStartPreview()
+      {
+        l.a.a.g("monitorStartPreview", new Object[0]);
+        EcgMonitorViewModel.this.clearRecordingPreviewState();
+        recordingState.setValue(EcgMonitorViewModel.State.PRE_CAPTURING);
+      }
+      
+      public void monitorStopPreview()
+      {
+        l.a.a.g("monitorStopPreview", new Object[0]);
+        recordingState.setValue(EcgMonitorViewModel.State.LISTENING);
+      }
+    };
+  }
+  
+  private com.alivecor.ecg.core.model.d createNonTriangleDeviceData()
+  {
+    com.alivecor.ecg.core.model.d localD = new com.alivecor.ecg.core.model.d();
+    int i = 3.$SwitchMap$com$alivecor$ecg$core$model$RecordingDevice[recordingConfig.selectedDevice.ordinal()];
+    d.a localA;
+    if (i != 1)
+    {
+      if (i != 2) {
+        localA = d.a.e;
+      } else {
+        localA = d.a.d;
+      }
+    }
+    else {
+      localA = d.a.a;
+    }
+    localD.a(localA);
+    l.a.a.d("createNonTriangleDeviceData(): Created Non-Triangle Device data: %s", new Object[] { localD });
+    return localD;
+  }
+  
+  private com.alivecor.ecg.core.model.d createTriangleData(BluetoothDeviceProperties paramBluetoothDeviceProperties)
+  {
+    com.alivecor.ecg.core.model.d localD = new com.alivecor.ecg.core.model.d();
+    localD.a(d.a.c);
+    if (paramBluetoothDeviceProperties != null)
+    {
+      localD.b(hardwareRevision);
+      localD.a(firmwareRevision);
+      localD.c(serialNumber);
+      int i = ((Integer)triangleBattery.getValue()).intValue();
+      if (i != -1) {
+        localD.a(Float.valueOf(i));
+      }
+    }
+    l.a.a.d("createTriangleData(): Created Triangle Device data: %s", new Object[] { localD });
+    return localD;
+  }
+  
+  private io.reactivex.r<RecordingSettings> initAndCheck(RecordingConfig paramRecordingConfig, RecordingSettings paramRecordingSettings)
+  {
+    return io.reactivex.r.o(paramRecordingSettings).v(io.reactivex.b0.a.b()).q(io.reactivex.u.b.a.a()).i(new u(this, paramRecordingSettings)).m(new n(this, paramRecordingConfig));
+  }
+  
+  private void initNewMonitor(Device paramDevice)
+  {
+    l.a.a.a("initMonitor()", new Object[0]);
+    ecgDevice = paramDevice;
+    ecgMonitor = createEcgMonitor(paramDevice, recordingSettings.mainsFreq.hz, isRecordAudio());
+  }
+  
+  private void onError(RecordingError paramRecordingError)
+  {
+    l.a.a.b("onError: %s", new Object[] { paramRecordingError });
+    shutdownMonitor();
+    recordingError = paramRecordingError;
+    recordingState.setValue(State.ERROR);
+    task.setValue(Tasks.ON_RECORDING_ERROR);
+  }
+  
+  private io.reactivex.r<TriangleDevice> prepareTriangleRecording(RecordingConfig paramRecordingConfig, RecordingSettings paramRecordingSettings)
+  {
+    Object localObject = getPairedTriangleAddress();
+    Objects.requireNonNull(paramRecordingConfig);
+    l.a.a.a("prepareTriangleRecording: Called for %s.  Restrict? %b", new Object[] { localObject, Boolean.FALSE });
+    localObject = triangleWrapper.scanForDevices().m(new q(paramRecordingConfig, (String)localObject)).n();
+    TriangleBluetoothWrapperClass localTriangleBluetoothWrapperClass = triangleWrapper;
+    Objects.requireNonNull(localTriangleBluetoothWrapperClass);
+    localObject = ((io.reactivex.i)localObject).l(new n1(localTriangleBluetoothWrapperClass)).i(new v(this)).m(new p(this, paramRecordingConfig));
+    return initAndCheck(paramRecordingConfig, paramRecordingSettings).w().c((io.reactivex.t)localObject);
+  }
+  
+  private io.reactivex.r<com.alivecor.ai.s> processRecording(RecordingStatus paramRecordingStatus, String paramString1, String paramString2, String paramString3)
+  {
+    return io.reactivex.r.n(new x(this, paramString1, paramString2)).p(new a0(paramRecordingStatus, paramString1, paramString2)).i(t.b).v(io.reactivex.b0.a.a());
+  }
+  
+  private void setCurrentHrValue(Integer paramInteger)
+  {
+    currentHr.setValue(paramInteger);
+    task.setValue(Tasks.ON_CURRENT_BPM_UPDATED);
+  }
+  
+  private void shutdownMonitor()
+  {
+    l.a.a.a("shutdownMonitor()", new Object[0]);
+    triangleWrapper.deviceProperties().removeObserver(trianglePropertiesObserver);
+    triangleWrapper.connectionState().removeObserver(errorOnTriangleError);
+    triangleWrapper.triangleBattery().removeObserver(triangleBatteryError);
+    Object localObject = prepareToStart;
+    if (localObject != null) {
+      ((io.reactivex.v.b)localObject).e();
+    }
+    if (postRecordingProcess != null)
+    {
+      l.a.a.a("Stopping a post-recording process", new Object[0]);
+      postRecordingProcess.e();
+    }
+    localObject = ecgDevice;
+    if (localObject != null) {
+      ((Device)localObject).stopCapturing();
+    }
+    localObject = ecgMonitor;
+    if (localObject != null) {
+      ((ECGMonitor)localObject).stop();
+    }
+    triangleWrapper.dispose();
+    localObject = ecgDevice;
+    if (localObject != null)
+    {
+      ((Device)localObject).dispose();
+      ecgDevice = null;
+    }
+    localObject = ecgMonitor;
+    if (localObject != null)
+    {
+      ((ECGMonitor)localObject).dispose();
+      ecgMonitor = null;
+    }
+  }
+  
+  private void validateRecordingConfigOrThrow(RecordingConfig paramRecordingConfig)
+  {
+    if (paramRecordingConfig != null)
+    {
+      c localC = selectedDevice;
+      if ((localC != null) && (localC != c.e))
+      {
+        com.alivecor.ecg.core.model.b localB = deviceLeads;
+        if ((localB != null) && ((localB != com.alivecor.ecg.core.model.b.c) || (localC == c.c))) {
+          return;
+        }
+        throw new IllegalArgumentException(String.format("Invalid RecordingConfig: Device %s cannot have leads config %s", new Object[] { selectedDevice, deviceLeads }));
+      }
+      throw new IllegalArgumentException(String.format("Invalid RecordingConfig: selectedDevice must not be %s", new Object[] { selectedDevice }));
+    }
+    throw new IllegalArgumentException("Recording config can not be null.");
+  }
+  
+  public LiveData<Integer> beatOffsets()
+  {
+    return beatOffsetsLiveData;
+  }
+  
+  public LiveData<TriangleBluetoothWrapperClass.BLEConnectionState> bleConnectionState()
+  {
+    return triangleConnectionState;
+  }
+  
+  public void confirmRecording()
+  {
+    recordingState.setValue(State.EVALUATION_READY);
+    task.setValue(Tasks.POST_EVALUATION_RESULT);
+  }
+  
+  public LiveData<Integer> currentHr()
+  {
+    return currentHr;
+  }
+  
+  public LiveData<com.alivecor.ecg.core.model.d> deviceData()
+  {
+    return deviceData;
+  }
+  
+  public LiveData<Integer> elapsedRecTimeMs()
+  {
+    return elapsedRecTimeMs;
+  }
+  
+  public RecordingError error()
+  {
+    return recordingError;
+  }
+  
+  protected String getPairedTriangleAddress()
+  {
+    if (pairedTriangleAddress == null) {
+      pairedTriangleAddress = appPreferences.getOptionSelectedTriangleDevice();
+    }
+    return pairedTriangleAddress;
+  }
+  
+  public RecordResult getRecordResult()
+  {
+    return completedRecordResult;
+  }
+  
+  public RecordingConfig getRecordingConfig()
+  {
+    return recordingConfig;
+  }
+  
+  protected com.alivecor.ai.s getSavedEvaluationResult()
+  {
+    return savedEvaluationResult;
+  }
+  
+  protected boolean isRecordAudio()
+  {
+    return recordingSettings.voiceEnabled;
+  }
+  
+  public LiveData<c.h.p.d<LeadState, LeadState>> leadState()
+  {
+    return leadState;
+  }
+  
+  public void onCleared()
+  {
+    l.a.a.d("onCleared()", new Object[0]);
+    stop();
+    super.onCleared();
+  }
+  
+  public LiveData<LeadValues> previewValues()
+  {
+    return previewValuesLiveData;
+  }
+  
+  public LiveData<RecordingSettings> recordingSettings()
+  {
+    return settingsLiveData;
+  }
+  
+  public void resetRecordingState()
+  {
+    l.a.a.a("resetRecordingState()", new Object[0]);
+    task.setValue(Tasks.RECORDING_INITIALIZED);
+    recordingConfig = null;
+    recordingSettings = null;
+    recordingState.setValue(State.IDLE);
+    recordingError = null;
+    savedEvaluationResult = null;
+    beatOffsetsLiveData.setValue(null);
+    previewValuesLiveData.setValue(null);
+    triangleAddress.setValue(null);
+    elapsedRecTimeMs.setValue(null);
+    leadState.setValue(null);
+    setCurrentHrValue(null);
+  }
+  
+  public void restart()
+  {
+    RecordingConfig localRecordingConfig = recordingConfig;
+    if (localRecordingConfig == null)
+    {
+      l.a.a.h("restart(): Called without recording config.  Call start() first", new Object[0]);
+      return;
+    }
+    RecordingSettings localRecordingSettings = recordingSettings;
+    stop();
+    start(localRecordingConfig, localRecordingSettings);
+  }
+  
+  protected void setPairedTriangleAddress(String paramString)
+  {
+    pairedTriangleAddress = paramString;
+  }
+  
+  public LiveData<Integer> signalPercent()
+  {
+    return signalPercent;
+  }
+  
+  protected void start(RecordingConfig paramRecordingConfig, RecordingSettings paramRecordingSettings)
+  {
+    l.a.a.a("start(): Recording Config: %s", new Object[] { paramRecordingConfig });
+    l.a.a.a("start(): Recording Settings: %s", new Object[] { paramRecordingSettings });
+    validateRecordingConfigOrThrow(paramRecordingConfig);
+    recordingConfig = paramRecordingConfig;
+    recordingSettings = paramRecordingSettings;
+    io.reactivex.v.b localB;
+    if (selectedDevice == c.c)
+    {
+      localB = prepareToStart;
+      if ((localB != null) && (!localB.h()))
+      {
+        l.a.a.d("start(): called while preparing.  Abandoning old prep and starting from Scan", new Object[0]);
+        prepareToStart.e();
+        shutdownMonitor();
+      }
+      l.a.a.d("start(): Starting scan for Triangle", new Object[0]);
+      triangleWrapper.deviceProperties().observeForever(trianglePropertiesObserver);
+      triangleWrapper.connectionState().observeForever(errorOnTriangleError);
+      triangleWrapper.triangleBattery().observeForever(triangleBatteryError);
+      task.setValue(Tasks.RECORDING_INITIALIZED);
+      recordingState.setValue(State.STARTING);
+      paramRecordingConfig = prepareTriangleRecording(paramRecordingConfig, paramRecordingSettings).q(io.reactivex.u.b.a.a()).g(new y(this)).t(new r(this), new o(this));
+    }
+    else
+    {
+      task.setValue(Tasks.RECORDING_INITIALIZED);
+      recordingState.setValue(State.STARTING);
+      localB = prepareToStart;
+      if ((localB != null) && (!localB.h()))
+      {
+        l.a.a.d("start(): Called while starting.  Abandoning old prep task", new Object[0]);
+        prepareToStart.e();
+      }
+      paramRecordingConfig = initAndCheck(paramRecordingConfig, paramRecordingSettings).q(io.reactivex.u.b.a.a()).g(new c0(this)).t(new b0(this), new i(this, paramRecordingConfig));
+    }
+    prepareToStart = paramRecordingConfig;
+  }
+  
+  public LiveData<State> state()
+  {
+    return recordingState;
+  }
+  
+  void stop()
+  {
+    State localState = (State)state().getValue();
+    l.a.a.a("stop(): called in state %s", new Object[] { localState });
+    if (localState != State.IDLE)
+    {
+      shutdownMonitor();
+      resetRecordingState();
+      return;
+    }
+    l.a.a.h("stop(): Already IDLE.  Skipping.", new Object[0]);
+  }
+  
+  public LiveData<String> triangleAddress()
+  {
+    return triangleAddress;
+  }
+  
+  public LiveData<Integer> triangleBatteryLevel()
+  {
+    return triangleBattery;
+  }
+  
+  private static class RecordPreconditionException
+    extends Exception
+  {
+    public final RecordingError error;
+    
+    public RecordPreconditionException(RecordingError paramRecordingError)
+    {
+      super();
+      error = paramRecordingError;
+    }
+  }
+  
+  public static enum State
+  {
+    static
+    {
+      State localState1 = new State("IDLE", 0);
+      IDLE = localState1;
+      State localState2 = new State("STARTING", 1);
+      STARTING = localState2;
+      State localState3 = new State("LISTENING", 2);
+      LISTENING = localState3;
+      State localState4 = new State("PRE_CAPTURING", 3);
+      PRE_CAPTURING = localState4;
+      State localState5 = new State("CAPTURING", 4);
+      CAPTURING = localState5;
+      State localState6 = new State("EVALUATING", 5);
+      EVALUATING = localState6;
+      State localState7 = new State("SAVING_DISK", 6);
+      SAVING_DISK = localState7;
+      State localState8 = new State("EVALUATION_NEED_CONFIRM", 7);
+      EVALUATION_NEED_CONFIRM = localState8;
+      State localState9 = new State("EVALUATION_READY", 8);
+      EVALUATION_READY = localState9;
+      State localState10 = new State("ERROR", 9);
+      ERROR = localState10;
+      $VALUES = new State[] { localState1, localState2, localState3, localState4, localState5, localState6, localState7, localState8, localState9, localState10 };
+    }
+  }
+  
+  private class StateLiveData
+    extends androidx.lifecycle.s<EcgMonitorViewModel.State>
+  {
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    
+    private StateLiveData() {}
+    
+    protected void onActive()
+    {
+      l.a.a.a("Active Observer on State", new Object[0]);
+      mainHandler.removeCallbacksAndMessages(null);
+    }
+    
+    protected void onInactive()
+    {
+      l.a.a.a("No active observers on State.  Timing out in %d ms", new Object[] { Long.valueOf(1000L) });
+      mainHandler.postDelayed(new s(this), 1000L);
+    }
+  }
+  
+  public static enum Tasks
+  {
+    static
+    {
+      Tasks localTasks1 = new Tasks("RECORDING_INITIALIZED", 0);
+      RECORDING_INITIALIZED = localTasks1;
+      Tasks localTasks2 = new Tasks("POST_EVALUATION_RESULT", 1);
+      POST_EVALUATION_RESULT = localTasks2;
+      Tasks localTasks3 = new Tasks("ON_RECORDING_ERROR", 2);
+      ON_RECORDING_ERROR = localTasks3;
+      Tasks localTasks4 = new Tasks("ON_USER_CANCELLED", 3);
+      ON_USER_CANCELLED = localTasks4;
+      Tasks localTasks5 = new Tasks("ON_CHANGE_DEVICE", 4);
+      ON_CHANGE_DEVICE = localTasks5;
+      Tasks localTasks6 = new Tasks("ON_CURRENT_BPM_UPDATED", 5);
+      ON_CURRENT_BPM_UPDATED = localTasks6;
+      $VALUES = new Tasks[] { localTasks1, localTasks2, localTasks3, localTasks4, localTasks5, localTasks6 };
+    }
+  }
+}

@@ -1,0 +1,882 @@
+package androidx.appcompat.widget;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources.NotFoundException;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
+import android.os.LocaleList;
+import android.text.method.PasswordTransformationMethod;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.widget.TextView;
+import androidx.core.content.g.j.f;
+import androidx.core.widget.i;
+import c.a.j;
+import c.h.q.f0;
+import c.h.q.q0.b;
+import java.lang.ref.WeakReference;
+import java.util.Locale;
+
+class t
+{
+  private final TextView a;
+  private l0 b;
+  private l0 c;
+  private l0 d;
+  private l0 e;
+  private l0 f;
+  private l0 g;
+  private l0 h;
+  private final u i;
+  private int j = 0;
+  private int k = -1;
+  private Typeface l;
+  private boolean m;
+  
+  t(TextView paramTextView)
+  {
+    a = paramTextView;
+    i = new u(paramTextView);
+  }
+  
+  private void B(int paramInt, float paramFloat)
+  {
+    i.w(paramInt, paramFloat);
+  }
+  
+  private void C(Context paramContext, n0 paramN0)
+  {
+    j = paramN0.k(j.H2, j);
+    int i2 = Build.VERSION.SDK_INT;
+    boolean bool2 = false;
+    if (i2 >= 28)
+    {
+      n = paramN0.k(j.M2, -1);
+      k = n;
+      if (n != -1) {
+        j = (j & 0x2 | 0x0);
+      }
+    }
+    int n = j.L2;
+    if ((!paramN0.s(n)) && (!paramN0.s(j.N2)))
+    {
+      n = j.G2;
+      if (paramN0.s(n))
+      {
+        m = false;
+        n = paramN0.k(n, 1);
+        if (n != 1)
+        {
+          if (n != 2)
+          {
+            if (n != 3) {
+              return;
+            }
+            l = Typeface.MONOSPACE;
+            return;
+          }
+          l = Typeface.SERIF;
+          return;
+        }
+        l = Typeface.SANS_SERIF;
+      }
+      return;
+    }
+    l = null;
+    final int i1 = j.N2;
+    if (paramN0.s(i1)) {
+      n = i1;
+    }
+    i1 = k;
+    final int i3 = j;
+    if (!paramContext.isRestricted()) {
+      paramContext = new a(i1, i3, new WeakReference(a));
+    }
+    try
+    {
+      paramContext = paramN0.j(n, j, paramContext);
+      if (paramContext == null) {
+        break label292;
+      }
+      if ((i2 < 28) || (k == -1)) {
+        break label287;
+      }
+      paramContext = Typeface.create(paramContext, 0);
+      i1 = k;
+      if ((j & 0x2) == 0) {
+        break label400;
+      }
+      bool1 = true;
+    }
+    catch (UnsupportedOperationException|Resources.NotFoundException paramContext)
+    {
+      for (;;)
+      {
+        label287:
+        label292:
+        continue;
+        boolean bool1 = false;
+        continue;
+        bool1 = false;
+      }
+    }
+    l = g.a(paramContext, i1, bool1);
+    break label292;
+    l = paramContext;
+    if (l == null)
+    {
+      bool1 = true;
+      m = bool1;
+      if (l == null)
+      {
+        paramContext = paramN0.o(n);
+        if (paramContext != null)
+        {
+          if ((Build.VERSION.SDK_INT >= 28) && (k != -1))
+          {
+            paramContext = Typeface.create(paramContext, 0);
+            n = k;
+            bool1 = bool2;
+            if ((j & 0x2) != 0) {
+              bool1 = true;
+            }
+            l = g.a(paramContext, n, bool1);
+            return;
+          }
+          l = Typeface.create(paramContext, j);
+        }
+      }
+      return;
+    }
+  }
+  
+  private void a(Drawable paramDrawable, l0 paramL0)
+  {
+    if ((paramDrawable != null) && (paramL0 != null)) {
+      k.i(paramDrawable, paramL0, a.getDrawableState());
+    }
+  }
+  
+  private static l0 d(Context paramContext, k paramK, int paramInt)
+  {
+    paramContext = paramK.f(paramContext, paramInt);
+    if (paramContext != null)
+    {
+      paramK = new l0();
+      d = true;
+      a = paramContext;
+      return paramK;
+    }
+    return null;
+  }
+  
+  private void y(Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4, Drawable paramDrawable5, Drawable paramDrawable6)
+  {
+    int n = Build.VERSION.SDK_INT;
+    if ((n >= 17) && ((paramDrawable5 != null) || (paramDrawable6 != null)))
+    {
+      paramDrawable3 = c.a(a);
+      paramDrawable1 = a;
+      if (paramDrawable5 == null) {
+        paramDrawable5 = paramDrawable3[0];
+      }
+      if (paramDrawable2 == null) {
+        paramDrawable2 = paramDrawable3[1];
+      }
+      if (paramDrawable6 == null) {
+        paramDrawable6 = paramDrawable3[2];
+      }
+      if (paramDrawable4 == null) {
+        paramDrawable4 = paramDrawable3[3];
+      }
+      c.b(paramDrawable1, paramDrawable5, paramDrawable2, paramDrawable6, paramDrawable4);
+      return;
+    }
+    if ((paramDrawable1 != null) || (paramDrawable2 != null) || (paramDrawable3 != null) || (paramDrawable4 != null))
+    {
+      if (n >= 17)
+      {
+        paramDrawable5 = c.a(a);
+        if ((paramDrawable5[0] != null) || (paramDrawable5[2] != null))
+        {
+          paramDrawable1 = a;
+          paramDrawable3 = paramDrawable5[0];
+          if (paramDrawable2 == null) {
+            paramDrawable2 = paramDrawable5[1];
+          }
+          paramDrawable6 = paramDrawable5[2];
+          if (paramDrawable4 == null) {
+            paramDrawable4 = paramDrawable5[3];
+          }
+          c.b(paramDrawable1, paramDrawable3, paramDrawable2, paramDrawable6, paramDrawable4);
+          return;
+        }
+      }
+      paramDrawable6 = a.getCompoundDrawables();
+      paramDrawable5 = a;
+      if (paramDrawable1 == null) {
+        paramDrawable1 = paramDrawable6[0];
+      }
+      if (paramDrawable2 == null) {
+        paramDrawable2 = paramDrawable6[1];
+      }
+      if (paramDrawable3 == null) {
+        paramDrawable3 = paramDrawable6[2];
+      }
+      if (paramDrawable4 == null) {
+        paramDrawable4 = paramDrawable6[3];
+      }
+      paramDrawable5.setCompoundDrawablesWithIntrinsicBounds(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+    }
+  }
+  
+  private void z()
+  {
+    l0 localL0 = h;
+    b = localL0;
+    c = localL0;
+    d = localL0;
+    e = localL0;
+    f = localL0;
+    g = localL0;
+  }
+  
+  void A(int paramInt, float paramFloat)
+  {
+    if ((!t0.b) && (!l())) {
+      B(paramInt, paramFloat);
+    }
+  }
+  
+  void b()
+  {
+    Drawable[] arrayOfDrawable;
+    if ((b != null) || (c != null) || (d != null) || (e != null))
+    {
+      arrayOfDrawable = a.getCompoundDrawables();
+      a(arrayOfDrawable[0], b);
+      a(arrayOfDrawable[1], c);
+      a(arrayOfDrawable[2], d);
+      a(arrayOfDrawable[3], e);
+    }
+    if ((Build.VERSION.SDK_INT >= 17) && ((f != null) || (g != null)))
+    {
+      arrayOfDrawable = c.a(a);
+      a(arrayOfDrawable[0], f);
+      a(arrayOfDrawable[2], g);
+    }
+  }
+  
+  void c()
+  {
+    i.b();
+  }
+  
+  int e()
+  {
+    return i.h();
+  }
+  
+  int f()
+  {
+    return i.i();
+  }
+  
+  int g()
+  {
+    return i.j();
+  }
+  
+  int[] h()
+  {
+    return i.k();
+  }
+  
+  int i()
+  {
+    return i.l();
+  }
+  
+  ColorStateList j()
+  {
+    l0 localL0 = h;
+    if (localL0 != null) {
+      return a;
+    }
+    return null;
+  }
+  
+  PorterDuff.Mode k()
+  {
+    l0 localL0 = h;
+    if (localL0 != null) {
+      return b;
+    }
+    return null;
+  }
+  
+  boolean l()
+  {
+    return i.q();
+  }
+  
+  void m(AttributeSet paramAttributeSet, int paramInt)
+  {
+    Context localContext = a.getContext();
+    k localK = k.b();
+    Object localObject1 = j.Y;
+    Object localObject2 = n0.v(localContext, paramAttributeSet, (int[])localObject1, paramInt, 0);
+    Object localObject3 = a;
+    f0.n0((View)localObject3, ((TextView)localObject3).getContext(), (int[])localObject1, paramAttributeSet, ((n0)localObject2).r(), paramInt, 0);
+    int i1 = ((n0)localObject2).n(j.Z, -1);
+    int n = j.c0;
+    if (((n0)localObject2).s(n)) {
+      b = d(localContext, localK, ((n0)localObject2).n(n, 0));
+    }
+    n = j.a0;
+    if (((n0)localObject2).s(n)) {
+      c = d(localContext, localK, ((n0)localObject2).n(n, 0));
+    }
+    n = j.d0;
+    if (((n0)localObject2).s(n)) {
+      d = d(localContext, localK, ((n0)localObject2).n(n, 0));
+    }
+    n = j.b0;
+    if (((n0)localObject2).s(n)) {
+      e = d(localContext, localK, ((n0)localObject2).n(n, 0));
+    }
+    n = Build.VERSION.SDK_INT;
+    if (n >= 17)
+    {
+      int i2 = j.e0;
+      if (((n0)localObject2).s(i2)) {
+        f = d(localContext, localK, ((n0)localObject2).n(i2, 0));
+      }
+      i2 = j.f0;
+      if (((n0)localObject2).s(i2)) {
+        g = d(localContext, localK, ((n0)localObject2).n(i2, 0));
+      }
+    }
+    ((n0)localObject2).w();
+    boolean bool2 = a.getTransformationMethod() instanceof PasswordTransformationMethod;
+    boolean bool1;
+    int i3;
+    label348:
+    Object localObject4;
+    Object localObject5;
+    if (i1 != -1)
+    {
+      localObject7 = n0.t(localContext, i1, j.E2);
+      if (!bool2)
+      {
+        i1 = j.P2;
+        if (((n0)localObject7).s(i1))
+        {
+          bool1 = ((n0)localObject7).a(i1, false);
+          i3 = 1;
+          break label348;
+        }
+      }
+      bool1 = false;
+      i3 = bool1;
+      C(localContext, (n0)localObject7);
+      if (n < 23)
+      {
+        i1 = j.I2;
+        if (((n0)localObject7).s(i1)) {
+          localObject1 = ((n0)localObject7).c(i1);
+        } else {
+          localObject1 = null;
+        }
+        i1 = j.J2;
+        if (((n0)localObject7).s(i1)) {
+          localObject2 = ((n0)localObject7).c(i1);
+        } else {
+          localObject2 = null;
+        }
+        i1 = j.K2;
+        localObject4 = localObject1;
+        localObject3 = localObject2;
+        if (((n0)localObject7).s(i1))
+        {
+          localObject5 = ((n0)localObject7).c(i1);
+          localObject4 = localObject1;
+          localObject1 = localObject2;
+          break label478;
+        }
+      }
+      else
+      {
+        localObject4 = null;
+        localObject3 = null;
+      }
+      localObject5 = null;
+      localObject1 = localObject3;
+      label478:
+      i1 = j.Q2;
+      if (((n0)localObject7).s(i1)) {
+        localObject6 = ((n0)localObject7).o(i1);
+      } else {
+        localObject6 = null;
+      }
+      if (n >= 26)
+      {
+        i1 = j.O2;
+        if (((n0)localObject7).s(i1))
+        {
+          localObject3 = ((n0)localObject7).o(i1);
+          break label544;
+        }
+      }
+      localObject3 = null;
+      label544:
+      ((n0)localObject7).w();
+      localObject2 = localObject4;
+      localObject4 = localObject6;
+    }
+    else
+    {
+      bool1 = false;
+      i3 = bool1;
+      localObject3 = null;
+      localObject2 = null;
+      localObject4 = null;
+      localObject1 = null;
+      localObject5 = null;
+    }
+    n0 localN0 = n0.v(localContext, paramAttributeSet, j.E2, paramInt, 0);
+    if (!bool2)
+    {
+      i1 = j.P2;
+      if (localN0.s(i1))
+      {
+        bool1 = localN0.a(i1, false);
+        i3 = 1;
+      }
+    }
+    Object localObject6 = localObject2;
+    Object localObject7 = localObject1;
+    Object localObject8 = localObject5;
+    if (n < 23)
+    {
+      i1 = j.I2;
+      if (localN0.s(i1)) {
+        localObject2 = localN0.c(i1);
+      }
+      i1 = j.J2;
+      if (localN0.s(i1)) {
+        localObject1 = localN0.c(i1);
+      }
+      i1 = j.K2;
+      localObject6 = localObject2;
+      localObject7 = localObject1;
+      localObject8 = localObject5;
+      if (localN0.s(i1))
+      {
+        localObject8 = localN0.c(i1);
+        localObject7 = localObject1;
+        localObject6 = localObject2;
+      }
+    }
+    i1 = j.Q2;
+    if (localN0.s(i1)) {
+      localObject4 = localN0.o(i1);
+    }
+    if (n >= 26)
+    {
+      i1 = j.O2;
+      if (localN0.s(i1))
+      {
+        localObject1 = localN0.o(i1);
+        break label802;
+      }
+    }
+    localObject1 = localObject3;
+    label802:
+    if (n >= 28)
+    {
+      i1 = j.F2;
+      if ((localN0.s(i1)) && (localN0.f(i1, -1) == 0)) {
+        a.setTextSize(0, 0.0F);
+      }
+    }
+    C(localContext, localN0);
+    localN0.w();
+    if (localObject6 != null) {
+      a.setTextColor((ColorStateList)localObject6);
+    }
+    if (localObject7 != null) {
+      a.setHintTextColor((ColorStateList)localObject7);
+    }
+    if (localObject8 != null) {
+      a.setLinkTextColor((ColorStateList)localObject8);
+    }
+    if ((!bool2) && (i3 != 0)) {
+      s(bool1);
+    }
+    localObject2 = l;
+    if (localObject2 != null) {
+      if (k == -1) {
+        a.setTypeface((Typeface)localObject2, j);
+      } else {
+        a.setTypeface((Typeface)localObject2);
+      }
+    }
+    if (localObject1 != null) {
+      f.d(a, (String)localObject1);
+    }
+    if (localObject4 != null) {
+      if (n >= 24)
+      {
+        e.b(a, e.a((String)localObject4));
+      }
+      else if (n >= 21)
+      {
+        localObject1 = localObject4.split(",")[0];
+        c.c(a, d.a((String)localObject1));
+      }
+    }
+    i.r(paramAttributeSet, paramInt);
+    if ((t0.b) && (i.l() != 0))
+    {
+      localObject1 = i.k();
+      if (localObject1.length > 0) {
+        if (f.a(a) != -1.0F) {
+          f.b(a, i.i(), i.h(), i.j(), 0);
+        } else {
+          f.c(a, (int[])localObject1, 0);
+        }
+      }
+    }
+    localObject6 = n0.u(localContext, paramAttributeSet, j.g0);
+    paramInt = ((n0)localObject6).n(j.o0, -1);
+    if (paramInt != -1) {
+      paramAttributeSet = localK.c(localContext, paramInt);
+    } else {
+      paramAttributeSet = null;
+    }
+    paramInt = ((n0)localObject6).n(j.t0, -1);
+    if (paramInt != -1) {
+      localObject1 = localK.c(localContext, paramInt);
+    } else {
+      localObject1 = null;
+    }
+    paramInt = ((n0)localObject6).n(j.p0, -1);
+    if (paramInt != -1) {
+      localObject2 = localK.c(localContext, paramInt);
+    } else {
+      localObject2 = null;
+    }
+    paramInt = ((n0)localObject6).n(j.m0, -1);
+    if (paramInt != -1) {
+      localObject3 = localK.c(localContext, paramInt);
+    } else {
+      localObject3 = null;
+    }
+    paramInt = ((n0)localObject6).n(j.q0, -1);
+    if (paramInt != -1) {
+      localObject4 = localK.c(localContext, paramInt);
+    } else {
+      localObject4 = null;
+    }
+    paramInt = ((n0)localObject6).n(j.n0, -1);
+    if (paramInt != -1) {
+      localObject5 = localK.c(localContext, paramInt);
+    } else {
+      localObject5 = null;
+    }
+    y(paramAttributeSet, (Drawable)localObject1, (Drawable)localObject2, (Drawable)localObject3, (Drawable)localObject4, (Drawable)localObject5);
+    paramInt = j.r0;
+    if (((n0)localObject6).s(paramInt))
+    {
+      paramAttributeSet = ((n0)localObject6).c(paramInt);
+      i.j(a, paramAttributeSet);
+    }
+    paramInt = j.s0;
+    if (((n0)localObject6).s(paramInt))
+    {
+      paramAttributeSet = x.d(((n0)localObject6).k(paramInt, -1), null);
+      i.k(a, paramAttributeSet);
+    }
+    paramInt = ((n0)localObject6).f(j.v0, -1);
+    n = ((n0)localObject6).f(j.w0, -1);
+    i1 = ((n0)localObject6).f(j.x0, -1);
+    ((n0)localObject6).w();
+    if (paramInt != -1) {
+      i.m(a, paramInt);
+    }
+    if (n != -1) {
+      i.n(a, n);
+    }
+    if (i1 != -1) {
+      i.o(a, i1);
+    }
+  }
+  
+  void n(final WeakReference<TextView> paramWeakReference, final Typeface paramTypeface)
+  {
+    if (m)
+    {
+      l = paramTypeface;
+      paramWeakReference = (TextView)paramWeakReference.get();
+      if (paramWeakReference != null)
+      {
+        if (f0.S(paramWeakReference))
+        {
+          paramWeakReference.post(new b(paramWeakReference, paramTypeface, j));
+          return;
+        }
+        paramWeakReference.setTypeface(paramTypeface, j);
+      }
+    }
+  }
+  
+  void o(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+  {
+    if (!t0.b) {
+      c();
+    }
+  }
+  
+  void p()
+  {
+    b();
+  }
+  
+  void q(Context paramContext, int paramInt)
+  {
+    n0 localN0 = n0.t(paramContext, paramInt, j.E2);
+    paramInt = j.P2;
+    if (localN0.s(paramInt)) {
+      s(localN0.a(paramInt, false));
+    }
+    paramInt = Build.VERSION.SDK_INT;
+    if (paramInt < 23)
+    {
+      n = j.I2;
+      ColorStateList localColorStateList;
+      if (localN0.s(n))
+      {
+        localColorStateList = localN0.c(n);
+        if (localColorStateList != null) {
+          a.setTextColor(localColorStateList);
+        }
+      }
+      n = j.K2;
+      if (localN0.s(n))
+      {
+        localColorStateList = localN0.c(n);
+        if (localColorStateList != null) {
+          a.setLinkTextColor(localColorStateList);
+        }
+      }
+      n = j.J2;
+      if (localN0.s(n))
+      {
+        localColorStateList = localN0.c(n);
+        if (localColorStateList != null) {
+          a.setHintTextColor(localColorStateList);
+        }
+      }
+    }
+    int n = j.F2;
+    if ((localN0.s(n)) && (localN0.f(n, -1) == 0)) {
+      a.setTextSize(0, 0.0F);
+    }
+    C(paramContext, localN0);
+    if (paramInt >= 26)
+    {
+      paramInt = j.O2;
+      if (localN0.s(paramInt))
+      {
+        paramContext = localN0.o(paramInt);
+        if (paramContext != null) {
+          f.d(a, paramContext);
+        }
+      }
+    }
+    localN0.w();
+    paramContext = l;
+    if (paramContext != null) {
+      a.setTypeface(paramContext, j);
+    }
+  }
+  
+  void r(TextView paramTextView, InputConnection paramInputConnection, EditorInfo paramEditorInfo)
+  {
+    if ((Build.VERSION.SDK_INT < 30) && (paramInputConnection != null)) {
+      b.f(paramEditorInfo, paramTextView.getText());
+    }
+  }
+  
+  void s(boolean paramBoolean)
+  {
+    a.setAllCaps(paramBoolean);
+  }
+  
+  void t(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    throws IllegalArgumentException
+  {
+    i.s(paramInt1, paramInt2, paramInt3, paramInt4);
+  }
+  
+  void u(int[] paramArrayOfInt, int paramInt)
+    throws IllegalArgumentException
+  {
+    i.t(paramArrayOfInt, paramInt);
+  }
+  
+  void v(int paramInt)
+  {
+    i.u(paramInt);
+  }
+  
+  void w(ColorStateList paramColorStateList)
+  {
+    if (h == null) {
+      h = new l0();
+    }
+    l0 localL0 = h;
+    a = paramColorStateList;
+    boolean bool;
+    if (paramColorStateList != null) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    d = bool;
+    z();
+  }
+  
+  void x(PorterDuff.Mode paramMode)
+  {
+    if (h == null) {
+      h = new l0();
+    }
+    l0 localL0 = h;
+    b = paramMode;
+    boolean bool;
+    if (paramMode != null) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    c = bool;
+    z();
+  }
+  
+  class a
+    extends j.f
+  {
+    a(int paramInt1, int paramInt2, WeakReference paramWeakReference) {}
+    
+    public void h(int paramInt) {}
+    
+    public void i(Typeface paramTypeface)
+    {
+      Typeface localTypeface = paramTypeface;
+      if (Build.VERSION.SDK_INT >= 28)
+      {
+        int i = i1;
+        localTypeface = paramTypeface;
+        if (i != -1)
+        {
+          boolean bool;
+          if ((i3 & 0x2) != 0) {
+            bool = true;
+          } else {
+            bool = false;
+          }
+          localTypeface = t.g.a(paramTypeface, i, bool);
+        }
+      }
+      n(c, localTypeface);
+    }
+  }
+  
+  class b
+    implements Runnable
+  {
+    b(TextView paramTextView, Typeface paramTypeface, int paramInt) {}
+    
+    public void run()
+    {
+      paramWeakReference.setTypeface(paramTypeface, d);
+    }
+  }
+  
+  static class c
+  {
+    static Drawable[] a(TextView paramTextView)
+    {
+      return paramTextView.getCompoundDrawablesRelative();
+    }
+    
+    static void b(TextView paramTextView, Drawable paramDrawable1, Drawable paramDrawable2, Drawable paramDrawable3, Drawable paramDrawable4)
+    {
+      paramTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(paramDrawable1, paramDrawable2, paramDrawable3, paramDrawable4);
+    }
+    
+    static void c(TextView paramTextView, Locale paramLocale)
+    {
+      paramTextView.setTextLocale(paramLocale);
+    }
+  }
+  
+  static class d
+  {
+    static Locale a(String paramString)
+    {
+      return Locale.forLanguageTag(paramString);
+    }
+  }
+  
+  static class e
+  {
+    static LocaleList a(String paramString)
+    {
+      return LocaleList.forLanguageTags(paramString);
+    }
+    
+    static void b(TextView paramTextView, LocaleList paramLocaleList)
+    {
+      paramTextView.setTextLocales(paramLocaleList);
+    }
+  }
+  
+  static class f
+  {
+    static int a(TextView paramTextView)
+    {
+      return paramTextView.getAutoSizeStepGranularity();
+    }
+    
+    static void b(TextView paramTextView, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
+    {
+      paramTextView.setAutoSizeTextTypeUniformWithConfiguration(paramInt1, paramInt2, paramInt3, paramInt4);
+    }
+    
+    static void c(TextView paramTextView, int[] paramArrayOfInt, int paramInt)
+    {
+      paramTextView.setAutoSizeTextTypeUniformWithPresetSizes(paramArrayOfInt, paramInt);
+    }
+    
+    static boolean d(TextView paramTextView, String paramString)
+    {
+      return paramTextView.setFontVariationSettings(paramString);
+    }
+  }
+  
+  static class g
+  {
+    static Typeface a(Typeface paramTypeface, int paramInt, boolean paramBoolean)
+    {
+      return Typeface.create(paramTypeface, paramInt, paramBoolean);
+    }
+  }
+}
